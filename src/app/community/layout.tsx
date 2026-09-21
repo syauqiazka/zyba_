@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { CommunityProvider } from "./context/CommunityContext";
 import CommunitySidebar from "./components/CommunitySidebar";
 
@@ -12,13 +12,26 @@ import CommunitySidebar from "./components/CommunitySidebar";
  * the content rather than pushing it — exactly like Instagram web.
  */
 function CommunityLayoutInner({ children }: { children: React.ReactNode }) {
-  return (
-    <div className="flex h-screen overflow-hidden bg-cream animate-in fade-in slide-in-from-right-3 duration-300 relative">
-      {/* Sidebar — fixed-position within this container, overlays the feed */}
-      <CommunitySidebar />
+  const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
 
-      {/* Main content — has a left margin matching the collapsed sidebar width (w-16 = 64px) */}
-      <div className="flex-1 min-w-0 h-full overflow-hidden flex flex-col ml-0">
+  return (
+    <div className="flex h-screen overflow-hidden bg-cream relative">
+      {/* Mobile hamburger */}
+      <button type="button" onClick={() => setMobileSidebarOpen(true)}
+        className="md:hidden fixed top-4 left-4 z-50 w-10 h-10 rounded-xl bg-white border border-brown-900/10 shadow-sm flex items-center justify-center text-brown-900"
+        aria-label="Buka menu">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+          <line x1="3" y1="6" x2="21" y2="6" /><line x1="3" y1="12" x2="21" y2="12" /><line x1="3" y1="18" x2="21" y2="18" />
+        </svg>
+      </button>
+      {mobileSidebarOpen && <div className="md:hidden fixed inset-0 z-40 bg-black/40" onClick={() => setMobileSidebarOpen(false)} />}
+
+      {/* Sidebar — off-canvas mobile, normal desktop */}
+      <div className={`fixed md:relative top-0 left-0 z-50 h-screen transition-transform duration-300 md:translate-x-0 ${mobileSidebarOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"}`}>
+        <CommunitySidebar onClose={() => setMobileSidebarOpen(false)} />
+      </div>
+
+      <div className="flex-1 min-w-0 h-full overflow-hidden flex flex-col">
         {children}
       </div>
     </div>

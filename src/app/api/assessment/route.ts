@@ -117,11 +117,12 @@ export async function POST(req: NextRequest) {
     );
 
     // ✅ Tandai onboardingCompleted = true di user record
-    try {
-      await userRepository.update(userId, { onboardingCompleted: true });
-    } catch (e) {
-      console.warn("Could not update onboardingCompleted:", e);
+    const updated = await userRepository.update(userId, { onboardingCompleted: true });
+    if (!updated) {
+      console.error("[/api/assessment] Failed to update onboardingCompleted for user:", userId);
+      return NextResponse.json({ error: "Gagal menyimpan status assessment ke database" }, { status: 500 });
     }
+    console.log("[/api/assessment] onboardingCompleted set to true for user:", userId);
 
     const response = NextResponse.json({
       success: true,

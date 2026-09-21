@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense } from "react";
+import { Suspense, useState } from "react";
 import { usePathname } from "next/navigation";
 import Sidebar from "@/components/ui/Sidebar";
 import NavigationProgress from "@/components/ui/NavigationProgress";
@@ -49,6 +49,7 @@ function PageLoadingFallback() {
 
 export default function ClientLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
 
   // Public pages AND assessment (full-screen, no sidebar)
   if (
@@ -79,15 +80,42 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
     );
   }
 
-  // Protected and internal app pages (dashboard, companion, community, dll) render with Sidebar
+  // Protected pages — sidebar + mobile off-canvas drawer (Bagian 15)
   return (
     <>
       <NavigationProgress />
-      <div className="flex">
-        <Suspense fallback={<SidebarSkeleton />}>
-          <Sidebar />
-        </Suspense>
-        <main className="flex-1 max-w-[1400px] mx-auto px-6 py-6 md:px-10 md:py-8 min-w-0">
+
+      {/* Mobile: hamburger button fixed top-left */}
+      <button
+        type="button"
+        onClick={() => setMobileSidebarOpen(true)}
+        className="md:hidden fixed top-4 left-4 z-50 w-10 h-10 rounded-xl bg-white border border-brown-900/10 shadow-sm flex items-center justify-center text-brown-900"
+        aria-label="Buka menu"
+      >
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+          <line x1="3" y1="6" x2="21" y2="6" />
+          <line x1="3" y1="12" x2="21" y2="12" />
+          <line x1="3" y1="18" x2="21" y2="18" />
+        </svg>
+      </button>
+
+      {/* Mobile: backdrop overlay */}
+      {mobileSidebarOpen && (
+        <div
+          className="md:hidden fixed inset-0 z-40 bg-black/40"
+          onClick={() => setMobileSidebarOpen(false)}
+        />
+      )}
+
+      <div className="flex items-start">
+        {/* Sidebar: off-canvas mobile, sticky desktop */}
+        <div className={`fixed md:sticky top-0 left-0 z-50 h-screen transition-transform duration-300 md:translate-x-0 ${mobileSidebarOpen ? "translate-x-0" : "-translate-x-full"}`}>
+          <Suspense fallback={<SidebarSkeleton />}>
+            <Sidebar onClose={() => setMobileSidebarOpen(false)} />
+          </Suspense>
+        </div>
+
+        <main className="flex-1 max-w-[1400px] mx-auto px-6 pt-6 pb-12 md:px-10 md:pt-8 min-w-0 overflow-auto">
           <Suspense fallback={<PageLoadingFallback />}>
             {children}
           </Suspense>

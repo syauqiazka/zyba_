@@ -19,8 +19,8 @@ export async function POST(req: NextRequest) {
   try {
     const token = req.cookies.get("auth-token")?.value;
     let userId = "user_demo_alex";
-    let authorName = "Alex Rivera";
-    let avatarUrl = "🦊"; // resolved emoji for display in posts
+    let authorName = "Pengguna ZYBA";
+    let avatarUrl = "fox";
 
     if (token) {
       const session = await verifySessionToken(token);

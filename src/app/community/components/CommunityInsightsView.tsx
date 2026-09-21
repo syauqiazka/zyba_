@@ -1,10 +1,12 @@
 "use client";
 
 import React from "react";
+import { useCommunity } from "../context/CommunityContext";
 
 export default function CommunityInsightsView() {
+  const { posts } = useCommunity();
   const STATS = [
-    { label: "Total Percakapan Komunitas", value: "2,541", change: "+14% minggu ini", positive: true },
+    { label: "Total Postingan Komunitas", value: `${posts.length}`, change: "dari database", positive: true },
     { label: "Tingkat Responsif Teman Sebaya", value: "98.4%", change: "< 5 menit rata-rata", positive: true },
     { label: "Streak Bernapas Terpanjang", value: "24 hari", change: "Sarah J. memimpin", positive: true },
     { label: "Sentimen Emosi Positif", value: "82%", change: "+6% peningkatan", positive: true },

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useCommunity } from "../context/CommunityContext";
 import PostCard from "./PostCard";
 
@@ -16,8 +16,26 @@ export default function CommunityProfileView() {
   } = useCommunity();
 
   const [activeTab, setActiveTab] = useState<"THREADS" | "REPLIES" | "REPOSTS" | "SAVED">("THREADS");
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+  const [currentUserName, setCurrentUserName] = useState("Pengguna ZYBA");
 
-  const myPosts = posts.filter((p) => p.author === "Alex Rivera" || p.id === "post-1");
+  useEffect(() => {
+    try {
+      const cached = localStorage.getItem("zyba_user_cache");
+      if (cached) {
+        const parsed = JSON.parse(cached);
+        if (parsed.name) setCurrentUserName(parsed.name);
+      }
+    } catch {}
+    fetch("/api/user/me").then(r => r.ok ? r.json() : null).then(d => {
+      if (d?.user) {
+        setCurrentUserId(d.user.id);
+        setCurrentUserName(d.user.name || "Pengguna ZYBA");
+      }
+    }).catch(() => {});
+  }, []);
+
+  const myPosts = currentUserId ? posts.filter((p) => p.author === currentUserName) : [];
   const mySaved = posts.filter((p) => savedPostIds.includes(p.id));
 
   return (
@@ -26,7 +44,7 @@ export default function CommunityProfileView() {
       <div className="bg-white rounded-3xl border border-brown-900/10 p-6 shadow-xs">
         <div className="flex items-start justify-between gap-4 mb-3">
           <div>
-            <h1 className="font-bold text-xl text-brown-900">Alex Rivera</h1>
+            <h1 className="font-bold text-xl text-brown-900">{currentUserName}</h1>
             <p className="text-xs text-brown-700/60 flex items-center gap-1.5 mt-0.5">
               <span>harikitte_ikou</span>
               <span className="text-[10px] bg-cream px-2 py-0.5 rounded-full font-bold text-brown-900">

@@ -145,12 +145,8 @@ export default function CompanionSidebar({
     ),
   };
 
-  const NAV_SECTIONS: { id: CompanionSection; label: string; iconKey: keyof typeof icons; badge?: string }[] = [
-    { id: "projects", label: "Proyek", iconKey: "projects" },
-    { id: "artifacts", label: "Catatan", iconKey: "artifacts" },
-    { id: "code", label: "Kode", iconKey: "code", badge: "Upgrade" },
-    { id: "customize", label: "Pengaturan", iconKey: "customize" },
-  ];
+  const NAV_SECTIONS: { id: CompanionSection; label: string; iconKey: keyof typeof icons; badge?: string }[] = [];
+  // Bagian 23.1: Proyek/Catatan/Kode/Pengaturan dihapus — scope creep
 
   // ── Dynamic username from localStorage cache ─────────────────────────────
   const displayName = (() => {

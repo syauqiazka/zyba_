@@ -55,7 +55,7 @@ export const INITIAL_COMMUNITY_POSTS: Post[] = [
     comments: [
       {
         id: "c-1",
-        author: "Alex Rivera",
+        author: "Pengguna ZYBA",
         avatar: "AL",
         time: "1 jam lalu",
         content: "Keren banget Sarah! Konsistensi breathing 4-4-4 emang ngebantu banget.",

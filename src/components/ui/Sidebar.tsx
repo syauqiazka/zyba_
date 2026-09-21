@@ -16,7 +16,7 @@ const NAV_ITEMS = [
   { href: "/resources", label: "Resources", icon: "book" },
 ];
 
-export default function Sidebar() {
+export default function Sidebar({ onClose }: { onClose?: () => void }) {
   const pathname = usePathname();
   const router = useRouter();
 
@@ -94,7 +94,13 @@ export default function Sidebar() {
   };
 
   return (
-    <aside className="w-64 shrink-0 border-r border-brown-900/10 bg-cream/90 backdrop-blur-xl min-h-screen p-5 flex flex-col justify-between sticky top-0 h-screen z-30 shadow-[12px_0_36px_-28px_rgba(59,42,32,0.5)]">
+    <aside className="w-64 shrink-0 border-r border-brown-900/10 bg-cream/95 min-h-screen p-5 flex flex-col justify-between sticky top-0 h-screen z-30 shadow-[12px_0_36px_-28px_rgba(59,42,32,0.5)]">
+      {/* Mobile close button */}
+      {onClose && (
+        <button type="button" onClick={onClose} className="md:hidden absolute top-3 right-3 w-8 h-8 rounded-lg bg-brown-900/5 hover:bg-brown-900/10 flex items-center justify-center text-brown-700" aria-label="Tutup menu">
+          ✕
+        </button>
+      )}
       <div className="flex flex-col gap-7">
         {/* Brand Logo */}
         <Link href="/dashboard" className="flex items-center gap-3 px-2 group">

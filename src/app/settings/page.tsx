@@ -6,7 +6,7 @@ import { SettingsBanner, ProfileSection, SettingsToggles } from "./components";
 import { PersonaId } from "@/backend/ai/personas";
 
 export default function SettingsPage() {
-  const [name, setName] = useState("Alex Rivera");
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("alex@zyba.app");
   const [phone, setPhone] = useState("+62 812-3456-7890");
   const [location, setLocation] = useState("Jakarta, Indonesia");

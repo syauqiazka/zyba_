@@ -23,60 +23,7 @@ export interface Conversation {
   messages: Message[];
 }
 
-export const INITIAL_CONVERSATIONS: Conversation[] = [
-  {
-    id: "conv-1",
-    title: "Overthinking Seputar Tugas Akhir",
-    lastMsg: "Terima kasih Zyba, latihan pernapasan tadi sangat membantu fokusku.",
-    time: "10:45 AM",
-    emotionTag: "Tenang",
-    messages: [
-      {
-        id: "m-1",
-        role: "USER",
-        content: "Halo Zyba, aku merasa cemas sekali memikirkan deadline tugas minggu depan.",
-        time: "10:40 AM",
-      },
-      {
-        id: "m-2",
-        role: "ASSISTANT",
-        content:
-          "Halo Alex! Sangat wajar merasa cemas saat menghadapi banyak tugas sekaligus. Cobalah tarik napas perlahan 4 detik, tahan 4 detik, lalu hembuskan 4 detik. Mari pecah tugasmu menjadi langkah-langkah kecil yang bisa diselesaikan hari ini.",
-        modelUsed: "gemini-1.5-flash",
-        time: "10:41 AM",
-      },
-      {
-        id: "m-3",
-        role: "USER",
-        content: "Terima kasih Zyba, latihan pernapasan tadi sangat membantu fokusku.",
-        time: "10:45 AM",
-      },
-    ],
-  },
-  {
-    id: "conv-2",
-    title: "Evaluasi Kualitas Tidur Minggu Ini",
-    lastMsg: "Cobalah mematikan gadget 30 menit sebelum tidur ya.",
-    time: "Kemarin",
-    emotionTag: "Reflektif",
-    messages: [
-      {
-        id: "m-4",
-        role: "USER",
-        content: "Belakangan ini aku baru bisa tidur jam 2 pagi. Kepala rasanya berat.",
-        time: "23:15 PM",
-      },
-      {
-        id: "m-5",
-        role: "ASSISTANT",
-        content:
-          "Kurang tidur dapat mempengaruhi regulasi emosi dan imunitas tubuh. Cobalah mematikan gadget 30 menit sebelum tidur dan dengarkan audio relaksasi di menu Resources.",
-        modelUsed: "gemini-1.5-flash",
-        time: "23:16 PM",
-      },
-    ],
-  },
-];
+export const INITIAL_CONVERSATIONS: Conversation[] = [];
 
 export type CompanionSection = "chat" | "projects" | "artifacts" | "code" | "customize";
 
@@ -99,7 +46,7 @@ const SLUG_TO_SECTION: Record<string, CompanionSection> = {
 
 interface CompanionContextType {
   conversations: Conversation[];
-  activeConvId: string;
+  activeConvId: string | null;
   setActiveConvId: (id: string) => void;
   activeSection: CompanionSection;
   setActiveSection: (sec: CompanionSection) => void;
@@ -152,13 +99,13 @@ export function CompanionProvider({ children }: { children: React.ReactNode }) {
     [router]
   );
 
-  const [conversations, setConversations] = useState<Conversation[]>(INITIAL_CONVERSATIONS);
-  const [activeConvId, setActiveConvId] = useState<string>("conv-1");
+  const [conversations, setConversations] = useState<Conversation[]>([]);
+  const [activeConvId, setActiveConvId] = useState<string | null>(null);
   const [chatMode, setChatMode] = useState<"curhat" | "solusi">("curhat");
   const [inputText, setInputText] = useState("");
   const [isVoiceActive, setIsVoiceActive] = useState(false);
   const [commStyle, setCommStyle] = useState<"CASUAL" | "FORMAL" | "FUN">("CASUAL");
-  const [selectedModel, setSelectedModel] = useState<AIModelType>("gemini-1.5-flash");
+  const [selectedModel, setSelectedModel] = useState<AIModelType>("gemini-3.8-flash");
   const [isSending, setIsSending] = useState(false);
 
   // Modals & Banners

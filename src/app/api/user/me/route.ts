@@ -7,11 +7,13 @@ export async function GET(req: NextRequest) {
   try {
     const token = req.cookies.get("auth-token")?.value;
     if (!token) {
+      console.log("[/api/user/me] No token");
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const session = await verifySessionToken(token);
     if (!session) {
+      console.log("[/api/user/me] Invalid session");
       return NextResponse.json({ error: "Invalid session" }, { status: 401 });
     }
 
@@ -20,6 +22,7 @@ export async function GET(req: NextRequest) {
       (await userRepository.findByEmail(session.email));
 
     if (!user) {
+      console.log("[/api/user/me] User not found:", session.userId, session.email);
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 

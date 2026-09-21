@@ -11,7 +11,7 @@ import { useCommunity, CommunityView, VIEW_TO_SLUG } from "../context/CommunityC
  * - On hover: expands to full width (w-64) with smooth slide animation
  * - Active item: brown-900 fill; hover: orange→green gradient (matches dashboard)
  */
-export default function CommunitySidebar() {
+export default function CommunitySidebar({ onClose }: { onClose?: () => void }) {
   const pathname = usePathname();
   const [expanded, setExpanded] = useState(false);
   const {

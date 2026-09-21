@@ -15,6 +15,12 @@ export default function RootLayout({
 }) {
   return (
     <html lang="id">
+      <head>
+        <link rel="preconnect" href="https://generativelanguage.googleapis.com" />
+        <link rel="preconnect" href="https://api.groq.com" />
+        <link rel="preconnect" href="https://openrouter.ai" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+      </head>
       <body>
         <ClientLayout>{children}</ClientLayout>
       </body>

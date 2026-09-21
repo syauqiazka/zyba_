@@ -128,15 +128,19 @@ export default function DashboardPage() {
   };
 
   // Format tanggal saat ini secara dinamis dalam Bahasa Indonesia
-  const todayFormatted = new Intl.DateTimeFormat("id-ID", {
-    weekday: "long",
-    day: "numeric",
-    month: "short",
-    year: "numeric",
-  }).format(new Date());
+  const [todayFormatted, setTodayFormatted] = useState("");
+
+  useEffect(() => {
+    setTodayFormatted(new Intl.DateTimeFormat("id-ID", {
+      weekday: "long",
+      day: "numeric",
+      month: "short",
+      year: "numeric",
+    }).format(new Date()));
+  }, []);
 
   return (
-    <div className="flex flex-col gap-8 pb-12">
+    <div className="flex flex-col gap-8 pb-12 min-h-0">
       {/* Top Banner & Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 glass-card p-6 rounded-3xl border border-brown-900/10 bg-gradient-to-r from-cream via-white to-green-100/40 shadow-sm">
         <div>
@@ -150,7 +154,7 @@ export default function DashboardPage() {
             >
               {userData.hasAssessment ? "Welcome back" : "Selamat Datang"}
             </span>
-            <span className="text-xs text-brown-700">| {todayFormatted}</span>
+            <span className="text-xs text-brown-700" suppressHydrationWarning>| {todayFormatted}</span>
           </div>
           <h1 className="font-display text-3xl font-extrabold text-brown-900">
             Hi, {userData.name}! 👋

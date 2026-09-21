@@ -19,39 +19,32 @@ interface ModelOption {
 
 const MODEL_OPTIONS: ModelOption[] = [
   {
-    id: "gemini-1.5-flash",
-    name: "Gemini 1.5 Flash",
+    id: "gemini-3.8-flash",
+    name: "Gemini 3.8 Flash",
     badge: "Default",
-    desc: "Cepat, ringan & responsif untuk obrolan santai",
+    desc: "Model terbaru Google, cerdas untuk long-horizon tasks",
     icon: "⚡",
-  },
-  {
-    id: "gemini-1.5-pro",
-    name: "Gemini 1.5 Pro",
-    badge: "Pro",
-    desc: "Kemampuan analisis mendalam & solusi terstruktur",
-    icon: "✨",
-  },
-  {
-    id: "claude-3-5-sonnet",
-    name: "Claude 3.5 Sonnet",
-    badge: "Rekomendasi",
-    desc: "Pemahaman emosional empatik & gaya bahasa natural",
-    icon: "🎨",
-  },
-  {
-    id: "gpt-4o",
-    name: "OpenAI GPT-4o",
-    badge: "Smart",
-    desc: "Logika pemecahan masalah serbaguna",
-    icon: "🤖",
   },
   {
     id: "llama-3.3-70b",
     name: "Groq Llama 3.3 70B",
     badge: "Ultra Fast",
-    desc: "Model open-source dengan inferensi kilat",
+    desc: "Inferensi kilat via Groq LPU",
     icon: "🦙",
+  },
+  {
+    id: "nemotron-3-ultra",
+    name: "NVIDIA Nemotron 3 Ultra",
+    badge: "Gratis",
+    desc: "55B MoE, reasoning frontier dari NVIDIA",
+    icon: "🟢",
+  },
+  {
+    id: "gemma-4-31b",
+    name: "Google Gemma 4 31B",
+    badge: "Gratis",
+    desc: "Dense multimodal, 256K context",
+    icon: "💎",
   },
 ];
 

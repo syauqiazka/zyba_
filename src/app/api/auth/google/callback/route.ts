@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { userRepository } from "@/backend/auth/userRepository";
+import { userRepository, StoredUser } from "@/backend/auth/userRepository";
 import { createSessionToken } from "@/lib/auth";
 import bcrypt from "bcryptjs";
 
@@ -82,19 +82,34 @@ export async function GET(request: NextRequest) {
     }
 
     // 3. Cari atau buat user di sistem ZYBA
-    let user = await userRepository.findByEmail(email);
+    let user: StoredUser | null = null;
     let isNewUser = false;
+
+    try {
+      user = await userRepository.findByEmail(email);
+    } catch (dbError: any) {
+      console.error("[Google OAuth] DB connection failed:", dbError.message);
+      return NextResponse.redirect(new URL("/login?error=database_unavailable", request.url));
+    }
 
     if (!user) {
       isNewUser = true;
       const dummyPasswordHash = await bcrypt.hash(`google_${Date.now()}_${Math.random()}`, 12);
-      user = await userRepository.create({
-        email,
-        name,
-        passwordHash: dummyPasswordHash,
-        avatarUrl: "fox", // avatar key default ZYBA
-        onboardingCompleted: false,
-      });
+      try {
+        user = await userRepository.create({
+          email,
+          name,
+          passwordHash: dummyPasswordHash,
+          avatarUrl: "fox",
+          onboardingCompleted: false,
+        });
+        console.log("[Google OAuth] Created new user:", user.id, email);
+      } catch (createError: any) {
+        console.error("[Google OAuth] Failed to create user:", createError.message);
+        return NextResponse.redirect(new URL("/login?error=user_creation_failed", request.url));
+      }
+    } else {
+      console.log("[Google OAuth] Existing user found:", user.id, email, "onboardingCompleted:", user.onboardingCompleted);
     }
 
     // 4. Terbitkan signed JWT session token (AGENTS.md Bagian 8.2)

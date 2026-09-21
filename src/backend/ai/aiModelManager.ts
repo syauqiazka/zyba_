@@ -3,7 +3,7 @@
 
 import { getPersonaById, PersonaDef, PersonaId } from "./personas";
 
-export type AIModelType = "gemini-2.0-flash" | "gemini-1.5-flash" | "gemini-1.5-pro" | "llama-3.3-70b" | "mistral-small" | "openrouter-free" | "claude-3-5-sonnet" | "gpt-4o" | "zyba-default";
+export type AIModelType = "gemini-3.8-flash" | "gemini-3.5-flash-lite" | "llama-3.3-70b" | "qwen-3.8-27b" | "mistral-small" | "openrouter-free" | "nemotron-3-ultra" | "gemma-4-31b" | "zyba-default";
 
 export interface AIRequestParams {
   message: string;
@@ -59,7 +59,7 @@ async function callMistral(sp: string, msg: string, hist: AIRequestParams["histo
 async function callOpenRouter(sp: string, msg: string, hist: AIRequestParams["history"]): Promise<PR | null> {
   const key = process.env.OPENROUTER_API_KEY; if (!key) return null;
   const messages = [{ role: "system", content: sp }, ...(hist ?? []).map(h => ({ role: h.role === "USER" ? "user" : "assistant", content: h.content })), { role: "user", content: msg }];
-  const res = await fetch("https://openrouter.ai/api/v1/chat/completions", { method: "POST", headers: { "Content-Type": "application/json", "Authorization": "Bearer " + key, "HTTP-Referer": "https://zyba.app", "X-Title": "Zyba Companion" }, body: JSON.stringify({ model: "meta-llama/llama-3.1-8b-instruct:free", messages, max_tokens: 800 }) });
+  const res = await fetch("https://openrouter.ai/api/v1/chat/completions", { method: "POST", headers: { "Content-Type": "application/json", "Authorization": "Bearer " + key, "HTTP-Referer": "https://zyba.app", "X-Title": "Zyba Companion" }, body: JSON.stringify({ models: ["nvidia/nemotron-3-ultra:free", "google/gemma-4-31b:free", "nvidia/nemotron-3-super:free", "cohere/north-mini-code:free"], route: "fallback", messages, max_tokens: 800 }) });
   if (res.status === 429) throw new Error("RATE_LIMIT");
   if (!res.ok) return null;
   const data = await res.json();
@@ -96,7 +96,7 @@ export async function processMultiModelAIResponse(params: AIRequestParams): Prom
 
   type E = { fn: () => Promise<PR | null>; name: AIModelType };
   const chain: E[] = [
-    { fn: () => callGemini("gemini-2.0-flash", sp, message, history), name: "gemini-2.0-flash" },
+    { fn: () => callGemini("gemini-3.8-flash", sp, message, history), name: "gemini-3.8-flash" },
     { fn: () => callGroq("llama-3.3-70b-versatile", sp, message, history), name: "llama-3.3-70b" },
     { fn: () => callMistral(sp, message, history), name: "mistral-small" },
     { fn: () => callOpenRouter(sp, message, history), name: "openrouter-free" },
