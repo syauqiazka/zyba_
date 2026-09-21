@@ -209,9 +209,39 @@ exports.Prisma.ResourceScalarFieldEnum = {
   createdAt: 'createdAt'
 };
 
+exports.Prisma.SubscriptionScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  plan: 'plan',
+  status: 'status',
+  startDate: 'startDate',
+  endDate: 'endDate',
+  createdAt: 'createdAt'
+};
+
+exports.Prisma.PaymentScalarFieldEnum = {
+  id: 'id',
+  subscriptionId: 'subscriptionId',
+  userId: 'userId',
+  amount: 'amount',
+  provider: 'provider',
+  orderId: 'orderId',
+  transactionId: 'transactionId',
+  paymentMethod: 'paymentMethod',
+  status: 'status',
+  rawPayload: 'rawPayload',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
+};
+
+exports.Prisma.NullableJsonNullValueInput = {
+  DbNull: Prisma.DbNull,
+  JsonNull: Prisma.JsonNull
 };
 
 exports.Prisma.QueryMode = {
@@ -222,6 +252,12 @@ exports.Prisma.QueryMode = {
 exports.Prisma.NullsOrder = {
   first: 'first',
   last: 'last'
+};
+
+exports.Prisma.JsonNullValueFilter = {
+  DbNull: Prisma.DbNull,
+  JsonNull: Prisma.JsonNull,
+  AnyNull: Prisma.AnyNull
 };
 exports.CompanionPersona = exports.$Enums.CompanionPersona = {
   KINA: 'KINA',
@@ -256,6 +292,21 @@ exports.ResourceType = exports.$Enums.ResourceType = {
   COURSE: 'COURSE'
 };
 
+exports.SubscriptionStatus = exports.$Enums.SubscriptionStatus = {
+  PENDING: 'PENDING',
+  ACTIVE: 'ACTIVE',
+  EXPIRED: 'EXPIRED',
+  CANCELLED: 'CANCELLED'
+};
+
+exports.PaymentStatus = exports.$Enums.PaymentStatus = {
+  PENDING: 'PENDING',
+  SUCCESS: 'SUCCESS',
+  FAILED: 'FAILED',
+  EXPIRED: 'EXPIRED',
+  CANCELLED: 'CANCELLED'
+};
+
 exports.Prisma.ModelName = {
   User: 'User',
   NotificationPref: 'NotificationPref',
@@ -263,7 +314,9 @@ exports.Prisma.ModelName = {
   MoodEntry: 'MoodEntry',
   JournalEntry: 'JournalEntry',
   ActivityLog: 'ActivityLog',
-  Resource: 'Resource'
+  Resource: 'Resource',
+  Subscription: 'Subscription',
+  Payment: 'Payment'
 };
 
 /**

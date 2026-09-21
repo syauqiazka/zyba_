@@ -35,6 +35,7 @@ model User {
   journalEntries   JournalEntry[]
   activities       ActivityLog[]
   notificationPref NotificationPref?
+  subscriptions    Subscription[]
 
   @@map("users")
 }
@@ -161,4 +162,53 @@ model Resource {
   createdAt   DateTime     @default(now())
 
   @@map("resources")
+}
+
+model Subscription {
+  id        String             @id @default(cuid())
+  userId    String
+  user      User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  plan      Plan
+  status    SubscriptionStatus @default(PENDING)
+  startDate DateTime?
+  endDate   DateTime?
+  createdAt DateTime           @default(now())
+  payments  Payment[]
+
+  @@index([userId])
+  @@map("subscriptions")
+}
+
+enum SubscriptionStatus {
+  PENDING
+  ACTIVE
+  EXPIRED
+  CANCELLED
+}
+
+model Payment {
+  id             String        @id @default(cuid())
+  subscriptionId String
+  subscription   Subscription  @relation(fields: [subscriptionId], references: [id])
+  userId         String
+  amount         Int
+  provider       String        @default("midtrans")
+  orderId        String        @unique
+  transactionId  String?
+  paymentMethod  String?
+  status         PaymentStatus @default(PENDING)
+  rawPayload     Json?
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  @@index([userId, createdAt])
+  @@map("payments")
+}
+
+enum PaymentStatus {
+  PENDING
+  SUCCESS
+  FAILED
+  EXPIRED
+  CANCELLED
 }

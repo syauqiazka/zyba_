@@ -6,6 +6,7 @@ export interface ProfileUser {
   name: string;
   email: string;
   avatarUrl?: string;
+  plan?: "FREE" | "PLUS";
   handle?: string;
   statusText?: string;
   customStatus?: string;

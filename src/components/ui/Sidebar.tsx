@@ -35,6 +35,7 @@ export default function Sidebar({ onClose }: { onClose?: () => void }) {
               name: parsed.name,
               email: parsed.email || "user@zyba.app",
               avatarUrl: parsed.avatarUrl || "🦊",
+              plan: parsed.plan || "FREE",
               streak: parsed.stats?.streak || 1,
               zybaScore: parsed.stats?.zybaScore || null,
             };
@@ -46,6 +47,7 @@ export default function Sidebar({ onClose }: { onClose?: () => void }) {
       name: "Pengguna ZYBA",
       email: "user@zyba.app",
       avatarUrl: "🦊",
+      plan: "FREE",
       streak: 1,
       zybaScore: null,
     };
@@ -151,7 +153,10 @@ export default function Sidebar({ onClose }: { onClose?: () => void }) {
 
       {/* Footer Profile & Zyba Plus Badge */}
       <div className="flex flex-col gap-3 pt-4 border-t border-brown-900/10">
-        <div className="bg-white/70 rounded-xl p-3 flex items-center justify-between border border-brown-900/10 transition-colors hover:bg-white">
+        <Link
+          href="/settings/zyba-plus"
+          className="bg-white/70 rounded-xl p-3 flex items-center justify-between border border-brown-900/10 transition-colors hover:bg-white hover:border-orange-500/30"
+        >
           <div className="flex items-center gap-2">
             <span className="flex size-8 items-center justify-center rounded-xl bg-orange-100 text-orange-500" aria-hidden="true">
               <svg className="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
@@ -159,14 +164,24 @@ export default function Sidebar({ onClose }: { onClose?: () => void }) {
               </svg>
             </span>
             <div className="flex flex-col">
-              <span className="text-xs font-bold text-brown-900">Zyba Plus</span>
-              <span className="text-[10px] text-brown-700">Fitur AI Unlocked</span>
+              <span className="text-xs font-bold text-brown-900">
+                {currentUser.plan === "PLUS" ? "Zyba Plus" : "Upgrade"}
+              </span>
+              <span className="text-[10px] text-brown-700">
+                {currentUser.plan === "PLUS" ? "Fitur AI Unlocked" : "Unlock fitur premium"}
+              </span>
             </div>
           </div>
-          <span className="text-[10px] bg-orange-500 text-white font-bold px-2 py-0.5 rounded-full">
-            PRO
-          </span>
-        </div>
+          {currentUser.plan === "PLUS" ? (
+            <span className="text-[10px] bg-orange-500 text-white font-bold px-2 py-0.5 rounded-full">
+              PRO
+            </span>
+          ) : (
+            <span className="text-[10px] text-orange-500 font-bold">
+              →
+            </span>
+          )}
+        </Link>
 
         {/* Profile User Control Bar */}
         <div className="relative">

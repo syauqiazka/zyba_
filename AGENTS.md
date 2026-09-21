@@ -4,7 +4,7 @@ Dokumen ini adalah satu-satunya sumber acuan untuk coding agent (Hermes+9Router,
 ⚠️ Baca urutan ini sebelum coding apa pun:
 
 Bagian 8 — Status Review & Prioritas Perbaikan — 3 isu keamanan yang HARUS diperbaiki duluan.
-Bagian 26 — Checklist Final — daftar centang sebelum submit lomba/deploy.
+Bagian 27 — Checklist Final — daftar centang sebelum submit lomba/deploy.
 1. Ringkasan Produk
 ZYBA — Gen Z Wellness Support. Pendamping kesehatan mental, fisik, dan sosial berbasis AI. Alur inti: Curhat → Solusi → Program → Aksi.
 
@@ -42,9 +42,11 @@ Mood: Happy	#E8C24A	bg-mood-happy	Mood selector
 Mood: Overjoyed	#8FAE5D	bg-mood-overjoyed	Mood selector
 Danger	#D9534F	bg-danger / text-danger	Hanya untuk delete/destructive action, jangan dipakai untuk styling konten krisis pengguna
 3.2 Tipografi
-Montserrat ExtraBold — judul besar/display (32–40px)
-Poppins SemiBold — subjudul/H1-H2 (18–24px)
-Poppins Regular — isi/body (14–16px), caption (12px)
+⚠️ Update (menggantikan spek font sebelumnya): rekomendasi font awal dari pitch deck (Montserrat + Poppins) tidak dipakai di implementasi akhir — tim memutuskan pakai DM Sans + Manrope, sudah terpasang di tailwind.config.ts dan globals.css. Ini font resmi yang berlaku sekarang.
+
+Manrope (weight 500/600/700/800) — font-display, dipakai untuk judul besar/display (32–40px), H1-H2 (18–24px).
+DM Sans (weight 400/500/600/700) — font-body, dipakai untuk isi/body (14–16px), caption (12px).
+Kelas Tailwind: font-display dan font-body (sudah dikonfigurasi, tinggal pakai langsung di className).
 3.3 Komponen Inti
 Button primer: pill/rounded-full (rounded-pill), background brown-900 atau orange-500, teks putih, ikon panah → di kanan.
 Button sekunder: outline atau flat green-100.
@@ -518,6 +520,30 @@ Angka statistik contoh (mis. "2.541 Conversations", "34/365") di Dashboard (Bagi
 Nama user contoh ("Alex Rivera", "Shinomiya") boleh tetap ada sebagai seed data development di prisma/seed.ts, tapi tidak boleh jadi fallback default yang tampil diam-diam kalau fetch data user asli gagal — pastikan ada loading state/empty state yang jelas, bukan menampilkan data orang lain.
 Setelah data/*.json dibersihkan dari git (Bagian 8.5.2), pastikan juga tidak lagi jadi sumber data yang secara keliru dianggap "data real" saat demo — beri log/warning yang jelas kalau app sedang jalan di mode fallback.
 Cara audit cepat: cari string literal berupa nama orang, angka statistik, atau isi percakapan yang ditulis langsung di file .tsx (bukan dari props, fetch, atau useState yang diawali kosong/null) — itu kandidat dummy data yang harus ditelusuri satu per satu.
+14.1 Bug Hydration Mismatch — Penyebab Layout "Konten Terdorong ke Bawah"
+⚠️ Temuan review kode: dashboard/page.tsx (dan kemungkinan halaman sidebar lain dengan pola serupa) membaca localStorage langsung di dalam initializer useState(() => { if (typeof window !== "undefined") {...} }). Pola ini menyebabkan hydration mismatch — server merender versi kosong (karena localStorage tidak ada di server), lalu client langsung merender ulang dengan data cache yang berbeda begitu hydrate. Gejala yang dilaporkan user: halaman menampilkan area kosong besar di bagian atas viewport dan konten utama (card "Welcome Back", dst.) seperti "terdorong" ke bawah, disertai indikator "beberapa errors" di overlay dev Next.js — kemungkinan besar berasal dari bug ini, dikombinasikan dengan animasi slide-in-from-bottom-3 di template.tsx yang terganggu prosesnya.
+
+Perbaikan: pindahkan pembacaan localStorage dari initializer useState ke dalam useEffect yang jalan setelah mount, dengan state awal yang selalu konsisten antara server dan client (mis. semua field null/default kosong), baru di-update lewat setUserData(...) di useEffect. Pola aman:
+
+// SALAH — baca localStorage di initializer useState (beda antara server & client)
+const [userData, setUserData] = useState(() => {
+  if (typeof window !== "undefined") {
+    const cached = localStorage.getItem("zyba_user_cache");
+    // ...
+  }
+});
+
+// BENAR — state awal konsisten, localStorage dibaca setelah mount di useEffect
+const [userData, setUserData] = useState(DEFAULT_USER_DATA); // sama persis di server & client
+
+useEffect(() => {
+  try {
+    const cached = localStorage.getItem("zyba_user_cache");
+    if (cached) setUserData(JSON.parse(cached));
+  } catch {}
+}, []);
+Terapkan pola ini ke semua halaman yang punya kode serupa (cek dengan grep -rn "typeof window" src/app/*/page.tsx), bukan cuma Dashboard — karena user melaporkan gejala ini muncul di semua halaman yang pakai sidebar utama.
+
 15. Responsif di Mobile (Perluasan Bagian 5)
 Bagian 5 sudah menetapkan breakpoint dasar (desktop ≥1024px, tablet 768–1023px, mobile <768px). Detail tambahan per halaman:
 
@@ -527,6 +553,18 @@ Community feed (max-width 600px center di desktop) → full-width dengan padding
 Companion chat: pastikan font tidak mengecil di bawah 14px, dan tap target (tombol kirim, ikon attachment/mic) minimal 44×44px sesuai standar aksesibilitas mobile.
 Modal (CreatePostModal, Chatbot Settings, dll.): di desktop floating card kanan-bawah → di mobile jadi bottom-sheet full-width (slide dari bawah), bukan card kecil yang terpotong di layar sempit.
 Wajib dites minimal di breakpoint 375px (iPhone SE), 390px (iPhone standar), dan 768px (tablet) sebelum dianggap "responsif" — bukan cuma di-resize browser sekilas.
+15.1 Regresi Desktop Akibat Implementasi Off-Canvas Sidebar (Bug Aktif)
+⚠️ Dilaporkan user: setelah sidebar dibuat responsif untuk mobile (off-canvas drawer + tombol hamburang fixed top-4 left-4 md:hidden), tampilan desktop jadi rusak — konten utama terdorong turun, ada area kosong besar di bagian atas viewport (gejala sama seperti Bagian 14.1, tapi kali ini penyebabnya bukan hydration, melainkan regresi dari perubahan sidebar responsif).
+
+Pola bug yang paling umum untuk kasus ini (cek satu-satu di kode sidebar/layout terbaru):
+
+Spacing/margin khusus mobile yang lupa di-reset di desktop. Kalau ada pt-16 atau sejenisnya di <main>/wrapper konten untuk menghindari tombol hamburger fixed menutupi konten di mobile, pastikan itu ditulis pt-16 md:pt-0 (atau breakpoint yang sesuai) — bukan pt-16 polos yang kebawa ke semua ukuran layar.
+Wrapper sidebar fixed md:sticky ... h-screen — cek apakah ada elemen sibling di <div class="flex"> (level yang sama dengan spacer w-64 dan <main>) yang ikut memengaruhi tinggi/posisi vertikal parent flex container-nya karena perubahan structural saat menambahkan drawer mobile.
+align-items pada parent flex container (<div class="flex"> yang membungkus spacer sidebar + <main>) — kalau berubah dari default stretch jadi center (sengaja atau tidak sengaja saat refactor), <main> akan menyusut ke tinggi kontennya sendiri dan ke-center vertikal di tengah tinggi sidebar yang h-screen, menyisakan ruang kosong di atas.
+Instruksi verifikasi: buka DevTools di desktop, inspect elemen <div class="flex"> yang membungkus sidebar-spacer + <main>, cek tab Computed untuk align-items — kalau nilainya center, itu penyebabnya, ubah balik ke default (hapus class items-center yang tidak sengaja ketambahan) atau eksplisit items-stretch.
+
+Prinsip pencegahan ke depan: setiap kali menambah class khusus mobile (padding, margin, position, height) untuk kebutuhan responsif, selalu pikirkan apakah itu perlu di-reset eksplisit di breakpoint md: ke atas — jangan asumsikan default Tailwind akan "otomatis benar" di desktop kalau sudah override sesuatu di mobile.
+
 16. Kebersihan Repo — Audit File/Folder Duplikat
 ⚠️ Klarifikasi penting: file seperti src/components/GoogleAuthProfileModal.tsx yang isinya cuma export { default } from "@/components/ui/GoogleAuthProfileModal" bukan bloat/dummy — itu re-export shim yang disengaja untuk backward compatibility import path (pola yang sama seperti lib/*.ts yang sudah dibahas di Bagian 8). Jangan dihapus, kecuali sudah dipastikan tidak ada satu pun file lain yang masih meng-import dari path lama itu.
 
@@ -944,7 +982,80 @@ Bagian 22-24 (konsistensi warna, slug routing, settings/privasi) — polish akhi
 Bagian 13-16 (performa, hapus dummy, responsif, kebersihan repo) — audit menyeluruh di tahap paling akhir, setelah semua fitur baru di atas selesai (audit dummy data harus dilakukan setelah semua koneksi backend nyata terpasang, supaya tidak ada yang keliru dianggap "sudah real" padahal masih ada sisa dummy dari proses development).
 Jangan kerjakan semuanya sekaligus dalam satu batch besar — riwayat proyek ini (lihat Bagian 8.5, 11.6) menunjukkan batch besar tanpa verifikasi per-langkah berujung ke klaim "selesai" yang ternyata tidak akurat (modal yang tidak ke-wire, styling yang tidak benar-benar berubah). Kerjakan per-bagian, verifikasi nyata (bukan cuma baca kode) di tiap langkah, baru lanjut.
 
-26. Checklist Final Sebelum Submit/Deploy
+26. Alur Zyba Plus — Pilih Paket sampai Bayar
+26.1 Payment Gateway: Midtrans (Sandbox)
+Rekomendasi: Midtrans Snap — payment gateway paling umum dipakai developer Indonesia, punya sandbox mode gratis tanpa perlu verifikasi bisnis untuk keperluan demo/kompetisi (cukup daftar akun, dapat Server Key + Client Key sandbox). Mendukung berbagai metode pembayaran (transfer bank, GoPay, OVO, kartu kredit, dll) lewat satu widget popup yang sudah jadi — ZYBA tidak perlu bikin UI form kartu/bank sendiri, itu semua sudah ditangani Midtrans Snap.
+
+⚠️ Sandbox mode = simulasi, tidak ada uang beneran berpindah. Untuk submit lomba ini cukup, jangan aktifkan mode production kecuali memang mau transaksi nyata (butuh verifikasi bisnis tambahan ke Midtrans).
+
+26.2 Skema Database (Account DB — Bagian 17)
+model Subscription {
+  id        String             @id @default(cuid())
+  userId    String
+  plan      Plan               // reuse enum FREE/PLUS yang sudah ada di model User
+  status    SubscriptionStatus @default(PENDING)
+  startDate DateTime?
+  endDate   DateTime?
+  createdAt DateTime           @default(now())
+  payments  Payment[]
+  @@index([userId])
+  @@map("subscriptions")
+}
+
+enum SubscriptionStatus {
+  PENDING
+  ACTIVE
+  EXPIRED
+  CANCELLED
+}
+
+model Payment {
+  id             String        @id @default(cuid())
+  subscriptionId String
+  subscription   Subscription  @relation(fields: [subscriptionId], references: [id])
+  userId         String
+  amount         Int           // dalam Rupiah, tanpa desimal
+  provider       String        @default("midtrans")
+  orderId        String        @unique // dikirim ke Midtrans, harus unik per transaksi
+  transactionId  String?       // ID dari Midtrans setelah pembayaran diproses
+  paymentMethod  String?       // "gopay" | "bank_transfer" | "credit_card" | dll, diisi dari webhook
+  status         PaymentStatus @default(PENDING)
+  rawPayload     Json?         // simpan response webhook mentah untuk audit/debug
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+  @@index([userId, createdAt])
+  @@map("payments")
+}
+
+enum PaymentStatus {
+  PENDING
+  SUCCESS
+  FAILED
+  EXPIRED
+  CANCELLED
+}
+26.3 Alur Lengkap (Pilih Paket → Bayar → Aktif)
+Halaman "Zyba Plus" (/settings/zyba-plus atau tab tersendiri, sesuai nav yang sudah ada di Bagian 24) — dua kartu berdampingan: Zyba Free (paket saat ini, kalau user masih free) vs Zyba Plus dengan daftar fitur eksklusif (sesuai Business Model pitch deck Bagian 16: penggunaan AI lebih banyak, rekomendasi lebih personal, program komunitas khusus, insight kebiasaan, laporan perkembangan) + harga per bulan.
+User klik "Upgrade ke Zyba Plus →" pada kartu Plus.
+Client memanggil POST /api/billing/checkout → server membuat record Subscription (status PENDING) + Payment (status PENDING, orderId unik), lalu memanggil Midtrans Snap API untuk mendapatkan snapToken.
+Client menerima snapToken, panggil window.snap.pay(snapToken, { onSuccess, onPending, onError, onClose }) — Midtrans menampilkan popup pembayaran bawaan mereka (pilih metode: transfer bank/e-wallet/kartu), ZYBA tidak perlu desain layar ini sendiri.
+Setelah user selesai bayar di popup Midtrans:
+onSuccess/onPending callback di client → redirect ke halaman konfirmasi (/settings/zyba-plus/success?order_id=...).
+Secara paralel dan independen, Midtrans mengirim webhook notification ke POST /api/billing/webhook — ini yang jadi sumber kebenaran status pembayaran, bukan callback client-side (client bisa ditutup/koneksi putus, webhook tetap jalan).
+Endpoint webhook wajib verifikasi signature (Midtrans mengirim signature_key yang dihitung dari order_id + status_code + gross_amount + ServerKey, dicocokkan di server) — tolak request yang signature-nya tidak valid, supaya tidak ada yang bisa memalsukan "pembayaran sukses".
+Setelah signature valid dan status pembayaran settlement/capture (sukses menurut Midtrans): update Payment.status = SUCCESS, Subscription.status = ACTIVE, set startDate/endDate (+30 hari dari sekarang), dan update User.plan = PLUS.
+Halaman konfirmasi (/settings/zyba-plus/success) menampilkan ringkasan: paket aktif, tanggal mulai, tanggal berakhir, tombol kembali ke Dashboard. Sidebar/badge di seluruh app otomatis berubah dari "Zyba Free" jadi "Zyba Plus PRO" (Bagian 22 — konsistensi identitas).
+Riwayat Pembayaran (/settings/billing, nav item sudah ada) — list semua Payment milik user: tanggal, jumlah, status, metode. Ini juga tempat user lihat kalau pembayaran gagal/pending, bukan cuma yang sukses.
+26.4 Environment Variables
+MIDTRANS_SERVER_KEY=""       # rahasia, JANGAN pernah dikirim ke client — dari dashboard.midtrans.com (Sandbox)
+MIDTRANS_CLIENT_KEY=""       # boleh dipakai di client (untuk load Snap.js)
+MIDTRANS_IS_PRODUCTION="false"  # tetap "false" untuk demo/kompetisi
+26.5 Hal Wajib Diperhatikan (Safety & Correctness)
+MIDTRANS_SERVER_KEY tidak boleh pernah muncul di kode client-side (tidak di NEXT_PUBLIC_*, tidak di response API ke browser) — hanya dipakai server-side saat request token & verifikasi webhook.
+Idempotency: webhook Midtrans bisa terkirim lebih dari sekali untuk event yang sama. Cek dulu apakah Payment dengan orderId itu sudah berstatus SUCCESS sebelum memprosesnya lagi — jangan aktifkan langganan dua kali/double-charge state karena webhook duplikat.
+Jangan percaya status dari client-side callback saja (poin 5-6 di atas) — status final harus dari webhook yang tervalidasi, client callback cuma untuk UX cepat (langsung kasih tahu user "sedang diproses").
+Expiry check: butuh mekanisme (cron job/scheduled function, atau dicek on-the-fly saat load halaman) yang mengubah Subscription.status jadi EXPIRED dan User.plan balik ke FREE setelah endDate lewat — tanpa ini, user yang sudah expired akan tetap dianggap Plus selamanya.
+27. Checklist Final Sebelum Submit/Deploy
 Gabungan semua item wajib dari seluruh dokumen ini — centang satu-satu sebelum dianggap selesai:
 
 Konsistensi Fitur & Repo Hygiene (temuan review kedua, Bagian 8.5–8.6):
@@ -1030,4 +1141,11 @@ Konsistensi Warna, Slug, Settings (Bagian 22-24):
 Eksekusi Backend (Bagian 25):
 
  Dikerjakan berurutan sesuai prioritas (17 → 19 → 20 → 21 → 22-24 → 13-16), tidak sekaligus dalam satu batch tanpa verifikasi.
+Zyba Plus / Payment Flow (Bagian 26):
+
+ MIDTRANS_SERVER_KEY tidak muncul di kode/response client-side mana pun.
+ Webhook signature Midtrans diverifikasi sebelum status pembayaran diproses.
+ Webhook idempotent — payment yang sudah SUCCESS tidak diproses ulang kalau notification terkirim dobel.
+ Ada mekanisme expiry (Subscription.status → EXPIRED, User.plan balik ke FREE) setelah endDate lewat.
+ Sudah dites end-to-end di Sandbox: pilih paket → bayar (simulasi) → status berubah ACTIVE → badge di sidebar berubah jadi "Zyba Plus" → muncul di Riwayat Pembayaran.
 Dokumen ini konsolidasi dari: review visual Figma UI kit awal, review langsung ke kode github.com/syauqiazka/zyba / zyba_, dan referensi gaya (landing page ala OpenRouter, Companion ala Claude.ai, Community ala Threads) — semua warna referensi eksternal disesuaikan ke palet ZYBA, bukan ditiru mentah-mentah.
