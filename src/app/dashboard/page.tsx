@@ -19,6 +19,7 @@ export default function DashboardPage() {
     stressLabel: string;
     streak: number;
     hasAssessment: boolean;
+    conversationCount: number;
   }>(() => {
     if (typeof window !== "undefined") {
       try {
@@ -34,6 +35,7 @@ export default function DashboardPage() {
             stressLabel: parsed.stats?.stressLabel || "Belum Ada Data",
             streak: parsed.stats?.hasAssessment ? Math.max(1, parsed.stats?.streak || 1) : 0,
             hasAssessment: Boolean(parsed.stats?.hasAssessment),
+            conversationCount: parsed.stats?.conversationCount ?? 0,
           };
         }
       } catch {}
@@ -47,6 +49,7 @@ export default function DashboardPage() {
       stressLabel: "Belum Ada Data",
       streak: 0,
       hasAssessment: false,
+      conversationCount: 0,
     };
   });
 
@@ -88,6 +91,7 @@ export default function DashboardPage() {
               stressLabel: data.stats.stressLabel || "Belum Ada Data",
               streak: data.stats.hasAssessment ? Math.max(1, data.stats.streak || 1) : 0,
               hasAssessment: Boolean(data.stats.hasAssessment),
+              conversationCount: data.stats.conversationCount ?? 0,
             };
             setUserData(nextData);
             try {
@@ -204,7 +208,7 @@ export default function DashboardPage() {
           stressLevel={userData.stressLevel}
           stressLabel={userData.stressLabel}
         />
-        <CompanionWidget conversationCount={0} />
+        <CompanionWidget conversationCount={userData.conversationCount} />
       </section>
 
       <TrackerChecklist

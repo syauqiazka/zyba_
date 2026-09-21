@@ -22,23 +22,6 @@ interface JournalEntry {
   flaggedForRisk?: boolean;
 }
 
-const INITIAL_JOURNAL: JournalEntry[] = [
-  {
-    id: "j-1",
-    title: "Selesai Presentasi Proyek",
-    content: "Hari ini presentasi berjalan lancar meskipun sempat deg-degan. Tim memberikan feedback positif!",
-    mood: "HAPPY",
-    date: "15 Sep 2026",
-  },
-  {
-    id: "j-2",
-    title: "Istirahat Sejenak dari Layar",
-    content: "Jalan santai di taman kampus selama 20 menit membantu menjernihkan pikiran.",
-    mood: "OVERJOYED",
-    date: "14 Sep 2026",
-  },
-];
-
 export default function MoodCheckInPage() {
   const [selectedMood, setSelectedMood] = useState<typeof MOODS[number]>(MOODS[3]); // Happy default
   const [stressRating, setStressRating] = useState<number>(2);
@@ -46,7 +29,7 @@ export default function MoodCheckInPage() {
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [journalTitle, setJournalTitle] = useState("");
   const [journalContent, setJournalContent] = useState("");
-  const [journalList, setJournalList] = useState<JournalEntry[]>(INITIAL_JOURNAL);
+  const [journalList, setJournalList] = useState<JournalEntry[]>([]); // Load dari API, mulai kosong
   const [savedSuccess, setSavedSuccess] = useState(false);
   const [crisisAlert, setCrisisAlert] = useState(false);
   const [userStreak, setUserStreak] = useState(1);
@@ -55,9 +38,10 @@ export default function MoodCheckInPage() {
   useEffect(() => {
     async function loadData() {
       try {
-        const [userRes, moodRes] = await Promise.all([
+        const [userRes, moodRes, journalRes] = await Promise.all([
           fetch("/api/user/me"),
           fetch("/api/mood"),
+          fetch("/api/journal"),
         ]);
 
         if (userRes.ok) {
@@ -92,8 +76,29 @@ export default function MoodCheckInPage() {
 
           setMoodCalendarData(unique);
         }
+
+        if (journalRes.ok) {
+          const data = await journalRes.json();
+          if (data.entries && data.entries.length > 0) {
+            // Map API journal entries to local JournalEntry format
+            const apiEntries: JournalEntry[] = data.entries.map(
+              (e: { id: string; title: string; content: string; mood: string; createdAt: string }) => ({
+                id: e.id,
+                title: e.title || "Catatan",
+                content: e.content,
+                mood: e.mood || "NEUTRAL",
+                date: new Date(e.createdAt).toLocaleDateString("id-ID", {
+                  day: "numeric",
+                  month: "short",
+                  year: "numeric",
+                }),
+              })
+            );
+            setJournalList(apiEntries);
+          }
+        }
       } catch (err) {
-        // Fallback silently
+        // Fallback silently — journal list stays empty
       }
     }
     loadData();

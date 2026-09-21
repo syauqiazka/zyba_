@@ -77,12 +77,12 @@ export default function CompanionSidebar({
     return pathname.startsWith(`/companion/${slug}`);
   };
 
-  // ── Shared nav item style (matches main dashboard sidebar exactly) ────────
+  // ── Shared nav item style (subtle active per AGENTS.md 10.8) ────────────
   const navItemClass = (active: boolean) =>
     `w-full flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-semibold transition-all duration-300 text-left
      ${
        active
-         ? "bg-brown-900 text-cream shadow-md shadow-brown-900/10 font-bold"
+         ? "bg-brown-900/8 text-brown-900 font-bold"
          : "text-brown-700 hover:-translate-y-0.5 hover:bg-gradient-to-r hover:from-orange-100/80 hover:to-green-100/80 hover:text-brown-900 hover:shadow-sm"
      }`;
 
@@ -146,11 +146,27 @@ export default function CompanionSidebar({
   };
 
   const NAV_SECTIONS: { id: CompanionSection; label: string; iconKey: keyof typeof icons; badge?: string }[] = [
-    { id: "projects", label: "Projects", iconKey: "projects" },
-    { id: "artifacts", label: "Artifacts", iconKey: "artifacts" },
-    { id: "code", label: "Code", iconKey: "code", badge: "Upgrade" },
-    { id: "customize", label: "Customize", iconKey: "customize" },
+    { id: "projects", label: "Proyek", iconKey: "projects" },
+    { id: "artifacts", label: "Catatan", iconKey: "artifacts" },
+    { id: "code", label: "Kode", iconKey: "code", badge: "Upgrade" },
+    { id: "customize", label: "Pengaturan", iconKey: "customize" },
   ];
+
+  // ── Dynamic username from localStorage cache ─────────────────────────────
+  const displayName = (() => {
+    if (typeof window !== "undefined") {
+      try {
+        const cached = localStorage.getItem("zyba_user_cache");
+        if (cached) {
+          const parsed = JSON.parse(cached);
+          return parsed.name || "Pengguna";
+        }
+      } catch {}
+    }
+    return "Pengguna";
+  })();
+
+  const displayInitial = displayName.charAt(0).toUpperCase();
 
   // ── When collapsed, show a slim icon rail ───────────────────────────────
   if (!sidebarVisible) {
@@ -161,7 +177,7 @@ export default function CompanionSidebar({
           type="button"
           onClick={onToggleSidebar}
           className="p-2 rounded-xl text-brown-700/50 hover:text-brown-900 hover:bg-gradient-to-r hover:from-orange-100/80 hover:to-green-100/80 hover:shadow-sm transition-all duration-300"
-          title="Show sidebar"
+          title="Tampilkan sidebar"
         >
           {icons.expand}
         </button>
@@ -173,7 +189,7 @@ export default function CompanionSidebar({
           type="button"
           onClick={() => { setActiveSection("chat"); onNewChat(); }}
           className="p-2 rounded-xl text-brown-700/50 hover:text-brown-900 hover:bg-gradient-to-r hover:from-orange-100/80 hover:to-green-100/80 transition-all duration-300"
-          title="New chat"
+          title="Percakapan Baru"
         >
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
             <line x1="12" y1="5" x2="12" y2="19" />
@@ -190,7 +206,7 @@ export default function CompanionSidebar({
             title={s.label}
             className={`p-2 rounded-xl transition-all duration-300 ${
               isActive(s.id)
-                ? "bg-brown-900 text-cream shadow-md"
+                ? "bg-brown-900/8 text-brown-900"
                 : "text-brown-700/50 hover:text-brown-900 hover:bg-gradient-to-r hover:from-orange-100/80 hover:to-green-100/80"
             }`}
           >
@@ -202,10 +218,10 @@ export default function CompanionSidebar({
         <button
           type="button"
           onClick={() => setActiveSection("chat")}
-          title="Chats and tasks"
+          title="Riwayat Percakapan"
           className={`p-2 rounded-xl transition-all duration-300 ${
             isActive("chat")
-              ? "bg-brown-900 text-cream shadow-md"
+              ? "bg-brown-900/8 text-brown-900"
               : "text-brown-700/50 hover:text-brown-900 hover:bg-gradient-to-r hover:from-orange-100/80 hover:to-green-100/80"
           }`}
         >
@@ -228,11 +244,8 @@ export default function CompanionSidebar({
             ←
           </span>
           <div className="flex items-center gap-1.5">
-            <span className="font-serif font-bold text-base text-brown-900 tracking-tight">
-              Claude
-            </span>
-            <span className="text-[10px] font-bold text-orange-600 bg-orange-100 px-1.5 py-0.5 rounded-md">
-              ZYBA
+            <span className="font-display font-bold text-base text-brown-900 tracking-tight">
+              Zyba Companion
             </span>
           </div>
         </Link>
@@ -260,7 +273,7 @@ export default function CompanionSidebar({
             <line x1="12" y1="5" x2="12" y2="19" />
             <line x1="5" y1="12" x2="19" y2="12" />
           </svg>
-          <span>New chat</span>
+          <span>Percakapan Baru</span>
         </button>
       </div>
 
@@ -290,7 +303,7 @@ export default function CompanionSidebar({
         ))}
       </nav>
 
-      {/* ── 4. Chats and Tasks Section Header ────────────────────────────── */}
+      {/* ── 4. Riwayat Percakapan Section Header ─────────────────────────── */}
       <div className="px-4 pt-3 pb-1 flex items-center justify-between shrink-0 border-t border-brown-900/6">
         <button
           type="button"
@@ -299,7 +312,7 @@ export default function CompanionSidebar({
             isActive("chat") ? "text-brown-900" : "text-brown-700/50 hover:text-brown-900"
           }`}
         >
-          Chats and tasks
+          Riwayat Percakapan
         </button>
         <div className="flex items-center gap-1">
           <button
@@ -351,11 +364,11 @@ export default function CompanionSidebar({
                 onClick={() => { setActiveSection("chat"); onSelectConv(conv.id); }}
                 className={`w-full flex items-center gap-2 px-3 py-2 rounded-xl text-left transition-all duration-300 group ${
                   active
-                    ? "bg-brown-900 text-cream shadow-md shadow-brown-900/10 font-semibold"
+                    ? "bg-brown-900/8 text-brown-900 font-semibold"
                     : "text-brown-700 hover:-translate-y-0.5 hover:bg-gradient-to-r hover:from-orange-100/80 hover:to-green-100/80 hover:text-brown-900 hover:shadow-sm"
                 }`}
               >
-                <span className={`w-1.5 h-1.5 rounded-full ${active ? "bg-cream/70" : moodColor} shrink-0 opacity-70 group-hover:opacity-100`} />
+                <span className={`w-1.5 h-1.5 rounded-full ${moodColor} shrink-0 opacity-70 group-hover:opacity-100`} />
                 <span className="flex-1 truncate text-xs">{conv.title}</span>
               </button>
             );
@@ -371,10 +384,10 @@ export default function CompanionSidebar({
           className="flex items-center gap-2 hover:bg-gradient-to-r hover:from-orange-100/80 hover:to-green-100/80 hover:-translate-y-0.5 p-1.5 rounded-xl transition-all duration-300 min-w-0"
         >
           <div className="w-6 h-6 rounded-full bg-brown-900 text-white flex items-center justify-center text-[10px] font-bold shrink-0">
-            A
+            {displayInitial}
           </div>
           <div className="text-left truncate">
-            <span className="text-xs font-bold text-brown-900 block truncate">Alex · Free</span>
+            <span className="text-xs font-bold text-brown-900 block truncate">{displayName} · Free</span>
           </div>
           <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="text-brown-700/40 shrink-0">
             <polyline points="6 9 12 15 18 9" />

@@ -33,8 +33,24 @@ export default function CreatePostModal({
 }: CreatePostModalProps) {
   const cardRef = useRef<HTMLDivElement>(null);
   const [threadParts, setThreadParts] = useState<string[]>([]);
-  const [postOption, setPostOption] = useState("Anyone can reply");
+  const [postOption, setPostOption] = useState("Semua orang bisa membalas");
   const [showOptionsDropdown, setShowOptionsDropdown] = useState(false);
+
+  // Get display name from localStorage cache
+  const displayName = (() => {
+    if (typeof window !== "undefined") {
+      try {
+        const cached = localStorage.getItem("zyba_user_cache");
+        if (cached) {
+          const parsed = JSON.parse(cached);
+          return parsed.name || "Kamu";
+        }
+      } catch {}
+    }
+    return "Kamu";
+  })();
+
+  const displayInitial = displayName.charAt(0).toUpperCase();
 
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
@@ -59,18 +75,18 @@ export default function CreatePostModal({
       aria-label="New thread"
       className="fixed bottom-20 right-4 sm:right-8 z-50 w-[calc(100vw-2rem)] sm:w-[480px] bg-white rounded-3xl shadow-2xl border border-brown-900/12 p-5 flex flex-col gap-3 animate-in fade-in slide-in-from-bottom-5 duration-200"
     >
-      {/* 1. Header: Cancel (left) — New thread (center) — Draft/Options (right) */}
+      {/* 1. Header: Batal (left) — Postingan Baru (center) — Draft/Options (right) */}
       <div className="flex items-center justify-between pb-3 border-b border-brown-900/6">
         <button
           type="button"
           onClick={onClose}
           className="text-xs font-semibold text-brown-700/70 hover:text-brown-900 transition-colors"
         >
-          Cancel
+          Batal
         </button>
 
         <span className="font-bold text-sm text-brown-900 tracking-tight">
-          New thread
+          Postingan Baru
         </span>
 
         <div className="flex items-center gap-2 text-brown-700/50">
@@ -93,12 +109,12 @@ export default function CreatePostModal({
       {/* 2. User info + Breadcrumb "Community or topic" */}
       <div className="flex items-start gap-3 pt-1">
         <div className="w-9 h-9 rounded-full bg-orange-100 border border-orange-200 flex items-center justify-center font-bold text-xs text-orange-600 shrink-0">
-          U
+          {displayInitial}
         </div>
 
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-1.5 flex-wrap">
-            <span className="text-xs font-bold text-brown-900">harikitte_ikou</span>
+            <span className="text-xs font-bold text-brown-900">{displayName}</span>
             <span className="text-[11px] text-brown-700/40">›</span>
             <select
               value={selectedTag}
@@ -113,11 +129,11 @@ export default function CreatePostModal({
             </select>
           </div>
 
-          {/* 3. "What's new?" Textarea */}
+          {/* 3. "Ada cerita apa hari ini?" Textarea */}
           <textarea
             value={newPostContent}
             onChange={(e) => onContentChange(e.target.value)}
-            placeholder="What's new?"
+            placeholder="Ada cerita apa hari ini?"
             rows={3}
             autoFocus
             className="w-full text-xs text-brown-900 placeholder:text-brown-700/40 resize-none focus:outline-none bg-transparent pt-2 leading-relaxed"
@@ -173,7 +189,7 @@ export default function CreatePostModal({
         </div>
       </div>
 
-      {/* 5. Sub-Action: "+ Add to thread" */}
+      {/* 5. Sub-Action: "+ Tambahkan ke thread" */}
       <div className="pt-2 pl-12 flex items-center gap-2">
         <button
           type="button"
@@ -181,7 +197,7 @@ export default function CreatePostModal({
           className="text-xs text-brown-700/50 hover:text-brown-900 transition-colors flex items-center gap-1.5"
         >
           <span className="w-4 h-4 rounded-full border border-brown-900/20 flex items-center justify-center text-[10px]">+</span>
-          <span>Add to thread</span>
+          <span>Tambahkan ke thread</span>
         </button>
       </div>
 
@@ -202,7 +218,7 @@ export default function CreatePostModal({
 
           {showOptionsDropdown && (
             <div className="absolute bottom-6 left-0 bg-white rounded-xl shadow-lg border border-brown-900/10 p-1.5 w-44 z-20 space-y-1">
-              {["Anyone can reply", "Followers only", "Only you can reply"].map((opt) => (
+              {["Semua orang bisa membalas", "Hanya pengikut", "Hanya saya"].map((opt) => (
                 <button
                   key={opt}
                   type="button"

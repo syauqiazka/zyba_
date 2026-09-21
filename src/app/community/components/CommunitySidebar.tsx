@@ -138,20 +138,20 @@ export default function CommunitySidebar() {
     badge?: number;
     isAction?: boolean;
   }[] = [
-      { id: "FOR_YOU", label: "For you", iconKey: "home" },
-      { id: "SEARCH", label: "Search", iconKey: "search" },
-      { id: "MESSAGES", label: "Messages", iconKey: "messages", badge: unreadMsgs > 0 ? unreadMsgs : undefined },
-      { id: "ACTIVITY", label: "Activity", iconKey: "activity", badge: unreadNotifs > 0 ? unreadNotifs : undefined },
-      { id: "PROFILE", label: "Profile", iconKey: "profile" },
-      { id: "INSIGHTS", label: "Insights", iconKey: "insights" },
+      { id: "FOR_YOU", label: "Untuk Kamu", iconKey: "home" },
+      { id: "SEARCH", label: "Cari", iconKey: "search" },
+      { id: "MESSAGES", label: "Pesan", iconKey: "messages", badge: unreadMsgs > 0 ? unreadMsgs : undefined },
+      { id: "ACTIVITY", label: "Notifikasi", iconKey: "activity", badge: unreadNotifs > 0 ? unreadNotifs : undefined },
+      { id: "PROFILE", label: "Profil", iconKey: "profile" },
+      { id: "INSIGHTS", label: "Statistik", iconKey: "insights" },
     ];
 
   const OTHER_FEEDS: { id: CommunityView; label: string; iconKey: keyof typeof icons }[] = [
-    { id: "FOLLOWING", label: "Following", iconKey: "following" },
-    { id: "SAVED", label: "Saved", iconKey: "saved" },
-    { id: "LIKED", label: "Liked", iconKey: "liked" },
-    { id: "GHOST_POSTS", label: "Ghost posts", iconKey: "ghost" },
-    { id: "ARCHIVE", label: "Archive", iconKey: "archive" },
+    { id: "FOLLOWING", label: "Mengikuti", iconKey: "following" },
+    { id: "SAVED", label: "Disimpan", iconKey: "saved" },
+    { id: "LIKED", label: "Disukai", iconKey: "liked" },
+    { id: "GHOST_POSTS", label: "Postingan Tersembunyi", iconKey: "ghost" },
+    { id: "ARCHIVE", label: "Arsip", iconKey: "archive" },
   ];
 
   // ─── Shared item style ────────────────────────────────────────────────────
@@ -159,7 +159,7 @@ export default function CommunitySidebar() {
     `relative flex items-center w-full py-2.5 rounded-xl transition-all duration-300 cursor-pointer select-none
    ${expanded ? "gap-3 px-3 justify-start" : "gap-0 px-0 justify-center"}
    ${active
-      ? "bg-brown-900 text-cream shadow-md shadow-brown-900/10 font-bold"
+      ? "bg-brown-900/8 text-brown-900 font-bold"
       : "text-brown-700 hover:-translate-y-0.5 hover:bg-gradient-to-r hover:from-orange-100/80 hover:to-green-100/80 hover:text-brown-900 hover:shadow-sm"
     }`;
 
@@ -184,10 +184,7 @@ export default function CommunitySidebar() {
         >
           <Link href="/dashboard" className="flex items-center gap-1.5 group" title="Kembali ke ZYBA">
             <span className="font-bold text-sm text-brown-900 tracking-tight whitespace-nowrap">
-              @threads
-            </span>
-            <span className="text-[10px] font-bold text-orange-600 bg-orange-100 px-1.5 py-0.5 rounded-md whitespace-nowrap">
-              ZYBA
+              Zyba Community
             </span>
           </Link>
         </div>
@@ -231,11 +228,11 @@ export default function CommunitySidebar() {
             </span>
           </button>
 
-          {/* + New thread */}
+          {/* + Thread Baru */}
           <button
             type="button"
             onClick={() => setIsPostModalOpen(true)}
-            title="New thread"
+            title="Thread Baru"
             className={itemClass(false)}
           >
             <span className="shrink-0 flex items-center justify-center w-5">{icons.plus}</span>
@@ -243,7 +240,7 @@ export default function CommunitySidebar() {
               className="whitespace-nowrap text-xs font-semibold transition-all duration-200"
               style={{ opacity: expanded ? 1 : 0, maxWidth: expanded ? 200 : 0, overflow: "hidden" }}
             >
-              New thread
+              Thread Baru
             </span>
           </button>
 
@@ -285,7 +282,7 @@ export default function CommunitySidebar() {
             style={{ opacity: expanded ? 1 : 0, maxHeight: expanded ? 32 : 0 }}
           >
             <span className="text-[10px] font-bold text-brown-700/50 uppercase tracking-wider whitespace-nowrap">
-              Other feeds
+              Feed Lain
             </span>
           </div>
 

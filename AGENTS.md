@@ -491,7 +491,52 @@ Klik "← Kembali ke ZYBA" → transisi balik → sidebar utama & /dashboard mun
 
 Implementasi: src/app/community/layout.tsx (buat kalau belum ada) me-render Community Sidebar menggantikan <Sidebar /> utama, mengikuti pola yang sama dengan /companion.
 
-12. Checklist Final Sebelum Submit/Deploy
+13. Performa & Skalabilitas
+13.1 Database & Query
+Semua endpoint list/feed wajib pakai pagination (take/skip atau cursor-based) — terutama api/community (feed bisa jadi ribuan post), riwayat MoodEntry, dan Message per Conversation. Jangan findMany() tanpa take di data yang bisa tumbuh besar.
+Hindari N+1 query: kalau butuh data user + posts + likes sekaligus, pakai include/select Prisma dalam satu query, jangan loop query per item di dalam .map().
+Pertahankan pola index yang sudah ada (@@index([userId, createdAt])) secara konsisten di semua model yang di-query per-user+waktu (MoodEntry, JournalEntry, ActivityLog, Message, CommunityPost) — cek schema.prisma, tambahkan index yang belum ada.
+DATABASE_URL (pooled/PgBouncer) dipakai untuk semua query runtime; DIRECT_URL hanya untuk migrate/db push. Jangan sampai ada kode yang connect pakai DIRECT_URL saat runtime — itu bikin koneksi cepat habis saat traffic naik.
+13.2 Caching & Data Fetching
+Halaman dengan data yang jarang berubah (Resources, statistik agregat Dashboard) pakai Next.js caching/ISR (revalidate), bukan cache: "no-store" di semua fetch tanpa alasan.
+Community feed & Companion chat (data yang sering berubah) boleh tetap dinamis, tapi tetap dipaginate — dinamis ≠ boleh fetch semua data sekaligus.
+Ambil data awal lewat Server Component saat halaman pertama dimuat; fetch di client-side cukup untuk aksi interaktif (kirim pesan baru, post baru), bukan untuk re-fetch seluruh list setiap render.
+13.3 Performa Frontend
+Semua gambar (avatar, attachment post, ilustrasi) wajib pakai next/image, bukan <img> — otomatis lazy-load, resize, dan format modern.
+Modal yang berat (CreatePostModal, Chatbot Settings) di-load dengan next/dynamic (ssr: false kalau tidak butuh SEO) supaya tidak masuk bundle awal halaman.
+Input pencarian (Cari percakapan..., Cari... di Community) wajib di-debounce (~300ms) — jangan filter/fetch di setiap keystroke tanpa jeda.
+Animasi transisi (Bagian 10.7/11.5) pakai transform/opacity (GPU-accelerated), hindari animasi pada width/height yang memicu reflow/layout thrashing.
+13.4 Rate Limiting & Proteksi Beban
+Endpoint yang menerima teks bebas dan/atau memanggil AI provider (companion chat, detectRisk, community post) idealnya dibatasi rate per user (mis. maksimal N request/menit) — mencegah spam sekaligus mencegah biaya API AI membengkak tak terkendali.
+OTP endpoint (api/auth/otp) harus punya batas percobaan + cooldown (kalau belum ada) — ini juga bagian dari keamanan (Bagian 8), bukan cuma performa.
+14. Hapus Semua Data Dummy — Ganti ke Data Real
+Audit berikut wajib dilakukan sebelum submit final — banyak bagian masih memakai data contoh dari tahap awal development:
+
+INITIAL_POSTS (array hardcoded) di community/page.tsx → ganti jadi fetch dari /api/community yang sudah ada, jangan ada lagi seed data tertulis langsung di komponen frontend.
+Contoh percakapan dummy (mis. "Overthinking Seputar Tugas Akhir", "Evaluasi Kualitas Tidur") di CompanionSidebar → pastikan ini hanya tampil kalau memang tersimpan di database milik user yang sedang login, bukan default yang selalu muncul untuk user baru.
+Angka statistik contoh (mis. "2.541 Conversations", "34/365") di Dashboard (Bagian 4.E) → pastikan berasal dari query agregat real (_count, aggregate), bukan angka yang ditulis manual di JSX.
+Nama user contoh ("Alex Rivera", "Shinomiya") boleh tetap ada sebagai seed data development di prisma/seed.ts, tapi tidak boleh jadi fallback default yang tampil diam-diam kalau fetch data user asli gagal — pastikan ada loading state/empty state yang jelas, bukan menampilkan data orang lain.
+Setelah data/*.json dibersihkan dari git (Bagian 8.5.2), pastikan juga tidak lagi jadi sumber data yang secara keliru dianggap "data real" saat demo — beri log/warning yang jelas kalau app sedang jalan di mode fallback.
+Cara audit cepat: cari string literal berupa nama orang, angka statistik, atau isi percakapan yang ditulis langsung di file .tsx (bukan dari props, fetch, atau useState yang diawali kosong/null) — itu kandidat dummy data yang harus ditelusuri satu per satu.
+15. Responsif di Mobile (Perluasan Bagian 5)
+Bagian 5 sudah menetapkan breakpoint dasar (desktop ≥1024px, tablet 768–1023px, mobile <768px). Detail tambahan per halaman:
+
+Sidebar utama & sidebar kontekstual (Companion/Community): di <768px, sidebar tidak boleh selalu terbuka menutupi konten. Ubah jadi off-canvas drawer yang di-toggle lewat ikon hamburger, default tertutup saat halaman dibuka.
+Dashboard grid (3-kolom di desktop, Bagian 4.E) → 1 kolom stack penuh di mobile.
+Community feed (max-width 600px center di desktop) → full-width dengan padding kiri-kanan kecil di mobile.
+Companion chat: pastikan font tidak mengecil di bawah 14px, dan tap target (tombol kirim, ikon attachment/mic) minimal 44×44px sesuai standar aksesibilitas mobile.
+Modal (CreatePostModal, Chatbot Settings, dll.): di desktop floating card kanan-bawah → di mobile jadi bottom-sheet full-width (slide dari bawah), bukan card kecil yang terpotong di layar sempit.
+Wajib dites minimal di breakpoint 375px (iPhone SE), 390px (iPhone standar), dan 768px (tablet) sebelum dianggap "responsif" — bukan cuma di-resize browser sekilas.
+16. Kebersihan Repo — Audit File/Folder Duplikat
+⚠️ Klarifikasi penting: file seperti src/components/GoogleAuthProfileModal.tsx yang isinya cuma export { default } from "@/components/ui/GoogleAuthProfileModal" bukan bloat/dummy — itu re-export shim yang disengaja untuk backward compatibility import path (pola yang sama seperti lib/*.ts yang sudah dibahas di Bagian 8). Jangan dihapus, kecuali sudah dipastikan tidak ada satu pun file lain yang masih meng-import dari path lama itu.
+
+Yang beneran perlu diaudit dan dibersihkan:
+
+Folder daily-assessment/ — kalau merge ke mood-check-in (Bagian 8.5.1) sudah dieksekusi, pastikan foldernya beneran terhapus dari filesystem, bukan cuma di-unlink dari sidebar tapi file-nya masih nyangkut di repo.
+Komponen yang jadi dead code (tidak pernah di-import di mana pun) — misalnya kasus CreatePostModal.tsx sebelum diperbaiki (Bagian 11.6), yang sempat ada tapi tidak pernah dirender. Cara cek: grep -r "NamaComponent" di seluruh src/; kalau cuma muncul di file definisinya sendiri, itu kandidat dead code.
+data/*.json — sudah dibahas di Bagian 8.5.2, harus keluar dari git history sepenuhnya.
+Cara aman melakukan pembersihan: jangan hapus file secara manual tanpa cek referensi dulu. Jalankan grep -r "NamaComponent" atau grep -r "from.*NamaFile" di seluruh src/ sebelum menghapus apa pun — kalau masih ada referensi aktif (bukan cuma shim backward-compat), jangan dihapus, cari dulu kenapa masih dipakai.
+17. Checklist Final Sebelum Submit/Deploy
 Gabungan semua item wajib dari seluruh dokumen ini — centang satu-satu sebelum dianggap selesai:
 
 Konsistensi Fitur & Repo Hygiene (temuan review kedua, Bagian 8.5–8.6):
@@ -524,4 +569,24 @@ Desain & UX:
  CreatePostModal benar-benar di-import & dirender di community/page.tsx dengan state kontrol yang valid, tombol "+" mengambang mengubah state itu (bukan lagi handleScrollToCompose), dan sudah dites klik langsung di browser — bukan cuma dibaca dari kode (Bagian 11.6).
  Semua warna pakai kelas Tailwind dari Bagian 3.1, tidak ada hex baru yang keluar dari palet.
  Layout desktop konsisten: sidebar kiri fixed, container max-width 1200–1280px (Bagian 5).
-Dokumen ini konsolidasi dari: review visual Figma UI kit awal, review langsung ke kode github.com/syauqiazka/zyba, dan referensi gaya (landing page ala OpenRouter, Community ala Threads) — semua warna referensi eksternal disesuaikan ke palet ZYBA, bukan ditiru mentah-mentah.
+Performa & Skalabilitas (Bagian 13):
+
+ Semua endpoint list/feed pakai pagination, tidak ada findMany() tanpa take di data yang bisa tumbuh besar.
+ Semua gambar pakai next/image, bukan <img>.
+ Input pencarian di-debounce (~300ms).
+ Rate limiting sudah ada di endpoint chat/companion, community post, dan OTP.
+Hapus Data Dummy (Bagian 14):
+
+ INITIAL_POSTS dan hardcoded lain di community/page.tsx sudah diganti fetch dari API asli.
+ Statistik dashboard (conversations count, streak, dll.) berasal dari query agregat real, bukan angka manual di JSX.
+ Tidak ada data user contoh ("Alex Rivera") yang tampil sebagai fallback diam-diam kalau fetch user asli gagal.
+Responsif Mobile (Bagian 15):
+
+ Sidebar (utama, Companion, Community) jadi off-canvas drawer di <768px, bukan selalu terbuka.
+ Dashboard grid, Community feed, dan Modal sudah dites di breakpoint 375px, 390px, dan 768px.
+Kebersihan Repo (Bagian 16):
+
+ Folder daily-assessment/ benar-benar terhapus dari filesystem (bukan cuma di-unlink dari nav) — kalau merge sudah dieksekusi.
+ Sudah di-grep dulu sebelum menghapus file apa pun — tidak ada referensi aktif yang ikut rusak.
+ Re-export shim (lib/*.ts, components/*.tsx yang isinya cuma export { default } from ...) dipertahankan, tidak ikut terhapus karena dikira dummy/bloat.
+Dokumen ini konsolidasi dari: review visual Figma UI kit awal, review langsung ke kode github.com/syauqiazka/zyba / zyba_, dan referensi gaya (landing page ala OpenRouter, Companion ala Claude.ai, Community ala Threads) — semua warna referensi eksternal disesuaikan ke palet ZYBA, bukan ditiru mentah-mentah.
