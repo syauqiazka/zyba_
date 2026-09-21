@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { verifySessionToken } from "@/lib/auth";
 import { userRepository, computeStreak } from "@/backend/auth/userRepository";
 import { resolveAvatar } from "@/lib/avatarUtils";
+import { accountDb } from "@/backend/db/accountClient";
 
 export async function GET(req: NextRequest) {
   try {
@@ -56,6 +57,18 @@ export async function GET(req: NextRequest) {
     // Compute streak dynamically from createdAt date
     const dynamicStreak = computeStreak(user.createdAt);
 
+    // Check active subscription for plan status
+    const activeSubscription = await accountDb.subscription.findFirst({
+      where: {
+        userId: user.id,
+        status: "ACTIVE",
+        endDate: { gte: new Date() },
+      },
+      orderBy: { createdAt: "desc" },
+    });
+
+    const plan = activeSubscription?.plan === "PLUS" ? "PLUS" : "FREE";
+
     return NextResponse.json({
       success: true,
       user: {
@@ -64,6 +77,7 @@ export async function GET(req: NextRequest) {
         email: user.email,
         avatarUrl: resolveAvatar(user.avatarUrl),
         avatarKey: user.avatarUrl || "fox",
+        plan,
         onboardingCompleted: user.onboardingCompleted,
         createdAt: user.createdAt,
       },
