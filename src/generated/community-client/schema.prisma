@@ -1,0 +1,49 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../../src/generated/community-client"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL_COMMUNITY")
+  directUrl = env("DIRECT_URL_COMMUNITY")
+}
+
+model CommunityPost {
+  id               String   @id @default(cuid())
+  userId           String // TANPA @relation — user ada di Account DB
+  content          String?
+  imageUrl         String?
+  audioUrl         String?
+  audioDurationSec Int?
+  stickerId        String?
+  createdAt        DateTime @default(now())
+
+  comments CommunityComment[]
+  likes    CommunityLike[]
+
+  @@index([createdAt])
+  @@map("community_posts")
+}
+
+model CommunityComment {
+  id        String        @id @default(cuid())
+  postId    String
+  post      CommunityPost @relation(fields: [postId], references: [id], onDelete: Cascade)
+  userId    String // TANPA @relation
+  content   String?
+  stickerId String?
+  createdAt DateTime      @default(now())
+
+  @@map("community_comments")
+}
+
+model CommunityLike {
+  id     String        @id @default(cuid())
+  postId String
+  post   CommunityPost @relation(fields: [postId], references: [id], onDelete: Cascade)
+  userId String
+
+  @@unique([postId, userId])
+  @@map("community_likes")
+}

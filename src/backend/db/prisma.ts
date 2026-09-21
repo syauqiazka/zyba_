@@ -1,16 +1,20 @@
-import { PrismaClient } from "@prisma/client";
+// Backward-compat: re-export accountDb as `prisma` so existing imports keep working.
+// New code: import directly from accountClient / companionClient / communityClient.
+import { PrismaClient } from "@/generated/account-client";
 
 const globalForPrisma = globalThis as unknown as {
-  prisma: PrismaClient | undefined;
+  accountDb: PrismaClient | undefined;
 };
 
-export const prisma =
-  globalForPrisma.prisma ??
+export const accountDb =
+  globalForPrisma.accountDb ??
   new PrismaClient({
     log: process.env.NODE_ENV === "development" ? ["query", "error", "warn"] : ["error"],
   });
 
-if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = prisma;
+if (process.env.NODE_ENV !== "production") globalForPrisma.accountDb = accountDb;
+
+export const prisma = accountDb;
 
 let isDbOnline = true;
 let lastDbCheck = 0;

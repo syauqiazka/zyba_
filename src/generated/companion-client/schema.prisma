@@ -1,0 +1,41 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../../src/generated/companion-client"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL_COMPANION")
+  directUrl = env("DIRECT_URL_COMPANION")
+}
+
+model Conversation {
+  id         String   @id @default(cuid())
+  userId     String // TANPA @relation — user ada di Account DB
+  title      String   @default("New Conversation")
+  emotionTag String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  messages Message[]
+
+  @@index([userId])
+  @@map("conversations")
+}
+
+model Message {
+  id               String       @id @default(cuid())
+  conversationId   String
+  conversation     Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  role             String // "USER" | "ASSISTANT"
+  content          String? // opsional kalau isinya cuma media
+  attachmentType   String? // "image" | "audio" | "sticker" | null
+  attachmentUrl    String? // URL object storage, BUKAN base64
+  audioDurationSec Int?
+  stickerId        String?
+  flaggedForRisk   Boolean      @default(false)
+  createdAt        DateTime     @default(now())
+
+  @@index([conversationId, createdAt])
+  @@map("messages")
+}

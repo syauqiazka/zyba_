@@ -5,10 +5,10 @@ import ChatHeader from "./components/ChatHeader";
 import ChatMessages from "./components/ChatMessages";
 import ChatInput from "./components/ChatInput";
 import CrisisBanner from "./components/CrisisBanner";
-import CompanionProjectsView from "./components/CompanionProjectsView";
-import CompanionArtifactsView from "./components/CompanionArtifactsView";
-import CompanionCodeView from "./components/CompanionCodeView";
 import { useCompanion } from "./context/CompanionContext";
+import PersonaPicker from "./components/PersonaPicker";
+import { PersonaId } from "@/backend/ai/personas";
+import { useState } from "react";
 
 /**
  * Companion Page - 100% Claude.ai Layout & Sub-Page Switching
@@ -44,25 +44,12 @@ export default function CompanionPage() {
   } = useCompanion();
 
   const hasMessages = (activeConv?.messages || []).length > 0;
+  const [selectedPersona, setSelectedPersona] = useState<PersonaId>("KINA");
 
   return (
     <div className="flex flex-col h-full min-h-0">
-      {/* Dynamic View based on Active Sidebar Selection */}
-      {activeSection === "projects" ? (
-        <div className="flex-1 flex flex-col bg-white rounded-3xl border border-brown-900/10 overflow-hidden shadow-sm min-h-0">
-          <CompanionProjectsView />
-        </div>
-      ) : activeSection === "artifacts" ? (
-        <div className="flex-1 flex flex-col bg-white rounded-3xl border border-brown-900/10 overflow-hidden shadow-sm min-h-0">
-          <CompanionArtifactsView />
-        </div>
-      ) : activeSection === "code" ? (
-        <div className="flex-1 flex flex-col bg-white rounded-3xl border border-brown-900/10 overflow-hidden shadow-sm min-h-0">
-          <CompanionCodeView />
-        </div>
-      ) : (
-        /* Chat Window: Header + Messages + Input (Exact Claude.ai structure) */
-        <div className="flex-1 flex flex-col bg-white rounded-3xl border border-brown-900/10 overflow-hidden shadow-sm min-h-0">
+      {/* Chat Window only — scope creep projects/artifacts/code dihapus (Bagian 23.1) */}
+      <div className="flex-1 flex flex-col bg-white rounded-3xl border border-brown-900/10 overflow-hidden shadow-sm min-h-0">
           <ChatHeader
             activeConv={activeConv}
             selectedModel={selectedModel}
@@ -105,50 +92,18 @@ export default function CompanionPage() {
               setCommStyle={setCommStyle}
             />
           )}
-        </div>
-      )}
+      </div>
 
-      {/* Settings Modal */}
+      {/* Settings Modal — FASE 4: PersonaPicker (Bagian 21) */}
       {showSettingsModal && (
         <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-xs flex items-center justify-center p-4">
           <div className="bg-white rounded-3xl p-7 max-w-sm w-full shadow-2xl border border-brown-900/10 flex flex-col gap-5">
             <div className="flex items-center justify-between">
-              <h3 className="font-display font-extrabold text-base text-brown-900">
-                Pengaturan Zyba Companion
-              </h3>
-              <button
-                type="button"
-                onClick={() => setShowSettingsModal(false)}
-                className="text-brown-700 hover:text-brown-900 text-sm"
-              >
-                ✕
-              </button>
+              <h3 className="font-display font-extrabold text-base text-brown-900">Pilih Karakter Zyba</h3>
+              <button type="button" onClick={() => setShowSettingsModal(false)} className="text-brown-700 hover:text-brown-900 text-sm">✕</button>
             </div>
-
-            <div className="flex flex-col gap-2">
-              <label className="text-xs font-bold text-brown-900">Gaya Komunikasi AI:</label>
-              {(["CASUAL", "FORMAL", "FUN"] as const).map((style) => (
-                <button
-                  key={style}
-                  type="button"
-                  onClick={() => setCommStyle(style)}
-                  className={`p-3 rounded-2xl text-xs font-bold border transition-colors flex items-center justify-between ${
-                    commStyle === style
-                      ? "bg-brown-900 text-white border-brown-900"
-                      : "bg-cream text-brown-900 border-brown-900/10 hover:border-orange-500"
-                  }`}
-                >
-                  <span>{style}</span>
-                  {commStyle === style && <span>✓</span>}
-                </button>
-              ))}
-            </div>
-
-            <button
-              type="button"
-              onClick={() => setShowSettingsModal(false)}
-              className="w-full py-2.5 rounded-full bg-orange-500 text-white text-xs font-bold hover:bg-brown-900 transition-colors"
-            >
+            <PersonaPicker selected={selectedPersona} onChange={setSelectedPersona} />
+            <button type="button" onClick={() => setShowSettingsModal(false)} className="w-full py-2.5 rounded-full bg-orange-500 text-white text-xs font-bold hover:bg-brown-900 transition-colors">
               Simpan & Tutup
             </button>
           </div>

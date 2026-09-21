@@ -1,26 +1,16 @@
-/**
- * Multi-Model AI Engine & Keys Manager for ZYBA Companion
- * Supporting multiple AI API Keys:
- * - Gemini 1.5 Flash (GEMINI_API_KEY / GEMINI_FLASH_API_KEY)
- * - Gemini 1.5 Pro (GEMINI_PRO_API_KEY)
- * - OpenAI GPT-4o (OPENAI_API_KEY)
- * - Groq Llama 3.3 70B (GROQ_API_KEY)
- * - Anthropic Claude 3.5 Sonnet (ANTHROPIC_API_KEY)
- */
+// FASE 2+4: Multi-provider AI + persona (AGENTS.md 19.1, 21.2)
+// Priority: Gemini -> Groq -> Mistral -> OpenRouter -> persona fallback
 
-export type AIModelType =
-  | "gemini-1.5-flash"
-  | "gemini-1.5-pro"
-  | "gpt-4o"
-  | "llama-3.3-70b"
-  | "claude-3-5-sonnet"
-  | "zyba-default";
+import { getPersonaById, PersonaDef, PersonaId } from "./personas";
+
+export type AIModelType = "gemini-2.0-flash" | "gemini-1.5-flash" | "gemini-1.5-pro" | "llama-3.3-70b" | "mistral-small" | "openrouter-free" | "claude-3-5-sonnet" | "gpt-4o" | "zyba-default";
 
 export interface AIRequestParams {
   message: string;
   model?: AIModelType;
+  persona?: PersonaId;
+  /** @deprecated use persona */
   communicationStyle?: "CASUAL" | "FORMAL" | "FUN";
-  emotionTag?: string;
   history?: { role: "USER" | "ASSISTANT"; content: string }[];
 }
 
@@ -31,201 +21,96 @@ export interface AIResponseResult {
   providerStatus: "API_LIVE" | "PERSONA_FALLBACK";
 }
 
-export async function processMultiModelAIResponse({
-  message,
-  model = "gemini-1.5-flash",
-  communicationStyle = "CASUAL",
-  emotionTag = "Calming",
-  history = [],
-}: AIRequestParams): Promise<AIResponseResult> {
-  const systemPrompt = `Kamu adalah Zyba Companion, pendamping kesehatan mental, fisik, dan sosial berbasis AI untuk Gen Z.
-Gaya komunikasi kamu saat ini: ${communicationStyle}.
-Berikan respon yang hangat, empati, bebas dari stigma, dan berorientasi pada latihan mindfulness praktis.`;
+type PR = { reply: string; emotionTag: string };
 
-  // 1. Google Gemini 1.5 Flash / Pro
-  if (model.startsWith("gemini")) {
-    const key =
-      model === "gemini-1.5-pro"
-        ? process.env.GEMINI_PRO_API_KEY || process.env.GEMINI_API_KEY
-        : process.env.GEMINI_FLASH_API_KEY || process.env.GEMINI_API_KEY;
+async function callGemini(mn: string, sp: string, msg: string, hist: AIRequestParams["history"]): Promise<PR | null> {
+  const key = process.env.GEMINI_API_KEY; if (!key) return null;
+  const contents = [...(hist ?? []).map(h => ({ role: h.role === "USER" ? "user" : "model", parts: [{ text: h.content }] })), { role: "user", parts: [{ text: msg }] }];
+  const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${mn}:generateContent?key=${key}`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ system_instruction: { parts: [{ text: sp }] }, contents }) });
+  if (res.status === 429) throw new Error("RATE_LIMIT");
+  if (!res.ok) return null;
+  const data = await res.json();
+  const text = data?.candidates?.[0]?.content?.parts?.[0]?.text;
+  return text ? { reply: text.trim(), emotionTag: "Empathetic (Gemini)" } : null;
+}
 
-    if (key) {
-      try {
-        const modelName = model === "gemini-1.5-pro" ? "gemini-1.5-pro" : "gemini-1.5-flash";
-        const res = await fetch(
-          `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${key}`,
-          {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              contents: [
-                { role: "user", parts: [{ text: `${systemPrompt}\n\nUser: ${message}` }] },
-              ],
-            }),
-          }
-        );
+async function callGroq(gm: string, sp: string, msg: string, hist: AIRequestParams["history"]): Promise<PR | null> {
+  const key = process.env.GROQ_API_KEY; if (!key) return null;
+  const messages = [{ role: "system", content: sp }, ...(hist ?? []).map(h => ({ role: h.role === "USER" ? "user" : "assistant", content: h.content })), { role: "user", content: msg }];
+  const res = await fetch("https://api.groq.com/openai/v1/chat/completions", { method: "POST", headers: { "Content-Type": "application/json", "Authorization": "Bearer " + key }, body: JSON.stringify({ model: gm, messages, max_tokens: 800 }) });
+  if (res.status === 429) throw new Error("RATE_LIMIT");
+  if (!res.ok) return null;
+  const data = await res.json();
+  const text = data?.choices?.[0]?.message?.content;
+  return text ? { reply: text.trim(), emotionTag: "Insightful (Groq)" } : null;
+}
 
-        if (res.ok) {
-          const data = await res.json();
-          const replyText = data?.candidates?.[0]?.content?.parts?.[0]?.text;
-          if (replyText) {
-            return {
-              reply: replyText.trim(),
-              modelUsed: model,
-              emotionTag: "Empathetic (Gemini)",
-              providerStatus: "API_LIVE",
-            };
-          }
-        }
-      } catch (err) {
-        console.error(`[aiModelManager] Error calling Gemini API (${model}):`, err);
-      }
-    }
-  }
+async function callMistral(sp: string, msg: string, hist: AIRequestParams["history"]): Promise<PR | null> {
+  const key = process.env.MISTRAL_API_KEY; if (!key) return null;
+  const messages = [{ role: "system", content: sp }, ...(hist ?? []).map(h => ({ role: h.role === "USER" ? "user" : "assistant", content: h.content })), { role: "user", content: msg }];
+  const res = await fetch("https://api.mistral.ai/v1/chat/completions", { method: "POST", headers: { "Content-Type": "application/json", "Authorization": "Bearer " + key }, body: JSON.stringify({ model: "mistral-small-latest", messages, max_tokens: 800 }) });
+  if (res.status === 429) throw new Error("RATE_LIMIT");
+  if (!res.ok) return null;
+  const data = await res.json();
+  const text = data?.choices?.[0]?.message?.content;
+  return text ? { reply: text.trim(), emotionTag: "Reflective (Mistral)" } : null;
+}
 
-  // 2. OpenAI GPT-4o
-  if (model === "gpt-4o" && process.env.OPENAI_API_KEY) {
-    try {
-      const res = await fetch("https://api.openai.com/v1/chat/completions", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
-        },
-        body: JSON.stringify({
-          model: "gpt-4o",
-          messages: [
-            { role: "system", content: systemPrompt },
-            ...history.map((h) => ({
-              role: h.role === "USER" ? "user" : "assistant",
-              content: h.content,
-            })),
-            { role: "user", content: message },
-          ],
-        }),
-      });
+async function callOpenRouter(sp: string, msg: string, hist: AIRequestParams["history"]): Promise<PR | null> {
+  const key = process.env.OPENROUTER_API_KEY; if (!key) return null;
+  const messages = [{ role: "system", content: sp }, ...(hist ?? []).map(h => ({ role: h.role === "USER" ? "user" : "assistant", content: h.content })), { role: "user", content: msg }];
+  const res = await fetch("https://openrouter.ai/api/v1/chat/completions", { method: "POST", headers: { "Content-Type": "application/json", "Authorization": "Bearer " + key, "HTTP-Referer": "https://zyba.app", "X-Title": "Zyba Companion" }, body: JSON.stringify({ model: "meta-llama/llama-3.1-8b-instruct:free", messages, max_tokens: 800 }) });
+  if (res.status === 429) throw new Error("RATE_LIMIT");
+  if (!res.ok) return null;
+  const data = await res.json();
+  const text = data?.choices?.[0]?.message?.content;
+  return text ? { reply: text.trim(), emotionTag: "Supportive (OpenRouter)" } : null;
+}
 
-      if (res.ok) {
-        const data = await res.json();
-        const replyText = data?.choices?.[0]?.message?.content;
-        if (replyText) {
-          return {
-            reply: replyText.trim(),
-            modelUsed: "gpt-4o",
-            emotionTag: "Supportive (GPT-4o)",
-            providerStatus: "API_LIVE",
-          };
-        }
-      }
-    } catch (err) {
-      console.error("[aiModelManager] Error calling OpenAI GPT-4o:", err);
-    }
-  }
-
-  // 3. Groq Llama 3.3 70B
-  if (model === "llama-3.3-70b" && process.env.GROQ_API_KEY) {
-    try {
-      const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${process.env.GROQ_API_KEY}`,
-        },
-        body: JSON.stringify({
-          model: "llama-3.3-70b-versatile",
-          messages: [
-            { role: "system", content: systemPrompt },
-            { role: "user", content: message },
-          ],
-        }),
-      });
-
-      if (res.ok) {
-        const data = await res.json();
-        const replyText = data?.choices?.[0]?.message?.content;
-        if (replyText) {
-          return {
-            reply: replyText.trim(),
-            modelUsed: "llama-3.3-70b",
-            emotionTag: "Insightful (Llama 3)",
-            providerStatus: "API_LIVE",
-          };
-        }
-      }
-    } catch (err) {
-      console.error("[aiModelManager] Error calling Groq Llama 3:", err);
-    }
-  }
-
-  // 4. Anthropic Claude 3.5 Sonnet
-  if (model === "claude-3-5-sonnet" && process.env.ANTHROPIC_API_KEY) {
-    try {
-      const res = await fetch("https://api.anthropic.com/v1/messages", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "x-api-key": process.env.ANTHROPIC_API_KEY,
-          "anthropic-version": "2023-06-01",
-        },
-        body: JSON.stringify({
-          model: "claude-3-5-sonnet-20241022",
-          max_tokens: 1000,
-          system: systemPrompt,
-          messages: [{ role: "user", content: message }],
-        }),
-      });
-
-      if (res.ok) {
-        const data = await res.json();
-        const replyText = data?.content?.[0]?.text;
-        if (replyText) {
-          return {
-            reply: replyText.trim(),
-            modelUsed: "claude-3-5-sonnet",
-            emotionTag: "Reflective (Claude)",
-            providerStatus: "API_LIVE",
-          };
-        }
-      }
-    } catch (err) {
-      console.error("[aiModelManager] Error calling Anthropic Claude:", err);
-    }
-  }
-
-  // 5. Intelligent Zyba Persona Contextual Fallback Response
-  const lowerMsg = message.toLowerCase();
-  let replyText = "";
-  let detectedEmotion = emotionTag;
-
-  if (lowerMsg.includes("tidur") || lowerMsg.includes("insomnia") || lowerMsg.includes("lelah")) {
-    detectedEmotion = "Rest Seeking";
-    replyText =
-      communicationStyle === "CASUAL"
-        ? `Istirahat itu penting banget, Alex. Coba matikan layar gadget 30 menit sebelum tidur dan ikuti sesi audio relaksasi tidur ZYBA di menu Resources.`
-        : communicationStyle === "FUN"
-        ? `Waktunya isi ulang baterai tubuhmu! 🔋 Jauhkan HP dan mari ikuti sesi audio relaksasi tidur dari ZYBA.`
-        : `Kualitas tidur berdampak langsung pada kestabilan emosi dan stamina fisik. Kami menyarankan Anda mengikuti sesi relaksasi pernapasan.`;
-  } else if (lowerMsg.includes("tugas") || lowerMsg.includes("kuliah") || lowerMsg.includes("ujian") || lowerMsg.includes("stres")) {
-    detectedEmotion = "Focused Coping";
-    replyText =
-      communicationStyle === "CASUAL"
-        ? `Paham banget, beban tugas memang suka bikin kewalahan. Mari pecah tugasmu jadi bagian-bagian kecil. Ambil 5 menit untuk tarik napas di menu Smart Activity Planner yuk!`
-        : communicationStyle === "FUN"
-        ? `Slow down, champion! 🌟 Kamu hebat sudah bertahan sejauh ini. Mari rehat 5 menit sebelum lanjut gempur tugas!`
-        : `Tekanan akademik merupakan hal yang umum dialami. Cobalah menerapkan teknik Pomodoro 25 menit fokus dan 5 menit istirahat.`;
+function personaFallback(persona: PersonaDef, message: string): PR {
+  const l = message.toLowerCase();
+  let reply = "";
+  if (l.includes("tidur") || l.includes("insomnia") || l.includes("lelah")) {
+    reply = persona.id === "RUBI" ? "Wah, badan udah minta rehat! Matiin layar 30 mnt sebelum tidur, terus dengerin audio relaksasi di Resources."
+      : persona.id === "BRUNO" ? "Tarik napas pelan... tahan 4 hitungan... hembuskan. Istirahat bukan tanda lemah."
+      : persona.id === "OLLIE" ? "Tidurmu terganggu, itu sinyal penting. Apa yang biasanya ada di pikiranmu saat mau tidur?"
+      : "Istirahat itu penting banget. Coba matikan layar 30 menit sebelum tidur dan ikuti sesi audio relaksasi di Resources.";
+  } else if (l.includes("stres") || l.includes("tugas") || l.includes("cemas")) {
+    reply = persona.id === "RUBI" ? "Santai dulu! Pecah tugasnya jadi bagian kecil-kecil. Mulai dari yang paling gampang!"
+      : persona.id === "BRUNO" ? "Yuk tarik napas bareng dulu. Satu... dua... tiga... Sekarang ceritain yang paling bikin berat."
+      : persona.id === "OLLIE" ? "Stres ini datang dari mana? Dari ekspektasi luar, atau ada sesuatu yang lebih dalam?"
+      : "Paham banget. Yuk pecah tugasmu jadi bagian kecil dan ambil 5 menit napas dulu.";
   } else {
-    replyText =
-      communicationStyle === "CASUAL"
-        ? `Terima kasih sudah berbagi dengan Zyba (${model}). Aku di sini mendengarkanmu. Mau kita coba latihan pernapasan bersama atau mau cerita lebih banyak?`
-        : communicationStyle === "FUN"
-        ? `Aku siap mendengarkan semua cerita serumu via ${model}! 🚀 Ceritakan apa saja yang ada di pikiranmu hari ini!`
-        : `Terima kasih telah berbagi. Zyba Companion (${model}) selalu siap memfasilitasi ruang refleksi kesehatan mental Anda.`;
+    reply = persona.id === "RUBI" ? "Heyy, cerita dong lebih! Aku di sini nemenin kok."
+      : persona.id === "BRUNO" ? "Aku di sini bersamamu. Ceritakan pelan-pelan, tidak apa."
+      : persona.id === "OLLIE" ? "Terima kasih sudah berbagi. Apa yang paling ingin kamu eksplorasi dari cerita ini?"
+      : "Makasih sudah cerita ke Zyba. Aku di sini mendengarkan. Mau lanjut cerita atau coba latihan pernapasan?";
+  }
+  return { reply, emotionTag: "Empathetic (Fallback)" };
+}
+
+export async function processMultiModelAIResponse(params: AIRequestParams): Promise<AIResponseResult> {
+  const { message, persona: personaId = "KINA", history = [] } = params;
+  const persona = getPersonaById(personaId);
+  const sp = persona.systemPrompt;
+
+  type E = { fn: () => Promise<PR | null>; name: AIModelType };
+  const chain: E[] = [
+    { fn: () => callGemini("gemini-2.0-flash", sp, message, history), name: "gemini-2.0-flash" },
+    { fn: () => callGroq("llama-3.3-70b-versatile", sp, message, history), name: "llama-3.3-70b" },
+    { fn: () => callMistral(sp, message, history), name: "mistral-small" },
+    { fn: () => callOpenRouter(sp, message, history), name: "openrouter-free" },
+  ];
+
+  for (const { fn, name } of chain) {
+    try {
+      const result = await fn();
+      if (result) return { reply: result.reply, modelUsed: name, emotionTag: result.emotionTag, providerStatus: "API_LIVE" };
+    } catch (err: any) {
+      console.warn("[aiModelManager] " + name + " skipped:", err?.message);
+    }
   }
 
-  return {
-    reply: replyText,
-    modelUsed: model,
-    emotionTag: detectedEmotion,
-    providerStatus: "PERSONA_FALLBACK",
-  };
+  const fallback = personaFallback(persona, message);
+  return { reply: fallback.reply, modelUsed: "zyba-default", emotionTag: fallback.emotionTag, providerStatus: "PERSONA_FALLBACK" };
 }

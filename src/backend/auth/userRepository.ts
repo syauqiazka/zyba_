@@ -12,7 +12,7 @@ export interface StoredUser {
   phone?: string | null;
   location?: string | null;
   bio?: string | null;
-  communicationStyle?: "CASUAL" | "FORMAL" | "FUN";
+  communicationStyle?: string; // legacy, mapped from companionPersona
   plan?: "FREE" | "PLUS";
   onboardingCompleted: boolean;
   zybaScore?: number | null;
@@ -141,7 +141,7 @@ export const userRepository = {
           phone: user.phone,
           location: user.location,
           bio: user.bio,
-          communicationStyle: user.communicationStyle as any,
+          communicationStyle: user.companionPersona as any,
           plan: user.plan as any,
           onboardingCompleted: user.onboardingCompleted,
           zybaScore: user.zybaScore,
@@ -174,7 +174,7 @@ export const userRepository = {
           phone: user.phone,
           location: user.location,
           bio: user.bio,
-          communicationStyle: user.communicationStyle as any,
+          communicationStyle: user.companionPersona as any,
           plan: user.plan as any,
           onboardingCompleted: user.onboardingCompleted,
           zybaScore: user.zybaScore,
@@ -281,7 +281,7 @@ export const userRepository = {
           data: {
             name: data.name,
             avatarUrl: data.avatarUrl,
-            communicationStyle: data.communicationStyle,
+            companionPersona: data.communicationStyle as any ?? undefined,
             onboardingCompleted: data.onboardingCompleted,
             zybaScore: data.zybaScore,
             passwordHash: data.passwordHash,

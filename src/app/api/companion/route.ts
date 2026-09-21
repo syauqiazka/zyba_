@@ -1,19 +1,22 @@
 import { NextRequest, NextResponse } from "next/server";
 import { detectRisk, CRISIS_RESOURCES } from "@/backend/crisis/crisisDetection";
 import { processMultiModelAIResponse, AIModelType } from "@/backend/ai/aiModelManager";
+import { PersonaId } from "@/backend/ai/personas";
 
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
     const {
       message,
-      model = "gemini-1.5-flash",
-      communicationStyle = "CASUAL",
+      model,
+      persona = "KINA",
+      communicationStyle,
       history = [],
     } = body as {
       message: string;
       model?: AIModelType;
-      communicationStyle?: "CASUAL" | "FORMAL" | "FUN";
+      persona?: PersonaId;
+      communicationStyle?: string;
       history?: { role: "USER" | "ASSISTANT"; content: string }[];
     };
 
@@ -21,26 +24,19 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Konten pesan wajib diisi." }, { status: 400 });
     }
 
-    // 1. Safety Crisis Keyword Check
+    // Safety: crisis check SEBELUM persona — tidak ada persona yang bypass ini (AGENTS.md 10.5, 21)
     const isRisk = detectRisk(message);
     if (isRisk) {
       return NextResponse.json({
-        reply:
-          "Zyba memprioritaskan keselamatanmu. Kami telah mengaktifkan nomor hotline pendampingan darurat resmi di bawah yang bisa kamu hubungi kapan saja secara gratis.",
+        reply: "Zyba memprioritaskan keselamatanmu. Nomor hotline pendampingan darurat resmi tersedia di bawah — bisa dihubungi kapan saja secara gratis.",
         isRisk: true,
         crisisResources: CRISIS_RESOURCES,
         emotionTag: "Crisis Support Needed",
-        modelUsed: model,
+        modelUsed: "zyba-default",
       });
     }
 
-    // 2. Multi-Model AI Engine Routing (Gemini 1.5 Flash/Pro, GPT-4o, Llama 3, Claude 3.5, Fallback)
-    const aiResult = await processMultiModelAIResponse({
-      message,
-      model,
-      communicationStyle,
-      history,
-    });
+    const aiResult = await processMultiModelAIResponse({ message, model, persona, history });
 
     return NextResponse.json({
       reply: aiResult.reply,

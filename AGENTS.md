@@ -4,7 +4,7 @@ Dokumen ini adalah satu-satunya sumber acuan untuk coding agent (Hermes+9Router,
 ⚠️ Baca urutan ini sebelum coding apa pun:
 
 Bagian 8 — Status Review & Prioritas Perbaikan — 3 isu keamanan yang HARUS diperbaiki duluan.
-Bagian 12 — Checklist Final — daftar centang sebelum submit lomba/deploy.
+Bagian 26 — Checklist Final — daftar centang sebelum submit lomba/deploy.
 1. Ringkasan Produk
 ZYBA — Gen Z Wellness Support. Pendamping kesehatan mental, fisik, dan sosial berbasis AI. Alur inti: Curhat → Solusi → Program → Aksi.
 
@@ -536,7 +536,415 @@ Folder daily-assessment/ — kalau merge ke mood-check-in (Bagian 8.5.1) sudah d
 Komponen yang jadi dead code (tidak pernah di-import di mana pun) — misalnya kasus CreatePostModal.tsx sebelum diperbaiki (Bagian 11.6), yang sempat ada tapi tidak pernah dirender. Cara cek: grep -r "NamaComponent" di seluruh src/; kalau cuma muncul di file definisinya sendiri, itu kandidat dead code.
 data/*.json — sudah dibahas di Bagian 8.5.2, harus keluar dari git history sepenuhnya.
 Cara aman melakukan pembersihan: jangan hapus file secara manual tanpa cek referensi dulu. Jalankan grep -r "NamaComponent" atau grep -r "from.*NamaFile" di seluruh src/ sebelum menghapus apa pun — kalau masih ada referensi aktif (bukan cuma shim backward-compat), jangan dihapus, cari dulu kenapa masih dipakai.
-17. Checklist Final Sebelum Submit/Deploy
+17. Arsitektur Multi-Database (3 Neon Terpisah)
+Keputusan arsitektur baru: database dipecah dari 1 Neon menjadi 3 Neon terpisah per domain: Companion, Community, dan Akun/Core. Ini mengganti seluruh setup di Bagian 7 yang tadinya 1 schema.prisma + 1 DATABASE_URL.
+
+17.1 Konsekuensi Teknis (Wajib Dipahami Sebelum Implementasi)
+Prisma tidak mendukung relasi (@relation) lintas database berbeda — satu schema.prisma cuma bisa punya satu datasource. Untuk 3 database beneran terpisah, dibutuhkan 3 skema Prisma + 3 Prisma Client yang berdiri sendiri-sendiri. Konsekuensinya:
+
+Tidak ada foreign key/relasi native antar DB. Field seperti Conversation.userId atau CommunityPost.userId tetap ada sebagai String biasa, tanpa @relation ke model User (karena User ada di database lain). Integritas data (memastikan userId itu valid) jadi tanggung jawab kode aplikasi, bukan database lagi.
+Tidak ada transaksi atomik lintas DB. prisma.$transaction() cuma berlaku dalam satu koneksi/database. Kalau ada aksi yang perlu update ke 2 DB sekaligus, tidak ada garansi keduanya sukses bareng — harus ditangani manual (retry/kompensasi), bukan dianggap "aman" seperti transaksi biasa.
+Tidak ada JOIN SQL lintas domain. Untuk menampilkan post komunitas lengkap dengan nama & avatar user, dibutuhkan 2 query terpisah: satu ke Community DB (ambil post), satu ke Account DB (ambil data user berdasarkan userId yang tersimpan di post), lalu digabung manual di kode aplikasi. Ini lebih lambat dan lebih rawan bug dibanding 1 query JOIN — pastikan ini memang trade-off yang diterima.
+3x connection pool. Tiga database berarti tiga connection pool terpisah dari Neon. Kalau masih pakai tier gratis Neon, perhatikan limit koneksi masing-masing project/database.
+17.2 Struktur File
+prisma/
+  account/
+    schema.prisma      → datasource: DATABASE_URL_ACCOUNT / DIRECT_URL_ACCOUNT
+  companion/
+    schema.prisma      → datasource: DATABASE_URL_COMPANION / DIRECT_URL_COMPANION
+  community/
+    schema.prisma      → datasource: DATABASE_URL_COMMUNITY / DIRECT_URL_COMMUNITY
+Tiap schema.prisma punya generator client dengan output berbeda supaya tidak saling menimpa:
+
+// prisma/account/schema.prisma
+generator client {
+  provider = "prisma-client-js"
+  output   = "../../src/generated/account-client"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL_ACCOUNT")
+  directUrl = env("DIRECT_URL_ACCOUNT")
+}
+
+model User { /* ...sama seperti sebelumnya... */ }
+model NotificationPref { /* ... */ }
+model Assessment { /* ... */ }
+model MoodEntry { /* ... */ }
+model JournalEntry { /* ... */ }
+model ActivityLog { /* ... */ }
+model Resource { /* ... */ }
+// prisma/companion/schema.prisma
+generator client {
+  provider = "prisma-client-js"
+  output   = "../../src/generated/companion-client"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL_COMPANION")
+  directUrl = env("DIRECT_URL_COMPANION")
+}
+
+model Conversation {
+  id        String   @id @default(cuid())
+  userId    String   // TANPA @relation — user ada di DB lain
+  title     String   @default("New Conversation")
+  emotionTag String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  messages  Message[]
+  @@index([userId])
+  @@map("conversations")
+}
+
+model Message {
+  id             String       @id @default(cuid())
+  conversationId String
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  role           String
+  content        String
+  flaggedForRisk Boolean      @default(false)
+  createdAt      DateTime     @default(now())
+  @@index([conversationId, createdAt])
+  @@map("messages")
+}
+// prisma/community/schema.prisma
+generator client {
+  provider = "prisma-client-js"
+  output   = "../../src/generated/community-client"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL_COMMUNITY")
+  directUrl = env("DIRECT_URL_COMMUNITY")
+}
+
+model CommunityPost {
+  id        String   @id @default(cuid())
+  userId    String   // TANPA @relation — user ada di DB lain
+  content   String
+  imageUrl  String?
+  createdAt DateTime @default(now())
+  comments  CommunityComment[]
+  likes     CommunityLike[]
+  @@index([createdAt])
+  @@map("community_posts")
+}
+
+model CommunityComment {
+  id        String        @id @default(cuid())
+  postId    String
+  post      CommunityPost @relation(fields: [postId], references: [id], onDelete: Cascade)
+  userId    String        // TANPA @relation
+  content   String
+  createdAt DateTime      @default(now())
+  @@map("community_comments")
+}
+
+model CommunityLike {
+  id     String        @id @default(cuid())
+  postId String
+  post   CommunityPost @relation(fields: [postId], references: [id], onDelete: Cascade)
+  userId String
+  @@unique([postId, userId])
+  @@map("community_likes")
+}
+17.3 Environment Variables
+# Account / Core DB
+DATABASE_URL_ACCOUNT="postgresql://...-pooler.../account?sslmode=require"
+DIRECT_URL_ACCOUNT="postgresql://.../account?sslmode=require"
+
+# Companion DB
+DATABASE_URL_COMPANION="postgresql://...-pooler.../companion?sslmode=require"
+DIRECT_URL_COMPANION="postgresql://.../companion?sslmode=require"
+
+# Community DB
+DATABASE_URL_COMMUNITY="postgresql://...-pooler.../community?sslmode=require"
+DIRECT_URL_COMMUNITY="postgresql://.../community?sslmode=require"
+Tiga database ini boleh berupa 3 database berbeda dalam satu Neon project (lebih murah/simpel di free tier) atau 3 Neon project terpisah — itu keputusan biaya/isolasi, bukan keharusan teknis. Prisma-nya tidak peduli selama URL-nya valid dan berbeda per skema.
+
+17.4 Client Singleton per Domain
+Ganti src/backend/db/prisma.ts (satu client) jadi tiga file singleton terpisah, pola sama seperti sebelumnya:
+
+// src/backend/db/accountClient.ts
+import { PrismaClient } from "@/generated/account-client";
+
+const globalForPrisma = globalThis as unknown as { accountDb: PrismaClient | undefined };
+export const accountDb = globalForPrisma.accountDb ?? new PrismaClient();
+if (process.env.NODE_ENV !== "production") globalForPrisma.accountDb = accountDb;
+// src/backend/db/companionClient.ts
+import { PrismaClient } from "@/generated/companion-client";
+
+const globalForPrisma = globalThis as unknown as { companionDb: PrismaClient | undefined };
+export const companionDb = globalForPrisma.companionDb ?? new PrismaClient();
+if (process.env.NODE_ENV !== "production") globalForPrisma.companionDb = companionDb;
+// src/backend/db/communityClient.ts
+import { PrismaClient } from "@/generated/community-client";
+
+const globalForPrisma = globalThis as unknown as { communityDb: PrismaClient | undefined };
+export const communityDb = globalForPrisma.communityDb ?? new PrismaClient();
+if (process.env.NODE_ENV !== "production") globalForPrisma.communityDb = communityDb;
+Setiap route API memilih client sesuai domainnya: api/mood/*, api/auth/*, api/journal/* → accountDb. api/companion/* → companionDb. api/community/* → communityDb.
+
+17.5 Contoh Query Gabungan Lintas DB
+Karena tidak ada JOIN, gabungkan manual di kode — contoh untuk community feed yang butuh nama user:
+
+// src/backend/community/communityRepository.ts
+import { communityDb } from "@/backend/db/communityClient";
+import { accountDb } from "@/backend/db/accountClient";
+
+export async function getFeedWithAuthors(take = 20, cursor?: string) {
+  const posts = await communityDb.communityPost.findMany({
+    take,
+    ...(cursor && { skip: 1, cursor: { id: cursor } }),
+    orderBy: { createdAt: "desc" },
+  });
+
+  const userIds = [...new Set(posts.map((p) => p.userId))];
+  const users = await accountDb.user.findMany({
+    where: { id: { in: userIds } },
+    select: { id: true, name: true, avatarUrl: true },
+  });
+  const userMap = new Map(users.map((u) => [u.id, u]));
+
+  return posts.map((post) => ({
+    ...post,
+    author: userMap.get(post.userId) ?? null, // null kalau user sudah dihapus — handle di UI
+  }));
+}
+17.6 Package.json Scripts
+"db:push:account": "prisma db push --schema=prisma/account/schema.prisma",
+"db:push:companion": "prisma db push --schema=prisma/companion/schema.prisma",
+"db:push:community": "prisma db push --schema=prisma/community/schema.prisma",
+"db:push:all": "npm run db:push:account && npm run db:push:companion && npm run db:push:community"
+17.7 Langkah Migrasi dari 1 DB ke 3 DB
+Buat 3 database di Neon (dalam 1 project atau 3 project terpisah — keputusan biaya).
+Pecah prisma/schema.prisma yang lama jadi 3 file sesuai struktur di 17.2.
+Ganti semua import backend/db/prisma.ts di seluruh route API (api/mood, api/auth, api/community, api/companion, dll.) ke client yang sesuai domainnya (17.4).
+Karena app masih tahap demo dan belum ada data user asli yang signifikan (lihat Bagian 14 — audit dummy data), aman untuk push schema baru dari nol ke 3 DB baru tanpa migrasi data lama. Kalau ternyata sudah ada data user asli yang penting, itu harus di-export dulu manual sebelum DB lama di-drop.
+Sekalian nonaktifkan/hapus data/*.json fallback storage (Bagian 8.5.2) di tahap ini — jangan sampai ada fallback lama yang campur aduk dengan 3 DB baru dan bikin data jadi tidak konsisten sumbernya.
+Update .env.example dan README.md dengan 6 environment variable baru (17.3), hapus DATABASE_URL/DIRECT_URL lama.
+19. Multi-Provider AI — Teks & Suara (Gratis)
+19.1 Provider Teks (LLM): Gemini, Mistral, OpenRouter, Groq
+⚠️ Temuan review langsung ke kode: ModelSelector.tsx saat ini berisi array statis MODEL_OPTIONS yang sepenuhnya hardcoded dan tidak terhubung ke API apa pun — isinya "Gemini 1.5 Flash", "Gemini 1.5 Pro", "Claude 3.5 Sonnet", "OpenAI GPT-4o", dan "Groq Llama 3.3 70B". Dua di antaranya (Claude, OpenAI GPT-4o) tidak ada dalam rencana provider gratis (tabel di bawah) dan harus dihapus dari daftar — Claude/OpenAI tidak punya free tier standing seperti 4 provider yang dipilih. Sebaliknya, Mistral dan OpenRouter belum muncul sama sekali di daftar padahal keduanya bagian dari rencana. Memilih item di picker ini saat ini juga tidak memanggil provider apa pun secara nyata — ini murni UI kosong.
+
+Empat provider ini dipilih karena semuanya punya free tier standing (bukan cuma trial credit yang expired), per pengecekan terbaru (2026):
+
+Provider	Free Tier	Model Andalan	Catatan
+Google Gemini (AI Studio)	Tanpa kartu kredit, ~15 RPM, model Flash gratis (model Pro biasanya cuma trial terbatas)	Gemini Flash (versi terbaru yang tersedia gratis)	Paling generous untuk pemakaian harian, jadi kandidat default/utama.
+Groq	Free forever, 30 RPM, ~14.4k request/hari	Llama 3.3 70B, Qwen, dll — plus Whisper Large v3 (dipakai juga untuk voice, lihat 19.2)	Inference tercepat (LPU hardware), cocok untuk chat real-time. Satu API key dipakai untuk teks dan suara.
+Mistral (La Plateforme)	Gratis, perlu verifikasi nomor telepon saat daftar, ~1 request/detik	Mistral Small, Mistral Nemo, Mixtral	Verifikasi telepon itu satu kali saat setup akun, bukan per-request.
+OpenRouter	Model dengan suffix :free, ~50 request/hari, tanpa kartu kredit	Beberapa model open-source (Llama, Qwen, dll, bervariasi)	Berguna sebagai router/fallback ke banyak model sekaligus lewat satu API.
+⚠️ Angka RPM/limit di atas berubah-ubah (provider sering revisi free tier tanpa banyak pengumuman) — sebelum implementasi final, cek ulang halaman pricing resmi masing-masing provider. Jangan hardcode asumsi limit ke dalam logic tanpa validasi runtime (tangani error 429 dengan graceful fallback ke provider lain, bukan crash).
+
+Pola implementasi: bikin satu interface AIProvider di src/backend/ai/ dengan method seragam (generateResponse(messages, options)), lalu masing-masing provider (GeminiProvider, GroqProvider, MistralProvider, OpenRouterProvider) implement interface itu. ModelSelector.tsx (sudah ada di Companion) memilih provider mana yang dipakai per percakapan — ini juga base yang sudah cocok dengan fitur "Model: Gemini 1.5 Flash" yang sudah ada di UI, tinggal disambungkan ke implementasi multi-provider yang sesungguhnya (bukan dummy/hardcoded response).
+
+Perbaikan konkret untuk ModelSelector.tsx:
+
+Hapus entry "claude-3-5-sonnet" dan "gpt-4o" dari MODEL_OPTIONS.
+Tambah entry untuk Mistral (mis. "mistral-small") dan OpenRouter (mis. salah satu model :free yang tersedia).
+Ganti default dari gemini-1.5-flash kalau nama model itu sudah tidak akurat — cek nama model Gemini Flash yang aktif saat ini di free tier (nama model berubah dari waktu ke waktu, jangan hardcode nama versi lama).
+Sambungkan onSelect/onChange di komponen ini supaya benar-benar mengubah provider yang dipanggil saat handleSendMessage jalan — bukan cuma mengubah label yang ditampilkan.
+Fallback chain: kalau provider utama kena rate limit (429), otomatis coba provider berikutnya dalam urutan prioritas (mis. Gemini → Groq → Mistral → OpenRouter), bukan langsung gagal ke user. Beri tahu user secara halus kalau sedang pakai provider cadangan (opsional, tidak wajib ditampilkan).
+
+19.2 AI Voice — Speech-to-Text & Text-to-Speech (Gratis)
+Speech-to-Text (STT — suara user jadi teks):
+
+Groq Whisper Large v3 — gratis, dalam paket free tier Groq yang sama dengan LLM (19.1), jadi tidak perlu API key terpisah. Rekomendasi utama karena satu provider dua fungsi.
+Text-to-Speech (TTS — balasan Zyba jadi suara):
+
+Edge TTS (edge-tts) — reverse-engineered dari fitur Read Aloud Microsoft Edge, 200+ suara neural, tanpa API key, tanpa limit terdokumentasi. Ini opsi paling murah-meriah, tapi sifatnya tidak resmi (unofficial) — ada risiko stabilitas jangka panjang kalau Microsoft mengubah endpoint internalnya. Cocok untuk demo/kompetisi, kurang cocok untuk produksi jangka panjang tanpa fallback.
+Web Speech API browser native (SpeechSynthesis) — bawaan browser, benar-benar gratis, tanpa API key, tanpa setup — tapi kualitas suara tergantung OS/browser user (bisa terdengar robotik di sebagian perangkat), dan Chrome punya bug append 15 detik per-utterance (perlu di-chunk manual kalau teksnya panjang). Cocok sebagai fallback terakhir kalau Edge TTS/provider lain gagal.
+ElevenLabs free tier (opsional, kualitas terbaik) — ~10.000 karakter/bulan gratis, suara paling natural. Karena limitnya kecil, pakai ini hanya untuk momen penting (mis. pesan pertama Zyba ke user baru), bukan semua respons chat.
+Rekomendasi susunan: STT pakai Groq Whisper (satu-satunya opsi, sudah cukup bagus & gratis). TTS pakai Edge TTS sebagai default, Web Speech API sebagai fallback kalau Edge TTS gagal, ElevenLabs (kalau mau) untuk momen spesial saja karena limitnya ketat.
+
+19.3 Template .env.example (Lengkap, Ganti yang Lama)
+# ── Database (Bagian 17 — 3 Neon terpisah) ──
+DATABASE_URL_ACCOUNT="postgresql://<user>:<password>@<endpoint>-pooler.<region>.aws.neon.tech/account?sslmode=require"
+DIRECT_URL_ACCOUNT="postgresql://<user>:<password>@<endpoint>.<region>.aws.neon.tech/account?sslmode=require"
+
+DATABASE_URL_COMPANION="postgresql://<user>:<password>@<endpoint>-pooler.<region>.aws.neon.tech/companion?sslmode=require"
+DIRECT_URL_COMPANION="postgresql://<user>:<password>@<endpoint>.<region>.aws.neon.tech/companion?sslmode=require"
+
+DATABASE_URL_COMMUNITY="postgresql://<user>:<password>@<endpoint>-pooler.<region>.aws.neon.tech/community?sslmode=require"
+DIRECT_URL_COMMUNITY="postgresql://<user>:<password>@<endpoint>.<region>.aws.neon.tech/community?sslmode=require"
+
+# ── AI Text Providers (Bagian 19.1) — daftar gratis di masing-masing dashboard ──
+GEMINI_API_KEY=""          # https://aistudio.google.com/apikey
+GROQ_API_KEY=""            # https://console.groq.com/keys — dipakai juga untuk STT (19.2)
+MISTRAL_API_KEY=""         # https://console.mistral.ai/ (butuh verifikasi no. telepon saat daftar)
+OPENROUTER_API_KEY=""      # https://openrouter.ai/keys
+
+# ── AI Voice (Bagian 19.2) ──
+# STT: pakai GROQ_API_KEY di atas, tidak perlu key terpisah.
+# TTS Edge TTS: tidak perlu API key sama sekali.
+ELEVENLABS_API_KEY=""      # opsional, https://elevenlabs.io — hanya untuk momen spesial (limit 10k karakter/bulan)
+
+# ── Object Storage untuk media attachment (Bagian 20) ──
+BLOB_READ_WRITE_TOKEN=""   # Vercel Blob — dari Vercel Dashboard > Storage > Create > Blob
+
+# ── Auth ──
+NEXTAUTH_SECRET="ganti-dengan-random-string-panjang"
+NEXTAUTH_URL="http://localhost:3000"
+20. Media Lampiran (Suara, Gambar, Stiker) — Companion & Community
+20.1 Prinsip Umum
+Semua file media (gambar, audio) tidak boleh disimpan sebagai base64/binary langsung di Postgres (Neon) — itu bikin ukuran database membengkak cepat dan query jadi lambat. Simpan file di object storage terpisah, database cuma menyimpan URL string-nya.
+
+Storage yang direkomendasikan: Vercel Blob — cocok karena project ini di Next.js dan kemungkinan deploy di Vercel. Free tier mencakup penyimpanan dasar + bandwidth bulanan yang cukup untuk skala demo/kompetisi (cek dashboard Vercel untuk angka pasti, karena batas free tier bisa berubah). Alternatif kalau tidak pakai Vercel: Cloudinary atau ImageKit (fokus gambar), keduanya juga punya free tier.
+
+20.2 Update Skema — Message (Companion DB)
+model Message {
+  id               String       @id @default(cuid())
+  conversationId   String
+  conversation     Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  role             String
+  content          String?      // teks pesan — opsional kalau isinya cuma media
+  attachmentType   String?      // "image" | "audio" | "sticker" | null
+  attachmentUrl    String?      // URL dari Vercel Blob, BUKAN base64
+  audioDurationSec Int?         // khusus attachmentType = "audio"
+  stickerId        String?      // khusus attachmentType = "sticker", lihat 20.4
+  flaggedForRisk   Boolean      @default(false)
+  createdAt        DateTime     @default(now())
+  @@index([conversationId, createdAt])
+  @@map("messages")
+}
+⚠️ Penting untuk safety (Bagian 8.5.2 & crisis detection): detectRisk() cuma bisa membaca teks. Kalau user kirim pesan suara (voice note) ke Zyba Companion, wajib transkrip dulu lewat Groq Whisper (19.2) sebelum dianggap "aman" — jangan biarkan pesan suara lolos tanpa dicek risk-nya sama sekali hanya karena bukan teks.
+
+20.3 Update Skema — CommunityPost & CommunityComment (Community DB)
+model CommunityPost {
+  id               String   @id @default(cuid())
+  userId           String
+  content          String?  // opsional kalau post cuma gambar/stiker
+  imageUrl         String?  // sudah ada sebelumnya
+  audioUrl         String?  // NEW — voice note di post
+  audioDurationSec Int?     // NEW
+  stickerId        String?  // NEW
+  createdAt        DateTime @default(now())
+  comments         CommunityComment[]
+  likes            CommunityLike[]
+  @@index([createdAt])
+  @@map("community_posts")
+}
+
+model CommunityComment {
+  id        String        @id @default(cuid())
+  postId    String
+  post      CommunityPost @relation(fields: [postId], references: [id], onDelete: Cascade)
+  userId    String
+  content   String?       // opsional kalau komentar cuma stiker
+  stickerId String?       // NEW — komentar-cuma-stiker itu pola umum medsos
+  createdAt DateTime      @default(now())
+  @@map("community_comments")
+}
+20.4 Stiker — Aset Statis, Bukan Tabel Database
+Untuk v1, stiker tidak perlu tabel Prisma sendiri — cukup set stiker kurasi yang di-bundle di frontend (public/stickers/*.png atau SVG), masing-masing punya stickerId unik (mis. "zyba_hug", "zyba_proud", "zyba_calm"). Field stickerId di Message/CommunityPost/CommunityComment cuma menyimpan string key ini, lalu frontend me-lookup asetnya dari daftar statis. Baru bikin tabel DB kalau nanti ada fitur upload stiker custom oleh user — jangan over-engineer di awal.
+
+20.5 Upload Flow (Ringkas)
+⚠️ Temuan review: tombol lampiran (📎) di ChatInput.tsx saat ini murni dekoratif — <button> tanpa onClick sama sekali, tidak membuka file picker, tidak melakukan apa-apa saat diklik. Ini harus disambungkan ke flow di bawah, bukan cuma dibiarkan sebagai ikon.
+
+User pilih file (gambar/rekam audio) di client — attach onClick ke tombol 📎 yang membuka <input type="file" accept="image/*,audio/*" /> tersembunyi, atau trigger UI upload sejenis.
+Client upload langsung ke Vercel Blob lewat client-upload token (bukan lewat server dulu, biar server tidak jadi bottleneck untuk file besar) — ikuti pola @vercel/blob client upload.
+Blob URL yang didapat dikirim ke API route (/api/companion/message atau /api/community/post) sebagai attachmentUrl, disimpan ke DB.
+Kalau attachment-nya audio dan dikirim ke Companion: server transkrip dulu via Groq Whisper, jalankan detectRisk() ke hasil transkrip, baru proses seperti pesan teks biasa.
+21. Persona Companion — Karakter Hewan (Ganti "Gaya" Casual/Formal/Fun)
+Perubahan desain: toggle "Gaya: CASUAL/FORMAL/FUN" (teks polos) di Companion diganti jadi pemilihan karakter hewan — tiap karakter punya nama, kepribadian, dan gaya bicara sendiri, bukan cuma label gaya bahasa. Ini menggantikan seluruh referensi "Gaya"/toggle Casual-Formal-Fun di Bagian 10 sebelumnya.
+
+⚠️ Temuan review: ChatHeader.tsx saat ini masih literally menampilkan {selectedModel} • Gaya: {commStyle} sebagai teks polos — belum ada implementasi persona hewan sama sekali di kode, masih 100% sistem lama. Ini juga penyebab gejala "hewan-hewan muncul di luar tab slug tapi hilang di dalam tab slug" — karena elemen visual apa pun yang terkait "hewan" (kemungkinan mascot ilustrasi di empty state, Bagian 10.3) hanya dirender di halaman /companion dasar, sedangkan /companion/[slug] merender cabang JSX yang berbeda (saat ini masih salah isi dengan Projects/Artifacts/Code/Customize — lihat Bagian 23.1). Perbaikan Bagian 23.1 (hapus scope creep, repurpose slug jadi per-percakapan dengan komponen chat yang sama persis seperti halaman dasar) otomatis akan menyelesaikan ketidakkonsistenan ini juga — jangan perbaiki dua-duanya secara terpisah, satu akar masalah.
+
+21.1 Set Persona (4 karakter, mencakup rentang tona yang sama seperti 3 gaya lama + 1 tambahan)
+Karakter	Emoji/Maskot	Kepribadian	Gaya Bicara	Setara Gaya Lama
+Kina (Kelinci)	🐰	Lembut, penuh empati, banyak validasi perasaan	Bahasa hangat, banyak kata-kata penenang, jarang menghakimi	~Casual (versi lebih lembut)
+Ollie (Burung Hantu)	🦉	Bijaksana, reflektif, suka menggali lebih dalam	Bahasa lebih terstruktur, banyak pertanyaan reflektif, sedikit lebih formal	~Formal
+Rubi (Rubah)	🦊	Santai, jenaka, kayak teman deket yang asik diajak curhat	Bahasa gaul, sesekali bercanda ringan (tetap sensitif kalau user lagi berat)	~Fun
+Bruno (Beruang)	🐻	Tenang, protektif, menenangkan — cocok saat user lagi cemas berat	Bahasa pelan, banyak jeda, teknik grounding (napas, dsb) diselipkan natural	Tambahan baru — dulu tidak ada padanan
+21.2 Implementasi
+Update enum Prisma (User.communicationStyle, DB Account):
+
+enum CompanionPersona {
+  KINA    // dulu CASUAL
+  OLLIE   // dulu FORMAL
+  RUBI    // dulu FUN
+  BRUNO   // baru
+}
+Butuh migration untuk rename data lama: CASUAL → KINA, FORMAL → OLLIE, FUN → RUBI (mapping 1:1, BRUNO jadi opsi baru yang belum ada sebelumnya).
+
+System prompt per persona — simpan di src/backend/ai/personas.ts:
+
+export const COMPANION_PERSONAS = {
+  KINA: {
+    name: "Kina", emoji: "🐰",
+    systemPrompt: "Kamu adalah Kina, kelinci pendamping yang lembut dan penuh empati. Validasi perasaan user dulu sebelum kasih saran. Gunakan bahasa hangat, hindari terkesan menghakimi.",
+  },
+  OLLIE: {
+    name: "Ollie", emoji: "🦉",
+    systemPrompt: "Kamu adalah Ollie, burung hantu yang bijaksana dan reflektif. Ajukan pertanyaan yang membantu user menggali perasaannya lebih dalam, gunakan bahasa yang lebih terstruktur.",
+  },
+  RUBI: {
+    name: "Rubi", emoji: "🦊",
+    systemPrompt: "Kamu adalah Rubi, rubah yang santai dan asik diajak ngobrol kayak teman deket. Boleh sesekali bercanda ringan, tapi tetap peka kalau user sedang serius/berat.",
+  },
+  BRUNO: {
+    name: "Bruno", emoji: "🐻",
+    systemPrompt: "Kamu adalah Bruno, beruang yang tenang dan menenangkan. Bicara pelan, sering selipkan teknik grounding (tarik napas, dsb) secara natural, cocok untuk user yang sedang cemas.",
+  },
+} as const;
+UI picker: ganti toggle pill "Casual/Formal/Fun" jadi grid 4 kartu kecil (avatar hewan + nama), dipilih sekali di awal onboarding Companion atau bisa diganti kapan saja dari Chatbot Settings (modal yang sudah ada, Bagian 10.1). Warna kartu tetap ikut palet ZYBA (Bagian 3.1), bukan warna baru per-hewan yang di luar palet — cukup ilustrasi/emoji hewan yang membedakan, bukan skema warna berbeda-beda.
+
+⚠️ Prinsip safety tetap berlaku di semua persona, tanpa kecuali: kalau detectRisk() mendeteksi krisis, banner krisis (Bagian 10.5) tetap tampil dengan nada tenang standar — persona manapun yang aktif tidak boleh mengubah/melunakkan respons terhadap sinyal bahaya diri.
+
+22. Konsistensi Warna Identitas — Brown-900 seperti Dashboard
+⚠️ Asumsi (koreksi kalau meleset): instruksi "kasih coklat yang kayak di dashboard" ditafsirkan sebagai — elemen identitas utama (avatar/chip user, header sapaan) di halaman lain masih pakai orange-500 (mis. avatar "AL" di compose box Community), padahal di Dashboard elemen sejenis (header sapaan "Hi, [Nama]!", avatar profil) konsisten pakai bg-brown-900. Kalau maksudnya bukan ini, kasih tahu elemen spesifik mana yang dimaksud.
+
+Aturan konsistensi: avatar/chip identitas user (bukan tombol aksi) di seluruh halaman (Community compose box, Companion sidebar bottom-profile, Community post card) pakai bg-brown-900 + teks putih untuk inisial — bukan bg-orange-500. orange-500 disisakan khusus untuk tombol aksi (Post, Kirim, CTA utama), supaya ada pembeda jelas: coklat = identitas, oranye = aksi.
+
+23. Routing Slug — Percakapan & Halaman Akun
+23.1 Companion — Slug per Percakapan
+⚠️ Temuan review langsung ke kode (penting): src/app/companion/[slug]/page.tsx sudah ada, tapi dipakai untuk sub-section ala Claude.ai — /companion/projects, /companion/artifacts, /companion/code, /companion/customize (ada CompanionProjectsView.tsx, CompanionArtifactsView.tsx, CompanionCodeView.tsx). Ini scope creep yang harus dihapus — di Bagian 10.7 sudah eksplisit ditulis "LEWATI bagian Projects/Artifacts/Code/Customize ala Claude — itu tidak relevan untuk Companion", tapi tetap dibangun. Fitur-fitur ini tidak ada gunanya untuk app pendamping kesehatan mental dan cuma nambah kompleksitas tanpa manfaat.
+
+Sementara itu, percakapan individual (activeConvId) masih murni React state di CompanionContext.tsx (useState<string>("conv-1")), sama sekali tidak tercermin di URL. Klik item percakapan di sidebar cuma ganti state, bukan navigasi ke route baru. Default value "conv-1" juga terindikasi data dummy (lihat Bagian 14) — perlu dicek apakah conversations array di context itu benar-benar fetch dari Companion DB atau masih hardcoded.
+
+Perbaikan yang harus dilakukan:
+
+Hapus CompanionProjectsView.tsx, CompanionArtifactsView.tsx, CompanionCodeView.tsx, dan seluruh routing /companion/projects, /companion/artifacts, /companion/code, /companion/customize — cek dulu dengan grep -r sebelum hapus, pastikan tidak ada bagian lain yang bergantung ke ini.
+Repurpose [slug] yang sudah ada (setelah dibersihkan dari poin 1) untuk fungsi yang benar: /companion/[slug] sebagai route per-percakapan, di mana slug = conversationId (atau slug singkat yang di-generate dari conversationId).
+Klik item di CompanionSidebar → ganti dari update state langsung menjadi <Link href={/companion/${conversation.id}}> atau router.push(), supaya activeConvId di CompanionContext di-derive dari URL param (useParams()), bukan useState yang berdiri sendiri.
+Pastikan conversations di CompanionContext benar-benar di-fetch dari Companion DB (Bagian 17) via API, bukan array hardcoded dengan "conv-1" sebagai default — ini bagian dari audit dummy data di Bagian 14.
+companion/page.tsx (root, tanpa slug) tetap jadi halaman default — redirect ke percakapan terbaru kalau ada, atau tampilkan empty state (Bagian 10.3) kalau user belum punya percakapan sama sekali.
+23.2 Community — Sudah Benar, Tidak Perlu Diubah
+✅ Konfirmasi dari review kode: src/app/community/[slug]/page.tsx sudah diimplementasikan dengan benar — dipakai untuk sub-view nav (/community/search, /community/messages, /community/activity, /community/profile, /community/insights), sesuai spek Bagian 11.5. Tidak ada perbaikan yang diperlukan di sini.
+
+23.3 Dashboard — Slug untuk Account Info / Profil
+"Account info" yang ditampilkan di Dashboard (avatar, nama, plan) seharusnya bukan cuma tampilan statis tanpa link — itu harus mengarah ke halaman Settings/Profil yang sudah py route sendiri:
+
+Pastikan src/app/settings/page.tsx (sudah ada di struktur folder) dipakai sebagai tujuan klik dari avatar/nama user di Dashboard maupun di sidebar manapun (Companion, Community) — satu halaman akun terpusat, bukan info akun yang duplikat/terpisah tampilannya di tiap section.
+Kalau butuh sub-halaman (mis. /settings/privacy, /settings/notifications), gunakan nested route dengan slug jelas, bukan modal-only yang tidak punya URL sendiri — supaya user bisa link langsung ke pengaturan tertentu.
+24. Fitur Settings yang Wajib Dilengkapi — Privasi Data & Lainnya
+Halaman Settings (Bagian 23.2) saat ini kemungkinan belum lengkap. Fitur minimum yang wajib ada:
+
+24.1 Privasi Data
+Ekspor data saya — tombol yang generate & download semua data user (mood entries, journal, percakapan, post komunitas) dalam format JSON/CSV. Ini juga selaras dengan prinsip transparansi yang disebut di Visi ZYBA (Bagian 1/6 pitch deck: "memastikan rasa aman, terjaga").
+Hapus akun saya — alur konfirmasi (bukan tombol sekali klik langsung hapus) yang benar-benar menghapus data user dari ketiga database (Account, Companion, Community — Bagian 17), bukan cuma dari satu DB dan meninggalkan data yatim di DB lain.
+Kontrol visibilitas Community — toggle per-post atau default akun: "publik ke komunitas" vs "anonim" (sudah ada contoh "Anonim #241" di feed, berarti fitur post anonim sudah ada — pastikan ini punya toggle yang jelas di UI compose box, bukan cuma hardcoded sebagian post).
+Kelola notifikasi — sudah ada model NotificationPref di schema (companionNotif/wellnessNotif/communityNotif), pastikan halaman Settings punya toggle UI yang benar-benar terhubung ke field ini, bukan dummy switch yang tidak nyimpen apa-apa.
+24.2 Lainnya (Minimum Umum untuk App Kesehatan Mental)
+Ganti persona Companion — link cepat ke pemilihan persona hewan (Bagian 21), tidak cuma bisa diganti dari dalam chat.
+Informasi bantuan krisis — halaman statis berisi kontak hotline resmi (sumber sama seperti CRISIS_RESOURCES di crisisDetection.ts), supaya user bisa akses ini kapan saja, tidak cuma muncul saat banner krisis aktif.
+Tentang & kontak tim — info dasar aplikasi, kontak untuk laporan bug/masalah (relevan untuk konteks lomba juga sebagai bukti kelengkapan produk).
+25. Rencana Eksekusi — Sambungkan Semua Spek Frontend ke Backend Nyata
+Ini rangkuman "waktunya eksekusi" — banyak bagian di dokumen ini (terutama Bagian 17, 19, 20, 21, 23, 24) masih berupa spesifikasi, belum tentu semua sudah benar-benar disambungkan ke backend yang berfungsi. Urutan eksekusi yang disarankan (dari yang paling jadi fondasi ke yang paling bergantung):
+
+Bagian 17 (Multi-DB) dulu — semua bagian lain butuh struktur database yang benar sebagai fondasi.
+Bagian 19 (Multi-provider AI) — supaya Companion punya otak yang beneran jalan, bukan dummy response.
+Bagian 20 (Media attachment) — nempel ke Companion/Community yang sudah punya AI + DB yang benar.
+Bagian 21 (Persona hewan) — nempel ke provider AI yang sudah jalan (system prompt beda per persona).
+Bagian 22-24 (konsistensi warna, slug routing, settings/privasi) — polish akhir setelah fondasi data & AI-nya solid.
+Bagian 13-16 (performa, hapus dummy, responsif, kebersihan repo) — audit menyeluruh di tahap paling akhir, setelah semua fitur baru di atas selesai (audit dummy data harus dilakukan setelah semua koneksi backend nyata terpasang, supaya tidak ada yang keliru dianggap "sudah real" padahal masih ada sisa dummy dari proses development).
+Jangan kerjakan semuanya sekaligus dalam satu batch besar — riwayat proyek ini (lihat Bagian 8.5, 11.6) menunjukkan batch besar tanpa verifikasi per-langkah berujung ke klaim "selesai" yang ternyata tidak akurat (modal yang tidak ke-wire, styling yang tidak benar-benar berubah). Kerjakan per-bagian, verifikasi nyata (bukan cuma baca kode) di tiap langkah, baru lanjut.
+
+26. Checklist Final Sebelum Submit/Deploy
 Gabungan semua item wajib dari seluruh dokumen ini — centang satu-satu sebelum dianggap selesai:
 
 Konsistensi Fitur & Repo Hygiene (temuan review kedua, Bagian 8.5–8.6):
@@ -589,4 +997,37 @@ Kebersihan Repo (Bagian 16):
  Folder daily-assessment/ benar-benar terhapus dari filesystem (bukan cuma di-unlink dari nav) — kalau merge sudah dieksekusi.
  Sudah di-grep dulu sebelum menghapus file apa pun — tidak ada referensi aktif yang ikut rusak.
  Re-export shim (lib/*.ts, components/*.tsx yang isinya cuma export { default } from ...) dipertahankan, tidak ikut terhapus karena dikira dummy/bloat.
+Arsitektur Multi-Database (Bagian 17):
+
+ 3 skema Prisma terpisah (prisma/account, prisma/companion, prisma/community) sudah dibuat, masing-masing dengan datasource dan generator output sendiri.
+ Semua userId di Companion/Community DB tanpa @relation ke User (karena beda database) — cuma String biasa.
+ Semua route API sudah pakai client sesuai domainnya (accountDb/companionDb/communityDb), tidak ada lagi import backend/db/prisma.ts yang lama.
+ Tampilan yang butuh data lintas domain (mis. nama user di post komunitas) sudah pakai pola gabung manual (Bagian 17.5), bukan asumsi JOIN otomatis.
+ .env/.env.example sudah pakai 6 variable baru (DATABASE_URL_ACCOUNT, dst.), variable lama dihapus.
+Multi-Provider AI & Suara (Bagian 19):
+
+ ModelSelector.tsx benar-benar terhubung ke minimal 1 provider nyata (Gemini/Groq/Mistral/OpenRouter), bukan respons dummy/hardcoded.
+ Ada fallback chain kalau satu provider kena rate limit (429), tidak langsung gagal total ke user.
+ STT pakai Groq Whisper, TTS pakai Edge TTS + fallback Web Speech API — sudah dites beneran menghasilkan audio, bukan cuma kode terpasang.
+ .env.example sudah di-update sesuai template lengkap di 19.3.
+Media Attachment (Bagian 20):
+
+ File gambar/audio disimpan di object storage (Vercel Blob atau setara), bukan base64 langsung di Postgres.
+ Pesan suara ke Zyba Companion ditranskrip dulu lewat Groq Whisper sebelum dicek detectRisk() — tidak ada voice note yang lolos tanpa dicek risiko.
+ Stiker pakai aset statis (stickerId string), tidak dipaksakan bikin tabel DB terpisah di v1.
+Persona Hewan (Bagian 21):
+
+ Toggle "Gaya: Casual/Formal/Fun" sudah diganti UI pemilihan karakter hewan (Kina/Ollie/Rubi/Bruno).
+ Enum Prisma CompanionPersona sudah menggantikan CommunicationStyle lama, data existing (kalau ada) sudah dimigrasi sesuai mapping 1:1.
+ Semua persona tetap menampilkan banner krisis standar saat detectRisk() aktif — tidak ada persona yang melunakkan respons terhadap sinyal bahaya diri.
+Konsistensi Warna, Slug, Settings (Bagian 22-24):
+
+ Avatar/chip identitas user pakai bg-brown-900 konsisten di semua halaman, orange-500 khusus tombol aksi.
+ CompanionProjectsView/CompanionArtifactsView/CompanionCodeView dan routing /companion/projects, /companion/artifacts, /companion/code, /companion/customize sudah dihapus (scope creep, lihat Bagian 23.1).
+ [slug] di Companion sudah di-repurpose jadi route per-percakapan (activeConvId di-derive dari URL, bukan useState berdiri sendiri), dan conversations sudah fetch dari Companion DB asli, bukan dummy "conv-1".
+ Account info di Dashboard mengarah ke halaman Settings terpusat, bukan duplikat tampilan di tiap section.
+ Settings sudah punya: ekspor data, hapus akun (terhapus dari 3 DB sekaligus), kontrol visibilitas post (publik/anonim), toggle notifikasi yang benar-benar tersambung ke NotificationPref.
+Eksekusi Backend (Bagian 25):
+
+ Dikerjakan berurutan sesuai prioritas (17 → 19 → 20 → 21 → 22-24 → 13-16), tidak sekaligus dalam satu batch tanpa verifikasi.
 Dokumen ini konsolidasi dari: review visual Figma UI kit awal, review langsung ke kode github.com/syauqiazka/zyba / zyba_, dan referensi gaya (landing page ala OpenRouter, Companion ala Claude.ai, Community ala Threads) — semua warna referensi eksternal disesuaikan ke palet ZYBA, bukan ditiru mentah-mentah.

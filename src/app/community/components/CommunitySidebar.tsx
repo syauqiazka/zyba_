@@ -156,12 +156,13 @@ export default function CommunitySidebar() {
 
   // ─── Shared item style ────────────────────────────────────────────────────
   const itemClass = (active: boolean) =>
-    `relative flex items-center w-full py-2.5 rounded-xl transition-all duration-300 cursor-pointer select-none
+  `relative flex items-center w-full py-2.5 rounded-xl transition-all duration-300 cursor-pointer select-none
    ${expanded ? "gap-3 px-3 justify-start" : "gap-0 px-0 justify-center"}
-   ${active
-      ? "bg-brown-900/8 text-brown-900 font-bold"
-      : "text-brown-700 hover:-translate-y-0.5 hover:bg-gradient-to-r hover:from-orange-100/80 hover:to-green-100/80 hover:text-brown-900 hover:shadow-sm"
-    }`;
+   ${
+     active
+       ? "bg-brown-900 text-cream shadow-md shadow-brown-900/10 font-bold"
+       : "text-brown-700 hover:-translate-y-0.5 hover:bg-gradient-to-r hover:from-orange-100/80 hover:to-green-100/80 hover:text-brown-900 hover:shadow-sm"
+   }`;
 
   return (
     <aside

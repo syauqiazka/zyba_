@@ -1,13 +1,12 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Link from "next/link";
 import MetricScoreCard from "./components/MetricScoreCard";
 import StressLevelChart from "./components/StressLevelChart";
 import CompanionWidget from "./components/CompanionWidget";
 import TrackerChecklist from "./components/TrackerChecklist";
 import QuickAccessCards from "./components/QuickAccessCards";
-
-import Link from "next/link";
 
 export default function DashboardPage() {
   const [userData, setUserData] = useState<{
@@ -174,7 +173,7 @@ export default function DashboardPage() {
           )}
         </div>
 
-        <div className="flex items-center gap-3">
+        <Link href="/settings" className="flex items-center gap-3 hover:opacity-80 transition-opacity" title="Pengaturan akun">
           <div className="flex flex-col items-end">
             <span className="text-xs font-bold text-brown-900">
               {userData.hasAssessment ? "Daily Streak" : "Status Pengguna"}
@@ -194,7 +193,7 @@ export default function DashboardPage() {
           >
             {userData.hasAssessment ? `🔥 ${userData.streak}` : "🌱"}
           </div>
-        </div>
+        </Link>
       </div>
 
       {/* Grid Overview Metrics */}

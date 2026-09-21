@@ -11,7 +11,12 @@
     "db:push": "prisma db push",
     "db:studio": "prisma studio",
     "db:migrate": "prisma migrate dev",
-    "db:seed": "ts-node prisma/seed.ts"
+    "db:seed": "ts-node prisma/seed.ts",
+    "db:push:account": "prisma db push --schema=prisma/account/schema.prisma",
+    "db:push:companion": "prisma db push --schema=prisma/companion/schema.prisma",
+    "db:push:community": "prisma db push --schema=prisma/community/schema.prisma",
+    "db:push:all": "npm run db:push:account && npm run db:push:companion && npm run db:push:community",
+    "db:generate:all": "prisma generate --schema=prisma/account/schema.prisma && prisma generate --schema=prisma/companion/schema.prisma && prisma generate --schema=prisma/community/schema.prisma"
   },
   "prisma": {
     "seed": "ts-node --compiler-options {\\\"module\\\":\\\"CommonJS\\\"} prisma/seed.ts"

@@ -6,9 +6,7 @@ import ChatHeader from "../components/ChatHeader";
 import ChatMessages from "../components/ChatMessages";
 import ChatInput from "../components/ChatInput";
 import CrisisBanner from "../components/CrisisBanner";
-import CompanionProjectsView from "../components/CompanionProjectsView";
-import CompanionArtifactsView from "../components/CompanionArtifactsView";
-import CompanionCodeView from "../components/CompanionCodeView";
+
 
 /**
  * Companion Sub-Route Page — /companion/[slug]
@@ -45,31 +43,8 @@ export default function CompanionSlugPage() {
 
   const hasMessages = (activeConv?.messages || []).length > 0;
 
-  if (activeSection === "projects") {
-    return (
-      <div className="flex-1 flex flex-col bg-white rounded-3xl border border-brown-900/10 overflow-hidden shadow-sm min-h-0">
-        <CompanionProjectsView />
-      </div>
-    );
-  }
-
-  if (activeSection === "artifacts") {
-    return (
-      <div className="flex-1 flex flex-col bg-white rounded-3xl border border-brown-900/10 overflow-hidden shadow-sm min-h-0">
-        <CompanionArtifactsView />
-      </div>
-    );
-  }
-
-  if (activeSection === "code") {
-    return (
-      <div className="flex-1 flex flex-col bg-white rounded-3xl border border-brown-900/10 overflow-hidden shadow-sm min-h-0">
-        <CompanionCodeView />
-      </div>
-    );
-  }
-
-  // Default: chat view (also used for /companion/customize if settings modal is open)
+  // Bagian 23.1: scope creep projects/artifacts/code sudah dihapus
+  // Hanya chat view yang tersisa
   return (
     <div className="flex flex-col h-full min-h-0">
       <div className="flex-1 flex flex-col bg-white rounded-3xl border border-brown-900/10 overflow-hidden shadow-sm min-h-0">

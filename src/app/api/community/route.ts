@@ -41,7 +41,7 @@ export async function POST(req: NextRequest) {
 
     // Handle like
     if (action === "LIKE" && postId) {
-      const liked = await communityRepository.toggleLike(postId);
+      const liked = await communityRepository.toggleLike(postId, userId);
       return NextResponse.json({ success: true, liked });
     }
 
@@ -55,6 +55,7 @@ export async function POST(req: NextRequest) {
       }
       const isRisk = detectRisk(content);
       const comment = await communityRepository.addComment(postId, {
+        userId,
         author: authorName,
         avatar: avatarUrl,
         content: content.trim(),

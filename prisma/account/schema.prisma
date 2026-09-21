@@ -1,0 +1,164 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../../src/generated/account-client"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL_ACCOUNT")
+  directUrl = env("DIRECT_URL_ACCOUNT")
+}
+
+model User {
+  id           String  @id @default(cuid())
+  email        String  @unique
+  passwordHash String
+  name         String
+  avatarUrl    String?
+  phone        String?
+  location     String?
+  bio          String?
+
+  companionPersona CompanionPersona @default(KINA)
+  plan             Plan             @default(FREE)
+
+  onboardingCompleted Boolean @default(false)
+  zybaScore           Int?
+  stressLevel         Int?
+  streak              Int?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  assessment       Assessment?
+  moodEntries      MoodEntry[]
+  journalEntries   JournalEntry[]
+  activities       ActivityLog[]
+  notificationPref NotificationPref?
+
+  @@map("users")
+}
+
+// FASE 4: ganti CommunicationStyle → CompanionPersona (mapping 1:1)
+enum CompanionPersona {
+  KINA  // dulu CASUAL
+  OLLIE // dulu FORMAL
+  RUBI  // dulu FUN
+  BRUNO // baru
+}
+
+enum Plan {
+  FREE
+  PLUS
+}
+
+model NotificationPref {
+  id             String  @id @default(cuid())
+  userId         String  @unique
+  user           User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  companionNotif Boolean @default(true)
+  wellnessNotif  Boolean @default(true)
+  communityNotif Boolean @default(false)
+
+  @@map("notification_prefs")
+}
+
+model Assessment {
+  id     String @id @default(cuid())
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  goal                 String?
+  gender               String?
+  age                  Int?
+  weightKg             Float?
+  initialMood          MoodLevel?
+  soughtHelpBefore     Boolean?
+  physicalSymptoms     String[]
+  sleepQualityRating   Int?
+  stressLevel          Int?
+  medications          String?
+  mentalHealthSymptoms String[]
+  expressionText       String?
+  flaggedForRisk       Boolean    @default(false)
+
+  createdAt DateTime @default(now())
+
+  @@map("assessments")
+}
+
+enum MoodLevel {
+  DEPRESSED
+  SAD
+  NEUTRAL
+  HAPPY
+  OVERJOYED
+}
+
+model MoodEntry {
+  id          String    @id @default(cuid())
+  userId      String
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  mood        MoodLevel
+  stressLevel Int?
+  note        String?
+  createdAt   DateTime  @default(now())
+
+  @@index([userId, createdAt])
+  @@map("mood_entries")
+}
+
+model JournalEntry {
+  id        String     @id @default(cuid())
+  userId    String
+  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title     String
+  content   String
+  mood      MoodLevel?
+  createdAt DateTime   @default(now())
+
+  @@index([userId, createdAt])
+  @@map("journal_entries")
+}
+
+enum ActivityType {
+  WALKING
+  RUNNING
+  WORKOUT
+  BREATHING
+  SLEEP
+}
+
+model ActivityLog {
+  id            String       @id @default(cuid())
+  userId        String
+  user          User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type          ActivityType
+  durationMin   Int?
+  distanceMeter Int?
+  targetMin     Int?
+  completed     Boolean      @default(false)
+  createdAt     DateTime     @default(now())
+
+  @@index([userId, createdAt])
+  @@map("activity_logs")
+}
+
+enum ResourceType {
+  ARTICLE
+  COURSE
+}
+
+model Resource {
+  id          String       @id @default(cuid())
+  type        ResourceType
+  title       String
+  author      String?
+  coverUrl    String?
+  durationMin Int?
+  body        String?
+  isPro       Boolean      @default(false)
+  createdAt   DateTime     @default(now())
+
+  @@map("resources")
+}
