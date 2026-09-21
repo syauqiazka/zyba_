@@ -1,0 +1,9 @@
+.next
+node_modules
+.env
+.env*.local
+.history
+
+# Local fallback data (berisi hash password demo, jangan pernah di-commit ke git)
+data/*.json
+data/

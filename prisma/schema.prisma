@@ -1,0 +1,260 @@
+// ZYBA — Prisma schema
+// Database: Neon Postgres (serverless)
+// Jalankan `npm run db:push` untuk sinkronisasi pertama kali (tanpa migration history),
+// atau `npm run db:migrate` kalau mau migration file tersimpan (rekomendasi untuk produksi).
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")   // pooled connection, dipakai runtime
+  directUrl = env("DIRECT_URL")     // direct connection, dipakai migrate/push
+}
+
+// ---------- USER & AUTH ----------
+
+model User {
+  id            String   @id @default(cuid())
+  email         String   @unique
+  passwordHash  String
+  name          String
+  avatarUrl     String?
+  phone         String?
+  location      String?
+  bio           String?
+
+  communicationStyle CommunicationStyle @default(FORMAL)
+  plan               Plan               @default(FREE)
+
+  onboardingCompleted Boolean @default(false)
+  zybaScore            Int?    // skor awal dari onboarding assessment
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  assessment       Assessment?
+  moodEntries      MoodEntry[]
+  journalEntries   JournalEntry[]
+  activities       ActivityLog[]
+  conversations    Conversation[]
+  posts            CommunityPost[]
+  comments         CommunityComment[]
+  notificationPref NotificationPref?
+
+  @@map("users")
+}
+
+enum CommunicationStyle {
+  CASUAL
+  FORMAL
+  FUN
+}
+
+enum Plan {
+  FREE
+  PLUS
+}
+
+model NotificationPref {
+  id                  String  @id @default(cuid())
+  userId              String  @unique
+  user                User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  companionNotif      Boolean @default(true)
+  wellnessNotif       Boolean @default(true)
+  communityNotif      Boolean @default(false)
+
+  @@map("notification_prefs")
+}
+
+// ---------- ONBOARDING ASSESSMENT ----------
+// Hasil kuisioner kesehatan mental awal (bagian C di AGENTS.md)
+
+model Assessment {
+  id       String @id @default(cuid())
+  userId   String @unique
+  user     User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  goal                String?
+  gender              String?
+  age                 Int?
+  weightKg            Float?
+  initialMood         MoodLevel?
+  soughtHelpBefore     Boolean?
+  physicalSymptoms    String[]  // multi-select disimpan sebagai array
+  sleepQualityRating  Int?      // 1-5
+  stressLevel         Int?      // 1-5
+  medications         String?
+  mentalHealthSymptoms String[]
+
+  // Free-text refleksi pengguna. Lihat catatan keamanan di bawah.
+  expressionText      String?
+  // Ditandai true oleh crisis-detection service (bukan oleh UI) jika
+  // expressionText terindikasi risiko bahaya diri. Dipakai untuk memicu
+  // alur eskalasi, BUKAN untuk ditampilkan sebagai skor/gamifikasi.
+  flaggedForRisk      Boolean  @default(false)
+
+  createdAt DateTime @default(now())
+
+  @@map("assessments")
+}
+
+// ---------- MOOD CHECK-IN ----------
+
+enum MoodLevel {
+  DEPRESSED
+  SAD
+  NEUTRAL
+  HAPPY
+  OVERJOYED
+}
+
+model MoodEntry {
+  id        String    @id @default(cuid())
+  userId    String
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  mood      MoodLevel
+  stressLevel Int?    // 1-5, opsional dicatat bareng mood
+  note      String?
+  createdAt DateTime  @default(now())
+
+  @@index([userId, createdAt])
+  @@map("mood_entries")
+}
+
+// ---------- HEALTH / MENTAL JOURNAL ----------
+
+model JournalEntry {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title     String
+  content   String
+  mood      MoodLevel?
+  createdAt DateTime @default(now())
+
+  @@index([userId, createdAt])
+  @@map("journal_entries")
+}
+
+// ---------- SMART ACTIVITY PLANNER ----------
+
+enum ActivityType {
+  WALKING
+  RUNNING
+  WORKOUT
+  BREATHING
+  SLEEP
+}
+
+model ActivityLog {
+  id           String       @id @default(cuid())
+  userId       String
+  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type         ActivityType
+  durationMin  Int?
+  distanceMeter Int?
+  targetMin    Int?
+  completed    Boolean      @default(false)
+  createdAt    DateTime     @default(now())
+
+  @@index([userId, createdAt])
+  @@map("activity_logs")
+}
+
+// ---------- ZYBA COMPANION (AI CHAT) ----------
+
+model Conversation {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title     String   @default("New Conversation")
+  emotionTag String? // hasil deteksi emosi otomatis dari isi chat
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  messages Message[]
+
+  @@map("conversations")
+}
+
+enum MessageRole {
+  USER
+  ASSISTANT
+}
+
+model Message {
+  id             String       @id @default(cuid())
+  conversationId String
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  role           MessageRole
+  content        String
+  // Ditandai true oleh crisis-detection service jika pesan USER terindikasi
+  // risiko bahaya diri. Route API akan memicu alur eskalasi terpisah.
+  flaggedForRisk Boolean      @default(false)
+  createdAt      DateTime     @default(now())
+
+  @@index([conversationId, createdAt])
+  @@map("messages")
+}
+
+// ---------- ZYBA COMMUNITY ----------
+
+model CommunityPost {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  content   String
+  imageUrl  String?
+  createdAt DateTime @default(now())
+
+  comments CommunityComment[]
+  likes    CommunityLike[]
+
+  @@index([createdAt])
+  @@map("community_posts")
+}
+
+model CommunityComment {
+  id        String        @id @default(cuid())
+  postId    String
+  post      CommunityPost @relation(fields: [postId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  content   String
+  createdAt DateTime      @default(now())
+
+  @@map("community_comments")
+}
+
+model CommunityLike {
+  id     String        @id @default(cuid())
+  postId String
+  post   CommunityPost @relation(fields: [postId], references: [id], onDelete: Cascade)
+  userId String
+
+  @@unique([postId, userId])
+  @@map("community_likes")
+}
+
+// ---------- RESOURCES (Articles & Courses) ----------
+
+enum ResourceType {
+  ARTICLE
+  COURSE
+}
+
+model Resource {
+  id          String       @id @default(cuid())
+  type        ResourceType
+  title       String
+  author      String?
+  coverUrl    String?
+  durationMin Int?
+  body        String?
+  isPro       Boolean      @default(false)
+  createdAt   DateTime     @default(now())
+
+  @@map("resources")
+}
