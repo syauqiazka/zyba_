@@ -97,6 +97,7 @@ export default function CompanionPage() {
             onSendMessage={(prompt) => handleSendMessage(prompt)}
             chatMode={chatMode}
             setChatMode={setChatMode}
+            ttsProvider={ttsProvider}
           />
 
           {/* Sticky Bottom Input — shown when there are active messages in the conversation */}

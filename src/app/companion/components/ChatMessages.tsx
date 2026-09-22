@@ -24,6 +24,7 @@ interface Props {
   onSendMessage?: (text: string) => void;
   chatMode?: "curhat" | "solusi";
   setChatMode?: (mode: "curhat" | "solusi") => void;
+  ttsProvider?: "elevenlabs" | "edge";
 }
 
 /**
@@ -48,6 +49,7 @@ export default function ChatMessages({
   onSendMessage,
   chatMode = "curhat",
   setChatMode,
+  ttsProvider = "edge",
 }: Props) {
   const [centerInput, setCenterInput] = useState("");
   const [isMicActive, setIsMicActive] = useState(false);
@@ -229,7 +231,7 @@ export default function ChatMessages({
                 {!isUser && hoveredMessageId === msg.id && (
                   <button
                     type="button"
-                    onClick={() => speak(msg.content, false)}
+                    onClick={() => speak(msg.content, ttsProvider === "elevenlabs")}
                     disabled={isLoading}
                     className="mt-2 p-1.5 rounded-lg border border-brown-900/10 hover:bg-orange-50 hover:border-orange-500/30 transition-colors text-brown-700 hover:text-orange-600 disabled:opacity-50"
                     title={isPlaying ? "Stop audio" : "Play audio"}
