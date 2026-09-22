@@ -124,6 +124,7 @@ export function CompanionProvider({ children }: { children: React.ReactNode }) {
   const { speak } = useTTS();
   const [latestAIMessageId, setLatestAIMessageId] = useState<string | null>(null);
   const [isTTSEnabled, setIsTTSEnabled] = useState(false); // Audio mode off by default
+  const playedMessageIds = useRef<Set<string>>(new Set()); // Track played messages
 
   const activeConv = conversations.find((c) => c.id === activeConvId) || conversations[0];
 
@@ -180,10 +181,16 @@ export function CompanionProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     if (!latestAIMessageId || !isTTSEnabled) return;
     
+    // Skip if already played
+    if (playedMessageIds.current.has(latestAIMessageId)) return;
+    
     const activeMessages = activeConv?.messages || [];
     const latestMsg = activeMessages.find(m => m.id === latestAIMessageId);
     
     if (latestMsg && latestMsg.role === "ASSISTANT") {
+      // Mark as played immediately
+      playedMessageIds.current.add(latestAIMessageId);
+      
       // Auto-play after small delay (let message render first)
       setTimeout(() => {
         speak(latestMsg.content, false);
