@@ -18,6 +18,8 @@ interface Props {
   setShowSettingsModal: (v: boolean) => void;
   setShowDeleteModal: (v: boolean) => void;
   setShowProModal?: (v: boolean) => void;
+  isTTSEnabled?: boolean;
+  setIsTTSEnabled?: (v: boolean) => void;
 }
 
 export default function ChatHeader({
@@ -27,6 +29,8 @@ export default function ChatHeader({
   setShowSettingsModal,
   setShowDeleteModal,
   setShowProModal,
+  isTTSEnabled = false,
+  setIsTTSEnabled,
 }: Props) {
   const currentEmotion = activeConv?.emotionTag || "Tenang";
   const moodColor = getMoodColor(currentEmotion);
@@ -87,6 +91,23 @@ export default function ChatHeader({
           >
             <span>⚡</span>
             <span>Zyba Plus</span>
+          </button>
+        )}
+
+        {/* Audio Mode Toggle */}
+        {setIsTTSEnabled && (
+          <button
+            type="button"
+            onClick={() => setIsTTSEnabled(!isTTSEnabled)}
+            className={`p-2 rounded-xl transition-colors text-sm ${
+              isTTSEnabled
+                ? "bg-orange-500 text-white hover:bg-orange-600"
+                : "text-brown-700 hover:bg-cream hover:text-brown-900"
+            }`}
+            title={isTTSEnabled ? "Nonaktifkan suara otomatis" : "Aktifkan suara otomatis"}
+            aria-label="Toggle audio mode"
+          >
+            {isTTSEnabled ? "🔊" : "🔇"}
           </button>
         )}
 

@@ -43,6 +43,8 @@ export default function CompanionPage() {
     activeConv,
     messagesEndRef,
     quotaRemaining,
+    isTTSEnabled,
+    setIsTTSEnabled,
   } = useCompanion();
 
   const hasMessages = (activeConv?.messages || []).length > 0;
@@ -59,6 +61,8 @@ export default function CompanionPage() {
             setShowSettingsModal={setShowSettingsModal}
             setShowDeleteModal={setShowDeleteModal}
             setShowProModal={setShowProModal}
+            isTTSEnabled={isTTSEnabled}
+            setIsTTSEnabled={setIsTTSEnabled}
           />
 
           {/* Crisis Banner (10.5) — calm, supportive */}

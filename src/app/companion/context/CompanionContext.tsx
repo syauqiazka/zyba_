@@ -78,6 +78,8 @@ interface CompanionContextType {
   activeConv: Conversation;
   messagesEndRef: React.RefObject<HTMLDivElement>;
   quotaRemaining: number | null;
+  isTTSEnabled: boolean;
+  setIsTTSEnabled: (val: boolean) => void;
 }
 
 const CompanionContext = createContext<CompanionContextType | null>(null);
@@ -121,6 +123,7 @@ export function CompanionProvider({ children }: { children: React.ReactNode }) {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const { speak } = useTTS();
   const [latestAIMessageId, setLatestAIMessageId] = useState<string | null>(null);
+  const [isTTSEnabled, setIsTTSEnabled] = useState(false); // Audio mode off by default
 
   const activeConv = conversations.find((c) => c.id === activeConvId) || conversations[0];
 
@@ -173,9 +176,9 @@ export function CompanionProvider({ children }: { children: React.ReactNode }) {
     scrollToBottom();
   }, [activeConv?.messages, isSending]);
 
-  // Auto-play TTS when new AI message arrives
+  // Auto-play TTS when new AI message arrives (only if TTS enabled)
   useEffect(() => {
-    if (!latestAIMessageId) return;
+    if (!latestAIMessageId || !isTTSEnabled) return;
     
     const activeMessages = activeConv?.messages || [];
     const latestMsg = activeMessages.find(m => m.id === latestAIMessageId);
@@ -186,7 +189,7 @@ export function CompanionProvider({ children }: { children: React.ReactNode }) {
         speak(latestMsg.content, false);
       }, 300);
     }
-  }, [latestAIMessageId, activeConv?.messages, speak]);
+  }, [latestAIMessageId, activeConv?.messages, speak, isTTSEnabled]);
 
   const handleSendMessage = async (customText?: string) => {
     const textToSend = (customText || inputText).trim();
@@ -415,6 +418,8 @@ export function CompanionProvider({ children }: { children: React.ReactNode }) {
         activeConv,
         messagesEndRef,
         quotaRemaining,
+        isTTSEnabled,
+        setIsTTSEnabled,
       }}
     >
       {children}
