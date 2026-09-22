@@ -46,7 +46,7 @@ export const INITIAL_COMMUNITY_POSTS: Post[] = [
     time: "2 jam lalu",
     tag: "Mindfulness",
     content:
-      "Baru saja menyelesaikan 7 hari streak breathing exercise di Zyba! Rasanya beban pikiran jauh lebih ringan menghadapi pekan ujian. Tetap semangat semuanya! 🌿✨ #zybarocks #mindfulness",
+      "Baru saja menyelesaikan 7 hari streak breathing exercise di Zyba! Rasanya beban pikiran jauh lebih ringan menghadapi pekan ujian. Tetap semangat semuanya! #zybarocks #mindfulness",
     likes: 34,
     commentsCount: 2,
     repostsCount: 5,
@@ -77,7 +77,7 @@ export const INITIAL_COMMUNITY_POSTS: Post[] = [
     time: "5 jam lalu",
     tag: "SleepRoutine",
     content:
-      "Dulu sering begadang sampai subuh karena overthinking. Setelah ikuti rekomendasi sleep hygiene di ZYBA, akhirnya bisa tidur teratur jam 11 malam. Small wins count! 🌙 #gratefulness #zybacare",
+      "Dulu sering begadang sampai subuh karena overthinking. Setelah ikuti rekomendasi sleep hygiene di ZYBA, akhirnya bisa tidur teratur jam 11 malam. Small wins count! #gratefulness #zybacare",
     likes: 58,
     commentsCount: 1,
     repostsCount: 3,
@@ -101,7 +101,7 @@ export const INITIAL_COMMUNITY_POSTS: Post[] = [
     time: "Kemarin",
     tag: "Sharing",
     content:
-      "Belajar untuk tidak terlalu keras pada diri sendiri hari ini. Setiap proses butuh waktu, dan istirahat bukan berarti menyerah. Hope you all have a peaceful day! ☕🌱 #selfcare #zybarocks",
+      "Belajar untuk tidak terlalu keras pada diri sendiri hari ini. Setiap proses butuh waktu, dan istirahat bukan berarti menyerah. Hope you all have a peaceful day! #selfcare #zybarocks",
     likes: 82,
     commentsCount: 0,
     repostsCount: 12,
@@ -111,7 +111,7 @@ export const INITIAL_COMMUNITY_POSTS: Post[] = [
   {
     id: "post-4",
     author: "Anonim #241",
-    avatar: "👻",
+    avatar: "?",
     isVerified: false,
     time: "3 jam lalu",
     tag: "CurhatAnonim",
@@ -173,7 +173,7 @@ const INITIAL_MESSAGES: CommunityMessage[] = [
   {
     id: "msg-3",
     user: "Zyba Mentor Care",
-    avatar: "🌿",
+    avatar: "Z",
     lastMessage: "Halo! Jika butuh pendampingan khusus seputar ujian, kami siap.",
     time: "18 Sep",
   },

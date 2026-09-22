@@ -27,12 +27,15 @@ export default function CommunityProfileView() {
         if (parsed.name) setCurrentUserName(parsed.name);
       }
     } catch {}
-    fetch("/api/user/me").then(r => r.ok ? r.json() : null).then(d => {
-      if (d?.user) {
-        setCurrentUserId(d.user.id);
-        setCurrentUserName(d.user.name || "Pengguna ZYBA");
-      }
-    }).catch(() => {});
+    fetch("/api/user/me")
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d) => {
+        if (d?.user) {
+          setCurrentUserId(d.user.id);
+          setCurrentUserName(d.user.name || "Pengguna ZYBA");
+        }
+      })
+      .catch(() => {});
   }, []);
 
   const myPosts = currentUserId ? posts.filter((p) => p.author === currentUserName) : [];
@@ -59,7 +62,7 @@ export default function CommunityProfileView() {
         </div>
 
         <p className="text-xs text-brown-900 leading-relaxed max-w-md mb-4">
-          Menjelajahi kebiasaan mindfulness & program kebugaran mental di ZYBA. Bersama saling menguatkan, satu langkah kecil setiap hari. 🌱✨
+          Menjelajahi kebiasaan mindfulness & program kebugaran mental di ZYBA. Bersama saling menguatkan, satu langkah kecil setiap hari.
         </p>
 
         <div className="flex items-center justify-between text-xs text-brown-700/60 border-t border-brown-900/6 pt-3">

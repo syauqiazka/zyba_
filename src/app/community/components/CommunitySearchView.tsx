@@ -214,7 +214,7 @@ export default function CommunitySearchView() {
           ) : (
             <div className="bg-white rounded-2xl border border-brown-900/8 p-8 text-center">
               <div className="w-14 h-14 rounded-2xl bg-cream border border-brown-900/8 flex items-center justify-center text-2xl mb-3 mx-auto">
-                🔍
+                <Search size={24} className="text-brown-700/40" />
               </div>
               <h3 className="font-bold text-sm text-brown-900 mb-1">
                 No results found

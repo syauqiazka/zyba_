@@ -19,7 +19,7 @@ export default function ComposeBox({ onAddPost, onRiskDetected, currentUserIniti
 
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
 
-  const QUICK_EMOJIS = ["🌿", "☕", "✨", "🌙", "🧡", "💪", "🌻", "🧘‍♂️"];
+  const QUICK_EMOJIS: string[] = [];
 
   const handlePost = () => {
     const trimmed = content.trim();
@@ -148,7 +148,7 @@ export default function ComposeBox({ onAddPost, onRiskDetected, currentUserIniti
             </button>
 
             {/* Quick Emoji Picker */}
-            {showEmojiPicker && (
+            {showEmojiPicker && QUICK_EMOJIS.length > 0 && (
               <div className="absolute bottom-full left-0 mb-2 z-30 bg-white border border-brown-900/10 rounded-2xl shadow-xl p-2 flex items-center gap-1 animate-in fade-in zoom-in-95 duration-150">
                 {QUICK_EMOJIS.map((emoji) => (
                   <button

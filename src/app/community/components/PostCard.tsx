@@ -298,7 +298,7 @@ export default function PostCard({ post, onToggleLike, onToggleRepost, onAddComm
         {/* Share toast */}
         {showShareToast && (
           <div className="mt-2 inline-flex items-center gap-1.5 text-[11px] bg-green-100 text-green-700 px-3 py-1 rounded-pill font-semibold">
-            ✓ Tautan berhasil disalin!
+            <span>✓</span> Tautan berhasil disalin!
           </div>
         )}
 

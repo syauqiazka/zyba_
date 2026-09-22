@@ -2,9 +2,9 @@
 
 import React, { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
-import PostCard from "../../components/PostCard";
+import { ArrowLeft, MessageCircle } from "lucide-react";
 import { useCommunity } from "../../context/CommunityContext";
-import { MessageCircle } from "lucide-react";
+import PostCard from "../../components/PostCard";
 
 interface ProfileData {
   userId: string;
@@ -41,9 +41,9 @@ export default function ProfilePage() {
   const params = useParams();
   const router = useRouter();
   const { handleToggleLike, handleToggleRepost, handleAddComment, handleTagFilter } = useCommunity();
-  
+
   const userId = params.userId as string;
-  
+
   const [profile, setProfile] = useState<ProfileData | null>(null);
   const [posts, setPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState(true);
@@ -54,20 +54,21 @@ export default function ProfilePage() {
     async function loadProfile() {
       try {
         setLoading(true);
-        
-        const [userRes, followRes, postsRes] = await Promise.all([
-          fetch(`/api/user/profile/${userId}`),
-          fetch(`/api/community/follows/${userId}`),
-          fetch(`/api/community/users/${userId}/posts`),
-        ]);
 
+        const userRes = await fetch("/api/user/profile/" + userId);
         if (!userRes.ok) {
-          console.error("Failed to load user profile");
+          console.error("Failed to load user");
           return;
         }
 
         const userData = await userRes.json();
-        const followData = followRes.ok ? await followRes.json() : { isFollowing: false, isFollower: false, isSelf: false };
+
+        const followRes = await fetch("/api/community/follows/" + userId);
+        const followData = followRes.ok
+          ? await followRes.json()
+          : { isFollowing: false, isFollower: false, isSelf: false };
+
+        const postsRes = await fetch("/api/community/users/" + userId + "/posts");
         const postsData = postsRes.ok ? await postsRes.json() : { posts: [] };
 
         setProfile({
@@ -103,25 +104,32 @@ export default function ProfilePage() {
     setFollowLoading(true);
     try {
       const method = profile.isFollowing ? "DELETE" : "POST";
-      const res = await fetch(`/api/community/follows/${userId}`, { method });
-      
+      const res = await fetch("/api/community/follows/" + userId, {
+        method: method,
+        headers: { "Content-Type": "application/json" },
+      });
+
       if (res.ok) {
         const data = await res.json();
-        setProfile(prev => prev ? {
-          ...prev,
-          isFollowing: data.isFollowing,
-          followerCount: prev.followerCount + (data.isFollowing ? 1 : -1),
-        } : null);
+        setProfile((prev) =>
+          prev
+            ? {
+                ...prev,
+                isFollowing: data.isFollowing,
+                followerCount: prev.followerCount + (data.isFollowing ? 1 : -1),
+              }
+            : null
+        );
       }
     } catch (error) {
-      console.error("Follow toggle error:", error);
+      console.error("Follow error:", error);
     } finally {
       setFollowLoading(false);
     }
   };
 
   const handleMessage = () => {
-    router.push(`/community/messages?userId=${userId}`);
+    router.push("/community/messages?userId=" + userId);
   };
 
   if (loading) {
@@ -142,25 +150,22 @@ export default function ProfilePage() {
 
   const initials = profile.name
     .split(" ")
-    .map((n) => n[0])
+    .map((part) => part[0])
     .join("")
     .toUpperCase()
     .slice(0, 2);
 
   return (
     <div className="flex-1 min-w-0 h-full overflow-y-auto flex justify-center py-4 px-3 sm:px-6">
-      <div className="w-full max-w-[620px] space-y-4">
-        {/* Profile Header */}
+      <div className="w-full max-w-[620px] mx-auto py-4 px-2 space-y-4">
         <div className="bg-white rounded-3xl border border-brown-900/10 p-6 shadow-xs">
           <div className="flex items-start justify-between gap-4 mb-3">
             <div className="flex-1">
               <h1 className="font-bold text-xl text-brown-900">{profile.name}</h1>
-              <p className="text-xs text-brown-700/60 mt-0.5">
-                @{profile.username}
-              </p>
+              <p className="text-xs text-brown-700/60 mt-0.5">@{profile.username}</p>
             </div>
 
-            <div className="w-16 h-16 rounded-full bg-orange-100 border border-orange-200 text-orange-600 flex items-center justify-center font-bold text-2xl shadow-md shrink-0">
+            <div className="w-16 h-16 rounded-full bg-orange-100 border border-orange-200 flex items-center justify-center font-bold text-2xl shadow-md shrink-0">
               {initials}
             </div>
           </div>
@@ -175,14 +180,14 @@ export default function ProfilePage() {
             <div className="flex items-center gap-4">
               <button
                 type="button"
-                onClick={() => router.push(`/community/profile/${userId}/followers`)}
+                onClick={() => router.push("/community/profile/" + userId + "/followers")}
                 className="hover:text-brown-900 transition-colors"
               >
                 <strong className="text-brown-900">{profile.followerCount}</strong> pengikut
               </button>
               <button
                 type="button"
-                onClick={() => router.push(`/community/profile/${userId}/following`)}
+                onClick={() => router.push("/community/profile/" + userId + "/following")}
                 className="hover:text-brown-900 transition-colors"
               >
                 <strong className="text-brown-900">{profile.followingCount}</strong> mengikuti
@@ -205,11 +210,12 @@ export default function ProfilePage() {
                     type="button"
                     onClick={handleFollowToggle}
                     disabled={followLoading}
-                    className={`rounded-full font-bold px-4 py-1.5 transition-colors shadow-2xs ${
-                      profile.isFollowing
+                    className={
+                      "rounded-full font-bold px-4 py-1.5 transition-colors shadow-2xs " +
+                      (profile.isFollowing
                         ? "bg-cream border border-brown-900/10 text-brown-900 hover:bg-brown-900/5"
-                        : "bg-brown-900 text-white hover:bg-orange-500"
-                    }`}
+                        : "bg-brown-900 text-white hover:bg-orange-500")
+                    }
                   >
                     {followLoading ? "..." : profile.isFollowing ? "Following" : "Follow"}
                   </button>
@@ -228,25 +234,24 @@ export default function ProfilePage() {
           </div>
         </div>
 
-        {/* Profile Tabs */}
         <div className="flex border-b border-brown-900/10 text-xs font-bold">
           {(["POSTS", "REPLIES"] as const).map((tab) => (
             <button
               key={tab}
               type="button"
               onClick={() => setActiveTab(tab)}
-              className={`flex-1 pb-3 text-center transition-all border-b-2 -mb-[1px] ${
-                activeTab === tab
+              className={
+                "flex-1 pb-3 text-center transition-all border-b-2 -mb-[1px] " +
+                (activeTab === tab
                   ? "border-brown-900 text-brown-900 font-extrabold"
-                  : "border-transparent text-brown-700/50 hover:text-brown-900"
-              }`}
+                  : "border-transparent text-brown-700/50 hover:text-brown-900")
+              }
             >
               {tab.charAt(0) + tab.slice(1).toLowerCase()}
             </button>
           ))}
         </div>
 
-        {/* Tab Contents */}
         <div className="bg-white rounded-2xl border border-brown-900/10 shadow-xs overflow-hidden">
           {activeTab === "POSTS" && posts.length === 0 && (
             <div className="py-12 text-center text-xs text-brown-700/50">
