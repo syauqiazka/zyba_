@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { AIModelType } from "@/backend/ai/aiModelManager";
 import ModelSelector from "./ModelSelector";
+import { useTTS } from "@/hooks/useTTS";
 
 interface Message {
   id: string;
@@ -51,6 +52,7 @@ export default function ChatMessages({
   const [centerInput, setCenterInput] = useState("");
   const [isMicActive, setIsMicActive] = useState(false);
   const [hoveredMessageId, setHoveredMessageId] = useState<string | null>(null);
+  const { speak, isPlaying, isLoading } = useTTS();
 
   const handleCenterSubmit = () => {
     if (!centerInput.trim() || isSending) return;
@@ -222,6 +224,19 @@ export default function ChatMessages({
                 }`}
               >
                 <div className="whitespace-pre-wrap">{msg.content}</div>
+                
+                {/* TTS Speaker Icon — only for AI replies */}
+                {!isUser && hoveredMessageId === msg.id && (
+                  <button
+                    type="button"
+                    onClick={() => speak(msg.content, false)}
+                    disabled={isLoading}
+                    className="mt-2 p-1.5 rounded-lg border border-brown-900/10 hover:bg-orange-50 hover:border-orange-500/30 transition-colors text-brown-700 hover:text-orange-600 disabled:opacity-50"
+                    title={isPlaying ? "Stop audio" : "Play audio"}
+                  >
+                    {isLoading ? "⏳" : isPlaying ? "⏸️" : "🔊"}
+                  </button>
+                )}
               </div>
             </div>
 
