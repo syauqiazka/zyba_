@@ -145,6 +145,22 @@ export function CompanionProvider({ children }: { children: React.ReactNode }) {
     const textToSend = (customText || inputText).trim();
     if (!textToSend || isSending) return;
 
+    // Auto-create conversation if none exists
+    if (!activeConvId || conversations.length === 0) {
+      const newId = `conv-${Date.now()}`;
+      const newConv: Conversation = {
+        id: newId,
+        title: textToSend.slice(0, 32),
+        lastMsg: textToSend,
+        time: "Baru saja",
+        emotionTag: "Netral",
+        messages: [],
+      };
+      setConversations([newConv]);
+      setActiveConvId(newId);
+      // Continue with message send below
+    }
+
     setInputText("");
     setIsSending(true);
 
@@ -275,13 +291,23 @@ export function CompanionProvider({ children }: { children: React.ReactNode }) {
   };
 
   const handleDeleteChat = () => {
-    if (conversations.length <= 1) {
+    if (!activeConvId) {
       setShowDeleteModal(false);
       return;
     }
+
     const filtered = conversations.filter((c) => c.id !== activeConvId);
-    setConversations(filtered);
-    setActiveConvId(filtered[0]?.id || "");
+    
+    if (filtered.length === 0) {
+      // Last conversation deleted — reset to empty state
+      setConversations([]);
+      setActiveConvId(null);
+    } else {
+      // Switch to first remaining conversation
+      setConversations(filtered);
+      setActiveConvId(filtered[0].id);
+    }
+    
     setShowDeleteModal(false);
   };
 
