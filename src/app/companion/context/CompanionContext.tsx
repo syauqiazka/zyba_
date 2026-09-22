@@ -123,13 +123,18 @@ export function CompanionProvider({ children }: { children: React.ReactNode }) {
   const [quotaRemaining, setQuotaRemaining] = useState<number | null>(null);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const { speak } = useTTS();
+  const { speak, stop } = useTTS();
   const [latestAIMessageId, setLatestAIMessageId] = useState<string | null>(null);
   const [isTTSEnabled, setIsTTSEnabled] = useState(false); // Audio mode off by default
   const [ttsProvider, setTTSProvider] = useState<"elevenlabs" | "edge">("edge"); // Default Edge TTS
   const playedMessageIds = useRef<Set<string>>(new Set()); // Track played messages
 
   const activeConv = conversations.find((c) => c.id === activeConvId) || conversations[0];
+
+  // Stop audio when switching conversations
+  useEffect(() => {
+    stop(); // stop any playing audio
+  }, [activeConvId, stop]);
 
   // Fetch conversations on mount
   useEffect(() => {
