@@ -21,9 +21,23 @@ const MODEL_OPTIONS: ModelOption[] = [
   {
     id: "gemini-3.8-flash",
     name: "Gemini 3.8 Flash",
-    badge: "Default",
-    desc: "Model terbaru Google, cerdas untuk long-horizon tasks",
+    badge: "Terbaru",
+    desc: "Most intelligent Flash model, long-horizon tasks",
     icon: "⚡",
+  },
+  {
+    id: "gemini-3.7-flash",
+    name: "Gemini 3.7 Flash",
+    badge: "Cepat",
+    desc: "High-speed Flash untuk coding & agentic tool use",
+    icon: "🚀",
+  },
+  {
+    id: "gemini-3.5-flash-lite",
+    name: "Gemini 3.5 Flash Lite",
+    badge: "Hemat",
+    desc: "Fastest, most cost-effective 3.5 model",
+    icon: "💨",
   },
   {
     id: "llama-3.3-70b",
@@ -31,6 +45,13 @@ const MODEL_OPTIONS: ModelOption[] = [
     badge: "Ultra Fast",
     desc: "Inferensi kilat via Groq LPU",
     icon: "🦙",
+  },
+  {
+    id: "ministral-8b",
+    name: "Ministral 8B",
+    badge: "Gratis",
+    desc: "Mistral's latest small model, efficient",
+    icon: "🌊",
   },
   {
     id: "nemotron-3-ultra",

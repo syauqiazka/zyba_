@@ -3,7 +3,7 @@
 
 import { getPersonaById, PersonaDef, PersonaId } from "./personas";
 
-export type AIModelType = "gemini-3.8-flash" | "gemini-3.5-flash-lite" | "llama-3.3-70b" | "qwen-3.8-27b" | "mistral-small" | "openrouter-free" | "nemotron-3-ultra" | "gemma-4-31b" | "zyba-default";
+export type AIModelType = "gemini-3.8-flash" | "gemini-3.7-flash" | "gemini-3.5-flash-lite" | "llama-3.3-70b" | "qwen-3.8-27b" | "ministral-8b" | "openrouter-free" | "nemotron-3-ultra" | "gemma-4-31b" | "zyba-default";
 
 export interface AIRequestParams {
   message: string;
@@ -127,10 +127,11 @@ export async function processMultiModelAIResponse(params: AIRequestParams): Prom
   // Map model to provider function
   const modelMap: Record<AIModelType, () => Promise<PR | null>> = {
     "gemini-3.8-flash": () => callGemini("gemini-3.8-flash", sp, message, history),
+    "gemini-3.7-flash": () => callGemini("gemini-3.7-flash", sp, message, history),
     "gemini-3.5-flash-lite": () => callGemini("gemini-3.5-flash-lite", sp, message, history),
     "llama-3.3-70b": () => callGroq("llama-3.3-70b-versatile", sp, message, history),
     "qwen-3.8-27b": () => callGroq("qwen2.5-72b-instruct", sp, message, history),
-    "mistral-small": () => callMistral(sp, message, history),
+    "ministral-8b": () => callMistral(sp, message, history),
     "openrouter-free": () => callOpenRouter(sp, message, history),
     "nemotron-3-ultra": () => callOpenRouter(sp, message, history),
     "gemma-4-31b": () => callOpenRouter(sp, message, history),
@@ -152,7 +153,7 @@ export async function processMultiModelAIResponse(params: AIRequestParams): Prom
   const chain: E[] = [
     { fn: () => callGemini("gemini-3.8-flash", sp, message, history), name: "gemini-3.8-flash" },
     { fn: () => callGroq("llama-3.3-70b-versatile", sp, message, history), name: "llama-3.3-70b" },
-    { fn: () => callMistral(sp, message, history), name: "mistral-small" },
+    { fn: () => callMistral(sp, message, history), name: "ministral-8b" },
     { fn: () => callOpenRouter(sp, message, history), name: "openrouter-free" },
   ];
 
