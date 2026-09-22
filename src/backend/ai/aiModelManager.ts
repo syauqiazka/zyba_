@@ -90,10 +90,34 @@ function personaFallback(persona: PersonaDef, message: string): PR {
 }
 
 export async function processMultiModelAIResponse(params: AIRequestParams): Promise<AIResponseResult> {
-  const { message, persona: personaId = "KINA", history = [] } = params;
+  const { message, model, persona: personaId = "KINA", history = [] } = params;
   const persona = getPersonaById(personaId);
   const sp = persona.systemPrompt;
 
+  // Map model to provider function
+  const modelMap: Record<AIModelType, () => Promise<PR | null>> = {
+    "gemini-3.8-flash": () => callGemini("gemini-3.8-flash", sp, message, history),
+    "gemini-3.5-flash-lite": () => callGemini("gemini-3.5-flash-lite", sp, message, history),
+    "llama-3.3-70b": () => callGroq("llama-3.3-70b-versatile", sp, message, history),
+    "qwen-3.8-27b": () => callGroq("qwen2.5-72b-instruct", sp, message, history),
+    "mistral-small": () => callMistral(sp, message, history),
+    "openrouter-free": () => callOpenRouter(sp, message, history),
+    "nemotron-3-ultra": () => callOpenRouter(sp, message, history),
+    "gemma-4-31b": () => callOpenRouter(sp, message, history),
+    "zyba-default": async () => null, // skip to fallback
+  };
+
+  // If user specified a model, try it first
+  if (model && modelMap[model]) {
+    try {
+      const result = await modelMap[model]();
+      if (result) return { reply: result.reply, modelUsed: model, emotionTag: result.emotionTag, providerStatus: "API_LIVE" };
+    } catch (err: any) {
+      console.warn(`[aiModelManager] ${model} failed:`, err?.message);
+    }
+  }
+
+  // Fallback chain: Gemini -> Groq -> Mistral -> OpenRouter
   type E = { fn: () => Promise<PR | null>; name: AIModelType };
   const chain: E[] = [
     { fn: () => callGemini("gemini-3.8-flash", sp, message, history), name: "gemini-3.8-flash" },
