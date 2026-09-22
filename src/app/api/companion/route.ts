@@ -4,6 +4,7 @@ import { processMultiModelAIResponse, AIModelType } from "@/backend/ai/aiModelMa
 import { PersonaId } from "@/backend/ai/personas";
 import { verifySessionToken } from "@/lib/auth";
 import { checkMessageQuota } from "@/backend/billing/entitlements";
+import { companionDb } from "@/backend/db/companionClient";
 
 export async function POST(req: NextRequest) {
   try {
@@ -38,12 +39,14 @@ export async function POST(req: NextRequest) {
       persona = "KINA",
       communicationStyle,
       history = [],
+      conversationId,
     } = body as {
       message: string;
       model?: AIModelType;
       persona?: PersonaId;
       communicationStyle?: string;
       history?: { role: "USER" | "ASSISTANT"; content: string }[];
+      conversationId?: string;
     };
 
     if (!message || !message.trim()) {
@@ -63,6 +66,31 @@ export async function POST(req: NextRequest) {
     }
 
     const aiResult = await processMultiModelAIResponse({ message, model, persona, history });
+
+    // Save user message + AI reply to DB
+    if (conversationId) {
+      await companionDb.message.createMany({
+        data: [
+          {
+            conversationId,
+            role: "USER",
+            content: message,
+          },
+          {
+            conversationId,
+            role: "ASSISTANT",
+            content: aiResult.reply,
+            modelUsed: aiResult.modelUsed,
+          },
+        ],
+      });
+
+      // Update conversation timestamp
+      await companionDb.conversation.update({
+        where: { id: conversationId },
+        data: { updatedAt: new Date() },
+      });
+    }
 
     return NextResponse.json({
       reply: aiResult.reply,

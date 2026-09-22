@@ -121,6 +121,35 @@ export function CompanionProvider({ children }: { children: React.ReactNode }) {
 
   const activeConv = conversations.find((c) => c.id === activeConvId) || conversations[0];
 
+  // Fetch conversations on mount
+  useEffect(() => {
+    fetch("/api/companion/conversations")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.conversations) {
+          const mapped = data.conversations.map((c: any) => ({
+            id: c.id,
+            title: c.title,
+            lastMsg: c.messages[c.messages.length - 1]?.content || "Percakapan baru",
+            time: new Date(c.updatedAt).toLocaleDateString("id-ID", { day: "numeric", month: "short" }),
+            emotionTag: "Netral",
+            messages: c.messages.map((m: any) => ({
+              id: m.id,
+              role: m.role,
+              content: m.content,
+              time: new Date(m.createdAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+              modelUsed: m.modelUsed,
+            })),
+          }));
+          setConversations(mapped);
+          if (mapped.length > 0) {
+            setActiveConvId(mapped[0].id);
+          }
+        }
+      })
+      .catch((err) => console.error("[Fetch Conversations]:", err));
+  }, []);
+
   // Fetch quota on mount
   useEffect(() => {
     fetch("/api/companion/quota")
@@ -158,7 +187,21 @@ export function CompanionProvider({ children }: { children: React.ReactNode }) {
       };
       setConversations([newConv]);
       setActiveConvId(newId);
-      // Continue with message send below
+      
+      // Save to DB immediately
+      const dbResponse = await fetch("/api/companion/conversations", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ title: newConv.title }),
+      });
+      const dbData = await dbResponse.json();
+      
+      // Update local state with DB ID
+      if (dbData.conversation) {
+        const dbId = dbData.conversation.id;
+        setConversations([{ ...newConv, id: dbId }]);
+        setActiveConvId(dbId);
+      }
     }
 
     setInputText("");
@@ -295,6 +338,11 @@ export function CompanionProvider({ children }: { children: React.ReactNode }) {
       setShowDeleteModal(false);
       return;
     }
+
+    // Delete from DB
+    fetch(`/api/companion/conversations?id=${activeConvId}`, {
+      method: "DELETE",
+    }).catch((err) => console.error("[Delete Conversation]:", err));
 
     const filtered = conversations.filter((c) => c.id !== activeConvId);
     

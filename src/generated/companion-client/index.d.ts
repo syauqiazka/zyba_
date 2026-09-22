@@ -1944,6 +1944,7 @@ export namespace Prisma {
     conversationId: string | null
     role: string | null
     content: string | null
+    modelUsed: string | null
     attachmentType: string | null
     attachmentUrl: string | null
     audioDurationSec: number | null
@@ -1957,6 +1958,7 @@ export namespace Prisma {
     conversationId: string | null
     role: string | null
     content: string | null
+    modelUsed: string | null
     attachmentType: string | null
     attachmentUrl: string | null
     audioDurationSec: number | null
@@ -1970,6 +1972,7 @@ export namespace Prisma {
     conversationId: number
     role: number
     content: number
+    modelUsed: number
     attachmentType: number
     attachmentUrl: number
     audioDurationSec: number
@@ -1993,6 +1996,7 @@ export namespace Prisma {
     conversationId?: true
     role?: true
     content?: true
+    modelUsed?: true
     attachmentType?: true
     attachmentUrl?: true
     audioDurationSec?: true
@@ -2006,6 +2010,7 @@ export namespace Prisma {
     conversationId?: true
     role?: true
     content?: true
+    modelUsed?: true
     attachmentType?: true
     attachmentUrl?: true
     audioDurationSec?: true
@@ -2019,6 +2024,7 @@ export namespace Prisma {
     conversationId?: true
     role?: true
     content?: true
+    modelUsed?: true
     attachmentType?: true
     attachmentUrl?: true
     audioDurationSec?: true
@@ -2119,6 +2125,7 @@ export namespace Prisma {
     conversationId: string
     role: string
     content: string | null
+    modelUsed: string | null
     attachmentType: string | null
     attachmentUrl: string | null
     audioDurationSec: number | null
@@ -2151,6 +2158,7 @@ export namespace Prisma {
     conversationId?: boolean
     role?: boolean
     content?: boolean
+    modelUsed?: boolean
     attachmentType?: boolean
     attachmentUrl?: boolean
     audioDurationSec?: boolean
@@ -2165,6 +2173,7 @@ export namespace Prisma {
     conversationId?: boolean
     role?: boolean
     content?: boolean
+    modelUsed?: boolean
     attachmentType?: boolean
     attachmentUrl?: boolean
     audioDurationSec?: boolean
@@ -2179,6 +2188,7 @@ export namespace Prisma {
     conversationId?: boolean
     role?: boolean
     content?: boolean
+    modelUsed?: boolean
     attachmentType?: boolean
     attachmentUrl?: boolean
     audioDurationSec?: boolean
@@ -2204,6 +2214,7 @@ export namespace Prisma {
       conversationId: string
       role: string
       content: string | null
+      modelUsed: string | null
       attachmentType: string | null
       attachmentUrl: string | null
       audioDurationSec: number | null
@@ -2608,6 +2619,7 @@ export namespace Prisma {
     readonly conversationId: FieldRef<"Message", 'String'>
     readonly role: FieldRef<"Message", 'String'>
     readonly content: FieldRef<"Message", 'String'>
+    readonly modelUsed: FieldRef<"Message", 'String'>
     readonly attachmentType: FieldRef<"Message", 'String'>
     readonly attachmentUrl: FieldRef<"Message", 'String'>
     readonly audioDurationSec: FieldRef<"Message", 'Int'>
@@ -2977,6 +2989,7 @@ export namespace Prisma {
     conversationId: 'conversationId',
     role: 'role',
     content: 'content',
+    modelUsed: 'modelUsed',
     attachmentType: 'attachmentType',
     attachmentUrl: 'attachmentUrl',
     audioDurationSec: 'audioDurationSec',
@@ -3151,6 +3164,7 @@ export namespace Prisma {
     conversationId?: StringFilter<"Message"> | string
     role?: StringFilter<"Message"> | string
     content?: StringNullableFilter<"Message"> | string | null
+    modelUsed?: StringNullableFilter<"Message"> | string | null
     attachmentType?: StringNullableFilter<"Message"> | string | null
     attachmentUrl?: StringNullableFilter<"Message"> | string | null
     audioDurationSec?: IntNullableFilter<"Message"> | number | null
@@ -3165,6 +3179,7 @@ export namespace Prisma {
     conversationId?: SortOrder
     role?: SortOrder
     content?: SortOrderInput | SortOrder
+    modelUsed?: SortOrderInput | SortOrder
     attachmentType?: SortOrderInput | SortOrder
     attachmentUrl?: SortOrderInput | SortOrder
     audioDurationSec?: SortOrderInput | SortOrder
@@ -3182,6 +3197,7 @@ export namespace Prisma {
     conversationId?: StringFilter<"Message"> | string
     role?: StringFilter<"Message"> | string
     content?: StringNullableFilter<"Message"> | string | null
+    modelUsed?: StringNullableFilter<"Message"> | string | null
     attachmentType?: StringNullableFilter<"Message"> | string | null
     attachmentUrl?: StringNullableFilter<"Message"> | string | null
     audioDurationSec?: IntNullableFilter<"Message"> | number | null
@@ -3196,6 +3212,7 @@ export namespace Prisma {
     conversationId?: SortOrder
     role?: SortOrder
     content?: SortOrderInput | SortOrder
+    modelUsed?: SortOrderInput | SortOrder
     attachmentType?: SortOrderInput | SortOrder
     attachmentUrl?: SortOrderInput | SortOrder
     audioDurationSec?: SortOrderInput | SortOrder
@@ -3217,6 +3234,7 @@ export namespace Prisma {
     conversationId?: StringWithAggregatesFilter<"Message"> | string
     role?: StringWithAggregatesFilter<"Message"> | string
     content?: StringNullableWithAggregatesFilter<"Message"> | string | null
+    modelUsed?: StringNullableWithAggregatesFilter<"Message"> | string | null
     attachmentType?: StringNullableWithAggregatesFilter<"Message"> | string | null
     attachmentUrl?: StringNullableWithAggregatesFilter<"Message"> | string | null
     audioDurationSec?: IntNullableWithAggregatesFilter<"Message"> | number | null
@@ -3296,6 +3314,7 @@ export namespace Prisma {
     id?: string
     role: string
     content?: string | null
+    modelUsed?: string | null
     attachmentType?: string | null
     attachmentUrl?: string | null
     audioDurationSec?: number | null
@@ -3310,6 +3329,7 @@ export namespace Prisma {
     conversationId: string
     role: string
     content?: string | null
+    modelUsed?: string | null
     attachmentType?: string | null
     attachmentUrl?: string | null
     audioDurationSec?: number | null
@@ -3322,6 +3342,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     role?: StringFieldUpdateOperationsInput | string
     content?: NullableStringFieldUpdateOperationsInput | string | null
+    modelUsed?: NullableStringFieldUpdateOperationsInput | string | null
     attachmentType?: NullableStringFieldUpdateOperationsInput | string | null
     attachmentUrl?: NullableStringFieldUpdateOperationsInput | string | null
     audioDurationSec?: NullableIntFieldUpdateOperationsInput | number | null
@@ -3336,6 +3357,7 @@ export namespace Prisma {
     conversationId?: StringFieldUpdateOperationsInput | string
     role?: StringFieldUpdateOperationsInput | string
     content?: NullableStringFieldUpdateOperationsInput | string | null
+    modelUsed?: NullableStringFieldUpdateOperationsInput | string | null
     attachmentType?: NullableStringFieldUpdateOperationsInput | string | null
     attachmentUrl?: NullableStringFieldUpdateOperationsInput | string | null
     audioDurationSec?: NullableIntFieldUpdateOperationsInput | number | null
@@ -3349,6 +3371,7 @@ export namespace Prisma {
     conversationId: string
     role: string
     content?: string | null
+    modelUsed?: string | null
     attachmentType?: string | null
     attachmentUrl?: string | null
     audioDurationSec?: number | null
@@ -3361,6 +3384,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     role?: StringFieldUpdateOperationsInput | string
     content?: NullableStringFieldUpdateOperationsInput | string | null
+    modelUsed?: NullableStringFieldUpdateOperationsInput | string | null
     attachmentType?: NullableStringFieldUpdateOperationsInput | string | null
     attachmentUrl?: NullableStringFieldUpdateOperationsInput | string | null
     audioDurationSec?: NullableIntFieldUpdateOperationsInput | number | null
@@ -3374,6 +3398,7 @@ export namespace Prisma {
     conversationId?: StringFieldUpdateOperationsInput | string
     role?: StringFieldUpdateOperationsInput | string
     content?: NullableStringFieldUpdateOperationsInput | string | null
+    modelUsed?: NullableStringFieldUpdateOperationsInput | string | null
     attachmentType?: NullableStringFieldUpdateOperationsInput | string | null
     attachmentUrl?: NullableStringFieldUpdateOperationsInput | string | null
     audioDurationSec?: NullableIntFieldUpdateOperationsInput | number | null
@@ -3541,6 +3566,7 @@ export namespace Prisma {
     conversationId?: SortOrder
     role?: SortOrder
     content?: SortOrder
+    modelUsed?: SortOrder
     attachmentType?: SortOrder
     attachmentUrl?: SortOrder
     audioDurationSec?: SortOrder
@@ -3558,6 +3584,7 @@ export namespace Prisma {
     conversationId?: SortOrder
     role?: SortOrder
     content?: SortOrder
+    modelUsed?: SortOrder
     attachmentType?: SortOrder
     attachmentUrl?: SortOrder
     audioDurationSec?: SortOrder
@@ -3571,6 +3598,7 @@ export namespace Prisma {
     conversationId?: SortOrder
     role?: SortOrder
     content?: SortOrder
+    modelUsed?: SortOrder
     attachmentType?: SortOrder
     attachmentUrl?: SortOrder
     audioDurationSec?: SortOrder
@@ -3840,6 +3868,7 @@ export namespace Prisma {
     id?: string
     role: string
     content?: string | null
+    modelUsed?: string | null
     attachmentType?: string | null
     attachmentUrl?: string | null
     audioDurationSec?: number | null
@@ -3852,6 +3881,7 @@ export namespace Prisma {
     id?: string
     role: string
     content?: string | null
+    modelUsed?: string | null
     attachmentType?: string | null
     attachmentUrl?: string | null
     audioDurationSec?: number | null
@@ -3894,6 +3924,7 @@ export namespace Prisma {
     conversationId?: StringFilter<"Message"> | string
     role?: StringFilter<"Message"> | string
     content?: StringNullableFilter<"Message"> | string | null
+    modelUsed?: StringNullableFilter<"Message"> | string | null
     attachmentType?: StringNullableFilter<"Message"> | string | null
     attachmentUrl?: StringNullableFilter<"Message"> | string | null
     audioDurationSec?: IntNullableFilter<"Message"> | number | null
@@ -3958,6 +3989,7 @@ export namespace Prisma {
     id?: string
     role: string
     content?: string | null
+    modelUsed?: string | null
     attachmentType?: string | null
     attachmentUrl?: string | null
     audioDurationSec?: number | null
@@ -3970,6 +4002,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     role?: StringFieldUpdateOperationsInput | string
     content?: NullableStringFieldUpdateOperationsInput | string | null
+    modelUsed?: NullableStringFieldUpdateOperationsInput | string | null
     attachmentType?: NullableStringFieldUpdateOperationsInput | string | null
     attachmentUrl?: NullableStringFieldUpdateOperationsInput | string | null
     audioDurationSec?: NullableIntFieldUpdateOperationsInput | number | null
@@ -3982,6 +4015,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     role?: StringFieldUpdateOperationsInput | string
     content?: NullableStringFieldUpdateOperationsInput | string | null
+    modelUsed?: NullableStringFieldUpdateOperationsInput | string | null
     attachmentType?: NullableStringFieldUpdateOperationsInput | string | null
     attachmentUrl?: NullableStringFieldUpdateOperationsInput | string | null
     audioDurationSec?: NullableIntFieldUpdateOperationsInput | number | null
@@ -3994,6 +4028,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     role?: StringFieldUpdateOperationsInput | string
     content?: NullableStringFieldUpdateOperationsInput | string | null
+    modelUsed?: NullableStringFieldUpdateOperationsInput | string | null
     attachmentType?: NullableStringFieldUpdateOperationsInput | string | null
     attachmentUrl?: NullableStringFieldUpdateOperationsInput | string | null
     audioDurationSec?: NullableIntFieldUpdateOperationsInput | number | null

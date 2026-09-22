@@ -65,7 +65,7 @@ async function callMistral(sp: string, msg: string, hist: AIRequestParams["histo
   const res = await fetch("https://api.mistral.ai/v1/chat/completions", { 
     method: "POST", 
     headers: { "Content-Type": "application/json", "Authorization": "Bearer " + key }, 
-    body: JSON.stringify({ model: "mistral-small-latest", messages, max_tokens: 500, temperature: 0.7 }),
+    body: JSON.stringify({ model: "ministral-8b-latest", messages, max_tokens: 500, temperature: 0.7 }),
     signal: AbortSignal.timeout(8000)
   });
   if (res.status === 429) throw new Error("RATE_LIMIT");
