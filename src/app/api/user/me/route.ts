@@ -67,6 +67,34 @@ export async function GET(req: NextRequest) {
       orderBy: { createdAt: "desc" },
     });
 
+    // Auto-expire subscriptions past endDate
+    const expiredSubscriptions = await accountDb.subscription.findMany({
+      where: {
+        userId: user.id,
+        status: "ACTIVE",
+        endDate: { lt: new Date() },
+      },
+    });
+
+    if (expiredSubscriptions.length > 0) {
+      await accountDb.subscription.updateMany({
+        where: {
+          userId: user.id,
+          status: "ACTIVE",
+          endDate: { lt: new Date() },
+        },
+        data: { status: "EXPIRED" },
+      });
+
+      // Downgrade user plan if no active subscription
+      if (!activeSubscription) {
+        await accountDb.user.update({
+          where: { id: user.id },
+          data: { plan: "FREE" },
+        });
+      }
+    }
+
     const plan = activeSubscription?.plan === "PLUS" ? "PLUS" : "FREE";
 
     return NextResponse.json({
