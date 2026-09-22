@@ -203,10 +203,11 @@ export function CompanionProvider({ children }: { children: React.ReactNode }) {
     if (!textToSend || isSending) return;
 
     // Auto-create conversation if none exists
-    if (!activeConvId || conversations.length === 0) {
-      const newId = `conv-${Date.now()}`;
+    let currentConvId = activeConvId;
+    
+    if (!currentConvId || conversations.length === 0) {
       const newConv: Conversation = {
-        id: newId,
+        id: `conv-${Date.now()}`, // temporary
         title: textToSend.slice(0, 32),
         lastMsg: textToSend,
         time: "Baru saja",
@@ -214,21 +215,27 @@ export function CompanionProvider({ children }: { children: React.ReactNode }) {
         messages: [],
       };
       setConversations([newConv]);
-      setActiveConvId(newId);
+      setActiveConvId(newConv.id);
+      currentConvId = newConv.id;
       
-      // Save to DB immediately
-      const dbResponse = await fetch("/api/companion/conversations", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ title: newConv.title }),
-      });
-      const dbData = await dbResponse.json();
-      
-      // Update local state with DB ID
-      if (dbData.conversation) {
-        const dbId = dbData.conversation.id;
-        setConversations([{ ...newConv, id: dbId }]);
-        setActiveConvId(dbId);
+      // Save to DB immediately and get real ID
+      try {
+        const dbResponse = await fetch("/api/companion/conversations", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ title: newConv.title }),
+        });
+        const dbData = await dbResponse.json();
+        
+        // Update local state with DB ID
+        if (dbData.conversation) {
+          const dbId = dbData.conversation.id;
+          setConversations([{ ...newConv, id: dbId }]);
+          setActiveConvId(dbId);
+          currentConvId = dbId; // use DB ID for message API
+        }
+      } catch (err) {
+        console.error("[Create Conversation]:", err);
       }
     }
 
@@ -245,7 +252,7 @@ export function CompanionProvider({ children }: { children: React.ReactNode }) {
 
     setConversations((prev) =>
       prev.map((c) => {
-        if (c.id === activeConvId) {
+        if (c.id === currentConvId) {
           const isFirstMessage = c.messages.length === 0;
           return {
             ...c,
@@ -271,7 +278,7 @@ export function CompanionProvider({ children }: { children: React.ReactNode }) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           message: textToSend,
-          conversationId: activeConvId,
+          conversationId: currentConvId, // use DB ID
           model: selectedModel,
           style: commStyle,
         }),
@@ -317,7 +324,7 @@ export function CompanionProvider({ children }: { children: React.ReactNode }) {
 
       setConversations((prev) =>
         prev.map((c) => {
-          if (c.id === activeConvId) {
+          if (c.id === currentConvId) {
             return {
               ...c,
               lastMsg: newAiMsg.content.slice(0, 60) + "...",
@@ -342,7 +349,7 @@ export function CompanionProvider({ children }: { children: React.ReactNode }) {
 
       setConversations((prev) =>
         prev.map((c) =>
-          c.id === activeConvId ? { ...c, messages: [...c.messages, fallbackAiMsg] } : c
+          c.id === currentConvId ? { ...c, messages: [...c.messages, fallbackAiMsg] } : c
         )
       );
     } finally {
