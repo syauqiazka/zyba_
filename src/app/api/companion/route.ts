@@ -67,29 +67,34 @@ export async function POST(req: NextRequest) {
 
     const aiResult = await processMultiModelAIResponse({ message, model, persona, history });
 
-    // Save user message + AI reply to DB
-    if (conversationId) {
-      await companionDb.message.createMany({
-        data: [
-          {
-            conversationId,
-            role: "USER",
-            content: message,
-          },
-          {
-            conversationId,
-            role: "ASSISTANT",
-            content: aiResult.reply,
-            modelUsed: aiResult.modelUsed,
-          },
-        ],
-      });
+    // Save user message + AI reply to DB (skip if temporary conversationId)
+    if (conversationId && !conversationId.startsWith("conv-")) {
+      try {
+        await companionDb.message.createMany({
+          data: [
+            {
+              conversationId,
+              role: "USER",
+              content: message,
+            },
+            {
+              conversationId,
+              role: "ASSISTANT",
+              content: aiResult.reply,
+              modelUsed: aiResult.modelUsed,
+            },
+          ],
+        });
 
-      // Update conversation timestamp
-      await companionDb.conversation.update({
-        where: { id: conversationId },
-        data: { updatedAt: new Date() },
-      });
+        // Update conversation timestamp
+        await companionDb.conversation.update({
+          where: { id: conversationId },
+          data: { updatedAt: new Date() },
+        });
+      } catch (dbErr) {
+        console.error("[Companion] Message save failed:", dbErr);
+        // Continue — AI reply tetap dikembalikan meski save gagal
+      }
     }
 
     return NextResponse.json({

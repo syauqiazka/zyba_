@@ -4,6 +4,7 @@ import React, { createContext, useContext, useState, useRef, useEffect, useCallb
 import { usePathname, useRouter } from "next/navigation";
 import { AIModelType } from "@/backend/ai/aiModelManager";
 import { detectRisk } from "@/lib/crisisDetection";
+import { useTTS } from "@/hooks/useTTS";
 
 export interface Message {
   id: string;
@@ -118,6 +119,8 @@ export function CompanionProvider({ children }: { children: React.ReactNode }) {
   const [quotaRemaining, setQuotaRemaining] = useState<number | null>(null);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const { speak } = useTTS();
+  const [latestAIMessageId, setLatestAIMessageId] = useState<string | null>(null);
 
   const activeConv = conversations.find((c) => c.id === activeConvId) || conversations[0];
 
@@ -169,6 +172,21 @@ export function CompanionProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     scrollToBottom();
   }, [activeConv?.messages, isSending]);
+
+  // Auto-play TTS when new AI message arrives
+  useEffect(() => {
+    if (!latestAIMessageId) return;
+    
+    const activeMessages = activeConv?.messages || [];
+    const latestMsg = activeMessages.find(m => m.id === latestAIMessageId);
+    
+    if (latestMsg && latestMsg.role === "ASSISTANT") {
+      // Auto-play after small delay (let message render first)
+      setTimeout(() => {
+        speak(latestMsg.content, false);
+      }, 300);
+    }
+  }, [latestAIMessageId, activeConv?.messages, speak]);
 
   const handleSendMessage = async (customText?: string) => {
     const textToSend = (customText || inputText).trim();
@@ -283,6 +301,9 @@ export function CompanionProvider({ children }: { children: React.ReactNode }) {
         modelUsed: data.modelUsed || selectedModel,
         time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
       };
+
+      // Auto-play TTS for AI reply
+      setLatestAIMessageId(newAiMsg.id);
 
       setConversations((prev) =>
         prev.map((c) => {
