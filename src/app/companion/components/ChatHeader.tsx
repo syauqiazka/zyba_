@@ -1,4 +1,4 @@
-"use client";
+import { Volume2, VolumeX, Settings2, Trash2, Zap } from "lucide-react";
 
 import { getMoodColor } from "./ConversationList";
 
@@ -88,14 +88,15 @@ export default function ChatHeader({
 
         {/* Free Plan / Upgrade Button per AGENTS.md 10.8 (setara posisi Free plan · Upgrade di Claude.ai) */}
         {setShowProModal && (
-          <button
-            type="button"
-            onClick={() => setShowProModal(true)}
-            className="px-3 py-1.5 rounded-full bg-orange-500 text-white hover:opacity-90 text-xs font-bold transition-all shadow-xs flex items-center gap-1"
-          >
-            <span>⚡</span>
-            <span>Zyba Plus</span>
-          </button>
+        <button
+          type="button"
+          onClick={() => setShowProModal(true)}
+          className="px-3 py-1.5 rounded-full bg-orange-500 text-white hover:opacity-90 text-xs font-bold transition-all shadow-xs flex items-center gap-1.5"
+          aria-label="Upgrade ke Zyba Plus"
+        >
+          <Zap size={12} aria-hidden />
+          <span>Zyba Plus</span>
+        </button>
         )}
 
         {/* Audio Mode Toggle */}
@@ -103,7 +104,7 @@ export default function ChatHeader({
           <button
             type="button"
             onClick={() => setIsTTSEnabled(!isTTSEnabled)}
-            className={`p-2 rounded-xl transition-colors text-sm ${
+            className={`p-2 rounded-xl transition-colors ${
               isTTSEnabled
                 ? "bg-orange-500 text-white hover:bg-orange-600"
                 : "text-brown-700 hover:bg-cream hover:text-brown-900"
@@ -111,7 +112,7 @@ export default function ChatHeader({
             title={isTTSEnabled ? "Nonaktifkan suara otomatis" : "Aktifkan suara otomatis"}
             aria-label="Toggle audio mode"
           >
-            {isTTSEnabled ? "🔊" : "🔇"}
+            {isTTSEnabled ? <Volume2 size={16} aria-hidden /> : <VolumeX size={16} aria-hidden />}
           </button>
         )}
 
@@ -131,26 +132,25 @@ export default function ChatHeader({
           </div>
         )}
 
-        {/* Settings Gear (10.1) */}
         <button
           type="button"
           onClick={() => setShowSettingsModal(true)}
-          className="p-2 rounded-xl text-brown-700 hover:bg-cream hover:text-brown-900 transition-colors text-sm"
+          className="p-2 rounded-xl text-brown-700 hover:bg-cream hover:text-brown-900 transition-colors"
           title="Pengaturan Chatbot"
           aria-label="Pengaturan Chatbot"
         >
-          ⚙️
+          <Settings2 size={16} aria-hidden />
         </button>
 
         {/* Delete Chat */}
         <button
           type="button"
           onClick={() => setShowDeleteModal(true)}
-          className="p-2 rounded-xl text-brown-700 hover:bg-orange-100 hover:text-danger transition-colors text-sm"
+          className="p-2 rounded-xl text-brown-700 hover:bg-orange-100 hover:text-danger transition-colors"
           title="Hapus Percakapan"
           aria-label="Hapus Percakapan"
         >
-          🗑️
+          <Trash2 size={16} aria-hidden />
         </button>
       </div>
     </header>

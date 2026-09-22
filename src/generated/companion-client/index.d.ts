@@ -1950,6 +1950,10 @@ export namespace Prisma {
     audioDurationSec: number | null
     stickerId: string | null
     flaggedForRisk: boolean | null
+    ttsAudioUrl: string | null
+    ttsProvider: string | null
+    ttsModel: string | null
+    ttsGeneratedAt: Date | null
     createdAt: Date | null
   }
 
@@ -1964,6 +1968,10 @@ export namespace Prisma {
     audioDurationSec: number | null
     stickerId: string | null
     flaggedForRisk: boolean | null
+    ttsAudioUrl: string | null
+    ttsProvider: string | null
+    ttsModel: string | null
+    ttsGeneratedAt: Date | null
     createdAt: Date | null
   }
 
@@ -1978,6 +1986,10 @@ export namespace Prisma {
     audioDurationSec: number
     stickerId: number
     flaggedForRisk: number
+    ttsAudioUrl: number
+    ttsProvider: number
+    ttsModel: number
+    ttsGeneratedAt: number
     createdAt: number
     _all: number
   }
@@ -2002,6 +2014,10 @@ export namespace Prisma {
     audioDurationSec?: true
     stickerId?: true
     flaggedForRisk?: true
+    ttsAudioUrl?: true
+    ttsProvider?: true
+    ttsModel?: true
+    ttsGeneratedAt?: true
     createdAt?: true
   }
 
@@ -2016,6 +2032,10 @@ export namespace Prisma {
     audioDurationSec?: true
     stickerId?: true
     flaggedForRisk?: true
+    ttsAudioUrl?: true
+    ttsProvider?: true
+    ttsModel?: true
+    ttsGeneratedAt?: true
     createdAt?: true
   }
 
@@ -2030,6 +2050,10 @@ export namespace Prisma {
     audioDurationSec?: true
     stickerId?: true
     flaggedForRisk?: true
+    ttsAudioUrl?: true
+    ttsProvider?: true
+    ttsModel?: true
+    ttsGeneratedAt?: true
     createdAt?: true
     _all?: true
   }
@@ -2131,6 +2155,10 @@ export namespace Prisma {
     audioDurationSec: number | null
     stickerId: string | null
     flaggedForRisk: boolean
+    ttsAudioUrl: string | null
+    ttsProvider: string | null
+    ttsModel: string | null
+    ttsGeneratedAt: Date | null
     createdAt: Date
     _count: MessageCountAggregateOutputType | null
     _avg: MessageAvgAggregateOutputType | null
@@ -2164,6 +2192,10 @@ export namespace Prisma {
     audioDurationSec?: boolean
     stickerId?: boolean
     flaggedForRisk?: boolean
+    ttsAudioUrl?: boolean
+    ttsProvider?: boolean
+    ttsModel?: boolean
+    ttsGeneratedAt?: boolean
     createdAt?: boolean
     conversation?: boolean | ConversationDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["message"]>
@@ -2179,6 +2211,10 @@ export namespace Prisma {
     audioDurationSec?: boolean
     stickerId?: boolean
     flaggedForRisk?: boolean
+    ttsAudioUrl?: boolean
+    ttsProvider?: boolean
+    ttsModel?: boolean
+    ttsGeneratedAt?: boolean
     createdAt?: boolean
     conversation?: boolean | ConversationDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["message"]>
@@ -2194,6 +2230,10 @@ export namespace Prisma {
     audioDurationSec?: boolean
     stickerId?: boolean
     flaggedForRisk?: boolean
+    ttsAudioUrl?: boolean
+    ttsProvider?: boolean
+    ttsModel?: boolean
+    ttsGeneratedAt?: boolean
     createdAt?: boolean
   }
 
@@ -2220,6 +2260,10 @@ export namespace Prisma {
       audioDurationSec: number | null
       stickerId: string | null
       flaggedForRisk: boolean
+      ttsAudioUrl: string | null
+      ttsProvider: string | null
+      ttsModel: string | null
+      ttsGeneratedAt: Date | null
       createdAt: Date
     }, ExtArgs["result"]["message"]>
     composites: {}
@@ -2625,6 +2669,10 @@ export namespace Prisma {
     readonly audioDurationSec: FieldRef<"Message", 'Int'>
     readonly stickerId: FieldRef<"Message", 'String'>
     readonly flaggedForRisk: FieldRef<"Message", 'Boolean'>
+    readonly ttsAudioUrl: FieldRef<"Message", 'String'>
+    readonly ttsProvider: FieldRef<"Message", 'String'>
+    readonly ttsModel: FieldRef<"Message", 'String'>
+    readonly ttsGeneratedAt: FieldRef<"Message", 'DateTime'>
     readonly createdAt: FieldRef<"Message", 'DateTime'>
   }
     
@@ -2995,6 +3043,10 @@ export namespace Prisma {
     audioDurationSec: 'audioDurationSec',
     stickerId: 'stickerId',
     flaggedForRisk: 'flaggedForRisk',
+    ttsAudioUrl: 'ttsAudioUrl',
+    ttsProvider: 'ttsProvider',
+    ttsModel: 'ttsModel',
+    ttsGeneratedAt: 'ttsGeneratedAt',
     createdAt: 'createdAt'
   };
 
@@ -3170,6 +3222,10 @@ export namespace Prisma {
     audioDurationSec?: IntNullableFilter<"Message"> | number | null
     stickerId?: StringNullableFilter<"Message"> | string | null
     flaggedForRisk?: BoolFilter<"Message"> | boolean
+    ttsAudioUrl?: StringNullableFilter<"Message"> | string | null
+    ttsProvider?: StringNullableFilter<"Message"> | string | null
+    ttsModel?: StringNullableFilter<"Message"> | string | null
+    ttsGeneratedAt?: DateTimeNullableFilter<"Message"> | Date | string | null
     createdAt?: DateTimeFilter<"Message"> | Date | string
     conversation?: XOR<ConversationRelationFilter, ConversationWhereInput>
   }
@@ -3185,6 +3241,10 @@ export namespace Prisma {
     audioDurationSec?: SortOrderInput | SortOrder
     stickerId?: SortOrderInput | SortOrder
     flaggedForRisk?: SortOrder
+    ttsAudioUrl?: SortOrderInput | SortOrder
+    ttsProvider?: SortOrderInput | SortOrder
+    ttsModel?: SortOrderInput | SortOrder
+    ttsGeneratedAt?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     conversation?: ConversationOrderByWithRelationInput
   }
@@ -3203,6 +3263,10 @@ export namespace Prisma {
     audioDurationSec?: IntNullableFilter<"Message"> | number | null
     stickerId?: StringNullableFilter<"Message"> | string | null
     flaggedForRisk?: BoolFilter<"Message"> | boolean
+    ttsAudioUrl?: StringNullableFilter<"Message"> | string | null
+    ttsProvider?: StringNullableFilter<"Message"> | string | null
+    ttsModel?: StringNullableFilter<"Message"> | string | null
+    ttsGeneratedAt?: DateTimeNullableFilter<"Message"> | Date | string | null
     createdAt?: DateTimeFilter<"Message"> | Date | string
     conversation?: XOR<ConversationRelationFilter, ConversationWhereInput>
   }, "id">
@@ -3218,6 +3282,10 @@ export namespace Prisma {
     audioDurationSec?: SortOrderInput | SortOrder
     stickerId?: SortOrderInput | SortOrder
     flaggedForRisk?: SortOrder
+    ttsAudioUrl?: SortOrderInput | SortOrder
+    ttsProvider?: SortOrderInput | SortOrder
+    ttsModel?: SortOrderInput | SortOrder
+    ttsGeneratedAt?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     _count?: MessageCountOrderByAggregateInput
     _avg?: MessageAvgOrderByAggregateInput
@@ -3240,6 +3308,10 @@ export namespace Prisma {
     audioDurationSec?: IntNullableWithAggregatesFilter<"Message"> | number | null
     stickerId?: StringNullableWithAggregatesFilter<"Message"> | string | null
     flaggedForRisk?: BoolWithAggregatesFilter<"Message"> | boolean
+    ttsAudioUrl?: StringNullableWithAggregatesFilter<"Message"> | string | null
+    ttsProvider?: StringNullableWithAggregatesFilter<"Message"> | string | null
+    ttsModel?: StringNullableWithAggregatesFilter<"Message"> | string | null
+    ttsGeneratedAt?: DateTimeNullableWithAggregatesFilter<"Message"> | Date | string | null
     createdAt?: DateTimeWithAggregatesFilter<"Message"> | Date | string
   }
 
@@ -3320,6 +3392,10 @@ export namespace Prisma {
     audioDurationSec?: number | null
     stickerId?: string | null
     flaggedForRisk?: boolean
+    ttsAudioUrl?: string | null
+    ttsProvider?: string | null
+    ttsModel?: string | null
+    ttsGeneratedAt?: Date | string | null
     createdAt?: Date | string
     conversation: ConversationCreateNestedOneWithoutMessagesInput
   }
@@ -3335,6 +3411,10 @@ export namespace Prisma {
     audioDurationSec?: number | null
     stickerId?: string | null
     flaggedForRisk?: boolean
+    ttsAudioUrl?: string | null
+    ttsProvider?: string | null
+    ttsModel?: string | null
+    ttsGeneratedAt?: Date | string | null
     createdAt?: Date | string
   }
 
@@ -3348,6 +3428,10 @@ export namespace Prisma {
     audioDurationSec?: NullableIntFieldUpdateOperationsInput | number | null
     stickerId?: NullableStringFieldUpdateOperationsInput | string | null
     flaggedForRisk?: BoolFieldUpdateOperationsInput | boolean
+    ttsAudioUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    ttsProvider?: NullableStringFieldUpdateOperationsInput | string | null
+    ttsModel?: NullableStringFieldUpdateOperationsInput | string | null
+    ttsGeneratedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     conversation?: ConversationUpdateOneRequiredWithoutMessagesNestedInput
   }
@@ -3363,6 +3447,10 @@ export namespace Prisma {
     audioDurationSec?: NullableIntFieldUpdateOperationsInput | number | null
     stickerId?: NullableStringFieldUpdateOperationsInput | string | null
     flaggedForRisk?: BoolFieldUpdateOperationsInput | boolean
+    ttsAudioUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    ttsProvider?: NullableStringFieldUpdateOperationsInput | string | null
+    ttsModel?: NullableStringFieldUpdateOperationsInput | string | null
+    ttsGeneratedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -3377,6 +3465,10 @@ export namespace Prisma {
     audioDurationSec?: number | null
     stickerId?: string | null
     flaggedForRisk?: boolean
+    ttsAudioUrl?: string | null
+    ttsProvider?: string | null
+    ttsModel?: string | null
+    ttsGeneratedAt?: Date | string | null
     createdAt?: Date | string
   }
 
@@ -3390,6 +3482,10 @@ export namespace Prisma {
     audioDurationSec?: NullableIntFieldUpdateOperationsInput | number | null
     stickerId?: NullableStringFieldUpdateOperationsInput | string | null
     flaggedForRisk?: BoolFieldUpdateOperationsInput | boolean
+    ttsAudioUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    ttsProvider?: NullableStringFieldUpdateOperationsInput | string | null
+    ttsModel?: NullableStringFieldUpdateOperationsInput | string | null
+    ttsGeneratedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -3404,6 +3500,10 @@ export namespace Prisma {
     audioDurationSec?: NullableIntFieldUpdateOperationsInput | number | null
     stickerId?: NullableStringFieldUpdateOperationsInput | string | null
     flaggedForRisk?: BoolFieldUpdateOperationsInput | boolean
+    ttsAudioUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    ttsProvider?: NullableStringFieldUpdateOperationsInput | string | null
+    ttsModel?: NullableStringFieldUpdateOperationsInput | string | null
+    ttsGeneratedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -3556,6 +3656,17 @@ export namespace Prisma {
     not?: NestedBoolFilter<$PrismaModel> | boolean
   }
 
+  export type DateTimeNullableFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
+    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
+  }
+
   export type ConversationRelationFilter = {
     is?: ConversationWhereInput
     isNot?: ConversationWhereInput
@@ -3572,6 +3683,10 @@ export namespace Prisma {
     audioDurationSec?: SortOrder
     stickerId?: SortOrder
     flaggedForRisk?: SortOrder
+    ttsAudioUrl?: SortOrder
+    ttsProvider?: SortOrder
+    ttsModel?: SortOrder
+    ttsGeneratedAt?: SortOrder
     createdAt?: SortOrder
   }
 
@@ -3590,6 +3705,10 @@ export namespace Prisma {
     audioDurationSec?: SortOrder
     stickerId?: SortOrder
     flaggedForRisk?: SortOrder
+    ttsAudioUrl?: SortOrder
+    ttsProvider?: SortOrder
+    ttsModel?: SortOrder
+    ttsGeneratedAt?: SortOrder
     createdAt?: SortOrder
   }
 
@@ -3604,6 +3723,10 @@ export namespace Prisma {
     audioDurationSec?: SortOrder
     stickerId?: SortOrder
     flaggedForRisk?: SortOrder
+    ttsAudioUrl?: SortOrder
+    ttsProvider?: SortOrder
+    ttsModel?: SortOrder
+    ttsGeneratedAt?: SortOrder
     createdAt?: SortOrder
   }
 
@@ -3633,6 +3756,20 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedBoolFilter<$PrismaModel>
     _max?: NestedBoolFilter<$PrismaModel>
+  }
+
+  export type DateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
+    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeNullableWithAggregatesFilter<$PrismaModel> | Date | string | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedDateTimeNullableFilter<$PrismaModel>
+    _max?: NestedDateTimeNullableFilter<$PrismaModel>
   }
 
   export type MessageCreateNestedManyWithoutConversationInput = {
@@ -3705,6 +3842,10 @@ export namespace Prisma {
 
   export type BoolFieldUpdateOperationsInput = {
     set?: boolean
+  }
+
+  export type NullableDateTimeFieldUpdateOperationsInput = {
+    set?: Date | string | null
   }
 
   export type ConversationUpdateOneRequiredWithoutMessagesNestedInput = {
@@ -3829,6 +3970,17 @@ export namespace Prisma {
     not?: NestedBoolFilter<$PrismaModel> | boolean
   }
 
+  export type NestedDateTimeNullableFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
+    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
+  }
+
   export type NestedIntNullableWithAggregatesFilter<$PrismaModel = never> = {
     equals?: number | IntFieldRefInput<$PrismaModel> | null
     in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
@@ -3864,6 +4016,20 @@ export namespace Prisma {
     _max?: NestedBoolFilter<$PrismaModel>
   }
 
+  export type NestedDateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
+    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeNullableWithAggregatesFilter<$PrismaModel> | Date | string | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedDateTimeNullableFilter<$PrismaModel>
+    _max?: NestedDateTimeNullableFilter<$PrismaModel>
+  }
+
   export type MessageCreateWithoutConversationInput = {
     id?: string
     role: string
@@ -3874,6 +4040,10 @@ export namespace Prisma {
     audioDurationSec?: number | null
     stickerId?: string | null
     flaggedForRisk?: boolean
+    ttsAudioUrl?: string | null
+    ttsProvider?: string | null
+    ttsModel?: string | null
+    ttsGeneratedAt?: Date | string | null
     createdAt?: Date | string
   }
 
@@ -3887,6 +4057,10 @@ export namespace Prisma {
     audioDurationSec?: number | null
     stickerId?: string | null
     flaggedForRisk?: boolean
+    ttsAudioUrl?: string | null
+    ttsProvider?: string | null
+    ttsModel?: string | null
+    ttsGeneratedAt?: Date | string | null
     createdAt?: Date | string
   }
 
@@ -3930,6 +4104,10 @@ export namespace Prisma {
     audioDurationSec?: IntNullableFilter<"Message"> | number | null
     stickerId?: StringNullableFilter<"Message"> | string | null
     flaggedForRisk?: BoolFilter<"Message"> | boolean
+    ttsAudioUrl?: StringNullableFilter<"Message"> | string | null
+    ttsProvider?: StringNullableFilter<"Message"> | string | null
+    ttsModel?: StringNullableFilter<"Message"> | string | null
+    ttsGeneratedAt?: DateTimeNullableFilter<"Message"> | Date | string | null
     createdAt?: DateTimeFilter<"Message"> | Date | string
   }
 
@@ -3995,6 +4173,10 @@ export namespace Prisma {
     audioDurationSec?: number | null
     stickerId?: string | null
     flaggedForRisk?: boolean
+    ttsAudioUrl?: string | null
+    ttsProvider?: string | null
+    ttsModel?: string | null
+    ttsGeneratedAt?: Date | string | null
     createdAt?: Date | string
   }
 
@@ -4008,6 +4190,10 @@ export namespace Prisma {
     audioDurationSec?: NullableIntFieldUpdateOperationsInput | number | null
     stickerId?: NullableStringFieldUpdateOperationsInput | string | null
     flaggedForRisk?: BoolFieldUpdateOperationsInput | boolean
+    ttsAudioUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    ttsProvider?: NullableStringFieldUpdateOperationsInput | string | null
+    ttsModel?: NullableStringFieldUpdateOperationsInput | string | null
+    ttsGeneratedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -4021,6 +4207,10 @@ export namespace Prisma {
     audioDurationSec?: NullableIntFieldUpdateOperationsInput | number | null
     stickerId?: NullableStringFieldUpdateOperationsInput | string | null
     flaggedForRisk?: BoolFieldUpdateOperationsInput | boolean
+    ttsAudioUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    ttsProvider?: NullableStringFieldUpdateOperationsInput | string | null
+    ttsModel?: NullableStringFieldUpdateOperationsInput | string | null
+    ttsGeneratedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -4034,6 +4224,10 @@ export namespace Prisma {
     audioDurationSec?: NullableIntFieldUpdateOperationsInput | number | null
     stickerId?: NullableStringFieldUpdateOperationsInput | string | null
     flaggedForRisk?: BoolFieldUpdateOperationsInput | boolean
+    ttsAudioUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    ttsProvider?: NullableStringFieldUpdateOperationsInput | string | null
+    ttsModel?: NullableStringFieldUpdateOperationsInput | string | null
+    ttsGeneratedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 

@@ -2,6 +2,7 @@
 
 import React from "react";
 import { useCommunity } from "../context/CommunityContext";
+import { BarChart3 } from "lucide-react";
 
 export default function CommunityInsightsView() {
   const { posts } = useCommunity();
@@ -22,7 +23,7 @@ export default function CommunityInsightsView() {
     <div className="w-full max-w-[620px] mx-auto py-4 px-2 space-y-4 animate-in fade-in duration-200">
       <div className="bg-white rounded-3xl border border-brown-900/10 p-6 shadow-xs">
         <div className="flex items-center gap-2 mb-1">
-          <span className="text-xl">📊</span>
+          <BarChart3 className="w-5 h-5 text-brown-900" />
           <h1 className="font-bold text-lg text-brown-900">Community Insights</h1>
         </div>
         <p className="text-xs text-brown-700/60 leading-relaxed">

@@ -12,6 +12,7 @@ import ComposeBox from "../components/ComposeBox";
 import PostCard from "../components/PostCard";
 import CreatePostModal from "../components/CreatePostModal";
 import CrisisBanner from "@/app/companion/components/CrisisBanner";
+import { Sprout } from "lucide-react";
 
 /**
  * Community Sub-Route Page — /community/[slug]
@@ -151,11 +152,13 @@ export default function CommunitySlugPage() {
         <div className="bg-white rounded-2xl border border-brown-900/10 shadow-xs overflow-hidden mb-12 divide-y divide-brown-900/6">
           {currentPosts.length === 0 ? (
             <div className="py-16 flex flex-col items-center text-center px-6">
-              <div className="w-14 h-14 rounded-2xl bg-green-100 border border-green-200 flex items-center justify-center text-2xl mb-3 shadow-xs">
-                🌿
+              <div className="w-14 h-14 rounded-2xl bg-green-100 border border-green-200 flex items-center justify-center mb-3 shadow-xs">
+                <Sprout className="w-7 h-7 text-green-700" />
               </div>
               <h3 className="font-bold text-sm text-brown-900 mb-1">
-                {currentView === "SAVED"
+                {currentView === "FOLLOWING"
+                  ? "Belum ada postingan"
+                  : currentView === "SAVED"
                   ? "Belum ada thread yang disimpan"
                   : currentView === "LIKED"
                   ? "Belum ada thread yang disukai"
@@ -164,7 +167,9 @@ export default function CommunitySlugPage() {
                   : "Belum ada cerita di sini"}
               </h3>
               <p className="text-xs text-brown-700/60 max-w-xs leading-relaxed">
-                {currentView === "SAVED"
+                {currentView === "FOLLOWING"
+                  ? "Belum mengikuti siapa pun. Temukan orang untuk diikuti di halaman Cari."
+                  : currentView === "SAVED"
                   ? "Tekan ikon bookmark pada cerita mana saja untuk menyimpannya di sini."
                   : currentView === "LIKED"
                   ? "Cerita yang kamu sukai akan otomatis terkumpul di feed ini."

@@ -1,5 +1,7 @@
 "use client";
 
+import { Paperclip, Mic, Send } from "lucide-react";
+
 import { useRef, useEffect } from "react";
 import ModelSelector from "./ModelSelector";
 import { AIModelType } from "@/backend/ai/aiModelManager";
@@ -66,18 +68,18 @@ export default function ChatInput({
         {/* Attachment Icon */}
         <button
           type="button"
-          className="p-2 text-brown-700 hover:text-brown-900 hover:bg-cream rounded-full transition-colors text-sm"
+          className="p-2 text-brown-700 hover:text-brown-900 hover:bg-cream rounded-full transition-colors"
           title="Lampiran dokumen / foto"
           aria-label="Lampiran"
         >
-          📎
+          <Paperclip size={16} aria-hidden />
         </button>
 
         {/* Voice/Mic Icon */}
         <button
           type="button"
           onClick={() => setIsVoiceActive(!isVoiceActive)}
-          className={`p-2 rounded-full transition-colors text-sm ${
+          className={`p-2 rounded-full transition-colors ${
             isVoiceActive
               ? "text-orange-500 bg-orange-100"
               : "text-brown-700 hover:text-brown-900 hover:bg-cream"
@@ -85,7 +87,7 @@ export default function ChatInput({
           title="Voice input"
           aria-label="Voice input"
         >
-          🎙️
+          <Mic size={16} aria-hidden />
         </button>
 
         {/* Text Input */}
@@ -112,7 +114,7 @@ export default function ChatInput({
               : "bg-brown-900/20 text-white/70 cursor-not-allowed"
           }`}
         >
-          <span className="text-sm font-bold">→</span>
+          <Send size={14} aria-hidden className="rotate-45" />
         </button>
       </div>
 

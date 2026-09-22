@@ -206,6 +206,13 @@ export function CompanionProvider({ children }: { children: React.ReactNode }) {
     }
   }, [latestAIMessageId, activeConv?.messages, speak, isTTSEnabled, ttsProvider]);
 
+  // Stop audio when conversation changes
+  useEffect(() => {
+    return () => {
+      stop(); // cleanup audio on activeConvId change
+    };
+  }, [activeConvId, stop]);
+
   const handleSendMessage = async (customText?: string) => {
     const textToSend = (customText || inputText).trim();
     if (!textToSend || isSending) return;

@@ -139,13 +139,64 @@ exports.Prisma.CommunityCommentScalarFieldEnum = {
   userId: 'userId',
   content: 'content',
   stickerId: 'stickerId',
+  parentId: 'parentId',
   createdAt: 'createdAt'
 };
 
 exports.Prisma.CommunityLikeScalarFieldEnum = {
   id: 'id',
   postId: 'postId',
-  userId: 'userId'
+  userId: 'userId',
+  createdAt: 'createdAt'
+};
+
+exports.Prisma.DirectConversationScalarFieldEnum = {
+  id: 'id',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  lastMessageAt: 'lastMessageAt'
+};
+
+exports.Prisma.DirectParticipantScalarFieldEnum = {
+  id: 'id',
+  conversationId: 'conversationId',
+  userId: 'userId',
+  joinedAt: 'joinedAt'
+};
+
+exports.Prisma.DirectMessageScalarFieldEnum = {
+  id: 'id',
+  conversationId: 'conversationId',
+  senderId: 'senderId',
+  content: 'content',
+  createdAt: 'createdAt',
+  readAt: 'readAt'
+};
+
+exports.Prisma.CommunityFollowScalarFieldEnum = {
+  id: 'id',
+  followerId: 'followerId',
+  followingId: 'followingId',
+  createdAt: 'createdAt'
+};
+
+exports.Prisma.CommunityBookmarkScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  postId: 'postId',
+  createdAt: 'createdAt'
+};
+
+exports.Prisma.CommunityNotificationScalarFieldEnum = {
+  id: 'id',
+  recipientId: 'recipientId',
+  actorId: 'actorId',
+  type: 'type',
+  postId: 'postId',
+  commentId: 'commentId',
+  conversationId: 'conversationId',
+  readAt: 'readAt',
+  createdAt: 'createdAt'
 };
 
 exports.Prisma.SortOrder = {
@@ -167,7 +218,13 @@ exports.Prisma.NullsOrder = {
 exports.Prisma.ModelName = {
   CommunityPost: 'CommunityPost',
   CommunityComment: 'CommunityComment',
-  CommunityLike: 'CommunityLike'
+  CommunityLike: 'CommunityLike',
+  DirectConversation: 'DirectConversation',
+  DirectParticipant: 'DirectParticipant',
+  DirectMessage: 'DirectMessage',
+  CommunityFollow: 'CommunityFollow',
+  CommunityBookmark: 'CommunityBookmark',
+  CommunityNotification: 'CommunityNotification'
 };
 
 /**

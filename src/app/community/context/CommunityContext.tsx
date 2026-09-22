@@ -288,6 +288,30 @@ export function CommunityProvider({ children }: { children: React.ReactNode }) {
     loadPosts();
   }, []);
 
+  // Load following feed when switching to FOLLOWING view
+  useEffect(() => {
+    async function loadFollowingFeed() {
+      if (currentView !== "FOLLOWING") return;
+      
+      try {
+        const res = await fetch("/api/community/feed/following");
+        if (res.ok) {
+          const data = await res.json();
+          if (data.posts) {
+            setFollowingPosts(data.posts);
+          }
+        } else if (res.status === 401) {
+          console.warn("Following feed: not authenticated");
+          setFollowingPosts([]);
+        }
+      } catch (err) {
+        console.warn("Failed to fetch following feed:", err);
+        setFollowingPosts([]);
+      }
+    }
+    loadFollowingFeed();
+  }, [currentView]);
+
   const handleTagFilter = (tag: string) => {
     setSelectedTag(tag);
     setSearchQuery("");
@@ -303,7 +327,7 @@ export function CommunityProvider({ children }: { children: React.ReactNode }) {
   // Determine which posts to show based on currentView
   let basePosts = posts;
   if (currentView === "FOLLOWING") {
-    basePosts = followingPosts.length > 0 ? followingPosts : posts.filter((p) => p.author !== "Sarah Jenkins");
+    basePosts = followingPosts;
   } else if (currentView === "SAVED") {
     basePosts = posts.filter((p) => savedPostIds.includes(p.id));
   } else if (currentView === "LIKED") {

@@ -1,143 +1,231 @@
 "use client";
 
-import React from "react";
-import { useCommunity } from "../context/CommunityContext";
-import PostCard from "./PostCard";
+import React, { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { Search, User, FileText, Sprout, Check } from "lucide-react";
+
+interface SearchResult {
+  id: string;
+  type: "people" | "posts";
+  name?: string;
+  username?: string;
+  avatarUrl?: string;
+  bio?: string;
+  content?: string;
+  mediaUrl?: string;
+}
 
 export default function CommunitySearchView() {
-  const {
-    searchQuery,
-    setSearchQuery,
-    selectedTag,
-    handleTagFilter,
-    currentPosts,
-    handleToggleLike,
-    handleToggleRepost,
-    handleAddComment,
-  } = useCommunity();
+  const router = useRouter();
+  const [query, setQuery] = useState("");
+  const [type, setType] = useState<"all" | "people" | "posts">("all");
+  const [results, setResults] = useState<SearchResult[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [showSuggestions, setShowSuggestions] = useState(false);
 
-  const TRENDING_TOPICS = [
-    { tag: "Mindfulness", postsCount: "1.2k posts" },
-    { tag: "SleepRoutine", postsCount: "840 posts" },
-    { tag: "Sharing", postsCount: "2.4k posts" },
-    { tag: "CurhatAnonim", postsCount: "620 posts" },
-    { tag: "Overthinking", postsCount: "950 posts" },
-  ];
+  const QUICK_TOPICS = ["Mindfulness", "SleepRoutine", "Sharing", "SelfCare", "MentalHealth"];
+  const QUICK_CREATORS = ["Sarah Jenkins", "Dimas Anggara", "Nadia Putri", "Rizky Pratama"];
 
-  const SUGGESTED_CREATORS = [
-    { name: "Sarah Jenkins", handle: "@sarahj", avatar: "SJ", bio: "Breathing enthusiast & mindfulness explorer" },
-    { name: "Dimas Anggara", handle: "@dimas_a", avatar: "DA", bio: "Sleep hygiene advocate · Gen Z Wellness" },
-    { name: "Nadia Putri", handle: "@nadiap", avatar: "NP", bio: "Mental health peer supporter" },
-  ];
+  useEffect(() => {
+    const delay = setTimeout(() => {
+      if (query.trim()) {
+        fetchSearchResults();
+      } else {
+        setResults([]);
+        setShowSuggestions(true);
+      }
+    }, 300);
+
+    return () => clearTimeout(delay);
+  }, [query, type]);
+
+  const fetchSearchResults = async () => {
+    setLoading(true);
+    try {
+      const url = `/api/community/search?q=${encodeURIComponent(query)}&type=${type}`;
+      const res = await fetch(url);
+      if (res.ok) {
+        const data = await res.json();
+        const combined: SearchResult[] = [];
+        
+        if (data.people) {
+          combined.push(...data.people.map((p: any) => ({ ...p, type: "people" as const })));
+        }
+        if (data.posts) {
+          combined.push(...data.posts.map((p: any) => ({ ...p, type: "posts" as const })));
+        }
+        
+        setResults(combined);
+        setShowSuggestions(false);
+      }
+    } catch (error) {
+      console.error("Search error:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleResultClick = (result: SearchResult) => {
+    if (result.type === "people") {
+      router.push(`/community/profile/${result.id}`);
+    } else {
+      // For posts, scroll to post ID or navigate to post detail
+      router.push(`/community#post-${result.id}`);
+    }
+  };
+
+  const handleQuickTopicClick = (topic: string) => {
+    setQuery(`#${topic}`);
+    setType("posts");
+  };
+
+  const handleQuickCreatorClick = (creatorName: string) => {
+    setQuery(creatorName);
+    setType("people");
+  };
 
   return (
     <div className="w-full max-w-[620px] mx-auto py-4 px-2 space-y-5 animate-in fade-in duration-200">
       {/* Search Input Bar */}
       <div className="relative">
         <div className="absolute left-4 top-1/2 -translate-y-1/2 text-brown-700/40">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <circle cx="11" cy="11" r="8" />
-            <line x1="21" y1="21" x2="16.65" y2="16.65" />
-          </svg>
+          <Search size={18} />
         </div>
         <input
           type="text"
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
           placeholder="Search topics, creators, or conversations..."
           autoFocus
-          className="w-full bg-white rounded-2xl pl-11 pr-10 py-3 text-xs md:text-sm text-brown-900 placeholder:text-brown-700/40 border border-brown-900/10 focus:outline-none focus:ring-2 focus:ring-orange-500 shadow-2xs"
+          className="w-full bg-white rounded-2xl pl-11 pr-20 py-3 text-xs md:text-sm text-brown-900 placeholder:text-brown-700/40 border border-brown-900/10 focus:outline-none focus:ring-2 focus:ring-orange-500 shadow-2xs"
         />
-        {searchQuery && (
+        <div className="absolute right-2 top-1/2 -translate-y-1/2 flex gap-1">
           <button
             type="button"
-            onClick={() => setSearchQuery("")}
-            className="absolute right-3.5 top-1/2 -translate-y-1/2 text-brown-700/40 hover:text-brown-900 text-xs font-bold"
+            onClick={() => setType("people")}
+            className={`p-1.5 rounded-lg transition-colors ${
+              type === "people" ? "text-orange-500 bg-orange-50" : "text-brown-700/40 hover:text-brown-900"
+            }`}
+            title="People"
           >
-            ✕
+            <User size={14} />
           </button>
-        )}
+          <button
+            type="button"
+            onClick={() => setType("posts")}
+            className={`p-1.5 rounded-lg transition-colors ${
+              type === "posts" ? "text-orange-500 bg-orange-50" : "text-brown-700/40 hover:text-brown-900"
+            }`}
+            title="Posts"
+          >
+            <FileText size={14} />
+          </button>
+        </div>
       </div>
 
-      {/* Trending Topics */}
-      {!searchQuery && (
+      {/* Quick Topics */}
+      {showSuggestions && !query && (
         <div className="bg-white rounded-2xl border border-brown-900/8 p-4 shadow-2xs">
           <h3 className="font-bold text-xs text-brown-900 mb-3 uppercase tracking-wider">
             Trending in Zyba Community
           </h3>
           <div className="flex flex-wrap gap-2">
-            {TRENDING_TOPICS.map((t) => (
+            {QUICK_TOPICS.map((t) => (
               <button
-                key={t.tag}
+                key={t}
                 type="button"
-                onClick={() => handleTagFilter(t.tag)}
-                className={`px-3 py-1.5 rounded-xl text-xs font-semibold border transition-all flex items-center gap-2 ${
-                  selectedTag === t.tag
-                    ? "bg-brown-900 text-white border-brown-900 shadow-2xs"
-                    : "bg-[#FAF7F2] text-brown-900 border-brown-900/8 hover:border-orange-500"
-                }`}
+                onClick={() => handleQuickTopicClick(t)}
+                className="px-3 py-1.5 rounded-xl text-xs font-semibold border transition-all flex items-center gap-2 bg-cream text-brown-900 border-brown-900/8 hover:border-orange-500"
               >
-                <span>#{t.tag}</span>
-                <span className="text-[10px] opacity-60">{t.postsCount}</span>
+                <Sprout size={10} className="text-green-600" />
+                <span>#{t}</span>
+              </button>
+            ))}
+          </div>
+          <h3 className="font-bold text-xs text-brown-900 mb-3 uppercase tracking-wider mt-4">
+            Popular Creators
+          </h3>
+          <div className="space-y-2">
+            {QUICK_CREATORS.map((c) => (
+              <button
+                key={c}
+                type="button"
+                onClick={() => handleQuickCreatorClick(c)}
+                className="w-full text-left p-2.5 rounded-lg hover:bg-brown-900/5 transition-colors flex items-center gap-3"
+              >
+                <div className="w-8 h-8 rounded-full bg-orange-100 border border-orange-200 flex items-center justify-center font-bold text-xs text-orange-600">
+                  {c.split(" ")[0][0]}{c.split(" ")[1][0]}
+                </div>
+                <span className="text-sm font-medium text-brown-900">{c}</span>
+                <Check size={12} className="text-green-600 ml-auto" />
               </button>
             ))}
           </div>
         </div>
       )}
 
-      {/* Suggested Follows */}
-      {!searchQuery && (
-        <div className="bg-white rounded-2xl border border-brown-900/8 p-4 shadow-2xs">
-          <h3 className="font-bold text-xs text-brown-900 mb-3 uppercase tracking-wider">
-            Suggested Creators
-          </h3>
-          <div className="space-y-3">
-            {SUGGESTED_CREATORS.map((c) => (
-              <div key={c.handle} className="flex items-center justify-between gap-3">
-                <div className="flex items-center gap-2.5 min-w-0">
-                  <div className="w-9 h-9 rounded-full bg-orange-100 border border-orange-200 flex items-center justify-center font-bold text-xs text-orange-600 shrink-0">
-                    {c.avatar}
-                  </div>
-                  <div className="min-w-0">
-                    <p className="text-xs font-bold text-brown-900 truncate">{c.name}</p>
-                    <p className="text-[11px] text-brown-700/60 truncate">{c.handle} · {c.bio}</p>
-                  </div>
-                </div>
+      {/* Search Results */}
+      {query && (
+        <div>
+          {loading ? (
+            <div className="bg-white rounded-2xl border border-brown-900/8 p-8 text-center">
+              <div className="text-xs text-brown-700/60">Searching...</div>
+            </div>
+          ) : results.length > 0 ? (
+            <div className="space-y-3">
+              {results.map((result) => (
                 <button
+                  key={`${result.type}-${result.id}`}
                   type="button"
-                  onClick={() => alert(`Mengikuti ${c.name}`)}
-                  className="rounded-full bg-brown-900 text-white text-xs font-bold px-4 py-1.5 hover:bg-orange-500 transition-colors shrink-0 shadow-2xs"
+                  onClick={() => handleResultClick(result)}
+                  className="w-full bg-white rounded-2xl border border-brown-900/8 p-4 shadow-2xs hover:border-orange-500/40 transition-all text-left"
                 >
-                  Follow
+                  <div className="flex items-start gap-3">
+                    <div className="w-10 h-10 rounded-full bg-cream border border-brown-900/10 flex items-center justify-center font-bold text-sm">
+                      {result.avatarUrl ? (
+                        <img src={result.avatarUrl} alt="" className="w-full h-full rounded-full object-cover" />
+                      ) : result.type === "people" ? (
+                        result.name?.split(" ").map(n => n[0]).join("").toUpperCase().slice(0, 2)
+                      ) : (
+                        <FileText size={16} className="text-brown-700" />
+                      )}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 mb-1">
+                        {result.type === "people" ? (
+                          <span className="font-bold text-sm text-brown-900">{result.name}</span>
+                        ) : (
+                          <span className="font-medium text-sm text-brown-900">Post by {result.name}</span>
+                        )}
+                        {result.type === "people" && (
+                          <span className="text-[10px] text-green-600 bg-green-50 px-2 py-0.5 rounded-full">Verified</span>
+                        )}
+                      </div>
+                      {result.type === "people" ? (
+                        <p className="text-xs text-brown-700/60 truncate">@{result.username}</p>
+                      ) : (
+                        <p className="text-xs text-brown-700/70 line-clamp-2">{result.content}</p>
+                      )}
+                    </div>
+                  </div>
                 </button>
+              ))}
+            </div>
+          ) : (
+            <div className="bg-white rounded-2xl border border-brown-900/8 p-8 text-center">
+              <div className="w-14 h-14 rounded-2xl bg-cream border border-brown-900/8 flex items-center justify-center text-2xl mb-3 mx-auto">
+                🔍
               </div>
-            ))}
-          </div>
+              <h3 className="font-bold text-sm text-brown-900 mb-1">
+                No results found
+              </h3>
+              <p className="text-xs text-brown-700/60 max-w-xs mx-auto">
+                Try different keywords or check spelling.
+              </p>
+            </div>
+          )}
         </div>
       )}
-
-      {/* Search Results / Posts */}
-      <div className="bg-white rounded-2xl border border-brown-900/10 shadow-xs overflow-hidden">
-        <div className="p-3 border-b border-brown-900/5 text-xs font-bold text-brown-700">
-          {searchQuery ? `Hasil Pencarian untuk "${searchQuery}"` : "Semua Cerita Terkini"}
-        </div>
-        {currentPosts.length === 0 ? (
-          <div className="py-12 text-center text-xs text-brown-700/50">
-            Tidak ditemukan cerita yang sesuai pencarian.
-          </div>
-        ) : (
-          currentPosts.map((post) => (
-            <PostCard
-              key={post.id}
-              post={post}
-              onToggleLike={handleToggleLike}
-              onToggleRepost={handleToggleRepost}
-              onAddComment={handleAddComment}
-              onTagClick={handleTagFilter}
-            />
-          ))
-        )}
-      </div>
     </div>
   );
 }

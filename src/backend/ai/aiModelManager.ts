@@ -140,13 +140,19 @@ export async function processMultiModelAIResponse(params: AIRequestParams): Prom
 
   // If user specified a model, try it first
   if (model && modelMap[model]) {
+    console.log(`[aiModelManager] Trying user-selected model: ${model}`);
     try {
       const result = await modelMap[model]();
-      if (result) return { reply: result.reply, modelUsed: model, emotionTag: result.emotionTag, providerStatus: "API_LIVE" };
+      if (result) {
+        console.log(`[aiModelManager] ✓ ${model} success`);
+        return { reply: result.reply, modelUsed: model, emotionTag: result.emotionTag, providerStatus: "API_LIVE" };
+      }
     } catch (err: any) {
-      console.warn(`[aiModelManager] ${model} failed:`, err?.message);
+      console.warn(`[aiModelManager] ✗ ${model} failed:`, err?.message);
     }
   }
+
+  console.log(`[aiModelManager] Starting fallback chain (selected model ${model || 'none'} unavailable)...`);
 
   // Fallback chain: Gemini -> Groq -> Mistral -> OpenRouter
   type E = { fn: () => Promise<PR | null>; name: AIModelType };
@@ -158,13 +164,19 @@ export async function processMultiModelAIResponse(params: AIRequestParams): Prom
   ];
 
   for (const { fn, name } of chain) {
+    console.log(`[aiModelManager] Trying fallback: ${name}...`);
     try {
       const result = await fn();
-      if (result) return { reply: result.reply, modelUsed: name, emotionTag: result.emotionTag, providerStatus: "API_LIVE" };
+      if (result) {
+        console.log(`[aiModelManager] ✓ Fallback ${name} success`);
+        return { reply: result.reply, modelUsed: name, emotionTag: result.emotionTag, providerStatus: "API_LIVE" };
+      }
     } catch (err: any) {
-      console.warn("[aiModelManager] " + name + " skipped:", err?.message);
+      console.warn(`[aiModelManager] ✗ ${name} failed:`, err?.message);
     }
   }
+
+  console.log(`[aiModelManager] All providers failed, using persona fallback`);
 
   const fallback = personaFallback(persona, message);
   return { reply: fallback.reply, modelUsed: "zyba-default", emotionTag: fallback.emotionTag, providerStatus: "PERSONA_FALLBACK" };

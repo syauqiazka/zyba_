@@ -1,91 +1,97 @@
 import { NextRequest, NextResponse } from "next/server";
-import { exec } from "child_process";
-import { promisify } from "util";
-import { mkdtemp, readFile, unlink } from "fs/promises";
-import { tmpdir } from "os";
-import path from "path";
+import { generateElevenLabsAudio, ELEVENLABS_CONFIG } from "@/backend/ai/elevenlabs";
+import { companionDb } from "@/backend/db/companionClient";
 
-const execAsync = promisify(exec);
-
-// Edge TTS via edge-tts CLI (npm i -g edge-tts or local install)
-// Fallback: return null and client uses Web Speech API
+/**
+ * POST /api/companion/tts
+ * Generate TTS audio untuk message Companion
+ * 
+ * SPEC: AGENTS.md 19.2 — ElevenLabs sebagai PRIMARY provider
+ * Fallback: browser SpeechSynthesis (Edge TTS REMOVED as default)
+ * Cache: ttsAudioUrl di Message schema
+ */
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { text, voice = "id-ID-ArdiNeural", useElevenLabs = false } = body as { 
-      text: string; 
-      voice?: string; 
-      useElevenLabs?: boolean;
-    };
+    const { messageId, text } = body as { messageId?: string; text: string };
 
-    if (!text) return NextResponse.json({ error: "Text wajib diisi." }, { status: 400 });
+    if (!text || text.trim().length === 0) {
+      return NextResponse.json({ error: "Text wajib diisi" }, { status: 400 });
+    }
 
-    // Try ElevenLabs first if requested (premium, limit 10k chars/month)
-    const elevenLabsKey = process.env.ELEVENLABS_API_KEY;
-    if (useElevenLabs && elevenLabsKey) {
+    // If messageId provided, check cache first
+    if (messageId) {
       try {
-        const response = await fetch(
-          "https://api.elevenlabs.io/v1/text-to-speech/21m00Tcm4TlvDq8ikWAM", // Rachel voice
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              "xi-api-key": elevenLabsKey,
-            },
-            body: JSON.stringify({
-              text: text.substring(0, 500), // limit per request (save quota)
-              model_id: "eleven_multilingual_v2",
-              voice_settings: {
-                stability: 0.5,
-                similarity_boost: 0.75,
-              },
-            }),
-            signal: AbortSignal.timeout(10000),
-          }
-        );
+        const message = await companionDb.message.findUnique({
+          where: { id: messageId },
+          select: { ttsAudioUrl: true, ttsProvider: true, ttsGeneratedAt: true },
+        });
 
-        if (response.ok) {
-          const audioBuffer = await response.arrayBuffer();
-          return new NextResponse(Buffer.from(audioBuffer), {
-            headers: {
-              "Content-Type": "audio/mpeg",
-              "X-TTS-Provider": "elevenlabs",
-              "Cache-Control": "public, max-age=86400",
-            },
-          });
+        // Return cached audio if exists and not expired (24h)
+        if (message?.ttsAudioUrl && message.ttsGeneratedAt) {
+          const age = Date.now() - message.ttsGeneratedAt.getTime();
+          if (age < 24 * 60 * 60 * 1000) {
+            console.log(`[TTS] Cache hit for message ${messageId}`);
+            return NextResponse.redirect(message.ttsAudioUrl);
+          }
         }
-        console.warn("[TTS] ElevenLabs failed:", response.status);
-      } catch (elevenErr) {
-        console.warn("[TTS] ElevenLabs error:", elevenErr);
+      } catch (dbErr) {
+        console.warn("[TTS] Cache check failed:", dbErr);
+        // Continue to generation
       }
     }
 
-    // Fallback: try edge-tts CLI
-    const tmpDir = await mkdtemp(path.join(tmpdir(), "zyba-tts-"));
-    const outFile = path.join(tmpDir, "speech.mp3");
+    // PRIMARY: Try ElevenLabs
+    const elevenLabsAudio = await generateElevenLabsAudio({ text });
 
-    try {
-      // Use Hermes venv edge-tts (fallback to global if not found)
-      const edgeTtsCmd = process.env.EDGE_TTS_PATH || "C:\\Users\\user\\AppData\\Local\\hermes\\hermes-agent\\venv\\Scripts\\edge-tts.exe";
-      await execAsync(`"${edgeTtsCmd}" --voice ${voice} --text "${text.replace(/"/g, "'\\'")}" --write-media "${outFile}"`, { timeout: 15000 });
-      const audioBuffer = await readFile(outFile);
-      await unlink(outFile).catch(() => {});
+    if (elevenLabsAudio) {
+      const audioBuffer = Buffer.from(elevenLabsAudio);
+
+      // TODO: Upload to Vercel Blob for persistent cache
+      // For now, return directly
+      // If messageId exists, save cache metadata
+      if (messageId) {
+        try {
+          await companionDb.message.update({
+            where: { id: messageId },
+            data: {
+              ttsProvider: "elevenlabs",
+              ttsModel: ELEVENLABS_CONFIG.defaultModel,
+              ttsGeneratedAt: new Date(),
+              // ttsAudioUrl: blobUrl, // TODO: after Blob upload
+            },
+          });
+        } catch (updateErr) {
+          console.warn("[TTS] Cache save failed:", updateErr);
+        }
+      }
 
       return new NextResponse(audioBuffer, {
         headers: {
           "Content-Type": "audio/mpeg",
           "Content-Length": String(audioBuffer.length),
-          "X-TTS-Provider": "edge-tts",
-          "Cache-Control": "public, max-age=3600",
+          "X-TTS-Provider": "elevenlabs",
+          "X-TTS-Model": ELEVENLABS_CONFIG.defaultModel,
+          "Cache-Control": "public, max-age=86400",
         },
       });
-    } catch (cliErr) {
-      // Edge TTS not available — client falls back to Web Speech API
-      console.warn("[TTS] edge-tts unavailable, client should use Web Speech API:", cliErr);
-      return NextResponse.json({ fallback: true, message: "Edge TTS tidak tersedia, gunakan Web Speech API." }, { status: 200 });
     }
+
+    // FALLBACK: Tell client to use browser SpeechSynthesis
+    console.log("[TTS] ElevenLabs unavailable, instructing client to use browser fallback");
+    return NextResponse.json(
+      {
+        fallback: true,
+        provider: "browser",
+        message: "Audio tidak tersedia dari server. Gunakan browser TTS.",
+      },
+      { status: 200 }
+    );
   } catch (err: any) {
     console.error("[TTS Error]:", err);
-    return NextResponse.json({ error: err.message || "TTS error" }, { status: 500 });
+    return NextResponse.json(
+      { error: "TTS generation failed", fallback: true },
+      { status: 500 }
+    );
   }
 }

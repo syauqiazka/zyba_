@@ -142,6 +142,10 @@ exports.Prisma.MessageScalarFieldEnum = {
   audioDurationSec: 'audioDurationSec',
   stickerId: 'stickerId',
   flaggedForRisk: 'flaggedForRisk',
+  ttsAudioUrl: 'ttsAudioUrl',
+  ttsProvider: 'ttsProvider',
+  ttsModel: 'ttsModel',
+  ttsGeneratedAt: 'ttsGeneratedAt',
   createdAt: 'createdAt'
 };
 

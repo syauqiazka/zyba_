@@ -35,6 +35,10 @@ model Message {
   audioDurationSec Int?
   stickerId        String?
   flaggedForRisk   Boolean      @default(false)
+  ttsAudioUrl      String?      // Cached TTS audio dari ElevenLabs/Edge
+  ttsProvider      String?      // "elevenlabs" | "edge" | "browser"
+  ttsModel         String?      // Model yang digunakan (eleven_flash_v2_5)
+  ttsGeneratedAt   DateTime?    // Kapan audio di-generate
   createdAt        DateTime     @default(now())
 
   @@index([conversationId, createdAt])

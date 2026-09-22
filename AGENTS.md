@@ -1221,3 +1221,1396 @@ Feature Gating Free vs Plus (Bagian 27):
  Insight mendalam, laporan bulanan, dan komunitas eksklusif masing-masing dicek hasFeature() di server sebelum diproses/ditampilkan.
  Dites langsung: user Free coba akses fitur Plus lewat API langsung (bukan cuma UI) — pastikan tetap ditolak server, bukan cuma disembunyikan di frontend.
 Dokumen ini konsolidasi dari: review visual Figma UI kit awal, review langsung ke kode github.com/syauqiazka/zyba / zyba_, dan referensi gaya (landing page ala OpenRouter, Companion ala Claude.ai, Community ala Threads) — semua warna referensi eksternal disesuaikan ke palet ZYBA, bukan ditiru mentah-mentah.
+
+## 19.2 UPDATE — AI Voice: ElevenLabs sebagai TTS Utama
+
+Bagian ini MENGGANTIKAN keputusan lama di 19.2 yang menjadikan Edge TTS sebagai default.
+
+### 19.2.1 Speech-to-Text
+
+STT tetap menggunakan Groq Whisper untuk voice note user.
+
+Flow wajib:
+
+User merekam / upload audio
+→ upload ke object storage
+→ server mengambil audio
+→ transkripsi Groq Whisper
+→ hasil transcript masuk `detectRisk()`
+→ kalau aman, transcript diproses oleh Companion
+→ kalau berisiko, jalankan flow crisis detection standar
+→ simpan pesan dan transcript sesuai kebutuhan aplikasi.
+
+Voice note tidak boleh langsung dikirim ke LLM tanpa melewati transkripsi + `detectRisk()`.
+
+### 19.2.2 Text-to-Speech — ElevenLabs WAJIB
+
+ElevenLabs sekarang menjadi satu-satunya provider TTS utama untuk Zyba Companion.
+
+Jangan lagi menggunakan Edge TTS sebagai default.
+
+Browser `SpeechSynthesis` hanya boleh menjadi fallback teknis terakhir kalau ElevenLabs gagal atau API key tidak tersedia dalam environment development.
+
+Gunakan API server-side. `ELEVENLABS_API_KEY` tidak boleh pernah dikirim ke browser.
+
+Model default:
+
+```ts
+const ELEVENLABS_TTS_MODEL = "eleven_flash_v2_5";
+```
+
+Alasan:
+
+* mendukung Indonesian;
+* latency rendah;
+* cocok untuk Companion yang responsnya interaktif;
+* ElevenLabs menyediakan streaming TTS.
+
+Fallback kualitas:
+
+```ts
+const ELEVENLABS_TTS_FALLBACK_MODEL = "eleven_multilingual_v2";
+```
+
+`eleven_multilingual_v2` dipakai kalau model Flash gagal atau kalau mode kualitas tinggi memang diminta.
+
+Jangan hardcode `voice_id` di banyak file. Simpan konfigurasi terpusat:
+
+```ts
+// src/backend/ai/elevenlabs.ts
+
+export const ELEVENLABS_CONFIG = {
+  defaultModel: "eleven_flash_v2_5",
+  fallbackModel: "eleven_multilingual_v2",
+  defaultVoiceId: process.env.ELEVENLABS_DEFAULT_VOICE_ID ?? "",
+  language: "id",
+} as const;
+```
+
+### 19.2.3 API Route TTS
+
+Buat:
+
+```txt
+src/app/api/companion/tts/route.ts
+```
+
+Endpoint:
+
+```http
+POST /api/companion/tts
+```
+
+Request:
+
+```json
+{
+  "messageId": "msg_123",
+  "text": "Aku paham, hari ini memang terasa berat."
+}
+```
+
+Server wajib:
+
+1. validasi session user;
+2. validasi bahwa `messageId` benar-benar milik conversation user;
+3. batasi panjang text;
+4. ambil text dari database bila memungkinkan, jangan percaya penuh text dari client;
+5. panggil ElevenLabs server-side;
+6. gunakan streaming response;
+7. return audio ke client;
+8. jangan mengembalikan API key atau provider credentials.
+
+Gunakan endpoint streaming ElevenLabs, bukan generate-file-and-wait kalau UI memang sedang memainkan respons Companion secara langsung.
+
+### 19.2.4 Cache Audio TTS
+
+Jangan membakar quota ElevenLabs setiap kali user menekan tombol speaker pada pesan yang sama.
+
+Tambahkan field ke model `Message` Companion:
+
+```prisma
+ttsAudioUrl      String?
+ttsProvider      String?
+ttsModel         String?
+ttsGeneratedAt   DateTime?
+```
+
+Flow:
+
+Pesan baru
+→ user menekan `Bacakan`
+→ cek `ttsAudioUrl`
+→ kalau ada, gunakan audio yang sudah tersimpan
+→ kalau belum ada, generate ElevenLabs
+→ upload hasil audio ke Vercel Blob
+→ simpan URL di Message
+→ play audio.
+
+Dengan begitu satu pesan hanya perlu generate TTS sekali.
+
+### 19.2.5 TTS UI
+
+Setiap pesan AI boleh punya action kecil:
+
+* `Volume2` → play
+* `VolumeX` → stop
+* `LoaderCircle` → sedang generate
+* `RotateCcw` → generate ulang jika error
+
+Gunakan `lucide-react`.
+
+Jangan gunakan:
+
+```txt
+🔊
+🔇
+⏳
+🔄
+```
+
+Icon UI selalu Lucide.
+
+### 19.2.6 TTS Error State
+
+Jika ElevenLabs gagal:
+
+```txt
+Audio tidak tersedia sekarang.
+Coba lagi.
+```
+
+Jangan menampilkan error API mentah seperti:
+
+```txt
+401 Unauthorized
+quota exceeded
+ELEVENLABS_API_KEY missing
+```
+
+Detail error hanya masuk server log.
+
+Fallback urutan:
+
+```txt
+ElevenLabs Flash
+↓
+ElevenLabs Multilingual v2
+↓
+Browser SpeechSynthesis
+```
+
+Jangan kembali ke Edge TTS sebagai provider normal.
+
+### 19.2.7 Verifikasi TTS
+
+Jangan menganggap TTS selesai hanya karena package dan API route sudah dibuat.
+
+Wajib test nyata:
+
+```txt
+[PASS] ElevenLabs API key configured
+[PASS] Voice ID valid
+[PASS] Indonesian text generated
+[PASS] Streaming response received
+[PASS] Audio can be played in browser
+[PASS] Audio URL cached
+[PASS] Second play does not consume another generation
+```
+
+Tambahkan smoke test:
+
+```bash
+npm run ai:tts-test
+```
+
+Test minimal satu kalimat Bahasa Indonesia.
+
+---
+
+## 19.4 Companion Model Verification — Semua Model Harus Benar-Benar Jalan
+
+Model selector tidak boleh lagi menjadi daftar UI yang hanya mengubah label.
+
+Setiap model yang muncul di UI wajib memenuhi:
+
+```txt
+MODEL TERDAFTAR
+↓
+PROVIDER TERKONFIGURASI
+↓
+API CALL BERHASIL
+↓
+RESPONS NYATA DITERIMA
+↓
+MODEL BOLEH MUNCUL DI MODEL SELECTOR
+```
+
+Jangan tampilkan model yang API key-nya belum tersedia.
+
+Buat registry terpusat:
+
+```ts
+// src/backend/ai/modelRegistry.ts
+
+export const MODEL_REGISTRY = [
+  {
+    id: "...",
+    provider: "gemini",
+    label: "...",
+    enabled: true,
+  },
+  {
+    id: "...",
+    provider: "groq",
+    label: "...",
+    enabled: true,
+  },
+  {
+    id: "...",
+    provider: "mistral",
+    label: "...",
+    enabled: true,
+  },
+  {
+    id: "...",
+    provider: "openrouter",
+    label: "...",
+    enabled: true,
+  },
+] as const;
+```
+
+Nama model jangan diasumsikan permanen. Provider/model ID harus dicek terhadap API/provider yang benar-benar dikonfigurasi sebelum ditampilkan.
+
+`ModelSelector.tsx` hanya menerima data dari registry/API, bukan array hardcoded terpisah.
+
+Tambahkan smoke test:
+
+```bash
+npm run ai:models-test
+```
+
+Output yang diharapkan:
+
+```txt
+Gemini      PASS
+Groq        PASS
+Mistral     PASS
+OpenRouter  PASS
+ElevenLabs  PASS
+```
+
+Model yang gagal:
+
+```txt
+Groq        FAIL — 401
+```
+
+tidak boleh dianggap selesai.
+
+Jangan mengganti error menjadi fake response.
+
+Tidak boleh ada kode seperti:
+
+```ts
+return "Aku mengerti perasaanmu...";
+```
+
+yang hanya digunakan untuk menyamarkan provider gagal.
+
+---
+
+# 29. Zyba Community — Direct Message / Pesan Antar Pengguna
+
+Ini fitur baru. DM berbeda dari Zyba Companion.
+
+Companion:
+
+```txt
+User → AI
+```
+
+Community DM:
+
+```txt
+User A ↔ User B
+```
+
+DM adalah komunikasi privat antar pengguna Community, bukan percakapan dengan AI.
+
+## 29.1 Scope v1
+
+Untuk versi pertama, hanya dukung:
+
+```txt
+1 user ↔ 1 user
+text message
+image attachment
+unread count
+read receipt
+typing indicator
+online/offline presence
+block
+report
+delete conversation
+pagination
+reconnect
+```
+
+Jangan dulu membuat:
+
+```txt
+group chat
+voice call
+video call
+screen sharing
+community server/channel
+```
+
+supaya scope tetap terkendali.
+
+## 29.2 Routing
+
+Gunakan:
+
+```txt
+/community
+/community/messages
+/community/messages/[conversationId]
+```
+
+Desktop:
+
+```txt
+ZYBA Sidebar
+    ↓
+Community Sidebar
+    ↓
+DM List       Active Conversation
+```
+
+Mobile:
+
+```txt
+Messages List
+      ↓
+Conversation
+```
+
+Saat masuk conversation dari mobile, tampilkan tombol `ArrowLeft`.
+
+## 29.3 Community Sidebar
+
+Bagian Messages yang sebelumnya sudah disebut dalam referensi sidebar Community sekarang WAJIB benar-benar diimplementasikan.
+
+Urutan:
+
+```txt
+← Kembali ke ZYBA
+
+Untuk Kamu
+Postingan Baru
+Cari
+Pesan
+Notifikasi
+Profil
+
+FEED LAIN
+Mengikuti
+Disimpan
+Disukai
+```
+
+Icon semuanya Lucide:
+
+```txt
+House
+Plus
+Search
+MessageCircle
+Bell
+UserRound
+Users
+Bookmark
+Heart
+```
+
+Tidak ada emoji.
+
+`MessageCircle` harus menjadi entry point menuju:
+
+```txt
+/community/messages
+```
+
+## 29.4 Database Schema — Community DB
+
+Karena Community sudah berada di database terpisah, userId tetap `String` tanpa relation ke Account DB.
+
+Tambahkan:
+
+```prisma
+model DirectConversation {
+  id             String            @id @default(cuid())
+  pairKey        String            @unique
+  createdAt      DateTime          @default(now())
+  updatedAt      DateTime          @updatedAt
+  lastMessageAt  DateTime?
+  participants   DirectParticipant[]
+  messages       DirectMessage[]
+
+  @@index([lastMessageAt])
+  @@map("direct_conversations")
+}
+
+model DirectParticipant {
+  id              String             @id @default(cuid())
+  conversationId  String
+  conversation    DirectConversation @relation(
+    fields: [conversationId],
+    references: [id],
+    onDelete: Cascade
+  )
+  userId          String
+  joinedAt        DateTime           @default(now())
+  lastReadAt      DateTime?
+  mutedAt         DateTime?
+
+  @@unique([conversationId, userId])
+  @@index([userId, updatedAt])
+  @@map("direct_participants")
+}
+
+model DirectMessage {
+  id               String             @id @default(cuid())
+  conversationId   String
+  conversation     DirectConversation @relation(
+    fields: [conversationId],
+    references: [id],
+    onDelete: Cascade
+  )
+  senderId         String
+  clientMessageId  String
+  content          String?
+  attachmentType   String?
+  attachmentUrl    String?
+  createdAt        DateTime           @default(now())
+  editedAt         DateTime?
+  deletedAt        DateTime?
+  flaggedForRisk   Boolean            @default(false)
+
+  @@unique([conversationId, senderId, clientMessageId])
+  @@index([conversationId, createdAt])
+  @@index([senderId, createdAt])
+  @@map("direct_messages")
+}
+```
+
+Catatan: `pairKey` dibentuk server dengan ID yang diurutkan:
+
+```ts
+const pairKey = [userAId, userBId].sort().join(":");
+```
+
+Dengan ini user A dan B tidak bisa tanpa sengaja memiliki dua DM berbeda.
+
+## 29.5 Realtime Transport
+
+Untuk v1 gunakan:
+
+```txt
+Neon Community DB
+      +
+      ↓
+Ably Realtime
+```
+
+Neon = source of truth.
+
+Ably = realtime delivery layer.
+
+Jangan menyimpan message history hanya di Ably.
+
+Flow kirim message:
+
+```txt
+Client
+  ↓
+POST /api/community/messages
+  ↓
+Auth + permission check
+  ↓
+detectRisk()
+  ↓
+Save DirectMessage ke Neon
+  ↓
+Publish event ke Ably
+  ↓
+Recipient menerima realtime event
+```
+
+Kalau Ably mati:
+
+```txt
+message tetap tersimpan di Neon
+```
+
+Client melakukan fetch ulang sehingga message tetap muncul.
+
+## 29.6 Ably Channel Naming
+
+Gunakan channel privat:
+
+```txt
+community:dm:{conversationId}
+```
+
+Inbox:
+
+```txt
+community:inbox:{userId}
+```
+
+Conversation channel:
+
+```txt
+subscribe
+publish
+presence
+history
+```
+
+Inbox channel digunakan untuk:
+
+```txt
+new message
+unread count update
+conversation updated
+```
+
+Jangan memberikan wildcard capability terlalu luas kalau tidak diperlukan.
+
+Token Ably harus dibuat dari server:
+
+```txt
+/api/community/realtime/token
+```
+
+Browser tidak pernah menerima `ABLY_API_KEY` langsung.
+
+Client menggunakan token authentication.
+
+Capability harus dibatasi ke channel yang memang dimiliki user.
+
+## 29.7 Environment Variables
+
+Tambahkan:
+
+```env
+ABLY_API_KEY=""
+NEXT_PUBLIC_ABLY_CLIENT_ID=""
+```
+
+`ABLY_API_KEY` server-only.
+
+Jangan memakai:
+
+```env
+NEXT_PUBLIC_ABLY_API_KEY=""
+```
+
+API key tidak boleh masuk bundle browser.
+
+## 29.8 Sending Message
+
+Endpoint:
+
+```http
+POST /api/community/messages
+```
+
+Request:
+
+```json
+{
+  "conversationId": "conv_123",
+  "clientMessageId": "local_abc123",
+  "content": "Semangat ya buat lombanya!"
+}
+```
+
+Server wajib:
+
+1. autentikasi user;
+2. pastikan conversation ada;
+3. pastikan user adalah participant;
+4. validasi `clientMessageId`;
+5. validasi panjang message;
+6. jalankan `detectRisk()` untuk teks bebas;
+7. simpan message;
+8. update `lastMessageAt`;
+9. publish event ke Ably;
+10. return canonical message dari database.
+
+`clientMessageId` digunakan untuk idempotency sehingga klik dua kali / retry network tidak menghasilkan duplicate message.
+
+## 29.9 Realtime Receive
+
+Client subscribe ke:
+
+```txt
+community:dm:{conversationId}
+```
+
+Saat event diterima:
+
+```txt
+cek message.id
+↓
+kalau sudah ada → ignore
+kalau belum → append
+```
+
+Jangan melakukan full refetch setiap menerima satu message.
+
+Refetch hanya untuk:
+
+```txt
+initial load
+reconnect
+pagination
+manual refresh
+```
+
+## 29.10 Reconnect
+
+Realtime UI harus menangani:
+
+```txt
+connected
+connecting
+disconnected
+failed
+```
+
+Ketika reconnect:
+
+```txt
+Ably reconnect
+↓
+ambil message terbaru dari Neon
+↓
+deduplicate berdasarkan message.id
+↓
+lanjut realtime subscription
+```
+
+Jangan mengandalkan koneksi realtime untuk menjamin tidak ada message yang terlewat.
+
+## 29.11 Typing Indicator
+
+Typing indicator TIDAK disimpan ke database.
+
+Gunakan realtime event:
+
+```txt
+typing:start
+typing:stop
+```
+
+Debounce sekitar:
+
+```txt
+300–500ms
+```
+
+UI:
+
+```txt
+Kina sedang mengetik...
+```
+
+atau:
+
+```txt
+Sedang mengetik...
+```
+
+Jangan membuat database row untuk setiap keystroke.
+
+## 29.12 Read Receipt
+
+Gunakan `lastReadAt` pada `DirectParticipant`.
+
+Flow:
+
+```txt
+User membuka conversation
+↓
+update lastReadAt
+↓
+publish read event
+```
+
+Visual:
+
+```txt
+✓    terkirim
+✓✓   dibaca
+```
+
+Gunakan Lucide `Check` / `CheckCheck`, bukan karakter Unicode `✓` yang ditulis manual kalau icon component sudah tersedia.
+
+## 29.13 DM Privacy
+
+Account Settings wajib memiliki kontrol:
+
+```txt
+Siapa yang boleh mengirim pesan?
+○ Semua pengguna
+○ Pengguna yang saya ikuti
+○ Tidak ada
+```
+
+Tambahkan block:
+
+```txt
+Block user
+```
+
+Saat blocked:
+
+```txt
+pengirim tidak bisa mengirim message
+recipient tidak mendapat notification baru
+conversation history tetap konsisten
+```
+
+Block enforcement WAJIB di server, bukan hanya UI.
+
+## 29.14 Report
+
+Menu:
+
+```txt
+MoreHorizontal
+    ├─ Laporkan
+    └─ Blokir
+```
+
+Jangan menggunakan modal penuh untuk menu sederhana.
+
+Report minimal menyimpan:
+
+```txt
+reporterId
+reportedUserId
+messageId / conversationId
+reason
+createdAt
+```
+
+Reason dapat berupa:
+
+```txt
+Spam
+Pelecehan
+Konten tidak pantas
+Lainnya
+```
+
+## 29.15 DM UI
+
+Desktop:
+
+```txt
+Community Sidebar
+      │
+      ├── DM List
+      │
+      └── Active Chat
+```
+
+DM list item:
+
+```txt
+Avatar    Nama User
+          Preview pesan terakhir
+                              12m
+```
+
+Unread:
+
+```txt
+Nama User
+Preview pesan...
+                         ●
+```
+
+Jangan membuat setiap conversation sebagai card besar.
+
+Gunakan divider tipis antar item.
+
+Conversation header:
+
+```txt
+ArrowLeft
+Avatar
+Nama
+Status online/offline
+MoreHorizontal
+```
+
+Message bubble:
+
+User sendiri:
+
+```txt
+rata kanan
+brown-900
+white text
+```
+
+User lain:
+
+```txt
+rata kiri
+white/cream
+brown text
+```
+
+Jangan menciptakan bubble dengan warna baru di luar design token ZYBA.
+
+Composer:
+
+```txt
+Paperclip
+textarea
+Smile
+Send
+```
+
+Tombol send memakai:
+
+```txt
+Send
+```
+
+bukan `➤`.
+
+## 29.16 Empty State DM
+
+Kalau belum ada conversation:
+
+```txt
+MessageCircle
+Belum ada pesan
+Mulai ngobrol dengan orang dari komunitas.
+```
+
+CTA:
+
+```txt
+Temukan teman di komunitas
+```
+
+Gunakan icon Lucide.
+
+Tidak memakai emoji.
+
+---
+
+# 30. Design System — SEMUA ICON WAJIB LUCIDE
+
+Install:
+
+```bash
+npm install lucide-react
+```
+
+Mulai sekarang seluruh icon UI ZYBA wajib menggunakan `lucide-react`.
+
+Tidak boleh lagi menggunakan emoji sebagai icon interface.
+
+## 30.1 Icon Rules
+
+Gunakan stroke icon default Lucide.
+
+Ukuran umum:
+
+```txt
+16px → metadata / secondary action
+18px → nav / compact action
+20px → standard action
+24px → prominent action
+28px+ → empty state / feature illustration
+```
+
+Jangan mencampur icon 16px, 24px, 28px dalam satu action row tanpa alasan.
+
+## 30.2 Mapping Utama
+
+```txt
+Back             ArrowLeft
+Close            X
+Search            Search
+Settings          Settings2
+New               Plus
+Send              Send
+Attachment        Paperclip
+Voice             Mic
+Speaker           Volume2
+Stop Audio        VolumeX
+Notification      Bell
+Messages          MessageCircle
+Profile           UserRound
+Community         Users
+Like              Heart
+Comment           MessageCircle
+Repost            Repeat2
+Share             Share2
+More              MoreHorizontal
+Report            Flag
+Block             Ban
+Image             Image
+Upload            Upload
+Loading           LoaderCircle
+Success           Check
+Read              CheckCheck
+Online            Circle
+Error             CircleAlert
+Security          Shield
+Privacy           Lock
+```
+
+Gunakan nama icon sesuai makna.
+
+Jangan memakai `Sparkles` untuk semua hal hanya karena terlihat "AI".
+
+## 30.3 Persona
+
+Persona hewan tetap boleh memiliki identitas visual.
+
+Tetapi emoji seperti:
+
+```txt
+🐰 🦉 🦊 🐻
+```
+
+tidak boleh digunakan sebagai UI icon.
+
+Ganti menjadi mascot asset/illustration:
+
+```txt
+Kina  → /mascots/kina.webp
+Ollie → /mascots/ollie.webp
+Rubi  → /mascots/rubi.webp
+Bruno → /mascots/bruno.webp
+```
+
+Data persona:
+
+```ts
+{
+  id: "KINA",
+  name: "Kina",
+  mascotSrc: "/mascots/kina.webp",
+}
+```
+
+Action button di sekitar mascot tetap Lucide.
+
+---
+
+# 30.4 Icon Button Accessibility
+
+Semua icon-only button wajib memiliki:
+
+```tsx
+aria-label
+title
+```
+
+Contoh:
+
+```tsx
+<button
+  type="button"
+  aria-label="Kirim pesan"
+  title="Kirim pesan"
+>
+  <Send size={20} aria-hidden="true" />
+</button>
+```
+
+Jangan membuat tombol hanya:
+
+```tsx
+<button>
+  <Send />
+</button>
+```
+
+karena tidak cukup jelas untuk accessibility.
+
+Tap target mobile minimum:
+
+```txt
+44 × 44px
+```
+
+Icon visual tidak harus 44px; container-nya yang harus memenuhi tap target.
+
+---
+
+# 30.5 Spacing System — Jangan Seragam
+
+ZYBA tidak boleh menggunakan spacing yang sama untuk semua komponen.
+
+Kesalahan yang harus dihindari:
+
+```txt
+semua card       p-6
+semua layout     gap-4
+semua section    mt-8
+semua item       py-3
+```
+
+Hasilnya terasa seperti template generik.
+
+Gunakan spacing berdasarkan hierarki.
+
+### Micro spacing
+
+Untuk icon + label:
+
+```txt
+gap-1.5
+gap-2
+```
+
+Contoh:
+
+```tsx
+<div className="flex items-center gap-2">
+```
+
+### Control spacing
+
+Untuk input, button group, action row:
+
+```txt
+gap-2
+gap-3
+```
+
+### Component spacing
+
+Dalam card / panel:
+
+```txt
+gap-4
+gap-5
+```
+
+Tidak semua harus `gap-6`.
+
+### Section spacing
+
+Antara blok besar:
+
+```txt
+gap-8
+gap-10
+gap-12
+```
+
+### Page section spacing
+
+Untuk section landing / dashboard:
+
+```txt
+py-12
+py-16
+py-20
+```
+
+Gunakan lebih besar ketika berpindah konteks.
+
+---
+
+# 30.6 Intentional Rhythm
+
+Spacing harus menunjukkan struktur.
+
+Contoh Companion:
+
+```txt
+Header
+  ↓ 12px
+Status / emotion
+  ↓ 24px
+Messages
+  ↓
+Message group
+  ↓ 32px
+Next message group
+```
+
+Jangan:
+
+```txt
+Header
+  ↓ 24
+Status
+  ↓ 24
+Messages
+  ↓ 24
+Every message
+  ↓ 24
+```
+
+Message dalam satu grup harus lebih rapat daripada antar grup.
+
+Contoh:
+
+```txt
+message 1
+message 2
+message 3
+
+      ↓ larger gap
+
+message 4
+```
+
+---
+
+# 30.7 Community Feed Spacing
+
+Community jangan menggunakan card terpisah dengan padding identik.
+
+Gunakan pola:
+
+```txt
+Post header
+   ↓ 8
+Post body
+   ↓ 12–16
+Media
+   ↓ 12
+Action row
+   ↓ 16
+Divider
+   ↓ 20–24
+Next post
+```
+
+Post yang memiliki image tidak boleh memiliki spacing sama persis dengan post text-only.
+
+Post text-only boleh lebih compact.
+
+Post dengan attachment mendapat ruang visual lebih besar.
+
+---
+
+# 30.8 Sidebar Spacing
+
+Sidebar harus lebih dense daripada content.
+
+Gunakan:
+
+```txt
+section label     mb-2
+nav item          py-2
+nav group         gap-1
+between groups    mt-6 / mt-8
+```
+
+Jangan memberi `py-4` ke setiap nav item karena sidebar akan terlalu tinggi.
+
+Active state tetap subtle:
+
+```txt
+bg-brown-900/5
+```
+
+bukan:
+
+```txt
+bg-green-100
+border-orange-500
+shadow
+```
+
+kecuali ada kebutuhan spesifik yang jelas.
+
+---
+
+# 30.9 DM Spacing
+
+DM list:
+
+```txt
+avatar      gap-3      content
+```
+
+Conversation header:
+
+```txt
+avatar + name        kiri
+actions              kanan
+```
+
+Message group:
+
+```txt
+same sender
+  → compact spacing
+
+different sender
+  → larger spacing
+```
+
+Composer:
+
+```txt
+top padding    12–16
+inner controls 8–12
+bottom padding 12–16
+```
+
+Jangan membuat composer setinggi card dashboard.
+
+---
+
+# 30.10 Decorative Elements
+
+Kurangi dekorasi yang tidak memiliki fungsi.
+
+Jangan menambahkan:
+
+```txt
+gradient random
+glow
+multiple badges
+random circles
+emoji decorations
+excessive shadows
+```
+
+ZYBA harus terasa:
+
+```txt
+warm
+clean
+calm
+modern
+intentional
+```
+
+Bukan:
+
+```txt
+colorful AI dashboard
+```
+
+---
+
+# 31. Final Integration Checklist — FITUR BARU
+
+## Companion AI
+
+* [ ] Semua model yang muncul di selector benar-benar memanggil provider nyata.
+* [ ] Tidak ada model dummy/hardcoded response.
+* [ ] Model registry menjadi sumber kebenaran.
+* [ ] `npm run ai:models-test` berhasil.
+* [ ] Provider failure menghasilkan fallback yang jelas.
+* [ ] ElevenLabs menjadi provider TTS utama.
+* [ ] ElevenLabs streaming berhasil.
+* [ ] Bahasa Indonesia berhasil disintesis.
+* [ ] `ELEVENLABS_API_KEY` server-only.
+* [ ] TTS audio dicache berdasarkan Message.
+* [ ] Tombol speaker menggunakan Lucide.
+* [ ] `npm run ai:tts-test` berhasil.
+* [ ] Browser SpeechSynthesis hanya menjadi fallback terakhir.
+* [ ] Edge TTS tidak lagi menjadi provider default.
+
+## Community DM
+
+* [ ] `/community/messages` tersedia.
+* [ ] `/community/messages/[conversationId]` tersedia.
+* [ ] Community Sidebar memiliki item `Pesan`.
+* [ ] DM 1:1 menggunakan pairKey.
+* [ ] DirectMessage sudah dipaginate.
+* [ ] `clientMessageId` mencegah duplicate send.
+* [ ] detectRisk() dipanggil pada DM text.
+* [ ] Message tersimpan di Community DB.
+* [ ] Ably digunakan untuk realtime delivery.
+* [ ] Ably API key hanya server-side.
+* [ ] Token capability dibatasi ke conversation/user channel.
+* [ ] Typing indicator tidak disimpan ke database.
+* [ ] Read receipt tersimpan.
+* [ ] Reconnect melakukan resync dari Neon.
+* [ ] Block enforcement dilakukan di server.
+* [ ] Report flow tersedia.
+* [ ] Unread count real-time.
+* [ ] Online/offline state tersedia.
+* [ ] Tidak ada polling setiap beberapa detik sebagai pengganti realtime.
+
+## Icon Consistency
+
+* [ ] `lucide-react` terpasang.
+* [ ] Tidak ada emoji sebagai UI icon.
+* [ ] Tidak ada `←`, `→`, `➤`, `❤️`, `💬`, `🔊`, `📎` yang dipakai sebagai icon UI.
+* [ ] Persona animal menggunakan mascot asset, bukan emoji.
+* [ ] Semua icon button memiliki aria-label.
+* [ ] Ukuran icon mengikuti aturan 16/18/20/24/28.
+* [ ] Stroke style konsisten.
+
+## Spacing
+
+* [ ] Tidak semua card menggunakan `p-6`.
+* [ ] Tidak semua layout menggunakan `gap-4`.
+* [ ] Sidebar lebih dense daripada content.
+* [ ] Message group lebih compact daripada section spacing.
+* [ ] Post dengan media memiliki rhythm berbeda dari text-only post.
+* [ ] Landing section menggunakan spacing lebih besar.
+* [ ] Mobile tap target minimal 44×44px.
+* [ ] Tidak ada blank space besar akibat padding yang terbawa dari breakpoint mobile.
+* [ ] Desktop dan mobile sama-sama dicek secara visual.
+
+## Final Browser Verification
+
+Jangan melaporkan fitur "selesai" hanya karena build berhasil.
+
+Wajib test langsung:
+
+```txt
+1. Login
+2. Pilih setiap model Companion
+3. Kirim message
+4. Pastikan response provider benar-benar berbeda sesuai model
+5. Tekan speaker
+6. Audio ElevenLabs terdengar
+7. Tekan speaker kedua kali
+8. Pastikan cache digunakan
+9. Masuk Community
+10. Buka Pesan
+11. User A kirim DM ke User B
+12. User B menerima tanpa refresh
+13. User B membalas
+14. Typing indicator muncul
+15. Read receipt berubah
+16. Disconnect/reconnect
+17. Pastikan message tidak hilang
+18. Block user
+19. Pastikan server menolak pesan setelah block
+20. Test mobile 375px
+21. Test mobile 390px
+22. Test tablet 768px
+23. Test desktop ≥1024px
+```
+
+Selesai hanya jika behavior, database, realtime, API, dan visual semuanya benar-benar bekerja.

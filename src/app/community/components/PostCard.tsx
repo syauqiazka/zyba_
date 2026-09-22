@@ -1,7 +1,9 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { useCommunity } from "../context/CommunityContext";
+import { Check } from "lucide-react";
 
 export interface CommentItem {
   id: string;
@@ -13,6 +15,7 @@ export interface CommentItem {
 
 export interface Post {
   id: string;
+  userId?: string;
   author: string;
   avatar: string;
   isVerified: boolean;
@@ -112,6 +115,7 @@ function AvatarBubble({ initials, size = "md" }: { initials: string; size?: "sm"
 }
 
 export default function PostCard({ post, onToggleLike, onToggleRepost, onAddComment, onTagClick }: PostCardProps) {
+  const router = useRouter();
   const { savedPostIds = [], handleToggleSave = () => {} } = useCommunity();
   const isSaved = savedPostIds.includes(post.id);
   const onToggleSave = handleToggleSave;
@@ -119,6 +123,12 @@ export default function PostCard({ post, onToggleLike, onToggleRepost, onAddComm
   const [showComments, setShowComments] = useState(false);
   const [commentInput, setCommentInput] = useState("");
   const [showShareToast, setShowShareToast] = useState(false);
+
+  const handleAuthorClick = () => {
+    if (post.userId) {
+      router.push(`/community/profile/${post.userId}`);
+    }
+  };
 
   const handleSendComment = () => {
     if (!commentInput.trim()) return;
@@ -138,7 +148,13 @@ export default function PostCard({ post, onToggleLike, onToggleRepost, onAddComm
     <article className="flex gap-3.5 px-5 py-4 border-b border-brown-900/[0.06] hover:bg-[#faf7f2]/50 transition-colors group last:border-b-0">
       {/* Left column: Avatar + vertical thread line */}
       <div className="flex flex-col items-center">
-        <AvatarBubble initials={post.avatar} />
+        <button 
+          type="button"
+          onClick={handleAuthorClick}
+          className="cursor-pointer hover:opacity-80 transition-opacity"
+        >
+          <AvatarBubble initials={post.avatar} />
+        </button>
         {/* Thread line — only when comments expand */}
         {showComments && post.comments && post.comments.length > 0 && (
           <div className="w-0.5 flex-1 bg-brown-900/10 mt-2 mb-1 min-h-[20px] rounded-full" />
@@ -150,12 +166,20 @@ export default function PostCard({ post, onToggleLike, onToggleRepost, onAddComm
         {/* Header row */}
         <div className="flex items-center justify-between gap-2 mb-1.5">
           <div className="flex items-center gap-1.5 min-w-0">
-            <span className="font-display font-bold text-sm text-brown-900 truncate">{post.author}</span>
+            <button
+              type="button"
+              onClick={handleAuthorClick}
+              className="font-display font-bold text-sm text-brown-900 truncate hover:underline cursor-pointer"
+            >
+              {post.author}
+            </button>
             {post.isVerified && (
               <span
                 title="Terverifikasi ZYBA"
-                className="inline-flex items-center justify-center w-4 h-4 rounded-full bg-green-100 text-green-700 text-[9px] font-extrabold border border-green-200 shrink-0"
-              >✓</span>
+                className="inline-flex items-center justify-center w-4 h-4 rounded-full bg-green-100 text-green-700 border border-green-200 shrink-0"
+              >
+                <Check className="w-2.5 h-2.5" strokeWidth={3} />
+              </span>
             )}
             <span className="text-xs text-brown-700/50 font-normal shrink-0">· {post.time}</span>
           </div>

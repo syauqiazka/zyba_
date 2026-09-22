@@ -28,6 +28,36 @@ export type CommunityComment = $Result.DefaultSelection<Prisma.$CommunityComment
  * 
  */
 export type CommunityLike = $Result.DefaultSelection<Prisma.$CommunityLikePayload>
+/**
+ * Model DirectConversation
+ * 
+ */
+export type DirectConversation = $Result.DefaultSelection<Prisma.$DirectConversationPayload>
+/**
+ * Model DirectParticipant
+ * 
+ */
+export type DirectParticipant = $Result.DefaultSelection<Prisma.$DirectParticipantPayload>
+/**
+ * Model DirectMessage
+ * 
+ */
+export type DirectMessage = $Result.DefaultSelection<Prisma.$DirectMessagePayload>
+/**
+ * Model CommunityFollow
+ * 
+ */
+export type CommunityFollow = $Result.DefaultSelection<Prisma.$CommunityFollowPayload>
+/**
+ * Model CommunityBookmark
+ * 
+ */
+export type CommunityBookmark = $Result.DefaultSelection<Prisma.$CommunityBookmarkPayload>
+/**
+ * Model CommunityNotification
+ * 
+ */
+export type CommunityNotification = $Result.DefaultSelection<Prisma.$CommunityNotificationPayload>
 
 /**
  * ##  Prisma Client ʲˢ
@@ -181,6 +211,66 @@ export class PrismaClient<
     * ```
     */
   get communityLike(): Prisma.CommunityLikeDelegate<ExtArgs>;
+
+  /**
+   * `prisma.directConversation`: Exposes CRUD operations for the **DirectConversation** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more DirectConversations
+    * const directConversations = await prisma.directConversation.findMany()
+    * ```
+    */
+  get directConversation(): Prisma.DirectConversationDelegate<ExtArgs>;
+
+  /**
+   * `prisma.directParticipant`: Exposes CRUD operations for the **DirectParticipant** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more DirectParticipants
+    * const directParticipants = await prisma.directParticipant.findMany()
+    * ```
+    */
+  get directParticipant(): Prisma.DirectParticipantDelegate<ExtArgs>;
+
+  /**
+   * `prisma.directMessage`: Exposes CRUD operations for the **DirectMessage** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more DirectMessages
+    * const directMessages = await prisma.directMessage.findMany()
+    * ```
+    */
+  get directMessage(): Prisma.DirectMessageDelegate<ExtArgs>;
+
+  /**
+   * `prisma.communityFollow`: Exposes CRUD operations for the **CommunityFollow** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more CommunityFollows
+    * const communityFollows = await prisma.communityFollow.findMany()
+    * ```
+    */
+  get communityFollow(): Prisma.CommunityFollowDelegate<ExtArgs>;
+
+  /**
+   * `prisma.communityBookmark`: Exposes CRUD operations for the **CommunityBookmark** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more CommunityBookmarks
+    * const communityBookmarks = await prisma.communityBookmark.findMany()
+    * ```
+    */
+  get communityBookmark(): Prisma.CommunityBookmarkDelegate<ExtArgs>;
+
+  /**
+   * `prisma.communityNotification`: Exposes CRUD operations for the **CommunityNotification** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more CommunityNotifications
+    * const communityNotifications = await prisma.communityNotification.findMany()
+    * ```
+    */
+  get communityNotification(): Prisma.CommunityNotificationDelegate<ExtArgs>;
 }
 
 export namespace Prisma {
@@ -624,7 +714,13 @@ export namespace Prisma {
   export const ModelName: {
     CommunityPost: 'CommunityPost',
     CommunityComment: 'CommunityComment',
-    CommunityLike: 'CommunityLike'
+    CommunityLike: 'CommunityLike',
+    DirectConversation: 'DirectConversation',
+    DirectParticipant: 'DirectParticipant',
+    DirectMessage: 'DirectMessage',
+    CommunityFollow: 'CommunityFollow',
+    CommunityBookmark: 'CommunityBookmark',
+    CommunityNotification: 'CommunityNotification'
   };
 
   export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -640,7 +736,7 @@ export namespace Prisma {
 
   export type TypeMap<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, ClientOptions = {}> = {
     meta: {
-      modelProps: "communityPost" | "communityComment" | "communityLike"
+      modelProps: "communityPost" | "communityComment" | "communityLike" | "directConversation" | "directParticipant" | "directMessage" | "communityFollow" | "communityBookmark" | "communityNotification"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -854,6 +950,426 @@ export namespace Prisma {
           }
         }
       }
+      DirectConversation: {
+        payload: Prisma.$DirectConversationPayload<ExtArgs>
+        fields: Prisma.DirectConversationFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.DirectConversationFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DirectConversationPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.DirectConversationFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DirectConversationPayload>
+          }
+          findFirst: {
+            args: Prisma.DirectConversationFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DirectConversationPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.DirectConversationFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DirectConversationPayload>
+          }
+          findMany: {
+            args: Prisma.DirectConversationFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DirectConversationPayload>[]
+          }
+          create: {
+            args: Prisma.DirectConversationCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DirectConversationPayload>
+          }
+          createMany: {
+            args: Prisma.DirectConversationCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.DirectConversationCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DirectConversationPayload>[]
+          }
+          delete: {
+            args: Prisma.DirectConversationDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DirectConversationPayload>
+          }
+          update: {
+            args: Prisma.DirectConversationUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DirectConversationPayload>
+          }
+          deleteMany: {
+            args: Prisma.DirectConversationDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.DirectConversationUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.DirectConversationUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DirectConversationPayload>
+          }
+          aggregate: {
+            args: Prisma.DirectConversationAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateDirectConversation>
+          }
+          groupBy: {
+            args: Prisma.DirectConversationGroupByArgs<ExtArgs>
+            result: $Utils.Optional<DirectConversationGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.DirectConversationCountArgs<ExtArgs>
+            result: $Utils.Optional<DirectConversationCountAggregateOutputType> | number
+          }
+        }
+      }
+      DirectParticipant: {
+        payload: Prisma.$DirectParticipantPayload<ExtArgs>
+        fields: Prisma.DirectParticipantFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.DirectParticipantFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DirectParticipantPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.DirectParticipantFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DirectParticipantPayload>
+          }
+          findFirst: {
+            args: Prisma.DirectParticipantFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DirectParticipantPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.DirectParticipantFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DirectParticipantPayload>
+          }
+          findMany: {
+            args: Prisma.DirectParticipantFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DirectParticipantPayload>[]
+          }
+          create: {
+            args: Prisma.DirectParticipantCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DirectParticipantPayload>
+          }
+          createMany: {
+            args: Prisma.DirectParticipantCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.DirectParticipantCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DirectParticipantPayload>[]
+          }
+          delete: {
+            args: Prisma.DirectParticipantDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DirectParticipantPayload>
+          }
+          update: {
+            args: Prisma.DirectParticipantUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DirectParticipantPayload>
+          }
+          deleteMany: {
+            args: Prisma.DirectParticipantDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.DirectParticipantUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.DirectParticipantUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DirectParticipantPayload>
+          }
+          aggregate: {
+            args: Prisma.DirectParticipantAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateDirectParticipant>
+          }
+          groupBy: {
+            args: Prisma.DirectParticipantGroupByArgs<ExtArgs>
+            result: $Utils.Optional<DirectParticipantGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.DirectParticipantCountArgs<ExtArgs>
+            result: $Utils.Optional<DirectParticipantCountAggregateOutputType> | number
+          }
+        }
+      }
+      DirectMessage: {
+        payload: Prisma.$DirectMessagePayload<ExtArgs>
+        fields: Prisma.DirectMessageFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.DirectMessageFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DirectMessagePayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.DirectMessageFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DirectMessagePayload>
+          }
+          findFirst: {
+            args: Prisma.DirectMessageFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DirectMessagePayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.DirectMessageFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DirectMessagePayload>
+          }
+          findMany: {
+            args: Prisma.DirectMessageFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DirectMessagePayload>[]
+          }
+          create: {
+            args: Prisma.DirectMessageCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DirectMessagePayload>
+          }
+          createMany: {
+            args: Prisma.DirectMessageCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.DirectMessageCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DirectMessagePayload>[]
+          }
+          delete: {
+            args: Prisma.DirectMessageDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DirectMessagePayload>
+          }
+          update: {
+            args: Prisma.DirectMessageUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DirectMessagePayload>
+          }
+          deleteMany: {
+            args: Prisma.DirectMessageDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.DirectMessageUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.DirectMessageUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DirectMessagePayload>
+          }
+          aggregate: {
+            args: Prisma.DirectMessageAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateDirectMessage>
+          }
+          groupBy: {
+            args: Prisma.DirectMessageGroupByArgs<ExtArgs>
+            result: $Utils.Optional<DirectMessageGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.DirectMessageCountArgs<ExtArgs>
+            result: $Utils.Optional<DirectMessageCountAggregateOutputType> | number
+          }
+        }
+      }
+      CommunityFollow: {
+        payload: Prisma.$CommunityFollowPayload<ExtArgs>
+        fields: Prisma.CommunityFollowFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.CommunityFollowFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CommunityFollowPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.CommunityFollowFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CommunityFollowPayload>
+          }
+          findFirst: {
+            args: Prisma.CommunityFollowFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CommunityFollowPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.CommunityFollowFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CommunityFollowPayload>
+          }
+          findMany: {
+            args: Prisma.CommunityFollowFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CommunityFollowPayload>[]
+          }
+          create: {
+            args: Prisma.CommunityFollowCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CommunityFollowPayload>
+          }
+          createMany: {
+            args: Prisma.CommunityFollowCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.CommunityFollowCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CommunityFollowPayload>[]
+          }
+          delete: {
+            args: Prisma.CommunityFollowDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CommunityFollowPayload>
+          }
+          update: {
+            args: Prisma.CommunityFollowUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CommunityFollowPayload>
+          }
+          deleteMany: {
+            args: Prisma.CommunityFollowDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.CommunityFollowUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.CommunityFollowUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CommunityFollowPayload>
+          }
+          aggregate: {
+            args: Prisma.CommunityFollowAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateCommunityFollow>
+          }
+          groupBy: {
+            args: Prisma.CommunityFollowGroupByArgs<ExtArgs>
+            result: $Utils.Optional<CommunityFollowGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.CommunityFollowCountArgs<ExtArgs>
+            result: $Utils.Optional<CommunityFollowCountAggregateOutputType> | number
+          }
+        }
+      }
+      CommunityBookmark: {
+        payload: Prisma.$CommunityBookmarkPayload<ExtArgs>
+        fields: Prisma.CommunityBookmarkFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.CommunityBookmarkFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CommunityBookmarkPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.CommunityBookmarkFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CommunityBookmarkPayload>
+          }
+          findFirst: {
+            args: Prisma.CommunityBookmarkFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CommunityBookmarkPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.CommunityBookmarkFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CommunityBookmarkPayload>
+          }
+          findMany: {
+            args: Prisma.CommunityBookmarkFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CommunityBookmarkPayload>[]
+          }
+          create: {
+            args: Prisma.CommunityBookmarkCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CommunityBookmarkPayload>
+          }
+          createMany: {
+            args: Prisma.CommunityBookmarkCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.CommunityBookmarkCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CommunityBookmarkPayload>[]
+          }
+          delete: {
+            args: Prisma.CommunityBookmarkDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CommunityBookmarkPayload>
+          }
+          update: {
+            args: Prisma.CommunityBookmarkUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CommunityBookmarkPayload>
+          }
+          deleteMany: {
+            args: Prisma.CommunityBookmarkDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.CommunityBookmarkUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.CommunityBookmarkUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CommunityBookmarkPayload>
+          }
+          aggregate: {
+            args: Prisma.CommunityBookmarkAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateCommunityBookmark>
+          }
+          groupBy: {
+            args: Prisma.CommunityBookmarkGroupByArgs<ExtArgs>
+            result: $Utils.Optional<CommunityBookmarkGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.CommunityBookmarkCountArgs<ExtArgs>
+            result: $Utils.Optional<CommunityBookmarkCountAggregateOutputType> | number
+          }
+        }
+      }
+      CommunityNotification: {
+        payload: Prisma.$CommunityNotificationPayload<ExtArgs>
+        fields: Prisma.CommunityNotificationFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.CommunityNotificationFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CommunityNotificationPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.CommunityNotificationFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CommunityNotificationPayload>
+          }
+          findFirst: {
+            args: Prisma.CommunityNotificationFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CommunityNotificationPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.CommunityNotificationFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CommunityNotificationPayload>
+          }
+          findMany: {
+            args: Prisma.CommunityNotificationFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CommunityNotificationPayload>[]
+          }
+          create: {
+            args: Prisma.CommunityNotificationCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CommunityNotificationPayload>
+          }
+          createMany: {
+            args: Prisma.CommunityNotificationCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.CommunityNotificationCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CommunityNotificationPayload>[]
+          }
+          delete: {
+            args: Prisma.CommunityNotificationDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CommunityNotificationPayload>
+          }
+          update: {
+            args: Prisma.CommunityNotificationUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CommunityNotificationPayload>
+          }
+          deleteMany: {
+            args: Prisma.CommunityNotificationDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.CommunityNotificationUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.CommunityNotificationUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CommunityNotificationPayload>
+          }
+          aggregate: {
+            args: Prisma.CommunityNotificationAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateCommunityNotification>
+          }
+          groupBy: {
+            args: Prisma.CommunityNotificationGroupByArgs<ExtArgs>
+            result: $Utils.Optional<CommunityNotificationGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.CommunityNotificationCountArgs<ExtArgs>
+            result: $Utils.Optional<CommunityNotificationCountAggregateOutputType> | number
+          }
+        }
+      }
     }
   } & {
     other: {
@@ -1047,6 +1563,77 @@ export namespace Prisma {
    */
   export type CommunityPostCountOutputTypeCountLikesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: CommunityLikeWhereInput
+  }
+
+
+  /**
+   * Count Type CommunityCommentCountOutputType
+   */
+
+  export type CommunityCommentCountOutputType = {
+    replies: number
+  }
+
+  export type CommunityCommentCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    replies?: boolean | CommunityCommentCountOutputTypeCountRepliesArgs
+  }
+
+  // Custom InputTypes
+  /**
+   * CommunityCommentCountOutputType without action
+   */
+  export type CommunityCommentCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CommunityCommentCountOutputType
+     */
+    select?: CommunityCommentCountOutputTypeSelect<ExtArgs> | null
+  }
+
+  /**
+   * CommunityCommentCountOutputType without action
+   */
+  export type CommunityCommentCountOutputTypeCountRepliesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: CommunityCommentWhereInput
+  }
+
+
+  /**
+   * Count Type DirectConversationCountOutputType
+   */
+
+  export type DirectConversationCountOutputType = {
+    participants: number
+    messages: number
+  }
+
+  export type DirectConversationCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    participants?: boolean | DirectConversationCountOutputTypeCountParticipantsArgs
+    messages?: boolean | DirectConversationCountOutputTypeCountMessagesArgs
+  }
+
+  // Custom InputTypes
+  /**
+   * DirectConversationCountOutputType without action
+   */
+  export type DirectConversationCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DirectConversationCountOutputType
+     */
+    select?: DirectConversationCountOutputTypeSelect<ExtArgs> | null
+  }
+
+  /**
+   * DirectConversationCountOutputType without action
+   */
+  export type DirectConversationCountOutputTypeCountParticipantsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: DirectParticipantWhereInput
+  }
+
+  /**
+   * DirectConversationCountOutputType without action
+   */
+  export type DirectConversationCountOutputTypeCountMessagesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: DirectMessageWhereInput
   }
 
 
@@ -2112,6 +2699,7 @@ export namespace Prisma {
     userId: string | null
     content: string | null
     stickerId: string | null
+    parentId: string | null
     createdAt: Date | null
   }
 
@@ -2121,6 +2709,7 @@ export namespace Prisma {
     userId: string | null
     content: string | null
     stickerId: string | null
+    parentId: string | null
     createdAt: Date | null
   }
 
@@ -2130,6 +2719,7 @@ export namespace Prisma {
     userId: number
     content: number
     stickerId: number
+    parentId: number
     createdAt: number
     _all: number
   }
@@ -2141,6 +2731,7 @@ export namespace Prisma {
     userId?: true
     content?: true
     stickerId?: true
+    parentId?: true
     createdAt?: true
   }
 
@@ -2150,6 +2741,7 @@ export namespace Prisma {
     userId?: true
     content?: true
     stickerId?: true
+    parentId?: true
     createdAt?: true
   }
 
@@ -2159,6 +2751,7 @@ export namespace Prisma {
     userId?: true
     content?: true
     stickerId?: true
+    parentId?: true
     createdAt?: true
     _all?: true
   }
@@ -2241,6 +2834,7 @@ export namespace Prisma {
     userId: string
     content: string | null
     stickerId: string | null
+    parentId: string | null
     createdAt: Date
     _count: CommunityCommentCountAggregateOutputType | null
     _min: CommunityCommentMinAggregateOutputType | null
@@ -2267,8 +2861,12 @@ export namespace Prisma {
     userId?: boolean
     content?: boolean
     stickerId?: boolean
+    parentId?: boolean
     createdAt?: boolean
     post?: boolean | CommunityPostDefaultArgs<ExtArgs>
+    parent?: boolean | CommunityComment$parentArgs<ExtArgs>
+    replies?: boolean | CommunityComment$repliesArgs<ExtArgs>
+    _count?: boolean | CommunityCommentCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["communityComment"]>
 
   export type CommunityCommentSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -2277,8 +2875,10 @@ export namespace Prisma {
     userId?: boolean
     content?: boolean
     stickerId?: boolean
+    parentId?: boolean
     createdAt?: boolean
     post?: boolean | CommunityPostDefaultArgs<ExtArgs>
+    parent?: boolean | CommunityComment$parentArgs<ExtArgs>
   }, ExtArgs["result"]["communityComment"]>
 
   export type CommunityCommentSelectScalar = {
@@ -2287,20 +2887,27 @@ export namespace Prisma {
     userId?: boolean
     content?: boolean
     stickerId?: boolean
+    parentId?: boolean
     createdAt?: boolean
   }
 
   export type CommunityCommentInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     post?: boolean | CommunityPostDefaultArgs<ExtArgs>
+    parent?: boolean | CommunityComment$parentArgs<ExtArgs>
+    replies?: boolean | CommunityComment$repliesArgs<ExtArgs>
+    _count?: boolean | CommunityCommentCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type CommunityCommentIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     post?: boolean | CommunityPostDefaultArgs<ExtArgs>
+    parent?: boolean | CommunityComment$parentArgs<ExtArgs>
   }
 
   export type $CommunityCommentPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "CommunityComment"
     objects: {
       post: Prisma.$CommunityPostPayload<ExtArgs>
+      parent: Prisma.$CommunityCommentPayload<ExtArgs> | null
+      replies: Prisma.$CommunityCommentPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -2308,6 +2915,7 @@ export namespace Prisma {
       userId: string
       content: string | null
       stickerId: string | null
+      parentId: string | null
       createdAt: Date
     }, ExtArgs["result"]["communityComment"]>
     composites: {}
@@ -2674,6 +3282,8 @@ export namespace Prisma {
   export interface Prisma__CommunityCommentClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     post<T extends CommunityPostDefaultArgs<ExtArgs> = {}>(args?: Subset<T, CommunityPostDefaultArgs<ExtArgs>>): Prisma__CommunityPostClient<$Result.GetResult<Prisma.$CommunityPostPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
+    parent<T extends CommunityComment$parentArgs<ExtArgs> = {}>(args?: Subset<T, CommunityComment$parentArgs<ExtArgs>>): Prisma__CommunityCommentClient<$Result.GetResult<Prisma.$CommunityCommentPayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
+    replies<T extends CommunityComment$repliesArgs<ExtArgs> = {}>(args?: Subset<T, CommunityComment$repliesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CommunityCommentPayload<ExtArgs>, T, "findMany"> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2708,6 +3318,7 @@ export namespace Prisma {
     readonly userId: FieldRef<"CommunityComment", 'String'>
     readonly content: FieldRef<"CommunityComment", 'String'>
     readonly stickerId: FieldRef<"CommunityComment", 'String'>
+    readonly parentId: FieldRef<"CommunityComment", 'String'>
     readonly createdAt: FieldRef<"CommunityComment", 'DateTime'>
   }
     
@@ -3027,6 +3638,41 @@ export namespace Prisma {
   }
 
   /**
+   * CommunityComment.parent
+   */
+  export type CommunityComment$parentArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CommunityComment
+     */
+    select?: CommunityCommentSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CommunityCommentInclude<ExtArgs> | null
+    where?: CommunityCommentWhereInput
+  }
+
+  /**
+   * CommunityComment.replies
+   */
+  export type CommunityComment$repliesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CommunityComment
+     */
+    select?: CommunityCommentSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CommunityCommentInclude<ExtArgs> | null
+    where?: CommunityCommentWhereInput
+    orderBy?: CommunityCommentOrderByWithRelationInput | CommunityCommentOrderByWithRelationInput[]
+    cursor?: CommunityCommentWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: CommunityCommentScalarFieldEnum | CommunityCommentScalarFieldEnum[]
+  }
+
+  /**
    * CommunityComment without action
    */
   export type CommunityCommentDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -3055,18 +3701,21 @@ export namespace Prisma {
     id: string | null
     postId: string | null
     userId: string | null
+    createdAt: Date | null
   }
 
   export type CommunityLikeMaxAggregateOutputType = {
     id: string | null
     postId: string | null
     userId: string | null
+    createdAt: Date | null
   }
 
   export type CommunityLikeCountAggregateOutputType = {
     id: number
     postId: number
     userId: number
+    createdAt: number
     _all: number
   }
 
@@ -3075,18 +3724,21 @@ export namespace Prisma {
     id?: true
     postId?: true
     userId?: true
+    createdAt?: true
   }
 
   export type CommunityLikeMaxAggregateInputType = {
     id?: true
     postId?: true
     userId?: true
+    createdAt?: true
   }
 
   export type CommunityLikeCountAggregateInputType = {
     id?: true
     postId?: true
     userId?: true
+    createdAt?: true
     _all?: true
   }
 
@@ -3166,6 +3818,7 @@ export namespace Prisma {
     id: string
     postId: string
     userId: string
+    createdAt: Date
     _count: CommunityLikeCountAggregateOutputType | null
     _min: CommunityLikeMinAggregateOutputType | null
     _max: CommunityLikeMaxAggregateOutputType | null
@@ -3189,6 +3842,7 @@ export namespace Prisma {
     id?: boolean
     postId?: boolean
     userId?: boolean
+    createdAt?: boolean
     post?: boolean | CommunityPostDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["communityLike"]>
 
@@ -3196,6 +3850,7 @@ export namespace Prisma {
     id?: boolean
     postId?: boolean
     userId?: boolean
+    createdAt?: boolean
     post?: boolean | CommunityPostDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["communityLike"]>
 
@@ -3203,6 +3858,7 @@ export namespace Prisma {
     id?: boolean
     postId?: boolean
     userId?: boolean
+    createdAt?: boolean
   }
 
   export type CommunityLikeInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -3221,6 +3877,7 @@ export namespace Prisma {
       id: string
       postId: string
       userId: string
+      createdAt: Date
     }, ExtArgs["result"]["communityLike"]>
     composites: {}
   }
@@ -3618,6 +4275,7 @@ export namespace Prisma {
     readonly id: FieldRef<"CommunityLike", 'String'>
     readonly postId: FieldRef<"CommunityLike", 'String'>
     readonly userId: FieldRef<"CommunityLike", 'String'>
+    readonly createdAt: FieldRef<"CommunityLike", 'DateTime'>
   }
     
 
@@ -3951,6 +4609,5490 @@ export namespace Prisma {
 
 
   /**
+   * Model DirectConversation
+   */
+
+  export type AggregateDirectConversation = {
+    _count: DirectConversationCountAggregateOutputType | null
+    _min: DirectConversationMinAggregateOutputType | null
+    _max: DirectConversationMaxAggregateOutputType | null
+  }
+
+  export type DirectConversationMinAggregateOutputType = {
+    id: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+    lastMessageAt: Date | null
+  }
+
+  export type DirectConversationMaxAggregateOutputType = {
+    id: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+    lastMessageAt: Date | null
+  }
+
+  export type DirectConversationCountAggregateOutputType = {
+    id: number
+    createdAt: number
+    updatedAt: number
+    lastMessageAt: number
+    _all: number
+  }
+
+
+  export type DirectConversationMinAggregateInputType = {
+    id?: true
+    createdAt?: true
+    updatedAt?: true
+    lastMessageAt?: true
+  }
+
+  export type DirectConversationMaxAggregateInputType = {
+    id?: true
+    createdAt?: true
+    updatedAt?: true
+    lastMessageAt?: true
+  }
+
+  export type DirectConversationCountAggregateInputType = {
+    id?: true
+    createdAt?: true
+    updatedAt?: true
+    lastMessageAt?: true
+    _all?: true
+  }
+
+  export type DirectConversationAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which DirectConversation to aggregate.
+     */
+    where?: DirectConversationWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of DirectConversations to fetch.
+     */
+    orderBy?: DirectConversationOrderByWithRelationInput | DirectConversationOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: DirectConversationWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` DirectConversations from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` DirectConversations.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned DirectConversations
+    **/
+    _count?: true | DirectConversationCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: DirectConversationMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: DirectConversationMaxAggregateInputType
+  }
+
+  export type GetDirectConversationAggregateType<T extends DirectConversationAggregateArgs> = {
+        [P in keyof T & keyof AggregateDirectConversation]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateDirectConversation[P]>
+      : GetScalarType<T[P], AggregateDirectConversation[P]>
+  }
+
+
+
+
+  export type DirectConversationGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: DirectConversationWhereInput
+    orderBy?: DirectConversationOrderByWithAggregationInput | DirectConversationOrderByWithAggregationInput[]
+    by: DirectConversationScalarFieldEnum[] | DirectConversationScalarFieldEnum
+    having?: DirectConversationScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: DirectConversationCountAggregateInputType | true
+    _min?: DirectConversationMinAggregateInputType
+    _max?: DirectConversationMaxAggregateInputType
+  }
+
+  export type DirectConversationGroupByOutputType = {
+    id: string
+    createdAt: Date
+    updatedAt: Date
+    lastMessageAt: Date
+    _count: DirectConversationCountAggregateOutputType | null
+    _min: DirectConversationMinAggregateOutputType | null
+    _max: DirectConversationMaxAggregateOutputType | null
+  }
+
+  type GetDirectConversationGroupByPayload<T extends DirectConversationGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<DirectConversationGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof DirectConversationGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], DirectConversationGroupByOutputType[P]>
+            : GetScalarType<T[P], DirectConversationGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type DirectConversationSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    lastMessageAt?: boolean
+    participants?: boolean | DirectConversation$participantsArgs<ExtArgs>
+    messages?: boolean | DirectConversation$messagesArgs<ExtArgs>
+    _count?: boolean | DirectConversationCountOutputTypeDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["directConversation"]>
+
+  export type DirectConversationSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    lastMessageAt?: boolean
+  }, ExtArgs["result"]["directConversation"]>
+
+  export type DirectConversationSelectScalar = {
+    id?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    lastMessageAt?: boolean
+  }
+
+  export type DirectConversationInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    participants?: boolean | DirectConversation$participantsArgs<ExtArgs>
+    messages?: boolean | DirectConversation$messagesArgs<ExtArgs>
+    _count?: boolean | DirectConversationCountOutputTypeDefaultArgs<ExtArgs>
+  }
+  export type DirectConversationIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
+
+  export type $DirectConversationPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "DirectConversation"
+    objects: {
+      participants: Prisma.$DirectParticipantPayload<ExtArgs>[]
+      messages: Prisma.$DirectMessagePayload<ExtArgs>[]
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      createdAt: Date
+      updatedAt: Date
+      lastMessageAt: Date
+    }, ExtArgs["result"]["directConversation"]>
+    composites: {}
+  }
+
+  type DirectConversationGetPayload<S extends boolean | null | undefined | DirectConversationDefaultArgs> = $Result.GetResult<Prisma.$DirectConversationPayload, S>
+
+  type DirectConversationCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = 
+    Omit<DirectConversationFindManyArgs, 'select' | 'include' | 'distinct'> & {
+      select?: DirectConversationCountAggregateInputType | true
+    }
+
+  export interface DirectConversationDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['DirectConversation'], meta: { name: 'DirectConversation' } }
+    /**
+     * Find zero or one DirectConversation that matches the filter.
+     * @param {DirectConversationFindUniqueArgs} args - Arguments to find a DirectConversation
+     * @example
+     * // Get one DirectConversation
+     * const directConversation = await prisma.directConversation.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends DirectConversationFindUniqueArgs>(args: SelectSubset<T, DirectConversationFindUniqueArgs<ExtArgs>>): Prisma__DirectConversationClient<$Result.GetResult<Prisma.$DirectConversationPayload<ExtArgs>, T, "findUnique"> | null, null, ExtArgs>
+
+    /**
+     * Find one DirectConversation that matches the filter or throw an error with `error.code='P2025'` 
+     * if no matches were found.
+     * @param {DirectConversationFindUniqueOrThrowArgs} args - Arguments to find a DirectConversation
+     * @example
+     * // Get one DirectConversation
+     * const directConversation = await prisma.directConversation.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends DirectConversationFindUniqueOrThrowArgs>(args: SelectSubset<T, DirectConversationFindUniqueOrThrowArgs<ExtArgs>>): Prisma__DirectConversationClient<$Result.GetResult<Prisma.$DirectConversationPayload<ExtArgs>, T, "findUniqueOrThrow">, never, ExtArgs>
+
+    /**
+     * Find the first DirectConversation that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DirectConversationFindFirstArgs} args - Arguments to find a DirectConversation
+     * @example
+     * // Get one DirectConversation
+     * const directConversation = await prisma.directConversation.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends DirectConversationFindFirstArgs>(args?: SelectSubset<T, DirectConversationFindFirstArgs<ExtArgs>>): Prisma__DirectConversationClient<$Result.GetResult<Prisma.$DirectConversationPayload<ExtArgs>, T, "findFirst"> | null, null, ExtArgs>
+
+    /**
+     * Find the first DirectConversation that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DirectConversationFindFirstOrThrowArgs} args - Arguments to find a DirectConversation
+     * @example
+     * // Get one DirectConversation
+     * const directConversation = await prisma.directConversation.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends DirectConversationFindFirstOrThrowArgs>(args?: SelectSubset<T, DirectConversationFindFirstOrThrowArgs<ExtArgs>>): Prisma__DirectConversationClient<$Result.GetResult<Prisma.$DirectConversationPayload<ExtArgs>, T, "findFirstOrThrow">, never, ExtArgs>
+
+    /**
+     * Find zero or more DirectConversations that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DirectConversationFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all DirectConversations
+     * const directConversations = await prisma.directConversation.findMany()
+     * 
+     * // Get first 10 DirectConversations
+     * const directConversations = await prisma.directConversation.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const directConversationWithIdOnly = await prisma.directConversation.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends DirectConversationFindManyArgs>(args?: SelectSubset<T, DirectConversationFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DirectConversationPayload<ExtArgs>, T, "findMany">>
+
+    /**
+     * Create a DirectConversation.
+     * @param {DirectConversationCreateArgs} args - Arguments to create a DirectConversation.
+     * @example
+     * // Create one DirectConversation
+     * const DirectConversation = await prisma.directConversation.create({
+     *   data: {
+     *     // ... data to create a DirectConversation
+     *   }
+     * })
+     * 
+     */
+    create<T extends DirectConversationCreateArgs>(args: SelectSubset<T, DirectConversationCreateArgs<ExtArgs>>): Prisma__DirectConversationClient<$Result.GetResult<Prisma.$DirectConversationPayload<ExtArgs>, T, "create">, never, ExtArgs>
+
+    /**
+     * Create many DirectConversations.
+     * @param {DirectConversationCreateManyArgs} args - Arguments to create many DirectConversations.
+     * @example
+     * // Create many DirectConversations
+     * const directConversation = await prisma.directConversation.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends DirectConversationCreateManyArgs>(args?: SelectSubset<T, DirectConversationCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many DirectConversations and returns the data saved in the database.
+     * @param {DirectConversationCreateManyAndReturnArgs} args - Arguments to create many DirectConversations.
+     * @example
+     * // Create many DirectConversations
+     * const directConversation = await prisma.directConversation.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many DirectConversations and only return the `id`
+     * const directConversationWithIdOnly = await prisma.directConversation.createManyAndReturn({ 
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends DirectConversationCreateManyAndReturnArgs>(args?: SelectSubset<T, DirectConversationCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DirectConversationPayload<ExtArgs>, T, "createManyAndReturn">>
+
+    /**
+     * Delete a DirectConversation.
+     * @param {DirectConversationDeleteArgs} args - Arguments to delete one DirectConversation.
+     * @example
+     * // Delete one DirectConversation
+     * const DirectConversation = await prisma.directConversation.delete({
+     *   where: {
+     *     // ... filter to delete one DirectConversation
+     *   }
+     * })
+     * 
+     */
+    delete<T extends DirectConversationDeleteArgs>(args: SelectSubset<T, DirectConversationDeleteArgs<ExtArgs>>): Prisma__DirectConversationClient<$Result.GetResult<Prisma.$DirectConversationPayload<ExtArgs>, T, "delete">, never, ExtArgs>
+
+    /**
+     * Update one DirectConversation.
+     * @param {DirectConversationUpdateArgs} args - Arguments to update one DirectConversation.
+     * @example
+     * // Update one DirectConversation
+     * const directConversation = await prisma.directConversation.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends DirectConversationUpdateArgs>(args: SelectSubset<T, DirectConversationUpdateArgs<ExtArgs>>): Prisma__DirectConversationClient<$Result.GetResult<Prisma.$DirectConversationPayload<ExtArgs>, T, "update">, never, ExtArgs>
+
+    /**
+     * Delete zero or more DirectConversations.
+     * @param {DirectConversationDeleteManyArgs} args - Arguments to filter DirectConversations to delete.
+     * @example
+     * // Delete a few DirectConversations
+     * const { count } = await prisma.directConversation.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends DirectConversationDeleteManyArgs>(args?: SelectSubset<T, DirectConversationDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more DirectConversations.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DirectConversationUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many DirectConversations
+     * const directConversation = await prisma.directConversation.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends DirectConversationUpdateManyArgs>(args: SelectSubset<T, DirectConversationUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one DirectConversation.
+     * @param {DirectConversationUpsertArgs} args - Arguments to update or create a DirectConversation.
+     * @example
+     * // Update or create a DirectConversation
+     * const directConversation = await prisma.directConversation.upsert({
+     *   create: {
+     *     // ... data to create a DirectConversation
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the DirectConversation we want to update
+     *   }
+     * })
+     */
+    upsert<T extends DirectConversationUpsertArgs>(args: SelectSubset<T, DirectConversationUpsertArgs<ExtArgs>>): Prisma__DirectConversationClient<$Result.GetResult<Prisma.$DirectConversationPayload<ExtArgs>, T, "upsert">, never, ExtArgs>
+
+
+    /**
+     * Count the number of DirectConversations.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DirectConversationCountArgs} args - Arguments to filter DirectConversations to count.
+     * @example
+     * // Count the number of DirectConversations
+     * const count = await prisma.directConversation.count({
+     *   where: {
+     *     // ... the filter for the DirectConversations we want to count
+     *   }
+     * })
+    **/
+    count<T extends DirectConversationCountArgs>(
+      args?: Subset<T, DirectConversationCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], DirectConversationCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a DirectConversation.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DirectConversationAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends DirectConversationAggregateArgs>(args: Subset<T, DirectConversationAggregateArgs>): Prisma.PrismaPromise<GetDirectConversationAggregateType<T>>
+
+    /**
+     * Group by DirectConversation.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DirectConversationGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends DirectConversationGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: DirectConversationGroupByArgs['orderBy'] }
+        : { orderBy?: DirectConversationGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, DirectConversationGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetDirectConversationGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the DirectConversation model
+   */
+  readonly fields: DirectConversationFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for DirectConversation.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__DirectConversationClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    participants<T extends DirectConversation$participantsArgs<ExtArgs> = {}>(args?: Subset<T, DirectConversation$participantsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DirectParticipantPayload<ExtArgs>, T, "findMany"> | Null>
+    messages<T extends DirectConversation$messagesArgs<ExtArgs> = {}>(args?: Subset<T, DirectConversation$messagesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DirectMessagePayload<ExtArgs>, T, "findMany"> | Null>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the DirectConversation model
+   */ 
+  interface DirectConversationFieldRefs {
+    readonly id: FieldRef<"DirectConversation", 'String'>
+    readonly createdAt: FieldRef<"DirectConversation", 'DateTime'>
+    readonly updatedAt: FieldRef<"DirectConversation", 'DateTime'>
+    readonly lastMessageAt: FieldRef<"DirectConversation", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * DirectConversation findUnique
+   */
+  export type DirectConversationFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DirectConversation
+     */
+    select?: DirectConversationSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DirectConversationInclude<ExtArgs> | null
+    /**
+     * Filter, which DirectConversation to fetch.
+     */
+    where: DirectConversationWhereUniqueInput
+  }
+
+  /**
+   * DirectConversation findUniqueOrThrow
+   */
+  export type DirectConversationFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DirectConversation
+     */
+    select?: DirectConversationSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DirectConversationInclude<ExtArgs> | null
+    /**
+     * Filter, which DirectConversation to fetch.
+     */
+    where: DirectConversationWhereUniqueInput
+  }
+
+  /**
+   * DirectConversation findFirst
+   */
+  export type DirectConversationFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DirectConversation
+     */
+    select?: DirectConversationSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DirectConversationInclude<ExtArgs> | null
+    /**
+     * Filter, which DirectConversation to fetch.
+     */
+    where?: DirectConversationWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of DirectConversations to fetch.
+     */
+    orderBy?: DirectConversationOrderByWithRelationInput | DirectConversationOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for DirectConversations.
+     */
+    cursor?: DirectConversationWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` DirectConversations from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` DirectConversations.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of DirectConversations.
+     */
+    distinct?: DirectConversationScalarFieldEnum | DirectConversationScalarFieldEnum[]
+  }
+
+  /**
+   * DirectConversation findFirstOrThrow
+   */
+  export type DirectConversationFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DirectConversation
+     */
+    select?: DirectConversationSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DirectConversationInclude<ExtArgs> | null
+    /**
+     * Filter, which DirectConversation to fetch.
+     */
+    where?: DirectConversationWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of DirectConversations to fetch.
+     */
+    orderBy?: DirectConversationOrderByWithRelationInput | DirectConversationOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for DirectConversations.
+     */
+    cursor?: DirectConversationWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` DirectConversations from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` DirectConversations.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of DirectConversations.
+     */
+    distinct?: DirectConversationScalarFieldEnum | DirectConversationScalarFieldEnum[]
+  }
+
+  /**
+   * DirectConversation findMany
+   */
+  export type DirectConversationFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DirectConversation
+     */
+    select?: DirectConversationSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DirectConversationInclude<ExtArgs> | null
+    /**
+     * Filter, which DirectConversations to fetch.
+     */
+    where?: DirectConversationWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of DirectConversations to fetch.
+     */
+    orderBy?: DirectConversationOrderByWithRelationInput | DirectConversationOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing DirectConversations.
+     */
+    cursor?: DirectConversationWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` DirectConversations from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` DirectConversations.
+     */
+    skip?: number
+    distinct?: DirectConversationScalarFieldEnum | DirectConversationScalarFieldEnum[]
+  }
+
+  /**
+   * DirectConversation create
+   */
+  export type DirectConversationCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DirectConversation
+     */
+    select?: DirectConversationSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DirectConversationInclude<ExtArgs> | null
+    /**
+     * The data needed to create a DirectConversation.
+     */
+    data: XOR<DirectConversationCreateInput, DirectConversationUncheckedCreateInput>
+  }
+
+  /**
+   * DirectConversation createMany
+   */
+  export type DirectConversationCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many DirectConversations.
+     */
+    data: DirectConversationCreateManyInput | DirectConversationCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * DirectConversation createManyAndReturn
+   */
+  export type DirectConversationCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DirectConversation
+     */
+    select?: DirectConversationSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * The data used to create many DirectConversations.
+     */
+    data: DirectConversationCreateManyInput | DirectConversationCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * DirectConversation update
+   */
+  export type DirectConversationUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DirectConversation
+     */
+    select?: DirectConversationSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DirectConversationInclude<ExtArgs> | null
+    /**
+     * The data needed to update a DirectConversation.
+     */
+    data: XOR<DirectConversationUpdateInput, DirectConversationUncheckedUpdateInput>
+    /**
+     * Choose, which DirectConversation to update.
+     */
+    where: DirectConversationWhereUniqueInput
+  }
+
+  /**
+   * DirectConversation updateMany
+   */
+  export type DirectConversationUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update DirectConversations.
+     */
+    data: XOR<DirectConversationUpdateManyMutationInput, DirectConversationUncheckedUpdateManyInput>
+    /**
+     * Filter which DirectConversations to update
+     */
+    where?: DirectConversationWhereInput
+  }
+
+  /**
+   * DirectConversation upsert
+   */
+  export type DirectConversationUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DirectConversation
+     */
+    select?: DirectConversationSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DirectConversationInclude<ExtArgs> | null
+    /**
+     * The filter to search for the DirectConversation to update in case it exists.
+     */
+    where: DirectConversationWhereUniqueInput
+    /**
+     * In case the DirectConversation found by the `where` argument doesn't exist, create a new DirectConversation with this data.
+     */
+    create: XOR<DirectConversationCreateInput, DirectConversationUncheckedCreateInput>
+    /**
+     * In case the DirectConversation was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<DirectConversationUpdateInput, DirectConversationUncheckedUpdateInput>
+  }
+
+  /**
+   * DirectConversation delete
+   */
+  export type DirectConversationDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DirectConversation
+     */
+    select?: DirectConversationSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DirectConversationInclude<ExtArgs> | null
+    /**
+     * Filter which DirectConversation to delete.
+     */
+    where: DirectConversationWhereUniqueInput
+  }
+
+  /**
+   * DirectConversation deleteMany
+   */
+  export type DirectConversationDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which DirectConversations to delete
+     */
+    where?: DirectConversationWhereInput
+  }
+
+  /**
+   * DirectConversation.participants
+   */
+  export type DirectConversation$participantsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DirectParticipant
+     */
+    select?: DirectParticipantSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DirectParticipantInclude<ExtArgs> | null
+    where?: DirectParticipantWhereInput
+    orderBy?: DirectParticipantOrderByWithRelationInput | DirectParticipantOrderByWithRelationInput[]
+    cursor?: DirectParticipantWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: DirectParticipantScalarFieldEnum | DirectParticipantScalarFieldEnum[]
+  }
+
+  /**
+   * DirectConversation.messages
+   */
+  export type DirectConversation$messagesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DirectMessage
+     */
+    select?: DirectMessageSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DirectMessageInclude<ExtArgs> | null
+    where?: DirectMessageWhereInput
+    orderBy?: DirectMessageOrderByWithRelationInput | DirectMessageOrderByWithRelationInput[]
+    cursor?: DirectMessageWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: DirectMessageScalarFieldEnum | DirectMessageScalarFieldEnum[]
+  }
+
+  /**
+   * DirectConversation without action
+   */
+  export type DirectConversationDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DirectConversation
+     */
+    select?: DirectConversationSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DirectConversationInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model DirectParticipant
+   */
+
+  export type AggregateDirectParticipant = {
+    _count: DirectParticipantCountAggregateOutputType | null
+    _min: DirectParticipantMinAggregateOutputType | null
+    _max: DirectParticipantMaxAggregateOutputType | null
+  }
+
+  export type DirectParticipantMinAggregateOutputType = {
+    id: string | null
+    conversationId: string | null
+    userId: string | null
+    joinedAt: Date | null
+  }
+
+  export type DirectParticipantMaxAggregateOutputType = {
+    id: string | null
+    conversationId: string | null
+    userId: string | null
+    joinedAt: Date | null
+  }
+
+  export type DirectParticipantCountAggregateOutputType = {
+    id: number
+    conversationId: number
+    userId: number
+    joinedAt: number
+    _all: number
+  }
+
+
+  export type DirectParticipantMinAggregateInputType = {
+    id?: true
+    conversationId?: true
+    userId?: true
+    joinedAt?: true
+  }
+
+  export type DirectParticipantMaxAggregateInputType = {
+    id?: true
+    conversationId?: true
+    userId?: true
+    joinedAt?: true
+  }
+
+  export type DirectParticipantCountAggregateInputType = {
+    id?: true
+    conversationId?: true
+    userId?: true
+    joinedAt?: true
+    _all?: true
+  }
+
+  export type DirectParticipantAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which DirectParticipant to aggregate.
+     */
+    where?: DirectParticipantWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of DirectParticipants to fetch.
+     */
+    orderBy?: DirectParticipantOrderByWithRelationInput | DirectParticipantOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: DirectParticipantWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` DirectParticipants from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` DirectParticipants.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned DirectParticipants
+    **/
+    _count?: true | DirectParticipantCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: DirectParticipantMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: DirectParticipantMaxAggregateInputType
+  }
+
+  export type GetDirectParticipantAggregateType<T extends DirectParticipantAggregateArgs> = {
+        [P in keyof T & keyof AggregateDirectParticipant]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateDirectParticipant[P]>
+      : GetScalarType<T[P], AggregateDirectParticipant[P]>
+  }
+
+
+
+
+  export type DirectParticipantGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: DirectParticipantWhereInput
+    orderBy?: DirectParticipantOrderByWithAggregationInput | DirectParticipantOrderByWithAggregationInput[]
+    by: DirectParticipantScalarFieldEnum[] | DirectParticipantScalarFieldEnum
+    having?: DirectParticipantScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: DirectParticipantCountAggregateInputType | true
+    _min?: DirectParticipantMinAggregateInputType
+    _max?: DirectParticipantMaxAggregateInputType
+  }
+
+  export type DirectParticipantGroupByOutputType = {
+    id: string
+    conversationId: string
+    userId: string
+    joinedAt: Date
+    _count: DirectParticipantCountAggregateOutputType | null
+    _min: DirectParticipantMinAggregateOutputType | null
+    _max: DirectParticipantMaxAggregateOutputType | null
+  }
+
+  type GetDirectParticipantGroupByPayload<T extends DirectParticipantGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<DirectParticipantGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof DirectParticipantGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], DirectParticipantGroupByOutputType[P]>
+            : GetScalarType<T[P], DirectParticipantGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type DirectParticipantSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    conversationId?: boolean
+    userId?: boolean
+    joinedAt?: boolean
+    conversation?: boolean | DirectConversationDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["directParticipant"]>
+
+  export type DirectParticipantSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    conversationId?: boolean
+    userId?: boolean
+    joinedAt?: boolean
+    conversation?: boolean | DirectConversationDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["directParticipant"]>
+
+  export type DirectParticipantSelectScalar = {
+    id?: boolean
+    conversationId?: boolean
+    userId?: boolean
+    joinedAt?: boolean
+  }
+
+  export type DirectParticipantInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    conversation?: boolean | DirectConversationDefaultArgs<ExtArgs>
+  }
+  export type DirectParticipantIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    conversation?: boolean | DirectConversationDefaultArgs<ExtArgs>
+  }
+
+  export type $DirectParticipantPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "DirectParticipant"
+    objects: {
+      conversation: Prisma.$DirectConversationPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      conversationId: string
+      userId: string
+      joinedAt: Date
+    }, ExtArgs["result"]["directParticipant"]>
+    composites: {}
+  }
+
+  type DirectParticipantGetPayload<S extends boolean | null | undefined | DirectParticipantDefaultArgs> = $Result.GetResult<Prisma.$DirectParticipantPayload, S>
+
+  type DirectParticipantCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = 
+    Omit<DirectParticipantFindManyArgs, 'select' | 'include' | 'distinct'> & {
+      select?: DirectParticipantCountAggregateInputType | true
+    }
+
+  export interface DirectParticipantDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['DirectParticipant'], meta: { name: 'DirectParticipant' } }
+    /**
+     * Find zero or one DirectParticipant that matches the filter.
+     * @param {DirectParticipantFindUniqueArgs} args - Arguments to find a DirectParticipant
+     * @example
+     * // Get one DirectParticipant
+     * const directParticipant = await prisma.directParticipant.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends DirectParticipantFindUniqueArgs>(args: SelectSubset<T, DirectParticipantFindUniqueArgs<ExtArgs>>): Prisma__DirectParticipantClient<$Result.GetResult<Prisma.$DirectParticipantPayload<ExtArgs>, T, "findUnique"> | null, null, ExtArgs>
+
+    /**
+     * Find one DirectParticipant that matches the filter or throw an error with `error.code='P2025'` 
+     * if no matches were found.
+     * @param {DirectParticipantFindUniqueOrThrowArgs} args - Arguments to find a DirectParticipant
+     * @example
+     * // Get one DirectParticipant
+     * const directParticipant = await prisma.directParticipant.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends DirectParticipantFindUniqueOrThrowArgs>(args: SelectSubset<T, DirectParticipantFindUniqueOrThrowArgs<ExtArgs>>): Prisma__DirectParticipantClient<$Result.GetResult<Prisma.$DirectParticipantPayload<ExtArgs>, T, "findUniqueOrThrow">, never, ExtArgs>
+
+    /**
+     * Find the first DirectParticipant that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DirectParticipantFindFirstArgs} args - Arguments to find a DirectParticipant
+     * @example
+     * // Get one DirectParticipant
+     * const directParticipant = await prisma.directParticipant.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends DirectParticipantFindFirstArgs>(args?: SelectSubset<T, DirectParticipantFindFirstArgs<ExtArgs>>): Prisma__DirectParticipantClient<$Result.GetResult<Prisma.$DirectParticipantPayload<ExtArgs>, T, "findFirst"> | null, null, ExtArgs>
+
+    /**
+     * Find the first DirectParticipant that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DirectParticipantFindFirstOrThrowArgs} args - Arguments to find a DirectParticipant
+     * @example
+     * // Get one DirectParticipant
+     * const directParticipant = await prisma.directParticipant.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends DirectParticipantFindFirstOrThrowArgs>(args?: SelectSubset<T, DirectParticipantFindFirstOrThrowArgs<ExtArgs>>): Prisma__DirectParticipantClient<$Result.GetResult<Prisma.$DirectParticipantPayload<ExtArgs>, T, "findFirstOrThrow">, never, ExtArgs>
+
+    /**
+     * Find zero or more DirectParticipants that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DirectParticipantFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all DirectParticipants
+     * const directParticipants = await prisma.directParticipant.findMany()
+     * 
+     * // Get first 10 DirectParticipants
+     * const directParticipants = await prisma.directParticipant.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const directParticipantWithIdOnly = await prisma.directParticipant.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends DirectParticipantFindManyArgs>(args?: SelectSubset<T, DirectParticipantFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DirectParticipantPayload<ExtArgs>, T, "findMany">>
+
+    /**
+     * Create a DirectParticipant.
+     * @param {DirectParticipantCreateArgs} args - Arguments to create a DirectParticipant.
+     * @example
+     * // Create one DirectParticipant
+     * const DirectParticipant = await prisma.directParticipant.create({
+     *   data: {
+     *     // ... data to create a DirectParticipant
+     *   }
+     * })
+     * 
+     */
+    create<T extends DirectParticipantCreateArgs>(args: SelectSubset<T, DirectParticipantCreateArgs<ExtArgs>>): Prisma__DirectParticipantClient<$Result.GetResult<Prisma.$DirectParticipantPayload<ExtArgs>, T, "create">, never, ExtArgs>
+
+    /**
+     * Create many DirectParticipants.
+     * @param {DirectParticipantCreateManyArgs} args - Arguments to create many DirectParticipants.
+     * @example
+     * // Create many DirectParticipants
+     * const directParticipant = await prisma.directParticipant.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends DirectParticipantCreateManyArgs>(args?: SelectSubset<T, DirectParticipantCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many DirectParticipants and returns the data saved in the database.
+     * @param {DirectParticipantCreateManyAndReturnArgs} args - Arguments to create many DirectParticipants.
+     * @example
+     * // Create many DirectParticipants
+     * const directParticipant = await prisma.directParticipant.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many DirectParticipants and only return the `id`
+     * const directParticipantWithIdOnly = await prisma.directParticipant.createManyAndReturn({ 
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends DirectParticipantCreateManyAndReturnArgs>(args?: SelectSubset<T, DirectParticipantCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DirectParticipantPayload<ExtArgs>, T, "createManyAndReturn">>
+
+    /**
+     * Delete a DirectParticipant.
+     * @param {DirectParticipantDeleteArgs} args - Arguments to delete one DirectParticipant.
+     * @example
+     * // Delete one DirectParticipant
+     * const DirectParticipant = await prisma.directParticipant.delete({
+     *   where: {
+     *     // ... filter to delete one DirectParticipant
+     *   }
+     * })
+     * 
+     */
+    delete<T extends DirectParticipantDeleteArgs>(args: SelectSubset<T, DirectParticipantDeleteArgs<ExtArgs>>): Prisma__DirectParticipantClient<$Result.GetResult<Prisma.$DirectParticipantPayload<ExtArgs>, T, "delete">, never, ExtArgs>
+
+    /**
+     * Update one DirectParticipant.
+     * @param {DirectParticipantUpdateArgs} args - Arguments to update one DirectParticipant.
+     * @example
+     * // Update one DirectParticipant
+     * const directParticipant = await prisma.directParticipant.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends DirectParticipantUpdateArgs>(args: SelectSubset<T, DirectParticipantUpdateArgs<ExtArgs>>): Prisma__DirectParticipantClient<$Result.GetResult<Prisma.$DirectParticipantPayload<ExtArgs>, T, "update">, never, ExtArgs>
+
+    /**
+     * Delete zero or more DirectParticipants.
+     * @param {DirectParticipantDeleteManyArgs} args - Arguments to filter DirectParticipants to delete.
+     * @example
+     * // Delete a few DirectParticipants
+     * const { count } = await prisma.directParticipant.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends DirectParticipantDeleteManyArgs>(args?: SelectSubset<T, DirectParticipantDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more DirectParticipants.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DirectParticipantUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many DirectParticipants
+     * const directParticipant = await prisma.directParticipant.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends DirectParticipantUpdateManyArgs>(args: SelectSubset<T, DirectParticipantUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one DirectParticipant.
+     * @param {DirectParticipantUpsertArgs} args - Arguments to update or create a DirectParticipant.
+     * @example
+     * // Update or create a DirectParticipant
+     * const directParticipant = await prisma.directParticipant.upsert({
+     *   create: {
+     *     // ... data to create a DirectParticipant
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the DirectParticipant we want to update
+     *   }
+     * })
+     */
+    upsert<T extends DirectParticipantUpsertArgs>(args: SelectSubset<T, DirectParticipantUpsertArgs<ExtArgs>>): Prisma__DirectParticipantClient<$Result.GetResult<Prisma.$DirectParticipantPayload<ExtArgs>, T, "upsert">, never, ExtArgs>
+
+
+    /**
+     * Count the number of DirectParticipants.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DirectParticipantCountArgs} args - Arguments to filter DirectParticipants to count.
+     * @example
+     * // Count the number of DirectParticipants
+     * const count = await prisma.directParticipant.count({
+     *   where: {
+     *     // ... the filter for the DirectParticipants we want to count
+     *   }
+     * })
+    **/
+    count<T extends DirectParticipantCountArgs>(
+      args?: Subset<T, DirectParticipantCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], DirectParticipantCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a DirectParticipant.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DirectParticipantAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends DirectParticipantAggregateArgs>(args: Subset<T, DirectParticipantAggregateArgs>): Prisma.PrismaPromise<GetDirectParticipantAggregateType<T>>
+
+    /**
+     * Group by DirectParticipant.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DirectParticipantGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends DirectParticipantGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: DirectParticipantGroupByArgs['orderBy'] }
+        : { orderBy?: DirectParticipantGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, DirectParticipantGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetDirectParticipantGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the DirectParticipant model
+   */
+  readonly fields: DirectParticipantFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for DirectParticipant.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__DirectParticipantClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    conversation<T extends DirectConversationDefaultArgs<ExtArgs> = {}>(args?: Subset<T, DirectConversationDefaultArgs<ExtArgs>>): Prisma__DirectConversationClient<$Result.GetResult<Prisma.$DirectConversationPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the DirectParticipant model
+   */ 
+  interface DirectParticipantFieldRefs {
+    readonly id: FieldRef<"DirectParticipant", 'String'>
+    readonly conversationId: FieldRef<"DirectParticipant", 'String'>
+    readonly userId: FieldRef<"DirectParticipant", 'String'>
+    readonly joinedAt: FieldRef<"DirectParticipant", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * DirectParticipant findUnique
+   */
+  export type DirectParticipantFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DirectParticipant
+     */
+    select?: DirectParticipantSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DirectParticipantInclude<ExtArgs> | null
+    /**
+     * Filter, which DirectParticipant to fetch.
+     */
+    where: DirectParticipantWhereUniqueInput
+  }
+
+  /**
+   * DirectParticipant findUniqueOrThrow
+   */
+  export type DirectParticipantFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DirectParticipant
+     */
+    select?: DirectParticipantSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DirectParticipantInclude<ExtArgs> | null
+    /**
+     * Filter, which DirectParticipant to fetch.
+     */
+    where: DirectParticipantWhereUniqueInput
+  }
+
+  /**
+   * DirectParticipant findFirst
+   */
+  export type DirectParticipantFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DirectParticipant
+     */
+    select?: DirectParticipantSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DirectParticipantInclude<ExtArgs> | null
+    /**
+     * Filter, which DirectParticipant to fetch.
+     */
+    where?: DirectParticipantWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of DirectParticipants to fetch.
+     */
+    orderBy?: DirectParticipantOrderByWithRelationInput | DirectParticipantOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for DirectParticipants.
+     */
+    cursor?: DirectParticipantWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` DirectParticipants from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` DirectParticipants.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of DirectParticipants.
+     */
+    distinct?: DirectParticipantScalarFieldEnum | DirectParticipantScalarFieldEnum[]
+  }
+
+  /**
+   * DirectParticipant findFirstOrThrow
+   */
+  export type DirectParticipantFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DirectParticipant
+     */
+    select?: DirectParticipantSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DirectParticipantInclude<ExtArgs> | null
+    /**
+     * Filter, which DirectParticipant to fetch.
+     */
+    where?: DirectParticipantWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of DirectParticipants to fetch.
+     */
+    orderBy?: DirectParticipantOrderByWithRelationInput | DirectParticipantOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for DirectParticipants.
+     */
+    cursor?: DirectParticipantWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` DirectParticipants from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` DirectParticipants.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of DirectParticipants.
+     */
+    distinct?: DirectParticipantScalarFieldEnum | DirectParticipantScalarFieldEnum[]
+  }
+
+  /**
+   * DirectParticipant findMany
+   */
+  export type DirectParticipantFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DirectParticipant
+     */
+    select?: DirectParticipantSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DirectParticipantInclude<ExtArgs> | null
+    /**
+     * Filter, which DirectParticipants to fetch.
+     */
+    where?: DirectParticipantWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of DirectParticipants to fetch.
+     */
+    orderBy?: DirectParticipantOrderByWithRelationInput | DirectParticipantOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing DirectParticipants.
+     */
+    cursor?: DirectParticipantWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` DirectParticipants from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` DirectParticipants.
+     */
+    skip?: number
+    distinct?: DirectParticipantScalarFieldEnum | DirectParticipantScalarFieldEnum[]
+  }
+
+  /**
+   * DirectParticipant create
+   */
+  export type DirectParticipantCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DirectParticipant
+     */
+    select?: DirectParticipantSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DirectParticipantInclude<ExtArgs> | null
+    /**
+     * The data needed to create a DirectParticipant.
+     */
+    data: XOR<DirectParticipantCreateInput, DirectParticipantUncheckedCreateInput>
+  }
+
+  /**
+   * DirectParticipant createMany
+   */
+  export type DirectParticipantCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many DirectParticipants.
+     */
+    data: DirectParticipantCreateManyInput | DirectParticipantCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * DirectParticipant createManyAndReturn
+   */
+  export type DirectParticipantCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DirectParticipant
+     */
+    select?: DirectParticipantSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * The data used to create many DirectParticipants.
+     */
+    data: DirectParticipantCreateManyInput | DirectParticipantCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DirectParticipantIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * DirectParticipant update
+   */
+  export type DirectParticipantUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DirectParticipant
+     */
+    select?: DirectParticipantSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DirectParticipantInclude<ExtArgs> | null
+    /**
+     * The data needed to update a DirectParticipant.
+     */
+    data: XOR<DirectParticipantUpdateInput, DirectParticipantUncheckedUpdateInput>
+    /**
+     * Choose, which DirectParticipant to update.
+     */
+    where: DirectParticipantWhereUniqueInput
+  }
+
+  /**
+   * DirectParticipant updateMany
+   */
+  export type DirectParticipantUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update DirectParticipants.
+     */
+    data: XOR<DirectParticipantUpdateManyMutationInput, DirectParticipantUncheckedUpdateManyInput>
+    /**
+     * Filter which DirectParticipants to update
+     */
+    where?: DirectParticipantWhereInput
+  }
+
+  /**
+   * DirectParticipant upsert
+   */
+  export type DirectParticipantUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DirectParticipant
+     */
+    select?: DirectParticipantSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DirectParticipantInclude<ExtArgs> | null
+    /**
+     * The filter to search for the DirectParticipant to update in case it exists.
+     */
+    where: DirectParticipantWhereUniqueInput
+    /**
+     * In case the DirectParticipant found by the `where` argument doesn't exist, create a new DirectParticipant with this data.
+     */
+    create: XOR<DirectParticipantCreateInput, DirectParticipantUncheckedCreateInput>
+    /**
+     * In case the DirectParticipant was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<DirectParticipantUpdateInput, DirectParticipantUncheckedUpdateInput>
+  }
+
+  /**
+   * DirectParticipant delete
+   */
+  export type DirectParticipantDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DirectParticipant
+     */
+    select?: DirectParticipantSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DirectParticipantInclude<ExtArgs> | null
+    /**
+     * Filter which DirectParticipant to delete.
+     */
+    where: DirectParticipantWhereUniqueInput
+  }
+
+  /**
+   * DirectParticipant deleteMany
+   */
+  export type DirectParticipantDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which DirectParticipants to delete
+     */
+    where?: DirectParticipantWhereInput
+  }
+
+  /**
+   * DirectParticipant without action
+   */
+  export type DirectParticipantDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DirectParticipant
+     */
+    select?: DirectParticipantSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DirectParticipantInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model DirectMessage
+   */
+
+  export type AggregateDirectMessage = {
+    _count: DirectMessageCountAggregateOutputType | null
+    _min: DirectMessageMinAggregateOutputType | null
+    _max: DirectMessageMaxAggregateOutputType | null
+  }
+
+  export type DirectMessageMinAggregateOutputType = {
+    id: string | null
+    conversationId: string | null
+    senderId: string | null
+    content: string | null
+    createdAt: Date | null
+    readAt: Date | null
+  }
+
+  export type DirectMessageMaxAggregateOutputType = {
+    id: string | null
+    conversationId: string | null
+    senderId: string | null
+    content: string | null
+    createdAt: Date | null
+    readAt: Date | null
+  }
+
+  export type DirectMessageCountAggregateOutputType = {
+    id: number
+    conversationId: number
+    senderId: number
+    content: number
+    createdAt: number
+    readAt: number
+    _all: number
+  }
+
+
+  export type DirectMessageMinAggregateInputType = {
+    id?: true
+    conversationId?: true
+    senderId?: true
+    content?: true
+    createdAt?: true
+    readAt?: true
+  }
+
+  export type DirectMessageMaxAggregateInputType = {
+    id?: true
+    conversationId?: true
+    senderId?: true
+    content?: true
+    createdAt?: true
+    readAt?: true
+  }
+
+  export type DirectMessageCountAggregateInputType = {
+    id?: true
+    conversationId?: true
+    senderId?: true
+    content?: true
+    createdAt?: true
+    readAt?: true
+    _all?: true
+  }
+
+  export type DirectMessageAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which DirectMessage to aggregate.
+     */
+    where?: DirectMessageWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of DirectMessages to fetch.
+     */
+    orderBy?: DirectMessageOrderByWithRelationInput | DirectMessageOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: DirectMessageWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` DirectMessages from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` DirectMessages.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned DirectMessages
+    **/
+    _count?: true | DirectMessageCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: DirectMessageMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: DirectMessageMaxAggregateInputType
+  }
+
+  export type GetDirectMessageAggregateType<T extends DirectMessageAggregateArgs> = {
+        [P in keyof T & keyof AggregateDirectMessage]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateDirectMessage[P]>
+      : GetScalarType<T[P], AggregateDirectMessage[P]>
+  }
+
+
+
+
+  export type DirectMessageGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: DirectMessageWhereInput
+    orderBy?: DirectMessageOrderByWithAggregationInput | DirectMessageOrderByWithAggregationInput[]
+    by: DirectMessageScalarFieldEnum[] | DirectMessageScalarFieldEnum
+    having?: DirectMessageScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: DirectMessageCountAggregateInputType | true
+    _min?: DirectMessageMinAggregateInputType
+    _max?: DirectMessageMaxAggregateInputType
+  }
+
+  export type DirectMessageGroupByOutputType = {
+    id: string
+    conversationId: string
+    senderId: string
+    content: string
+    createdAt: Date
+    readAt: Date | null
+    _count: DirectMessageCountAggregateOutputType | null
+    _min: DirectMessageMinAggregateOutputType | null
+    _max: DirectMessageMaxAggregateOutputType | null
+  }
+
+  type GetDirectMessageGroupByPayload<T extends DirectMessageGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<DirectMessageGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof DirectMessageGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], DirectMessageGroupByOutputType[P]>
+            : GetScalarType<T[P], DirectMessageGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type DirectMessageSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    conversationId?: boolean
+    senderId?: boolean
+    content?: boolean
+    createdAt?: boolean
+    readAt?: boolean
+    conversation?: boolean | DirectConversationDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["directMessage"]>
+
+  export type DirectMessageSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    conversationId?: boolean
+    senderId?: boolean
+    content?: boolean
+    createdAt?: boolean
+    readAt?: boolean
+    conversation?: boolean | DirectConversationDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["directMessage"]>
+
+  export type DirectMessageSelectScalar = {
+    id?: boolean
+    conversationId?: boolean
+    senderId?: boolean
+    content?: boolean
+    createdAt?: boolean
+    readAt?: boolean
+  }
+
+  export type DirectMessageInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    conversation?: boolean | DirectConversationDefaultArgs<ExtArgs>
+  }
+  export type DirectMessageIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    conversation?: boolean | DirectConversationDefaultArgs<ExtArgs>
+  }
+
+  export type $DirectMessagePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "DirectMessage"
+    objects: {
+      conversation: Prisma.$DirectConversationPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      conversationId: string
+      senderId: string
+      content: string
+      createdAt: Date
+      readAt: Date | null
+    }, ExtArgs["result"]["directMessage"]>
+    composites: {}
+  }
+
+  type DirectMessageGetPayload<S extends boolean | null | undefined | DirectMessageDefaultArgs> = $Result.GetResult<Prisma.$DirectMessagePayload, S>
+
+  type DirectMessageCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = 
+    Omit<DirectMessageFindManyArgs, 'select' | 'include' | 'distinct'> & {
+      select?: DirectMessageCountAggregateInputType | true
+    }
+
+  export interface DirectMessageDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['DirectMessage'], meta: { name: 'DirectMessage' } }
+    /**
+     * Find zero or one DirectMessage that matches the filter.
+     * @param {DirectMessageFindUniqueArgs} args - Arguments to find a DirectMessage
+     * @example
+     * // Get one DirectMessage
+     * const directMessage = await prisma.directMessage.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends DirectMessageFindUniqueArgs>(args: SelectSubset<T, DirectMessageFindUniqueArgs<ExtArgs>>): Prisma__DirectMessageClient<$Result.GetResult<Prisma.$DirectMessagePayload<ExtArgs>, T, "findUnique"> | null, null, ExtArgs>
+
+    /**
+     * Find one DirectMessage that matches the filter or throw an error with `error.code='P2025'` 
+     * if no matches were found.
+     * @param {DirectMessageFindUniqueOrThrowArgs} args - Arguments to find a DirectMessage
+     * @example
+     * // Get one DirectMessage
+     * const directMessage = await prisma.directMessage.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends DirectMessageFindUniqueOrThrowArgs>(args: SelectSubset<T, DirectMessageFindUniqueOrThrowArgs<ExtArgs>>): Prisma__DirectMessageClient<$Result.GetResult<Prisma.$DirectMessagePayload<ExtArgs>, T, "findUniqueOrThrow">, never, ExtArgs>
+
+    /**
+     * Find the first DirectMessage that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DirectMessageFindFirstArgs} args - Arguments to find a DirectMessage
+     * @example
+     * // Get one DirectMessage
+     * const directMessage = await prisma.directMessage.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends DirectMessageFindFirstArgs>(args?: SelectSubset<T, DirectMessageFindFirstArgs<ExtArgs>>): Prisma__DirectMessageClient<$Result.GetResult<Prisma.$DirectMessagePayload<ExtArgs>, T, "findFirst"> | null, null, ExtArgs>
+
+    /**
+     * Find the first DirectMessage that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DirectMessageFindFirstOrThrowArgs} args - Arguments to find a DirectMessage
+     * @example
+     * // Get one DirectMessage
+     * const directMessage = await prisma.directMessage.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends DirectMessageFindFirstOrThrowArgs>(args?: SelectSubset<T, DirectMessageFindFirstOrThrowArgs<ExtArgs>>): Prisma__DirectMessageClient<$Result.GetResult<Prisma.$DirectMessagePayload<ExtArgs>, T, "findFirstOrThrow">, never, ExtArgs>
+
+    /**
+     * Find zero or more DirectMessages that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DirectMessageFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all DirectMessages
+     * const directMessages = await prisma.directMessage.findMany()
+     * 
+     * // Get first 10 DirectMessages
+     * const directMessages = await prisma.directMessage.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const directMessageWithIdOnly = await prisma.directMessage.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends DirectMessageFindManyArgs>(args?: SelectSubset<T, DirectMessageFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DirectMessagePayload<ExtArgs>, T, "findMany">>
+
+    /**
+     * Create a DirectMessage.
+     * @param {DirectMessageCreateArgs} args - Arguments to create a DirectMessage.
+     * @example
+     * // Create one DirectMessage
+     * const DirectMessage = await prisma.directMessage.create({
+     *   data: {
+     *     // ... data to create a DirectMessage
+     *   }
+     * })
+     * 
+     */
+    create<T extends DirectMessageCreateArgs>(args: SelectSubset<T, DirectMessageCreateArgs<ExtArgs>>): Prisma__DirectMessageClient<$Result.GetResult<Prisma.$DirectMessagePayload<ExtArgs>, T, "create">, never, ExtArgs>
+
+    /**
+     * Create many DirectMessages.
+     * @param {DirectMessageCreateManyArgs} args - Arguments to create many DirectMessages.
+     * @example
+     * // Create many DirectMessages
+     * const directMessage = await prisma.directMessage.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends DirectMessageCreateManyArgs>(args?: SelectSubset<T, DirectMessageCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many DirectMessages and returns the data saved in the database.
+     * @param {DirectMessageCreateManyAndReturnArgs} args - Arguments to create many DirectMessages.
+     * @example
+     * // Create many DirectMessages
+     * const directMessage = await prisma.directMessage.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many DirectMessages and only return the `id`
+     * const directMessageWithIdOnly = await prisma.directMessage.createManyAndReturn({ 
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends DirectMessageCreateManyAndReturnArgs>(args?: SelectSubset<T, DirectMessageCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DirectMessagePayload<ExtArgs>, T, "createManyAndReturn">>
+
+    /**
+     * Delete a DirectMessage.
+     * @param {DirectMessageDeleteArgs} args - Arguments to delete one DirectMessage.
+     * @example
+     * // Delete one DirectMessage
+     * const DirectMessage = await prisma.directMessage.delete({
+     *   where: {
+     *     // ... filter to delete one DirectMessage
+     *   }
+     * })
+     * 
+     */
+    delete<T extends DirectMessageDeleteArgs>(args: SelectSubset<T, DirectMessageDeleteArgs<ExtArgs>>): Prisma__DirectMessageClient<$Result.GetResult<Prisma.$DirectMessagePayload<ExtArgs>, T, "delete">, never, ExtArgs>
+
+    /**
+     * Update one DirectMessage.
+     * @param {DirectMessageUpdateArgs} args - Arguments to update one DirectMessage.
+     * @example
+     * // Update one DirectMessage
+     * const directMessage = await prisma.directMessage.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends DirectMessageUpdateArgs>(args: SelectSubset<T, DirectMessageUpdateArgs<ExtArgs>>): Prisma__DirectMessageClient<$Result.GetResult<Prisma.$DirectMessagePayload<ExtArgs>, T, "update">, never, ExtArgs>
+
+    /**
+     * Delete zero or more DirectMessages.
+     * @param {DirectMessageDeleteManyArgs} args - Arguments to filter DirectMessages to delete.
+     * @example
+     * // Delete a few DirectMessages
+     * const { count } = await prisma.directMessage.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends DirectMessageDeleteManyArgs>(args?: SelectSubset<T, DirectMessageDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more DirectMessages.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DirectMessageUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many DirectMessages
+     * const directMessage = await prisma.directMessage.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends DirectMessageUpdateManyArgs>(args: SelectSubset<T, DirectMessageUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one DirectMessage.
+     * @param {DirectMessageUpsertArgs} args - Arguments to update or create a DirectMessage.
+     * @example
+     * // Update or create a DirectMessage
+     * const directMessage = await prisma.directMessage.upsert({
+     *   create: {
+     *     // ... data to create a DirectMessage
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the DirectMessage we want to update
+     *   }
+     * })
+     */
+    upsert<T extends DirectMessageUpsertArgs>(args: SelectSubset<T, DirectMessageUpsertArgs<ExtArgs>>): Prisma__DirectMessageClient<$Result.GetResult<Prisma.$DirectMessagePayload<ExtArgs>, T, "upsert">, never, ExtArgs>
+
+
+    /**
+     * Count the number of DirectMessages.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DirectMessageCountArgs} args - Arguments to filter DirectMessages to count.
+     * @example
+     * // Count the number of DirectMessages
+     * const count = await prisma.directMessage.count({
+     *   where: {
+     *     // ... the filter for the DirectMessages we want to count
+     *   }
+     * })
+    **/
+    count<T extends DirectMessageCountArgs>(
+      args?: Subset<T, DirectMessageCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], DirectMessageCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a DirectMessage.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DirectMessageAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends DirectMessageAggregateArgs>(args: Subset<T, DirectMessageAggregateArgs>): Prisma.PrismaPromise<GetDirectMessageAggregateType<T>>
+
+    /**
+     * Group by DirectMessage.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DirectMessageGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends DirectMessageGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: DirectMessageGroupByArgs['orderBy'] }
+        : { orderBy?: DirectMessageGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, DirectMessageGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetDirectMessageGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the DirectMessage model
+   */
+  readonly fields: DirectMessageFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for DirectMessage.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__DirectMessageClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    conversation<T extends DirectConversationDefaultArgs<ExtArgs> = {}>(args?: Subset<T, DirectConversationDefaultArgs<ExtArgs>>): Prisma__DirectConversationClient<$Result.GetResult<Prisma.$DirectConversationPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the DirectMessage model
+   */ 
+  interface DirectMessageFieldRefs {
+    readonly id: FieldRef<"DirectMessage", 'String'>
+    readonly conversationId: FieldRef<"DirectMessage", 'String'>
+    readonly senderId: FieldRef<"DirectMessage", 'String'>
+    readonly content: FieldRef<"DirectMessage", 'String'>
+    readonly createdAt: FieldRef<"DirectMessage", 'DateTime'>
+    readonly readAt: FieldRef<"DirectMessage", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * DirectMessage findUnique
+   */
+  export type DirectMessageFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DirectMessage
+     */
+    select?: DirectMessageSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DirectMessageInclude<ExtArgs> | null
+    /**
+     * Filter, which DirectMessage to fetch.
+     */
+    where: DirectMessageWhereUniqueInput
+  }
+
+  /**
+   * DirectMessage findUniqueOrThrow
+   */
+  export type DirectMessageFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DirectMessage
+     */
+    select?: DirectMessageSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DirectMessageInclude<ExtArgs> | null
+    /**
+     * Filter, which DirectMessage to fetch.
+     */
+    where: DirectMessageWhereUniqueInput
+  }
+
+  /**
+   * DirectMessage findFirst
+   */
+  export type DirectMessageFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DirectMessage
+     */
+    select?: DirectMessageSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DirectMessageInclude<ExtArgs> | null
+    /**
+     * Filter, which DirectMessage to fetch.
+     */
+    where?: DirectMessageWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of DirectMessages to fetch.
+     */
+    orderBy?: DirectMessageOrderByWithRelationInput | DirectMessageOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for DirectMessages.
+     */
+    cursor?: DirectMessageWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` DirectMessages from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` DirectMessages.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of DirectMessages.
+     */
+    distinct?: DirectMessageScalarFieldEnum | DirectMessageScalarFieldEnum[]
+  }
+
+  /**
+   * DirectMessage findFirstOrThrow
+   */
+  export type DirectMessageFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DirectMessage
+     */
+    select?: DirectMessageSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DirectMessageInclude<ExtArgs> | null
+    /**
+     * Filter, which DirectMessage to fetch.
+     */
+    where?: DirectMessageWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of DirectMessages to fetch.
+     */
+    orderBy?: DirectMessageOrderByWithRelationInput | DirectMessageOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for DirectMessages.
+     */
+    cursor?: DirectMessageWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` DirectMessages from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` DirectMessages.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of DirectMessages.
+     */
+    distinct?: DirectMessageScalarFieldEnum | DirectMessageScalarFieldEnum[]
+  }
+
+  /**
+   * DirectMessage findMany
+   */
+  export type DirectMessageFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DirectMessage
+     */
+    select?: DirectMessageSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DirectMessageInclude<ExtArgs> | null
+    /**
+     * Filter, which DirectMessages to fetch.
+     */
+    where?: DirectMessageWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of DirectMessages to fetch.
+     */
+    orderBy?: DirectMessageOrderByWithRelationInput | DirectMessageOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing DirectMessages.
+     */
+    cursor?: DirectMessageWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` DirectMessages from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` DirectMessages.
+     */
+    skip?: number
+    distinct?: DirectMessageScalarFieldEnum | DirectMessageScalarFieldEnum[]
+  }
+
+  /**
+   * DirectMessage create
+   */
+  export type DirectMessageCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DirectMessage
+     */
+    select?: DirectMessageSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DirectMessageInclude<ExtArgs> | null
+    /**
+     * The data needed to create a DirectMessage.
+     */
+    data: XOR<DirectMessageCreateInput, DirectMessageUncheckedCreateInput>
+  }
+
+  /**
+   * DirectMessage createMany
+   */
+  export type DirectMessageCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many DirectMessages.
+     */
+    data: DirectMessageCreateManyInput | DirectMessageCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * DirectMessage createManyAndReturn
+   */
+  export type DirectMessageCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DirectMessage
+     */
+    select?: DirectMessageSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * The data used to create many DirectMessages.
+     */
+    data: DirectMessageCreateManyInput | DirectMessageCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DirectMessageIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * DirectMessage update
+   */
+  export type DirectMessageUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DirectMessage
+     */
+    select?: DirectMessageSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DirectMessageInclude<ExtArgs> | null
+    /**
+     * The data needed to update a DirectMessage.
+     */
+    data: XOR<DirectMessageUpdateInput, DirectMessageUncheckedUpdateInput>
+    /**
+     * Choose, which DirectMessage to update.
+     */
+    where: DirectMessageWhereUniqueInput
+  }
+
+  /**
+   * DirectMessage updateMany
+   */
+  export type DirectMessageUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update DirectMessages.
+     */
+    data: XOR<DirectMessageUpdateManyMutationInput, DirectMessageUncheckedUpdateManyInput>
+    /**
+     * Filter which DirectMessages to update
+     */
+    where?: DirectMessageWhereInput
+  }
+
+  /**
+   * DirectMessage upsert
+   */
+  export type DirectMessageUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DirectMessage
+     */
+    select?: DirectMessageSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DirectMessageInclude<ExtArgs> | null
+    /**
+     * The filter to search for the DirectMessage to update in case it exists.
+     */
+    where: DirectMessageWhereUniqueInput
+    /**
+     * In case the DirectMessage found by the `where` argument doesn't exist, create a new DirectMessage with this data.
+     */
+    create: XOR<DirectMessageCreateInput, DirectMessageUncheckedCreateInput>
+    /**
+     * In case the DirectMessage was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<DirectMessageUpdateInput, DirectMessageUncheckedUpdateInput>
+  }
+
+  /**
+   * DirectMessage delete
+   */
+  export type DirectMessageDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DirectMessage
+     */
+    select?: DirectMessageSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DirectMessageInclude<ExtArgs> | null
+    /**
+     * Filter which DirectMessage to delete.
+     */
+    where: DirectMessageWhereUniqueInput
+  }
+
+  /**
+   * DirectMessage deleteMany
+   */
+  export type DirectMessageDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which DirectMessages to delete
+     */
+    where?: DirectMessageWhereInput
+  }
+
+  /**
+   * DirectMessage without action
+   */
+  export type DirectMessageDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DirectMessage
+     */
+    select?: DirectMessageSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DirectMessageInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model CommunityFollow
+   */
+
+  export type AggregateCommunityFollow = {
+    _count: CommunityFollowCountAggregateOutputType | null
+    _min: CommunityFollowMinAggregateOutputType | null
+    _max: CommunityFollowMaxAggregateOutputType | null
+  }
+
+  export type CommunityFollowMinAggregateOutputType = {
+    id: string | null
+    followerId: string | null
+    followingId: string | null
+    createdAt: Date | null
+  }
+
+  export type CommunityFollowMaxAggregateOutputType = {
+    id: string | null
+    followerId: string | null
+    followingId: string | null
+    createdAt: Date | null
+  }
+
+  export type CommunityFollowCountAggregateOutputType = {
+    id: number
+    followerId: number
+    followingId: number
+    createdAt: number
+    _all: number
+  }
+
+
+  export type CommunityFollowMinAggregateInputType = {
+    id?: true
+    followerId?: true
+    followingId?: true
+    createdAt?: true
+  }
+
+  export type CommunityFollowMaxAggregateInputType = {
+    id?: true
+    followerId?: true
+    followingId?: true
+    createdAt?: true
+  }
+
+  export type CommunityFollowCountAggregateInputType = {
+    id?: true
+    followerId?: true
+    followingId?: true
+    createdAt?: true
+    _all?: true
+  }
+
+  export type CommunityFollowAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which CommunityFollow to aggregate.
+     */
+    where?: CommunityFollowWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of CommunityFollows to fetch.
+     */
+    orderBy?: CommunityFollowOrderByWithRelationInput | CommunityFollowOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: CommunityFollowWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` CommunityFollows from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` CommunityFollows.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned CommunityFollows
+    **/
+    _count?: true | CommunityFollowCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: CommunityFollowMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: CommunityFollowMaxAggregateInputType
+  }
+
+  export type GetCommunityFollowAggregateType<T extends CommunityFollowAggregateArgs> = {
+        [P in keyof T & keyof AggregateCommunityFollow]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateCommunityFollow[P]>
+      : GetScalarType<T[P], AggregateCommunityFollow[P]>
+  }
+
+
+
+
+  export type CommunityFollowGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: CommunityFollowWhereInput
+    orderBy?: CommunityFollowOrderByWithAggregationInput | CommunityFollowOrderByWithAggregationInput[]
+    by: CommunityFollowScalarFieldEnum[] | CommunityFollowScalarFieldEnum
+    having?: CommunityFollowScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: CommunityFollowCountAggregateInputType | true
+    _min?: CommunityFollowMinAggregateInputType
+    _max?: CommunityFollowMaxAggregateInputType
+  }
+
+  export type CommunityFollowGroupByOutputType = {
+    id: string
+    followerId: string
+    followingId: string
+    createdAt: Date
+    _count: CommunityFollowCountAggregateOutputType | null
+    _min: CommunityFollowMinAggregateOutputType | null
+    _max: CommunityFollowMaxAggregateOutputType | null
+  }
+
+  type GetCommunityFollowGroupByPayload<T extends CommunityFollowGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<CommunityFollowGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof CommunityFollowGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], CommunityFollowGroupByOutputType[P]>
+            : GetScalarType<T[P], CommunityFollowGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type CommunityFollowSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    followerId?: boolean
+    followingId?: boolean
+    createdAt?: boolean
+  }, ExtArgs["result"]["communityFollow"]>
+
+  export type CommunityFollowSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    followerId?: boolean
+    followingId?: boolean
+    createdAt?: boolean
+  }, ExtArgs["result"]["communityFollow"]>
+
+  export type CommunityFollowSelectScalar = {
+    id?: boolean
+    followerId?: boolean
+    followingId?: boolean
+    createdAt?: boolean
+  }
+
+
+  export type $CommunityFollowPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "CommunityFollow"
+    objects: {}
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      followerId: string
+      followingId: string
+      createdAt: Date
+    }, ExtArgs["result"]["communityFollow"]>
+    composites: {}
+  }
+
+  type CommunityFollowGetPayload<S extends boolean | null | undefined | CommunityFollowDefaultArgs> = $Result.GetResult<Prisma.$CommunityFollowPayload, S>
+
+  type CommunityFollowCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = 
+    Omit<CommunityFollowFindManyArgs, 'select' | 'include' | 'distinct'> & {
+      select?: CommunityFollowCountAggregateInputType | true
+    }
+
+  export interface CommunityFollowDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['CommunityFollow'], meta: { name: 'CommunityFollow' } }
+    /**
+     * Find zero or one CommunityFollow that matches the filter.
+     * @param {CommunityFollowFindUniqueArgs} args - Arguments to find a CommunityFollow
+     * @example
+     * // Get one CommunityFollow
+     * const communityFollow = await prisma.communityFollow.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends CommunityFollowFindUniqueArgs>(args: SelectSubset<T, CommunityFollowFindUniqueArgs<ExtArgs>>): Prisma__CommunityFollowClient<$Result.GetResult<Prisma.$CommunityFollowPayload<ExtArgs>, T, "findUnique"> | null, null, ExtArgs>
+
+    /**
+     * Find one CommunityFollow that matches the filter or throw an error with `error.code='P2025'` 
+     * if no matches were found.
+     * @param {CommunityFollowFindUniqueOrThrowArgs} args - Arguments to find a CommunityFollow
+     * @example
+     * // Get one CommunityFollow
+     * const communityFollow = await prisma.communityFollow.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends CommunityFollowFindUniqueOrThrowArgs>(args: SelectSubset<T, CommunityFollowFindUniqueOrThrowArgs<ExtArgs>>): Prisma__CommunityFollowClient<$Result.GetResult<Prisma.$CommunityFollowPayload<ExtArgs>, T, "findUniqueOrThrow">, never, ExtArgs>
+
+    /**
+     * Find the first CommunityFollow that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CommunityFollowFindFirstArgs} args - Arguments to find a CommunityFollow
+     * @example
+     * // Get one CommunityFollow
+     * const communityFollow = await prisma.communityFollow.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends CommunityFollowFindFirstArgs>(args?: SelectSubset<T, CommunityFollowFindFirstArgs<ExtArgs>>): Prisma__CommunityFollowClient<$Result.GetResult<Prisma.$CommunityFollowPayload<ExtArgs>, T, "findFirst"> | null, null, ExtArgs>
+
+    /**
+     * Find the first CommunityFollow that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CommunityFollowFindFirstOrThrowArgs} args - Arguments to find a CommunityFollow
+     * @example
+     * // Get one CommunityFollow
+     * const communityFollow = await prisma.communityFollow.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends CommunityFollowFindFirstOrThrowArgs>(args?: SelectSubset<T, CommunityFollowFindFirstOrThrowArgs<ExtArgs>>): Prisma__CommunityFollowClient<$Result.GetResult<Prisma.$CommunityFollowPayload<ExtArgs>, T, "findFirstOrThrow">, never, ExtArgs>
+
+    /**
+     * Find zero or more CommunityFollows that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CommunityFollowFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all CommunityFollows
+     * const communityFollows = await prisma.communityFollow.findMany()
+     * 
+     * // Get first 10 CommunityFollows
+     * const communityFollows = await prisma.communityFollow.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const communityFollowWithIdOnly = await prisma.communityFollow.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends CommunityFollowFindManyArgs>(args?: SelectSubset<T, CommunityFollowFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CommunityFollowPayload<ExtArgs>, T, "findMany">>
+
+    /**
+     * Create a CommunityFollow.
+     * @param {CommunityFollowCreateArgs} args - Arguments to create a CommunityFollow.
+     * @example
+     * // Create one CommunityFollow
+     * const CommunityFollow = await prisma.communityFollow.create({
+     *   data: {
+     *     // ... data to create a CommunityFollow
+     *   }
+     * })
+     * 
+     */
+    create<T extends CommunityFollowCreateArgs>(args: SelectSubset<T, CommunityFollowCreateArgs<ExtArgs>>): Prisma__CommunityFollowClient<$Result.GetResult<Prisma.$CommunityFollowPayload<ExtArgs>, T, "create">, never, ExtArgs>
+
+    /**
+     * Create many CommunityFollows.
+     * @param {CommunityFollowCreateManyArgs} args - Arguments to create many CommunityFollows.
+     * @example
+     * // Create many CommunityFollows
+     * const communityFollow = await prisma.communityFollow.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends CommunityFollowCreateManyArgs>(args?: SelectSubset<T, CommunityFollowCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many CommunityFollows and returns the data saved in the database.
+     * @param {CommunityFollowCreateManyAndReturnArgs} args - Arguments to create many CommunityFollows.
+     * @example
+     * // Create many CommunityFollows
+     * const communityFollow = await prisma.communityFollow.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many CommunityFollows and only return the `id`
+     * const communityFollowWithIdOnly = await prisma.communityFollow.createManyAndReturn({ 
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends CommunityFollowCreateManyAndReturnArgs>(args?: SelectSubset<T, CommunityFollowCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CommunityFollowPayload<ExtArgs>, T, "createManyAndReturn">>
+
+    /**
+     * Delete a CommunityFollow.
+     * @param {CommunityFollowDeleteArgs} args - Arguments to delete one CommunityFollow.
+     * @example
+     * // Delete one CommunityFollow
+     * const CommunityFollow = await prisma.communityFollow.delete({
+     *   where: {
+     *     // ... filter to delete one CommunityFollow
+     *   }
+     * })
+     * 
+     */
+    delete<T extends CommunityFollowDeleteArgs>(args: SelectSubset<T, CommunityFollowDeleteArgs<ExtArgs>>): Prisma__CommunityFollowClient<$Result.GetResult<Prisma.$CommunityFollowPayload<ExtArgs>, T, "delete">, never, ExtArgs>
+
+    /**
+     * Update one CommunityFollow.
+     * @param {CommunityFollowUpdateArgs} args - Arguments to update one CommunityFollow.
+     * @example
+     * // Update one CommunityFollow
+     * const communityFollow = await prisma.communityFollow.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends CommunityFollowUpdateArgs>(args: SelectSubset<T, CommunityFollowUpdateArgs<ExtArgs>>): Prisma__CommunityFollowClient<$Result.GetResult<Prisma.$CommunityFollowPayload<ExtArgs>, T, "update">, never, ExtArgs>
+
+    /**
+     * Delete zero or more CommunityFollows.
+     * @param {CommunityFollowDeleteManyArgs} args - Arguments to filter CommunityFollows to delete.
+     * @example
+     * // Delete a few CommunityFollows
+     * const { count } = await prisma.communityFollow.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends CommunityFollowDeleteManyArgs>(args?: SelectSubset<T, CommunityFollowDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more CommunityFollows.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CommunityFollowUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many CommunityFollows
+     * const communityFollow = await prisma.communityFollow.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends CommunityFollowUpdateManyArgs>(args: SelectSubset<T, CommunityFollowUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one CommunityFollow.
+     * @param {CommunityFollowUpsertArgs} args - Arguments to update or create a CommunityFollow.
+     * @example
+     * // Update or create a CommunityFollow
+     * const communityFollow = await prisma.communityFollow.upsert({
+     *   create: {
+     *     // ... data to create a CommunityFollow
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the CommunityFollow we want to update
+     *   }
+     * })
+     */
+    upsert<T extends CommunityFollowUpsertArgs>(args: SelectSubset<T, CommunityFollowUpsertArgs<ExtArgs>>): Prisma__CommunityFollowClient<$Result.GetResult<Prisma.$CommunityFollowPayload<ExtArgs>, T, "upsert">, never, ExtArgs>
+
+
+    /**
+     * Count the number of CommunityFollows.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CommunityFollowCountArgs} args - Arguments to filter CommunityFollows to count.
+     * @example
+     * // Count the number of CommunityFollows
+     * const count = await prisma.communityFollow.count({
+     *   where: {
+     *     // ... the filter for the CommunityFollows we want to count
+     *   }
+     * })
+    **/
+    count<T extends CommunityFollowCountArgs>(
+      args?: Subset<T, CommunityFollowCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], CommunityFollowCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a CommunityFollow.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CommunityFollowAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends CommunityFollowAggregateArgs>(args: Subset<T, CommunityFollowAggregateArgs>): Prisma.PrismaPromise<GetCommunityFollowAggregateType<T>>
+
+    /**
+     * Group by CommunityFollow.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CommunityFollowGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends CommunityFollowGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: CommunityFollowGroupByArgs['orderBy'] }
+        : { orderBy?: CommunityFollowGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, CommunityFollowGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetCommunityFollowGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the CommunityFollow model
+   */
+  readonly fields: CommunityFollowFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for CommunityFollow.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__CommunityFollowClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the CommunityFollow model
+   */ 
+  interface CommunityFollowFieldRefs {
+    readonly id: FieldRef<"CommunityFollow", 'String'>
+    readonly followerId: FieldRef<"CommunityFollow", 'String'>
+    readonly followingId: FieldRef<"CommunityFollow", 'String'>
+    readonly createdAt: FieldRef<"CommunityFollow", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * CommunityFollow findUnique
+   */
+  export type CommunityFollowFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CommunityFollow
+     */
+    select?: CommunityFollowSelect<ExtArgs> | null
+    /**
+     * Filter, which CommunityFollow to fetch.
+     */
+    where: CommunityFollowWhereUniqueInput
+  }
+
+  /**
+   * CommunityFollow findUniqueOrThrow
+   */
+  export type CommunityFollowFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CommunityFollow
+     */
+    select?: CommunityFollowSelect<ExtArgs> | null
+    /**
+     * Filter, which CommunityFollow to fetch.
+     */
+    where: CommunityFollowWhereUniqueInput
+  }
+
+  /**
+   * CommunityFollow findFirst
+   */
+  export type CommunityFollowFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CommunityFollow
+     */
+    select?: CommunityFollowSelect<ExtArgs> | null
+    /**
+     * Filter, which CommunityFollow to fetch.
+     */
+    where?: CommunityFollowWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of CommunityFollows to fetch.
+     */
+    orderBy?: CommunityFollowOrderByWithRelationInput | CommunityFollowOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for CommunityFollows.
+     */
+    cursor?: CommunityFollowWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` CommunityFollows from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` CommunityFollows.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of CommunityFollows.
+     */
+    distinct?: CommunityFollowScalarFieldEnum | CommunityFollowScalarFieldEnum[]
+  }
+
+  /**
+   * CommunityFollow findFirstOrThrow
+   */
+  export type CommunityFollowFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CommunityFollow
+     */
+    select?: CommunityFollowSelect<ExtArgs> | null
+    /**
+     * Filter, which CommunityFollow to fetch.
+     */
+    where?: CommunityFollowWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of CommunityFollows to fetch.
+     */
+    orderBy?: CommunityFollowOrderByWithRelationInput | CommunityFollowOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for CommunityFollows.
+     */
+    cursor?: CommunityFollowWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` CommunityFollows from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` CommunityFollows.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of CommunityFollows.
+     */
+    distinct?: CommunityFollowScalarFieldEnum | CommunityFollowScalarFieldEnum[]
+  }
+
+  /**
+   * CommunityFollow findMany
+   */
+  export type CommunityFollowFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CommunityFollow
+     */
+    select?: CommunityFollowSelect<ExtArgs> | null
+    /**
+     * Filter, which CommunityFollows to fetch.
+     */
+    where?: CommunityFollowWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of CommunityFollows to fetch.
+     */
+    orderBy?: CommunityFollowOrderByWithRelationInput | CommunityFollowOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing CommunityFollows.
+     */
+    cursor?: CommunityFollowWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` CommunityFollows from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` CommunityFollows.
+     */
+    skip?: number
+    distinct?: CommunityFollowScalarFieldEnum | CommunityFollowScalarFieldEnum[]
+  }
+
+  /**
+   * CommunityFollow create
+   */
+  export type CommunityFollowCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CommunityFollow
+     */
+    select?: CommunityFollowSelect<ExtArgs> | null
+    /**
+     * The data needed to create a CommunityFollow.
+     */
+    data: XOR<CommunityFollowCreateInput, CommunityFollowUncheckedCreateInput>
+  }
+
+  /**
+   * CommunityFollow createMany
+   */
+  export type CommunityFollowCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many CommunityFollows.
+     */
+    data: CommunityFollowCreateManyInput | CommunityFollowCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * CommunityFollow createManyAndReturn
+   */
+  export type CommunityFollowCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CommunityFollow
+     */
+    select?: CommunityFollowSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * The data used to create many CommunityFollows.
+     */
+    data: CommunityFollowCreateManyInput | CommunityFollowCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * CommunityFollow update
+   */
+  export type CommunityFollowUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CommunityFollow
+     */
+    select?: CommunityFollowSelect<ExtArgs> | null
+    /**
+     * The data needed to update a CommunityFollow.
+     */
+    data: XOR<CommunityFollowUpdateInput, CommunityFollowUncheckedUpdateInput>
+    /**
+     * Choose, which CommunityFollow to update.
+     */
+    where: CommunityFollowWhereUniqueInput
+  }
+
+  /**
+   * CommunityFollow updateMany
+   */
+  export type CommunityFollowUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update CommunityFollows.
+     */
+    data: XOR<CommunityFollowUpdateManyMutationInput, CommunityFollowUncheckedUpdateManyInput>
+    /**
+     * Filter which CommunityFollows to update
+     */
+    where?: CommunityFollowWhereInput
+  }
+
+  /**
+   * CommunityFollow upsert
+   */
+  export type CommunityFollowUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CommunityFollow
+     */
+    select?: CommunityFollowSelect<ExtArgs> | null
+    /**
+     * The filter to search for the CommunityFollow to update in case it exists.
+     */
+    where: CommunityFollowWhereUniqueInput
+    /**
+     * In case the CommunityFollow found by the `where` argument doesn't exist, create a new CommunityFollow with this data.
+     */
+    create: XOR<CommunityFollowCreateInput, CommunityFollowUncheckedCreateInput>
+    /**
+     * In case the CommunityFollow was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<CommunityFollowUpdateInput, CommunityFollowUncheckedUpdateInput>
+  }
+
+  /**
+   * CommunityFollow delete
+   */
+  export type CommunityFollowDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CommunityFollow
+     */
+    select?: CommunityFollowSelect<ExtArgs> | null
+    /**
+     * Filter which CommunityFollow to delete.
+     */
+    where: CommunityFollowWhereUniqueInput
+  }
+
+  /**
+   * CommunityFollow deleteMany
+   */
+  export type CommunityFollowDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which CommunityFollows to delete
+     */
+    where?: CommunityFollowWhereInput
+  }
+
+  /**
+   * CommunityFollow without action
+   */
+  export type CommunityFollowDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CommunityFollow
+     */
+    select?: CommunityFollowSelect<ExtArgs> | null
+  }
+
+
+  /**
+   * Model CommunityBookmark
+   */
+
+  export type AggregateCommunityBookmark = {
+    _count: CommunityBookmarkCountAggregateOutputType | null
+    _min: CommunityBookmarkMinAggregateOutputType | null
+    _max: CommunityBookmarkMaxAggregateOutputType | null
+  }
+
+  export type CommunityBookmarkMinAggregateOutputType = {
+    id: string | null
+    userId: string | null
+    postId: string | null
+    createdAt: Date | null
+  }
+
+  export type CommunityBookmarkMaxAggregateOutputType = {
+    id: string | null
+    userId: string | null
+    postId: string | null
+    createdAt: Date | null
+  }
+
+  export type CommunityBookmarkCountAggregateOutputType = {
+    id: number
+    userId: number
+    postId: number
+    createdAt: number
+    _all: number
+  }
+
+
+  export type CommunityBookmarkMinAggregateInputType = {
+    id?: true
+    userId?: true
+    postId?: true
+    createdAt?: true
+  }
+
+  export type CommunityBookmarkMaxAggregateInputType = {
+    id?: true
+    userId?: true
+    postId?: true
+    createdAt?: true
+  }
+
+  export type CommunityBookmarkCountAggregateInputType = {
+    id?: true
+    userId?: true
+    postId?: true
+    createdAt?: true
+    _all?: true
+  }
+
+  export type CommunityBookmarkAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which CommunityBookmark to aggregate.
+     */
+    where?: CommunityBookmarkWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of CommunityBookmarks to fetch.
+     */
+    orderBy?: CommunityBookmarkOrderByWithRelationInput | CommunityBookmarkOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: CommunityBookmarkWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` CommunityBookmarks from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` CommunityBookmarks.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned CommunityBookmarks
+    **/
+    _count?: true | CommunityBookmarkCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: CommunityBookmarkMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: CommunityBookmarkMaxAggregateInputType
+  }
+
+  export type GetCommunityBookmarkAggregateType<T extends CommunityBookmarkAggregateArgs> = {
+        [P in keyof T & keyof AggregateCommunityBookmark]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateCommunityBookmark[P]>
+      : GetScalarType<T[P], AggregateCommunityBookmark[P]>
+  }
+
+
+
+
+  export type CommunityBookmarkGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: CommunityBookmarkWhereInput
+    orderBy?: CommunityBookmarkOrderByWithAggregationInput | CommunityBookmarkOrderByWithAggregationInput[]
+    by: CommunityBookmarkScalarFieldEnum[] | CommunityBookmarkScalarFieldEnum
+    having?: CommunityBookmarkScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: CommunityBookmarkCountAggregateInputType | true
+    _min?: CommunityBookmarkMinAggregateInputType
+    _max?: CommunityBookmarkMaxAggregateInputType
+  }
+
+  export type CommunityBookmarkGroupByOutputType = {
+    id: string
+    userId: string
+    postId: string
+    createdAt: Date
+    _count: CommunityBookmarkCountAggregateOutputType | null
+    _min: CommunityBookmarkMinAggregateOutputType | null
+    _max: CommunityBookmarkMaxAggregateOutputType | null
+  }
+
+  type GetCommunityBookmarkGroupByPayload<T extends CommunityBookmarkGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<CommunityBookmarkGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof CommunityBookmarkGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], CommunityBookmarkGroupByOutputType[P]>
+            : GetScalarType<T[P], CommunityBookmarkGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type CommunityBookmarkSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userId?: boolean
+    postId?: boolean
+    createdAt?: boolean
+  }, ExtArgs["result"]["communityBookmark"]>
+
+  export type CommunityBookmarkSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userId?: boolean
+    postId?: boolean
+    createdAt?: boolean
+  }, ExtArgs["result"]["communityBookmark"]>
+
+  export type CommunityBookmarkSelectScalar = {
+    id?: boolean
+    userId?: boolean
+    postId?: boolean
+    createdAt?: boolean
+  }
+
+
+  export type $CommunityBookmarkPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "CommunityBookmark"
+    objects: {}
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      userId: string
+      postId: string
+      createdAt: Date
+    }, ExtArgs["result"]["communityBookmark"]>
+    composites: {}
+  }
+
+  type CommunityBookmarkGetPayload<S extends boolean | null | undefined | CommunityBookmarkDefaultArgs> = $Result.GetResult<Prisma.$CommunityBookmarkPayload, S>
+
+  type CommunityBookmarkCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = 
+    Omit<CommunityBookmarkFindManyArgs, 'select' | 'include' | 'distinct'> & {
+      select?: CommunityBookmarkCountAggregateInputType | true
+    }
+
+  export interface CommunityBookmarkDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['CommunityBookmark'], meta: { name: 'CommunityBookmark' } }
+    /**
+     * Find zero or one CommunityBookmark that matches the filter.
+     * @param {CommunityBookmarkFindUniqueArgs} args - Arguments to find a CommunityBookmark
+     * @example
+     * // Get one CommunityBookmark
+     * const communityBookmark = await prisma.communityBookmark.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends CommunityBookmarkFindUniqueArgs>(args: SelectSubset<T, CommunityBookmarkFindUniqueArgs<ExtArgs>>): Prisma__CommunityBookmarkClient<$Result.GetResult<Prisma.$CommunityBookmarkPayload<ExtArgs>, T, "findUnique"> | null, null, ExtArgs>
+
+    /**
+     * Find one CommunityBookmark that matches the filter or throw an error with `error.code='P2025'` 
+     * if no matches were found.
+     * @param {CommunityBookmarkFindUniqueOrThrowArgs} args - Arguments to find a CommunityBookmark
+     * @example
+     * // Get one CommunityBookmark
+     * const communityBookmark = await prisma.communityBookmark.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends CommunityBookmarkFindUniqueOrThrowArgs>(args: SelectSubset<T, CommunityBookmarkFindUniqueOrThrowArgs<ExtArgs>>): Prisma__CommunityBookmarkClient<$Result.GetResult<Prisma.$CommunityBookmarkPayload<ExtArgs>, T, "findUniqueOrThrow">, never, ExtArgs>
+
+    /**
+     * Find the first CommunityBookmark that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CommunityBookmarkFindFirstArgs} args - Arguments to find a CommunityBookmark
+     * @example
+     * // Get one CommunityBookmark
+     * const communityBookmark = await prisma.communityBookmark.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends CommunityBookmarkFindFirstArgs>(args?: SelectSubset<T, CommunityBookmarkFindFirstArgs<ExtArgs>>): Prisma__CommunityBookmarkClient<$Result.GetResult<Prisma.$CommunityBookmarkPayload<ExtArgs>, T, "findFirst"> | null, null, ExtArgs>
+
+    /**
+     * Find the first CommunityBookmark that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CommunityBookmarkFindFirstOrThrowArgs} args - Arguments to find a CommunityBookmark
+     * @example
+     * // Get one CommunityBookmark
+     * const communityBookmark = await prisma.communityBookmark.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends CommunityBookmarkFindFirstOrThrowArgs>(args?: SelectSubset<T, CommunityBookmarkFindFirstOrThrowArgs<ExtArgs>>): Prisma__CommunityBookmarkClient<$Result.GetResult<Prisma.$CommunityBookmarkPayload<ExtArgs>, T, "findFirstOrThrow">, never, ExtArgs>
+
+    /**
+     * Find zero or more CommunityBookmarks that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CommunityBookmarkFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all CommunityBookmarks
+     * const communityBookmarks = await prisma.communityBookmark.findMany()
+     * 
+     * // Get first 10 CommunityBookmarks
+     * const communityBookmarks = await prisma.communityBookmark.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const communityBookmarkWithIdOnly = await prisma.communityBookmark.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends CommunityBookmarkFindManyArgs>(args?: SelectSubset<T, CommunityBookmarkFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CommunityBookmarkPayload<ExtArgs>, T, "findMany">>
+
+    /**
+     * Create a CommunityBookmark.
+     * @param {CommunityBookmarkCreateArgs} args - Arguments to create a CommunityBookmark.
+     * @example
+     * // Create one CommunityBookmark
+     * const CommunityBookmark = await prisma.communityBookmark.create({
+     *   data: {
+     *     // ... data to create a CommunityBookmark
+     *   }
+     * })
+     * 
+     */
+    create<T extends CommunityBookmarkCreateArgs>(args: SelectSubset<T, CommunityBookmarkCreateArgs<ExtArgs>>): Prisma__CommunityBookmarkClient<$Result.GetResult<Prisma.$CommunityBookmarkPayload<ExtArgs>, T, "create">, never, ExtArgs>
+
+    /**
+     * Create many CommunityBookmarks.
+     * @param {CommunityBookmarkCreateManyArgs} args - Arguments to create many CommunityBookmarks.
+     * @example
+     * // Create many CommunityBookmarks
+     * const communityBookmark = await prisma.communityBookmark.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends CommunityBookmarkCreateManyArgs>(args?: SelectSubset<T, CommunityBookmarkCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many CommunityBookmarks and returns the data saved in the database.
+     * @param {CommunityBookmarkCreateManyAndReturnArgs} args - Arguments to create many CommunityBookmarks.
+     * @example
+     * // Create many CommunityBookmarks
+     * const communityBookmark = await prisma.communityBookmark.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many CommunityBookmarks and only return the `id`
+     * const communityBookmarkWithIdOnly = await prisma.communityBookmark.createManyAndReturn({ 
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends CommunityBookmarkCreateManyAndReturnArgs>(args?: SelectSubset<T, CommunityBookmarkCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CommunityBookmarkPayload<ExtArgs>, T, "createManyAndReturn">>
+
+    /**
+     * Delete a CommunityBookmark.
+     * @param {CommunityBookmarkDeleteArgs} args - Arguments to delete one CommunityBookmark.
+     * @example
+     * // Delete one CommunityBookmark
+     * const CommunityBookmark = await prisma.communityBookmark.delete({
+     *   where: {
+     *     // ... filter to delete one CommunityBookmark
+     *   }
+     * })
+     * 
+     */
+    delete<T extends CommunityBookmarkDeleteArgs>(args: SelectSubset<T, CommunityBookmarkDeleteArgs<ExtArgs>>): Prisma__CommunityBookmarkClient<$Result.GetResult<Prisma.$CommunityBookmarkPayload<ExtArgs>, T, "delete">, never, ExtArgs>
+
+    /**
+     * Update one CommunityBookmark.
+     * @param {CommunityBookmarkUpdateArgs} args - Arguments to update one CommunityBookmark.
+     * @example
+     * // Update one CommunityBookmark
+     * const communityBookmark = await prisma.communityBookmark.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends CommunityBookmarkUpdateArgs>(args: SelectSubset<T, CommunityBookmarkUpdateArgs<ExtArgs>>): Prisma__CommunityBookmarkClient<$Result.GetResult<Prisma.$CommunityBookmarkPayload<ExtArgs>, T, "update">, never, ExtArgs>
+
+    /**
+     * Delete zero or more CommunityBookmarks.
+     * @param {CommunityBookmarkDeleteManyArgs} args - Arguments to filter CommunityBookmarks to delete.
+     * @example
+     * // Delete a few CommunityBookmarks
+     * const { count } = await prisma.communityBookmark.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends CommunityBookmarkDeleteManyArgs>(args?: SelectSubset<T, CommunityBookmarkDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more CommunityBookmarks.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CommunityBookmarkUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many CommunityBookmarks
+     * const communityBookmark = await prisma.communityBookmark.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends CommunityBookmarkUpdateManyArgs>(args: SelectSubset<T, CommunityBookmarkUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one CommunityBookmark.
+     * @param {CommunityBookmarkUpsertArgs} args - Arguments to update or create a CommunityBookmark.
+     * @example
+     * // Update or create a CommunityBookmark
+     * const communityBookmark = await prisma.communityBookmark.upsert({
+     *   create: {
+     *     // ... data to create a CommunityBookmark
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the CommunityBookmark we want to update
+     *   }
+     * })
+     */
+    upsert<T extends CommunityBookmarkUpsertArgs>(args: SelectSubset<T, CommunityBookmarkUpsertArgs<ExtArgs>>): Prisma__CommunityBookmarkClient<$Result.GetResult<Prisma.$CommunityBookmarkPayload<ExtArgs>, T, "upsert">, never, ExtArgs>
+
+
+    /**
+     * Count the number of CommunityBookmarks.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CommunityBookmarkCountArgs} args - Arguments to filter CommunityBookmarks to count.
+     * @example
+     * // Count the number of CommunityBookmarks
+     * const count = await prisma.communityBookmark.count({
+     *   where: {
+     *     // ... the filter for the CommunityBookmarks we want to count
+     *   }
+     * })
+    **/
+    count<T extends CommunityBookmarkCountArgs>(
+      args?: Subset<T, CommunityBookmarkCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], CommunityBookmarkCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a CommunityBookmark.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CommunityBookmarkAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends CommunityBookmarkAggregateArgs>(args: Subset<T, CommunityBookmarkAggregateArgs>): Prisma.PrismaPromise<GetCommunityBookmarkAggregateType<T>>
+
+    /**
+     * Group by CommunityBookmark.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CommunityBookmarkGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends CommunityBookmarkGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: CommunityBookmarkGroupByArgs['orderBy'] }
+        : { orderBy?: CommunityBookmarkGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, CommunityBookmarkGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetCommunityBookmarkGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the CommunityBookmark model
+   */
+  readonly fields: CommunityBookmarkFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for CommunityBookmark.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__CommunityBookmarkClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the CommunityBookmark model
+   */ 
+  interface CommunityBookmarkFieldRefs {
+    readonly id: FieldRef<"CommunityBookmark", 'String'>
+    readonly userId: FieldRef<"CommunityBookmark", 'String'>
+    readonly postId: FieldRef<"CommunityBookmark", 'String'>
+    readonly createdAt: FieldRef<"CommunityBookmark", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * CommunityBookmark findUnique
+   */
+  export type CommunityBookmarkFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CommunityBookmark
+     */
+    select?: CommunityBookmarkSelect<ExtArgs> | null
+    /**
+     * Filter, which CommunityBookmark to fetch.
+     */
+    where: CommunityBookmarkWhereUniqueInput
+  }
+
+  /**
+   * CommunityBookmark findUniqueOrThrow
+   */
+  export type CommunityBookmarkFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CommunityBookmark
+     */
+    select?: CommunityBookmarkSelect<ExtArgs> | null
+    /**
+     * Filter, which CommunityBookmark to fetch.
+     */
+    where: CommunityBookmarkWhereUniqueInput
+  }
+
+  /**
+   * CommunityBookmark findFirst
+   */
+  export type CommunityBookmarkFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CommunityBookmark
+     */
+    select?: CommunityBookmarkSelect<ExtArgs> | null
+    /**
+     * Filter, which CommunityBookmark to fetch.
+     */
+    where?: CommunityBookmarkWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of CommunityBookmarks to fetch.
+     */
+    orderBy?: CommunityBookmarkOrderByWithRelationInput | CommunityBookmarkOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for CommunityBookmarks.
+     */
+    cursor?: CommunityBookmarkWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` CommunityBookmarks from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` CommunityBookmarks.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of CommunityBookmarks.
+     */
+    distinct?: CommunityBookmarkScalarFieldEnum | CommunityBookmarkScalarFieldEnum[]
+  }
+
+  /**
+   * CommunityBookmark findFirstOrThrow
+   */
+  export type CommunityBookmarkFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CommunityBookmark
+     */
+    select?: CommunityBookmarkSelect<ExtArgs> | null
+    /**
+     * Filter, which CommunityBookmark to fetch.
+     */
+    where?: CommunityBookmarkWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of CommunityBookmarks to fetch.
+     */
+    orderBy?: CommunityBookmarkOrderByWithRelationInput | CommunityBookmarkOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for CommunityBookmarks.
+     */
+    cursor?: CommunityBookmarkWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` CommunityBookmarks from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` CommunityBookmarks.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of CommunityBookmarks.
+     */
+    distinct?: CommunityBookmarkScalarFieldEnum | CommunityBookmarkScalarFieldEnum[]
+  }
+
+  /**
+   * CommunityBookmark findMany
+   */
+  export type CommunityBookmarkFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CommunityBookmark
+     */
+    select?: CommunityBookmarkSelect<ExtArgs> | null
+    /**
+     * Filter, which CommunityBookmarks to fetch.
+     */
+    where?: CommunityBookmarkWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of CommunityBookmarks to fetch.
+     */
+    orderBy?: CommunityBookmarkOrderByWithRelationInput | CommunityBookmarkOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing CommunityBookmarks.
+     */
+    cursor?: CommunityBookmarkWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` CommunityBookmarks from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` CommunityBookmarks.
+     */
+    skip?: number
+    distinct?: CommunityBookmarkScalarFieldEnum | CommunityBookmarkScalarFieldEnum[]
+  }
+
+  /**
+   * CommunityBookmark create
+   */
+  export type CommunityBookmarkCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CommunityBookmark
+     */
+    select?: CommunityBookmarkSelect<ExtArgs> | null
+    /**
+     * The data needed to create a CommunityBookmark.
+     */
+    data: XOR<CommunityBookmarkCreateInput, CommunityBookmarkUncheckedCreateInput>
+  }
+
+  /**
+   * CommunityBookmark createMany
+   */
+  export type CommunityBookmarkCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many CommunityBookmarks.
+     */
+    data: CommunityBookmarkCreateManyInput | CommunityBookmarkCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * CommunityBookmark createManyAndReturn
+   */
+  export type CommunityBookmarkCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CommunityBookmark
+     */
+    select?: CommunityBookmarkSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * The data used to create many CommunityBookmarks.
+     */
+    data: CommunityBookmarkCreateManyInput | CommunityBookmarkCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * CommunityBookmark update
+   */
+  export type CommunityBookmarkUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CommunityBookmark
+     */
+    select?: CommunityBookmarkSelect<ExtArgs> | null
+    /**
+     * The data needed to update a CommunityBookmark.
+     */
+    data: XOR<CommunityBookmarkUpdateInput, CommunityBookmarkUncheckedUpdateInput>
+    /**
+     * Choose, which CommunityBookmark to update.
+     */
+    where: CommunityBookmarkWhereUniqueInput
+  }
+
+  /**
+   * CommunityBookmark updateMany
+   */
+  export type CommunityBookmarkUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update CommunityBookmarks.
+     */
+    data: XOR<CommunityBookmarkUpdateManyMutationInput, CommunityBookmarkUncheckedUpdateManyInput>
+    /**
+     * Filter which CommunityBookmarks to update
+     */
+    where?: CommunityBookmarkWhereInput
+  }
+
+  /**
+   * CommunityBookmark upsert
+   */
+  export type CommunityBookmarkUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CommunityBookmark
+     */
+    select?: CommunityBookmarkSelect<ExtArgs> | null
+    /**
+     * The filter to search for the CommunityBookmark to update in case it exists.
+     */
+    where: CommunityBookmarkWhereUniqueInput
+    /**
+     * In case the CommunityBookmark found by the `where` argument doesn't exist, create a new CommunityBookmark with this data.
+     */
+    create: XOR<CommunityBookmarkCreateInput, CommunityBookmarkUncheckedCreateInput>
+    /**
+     * In case the CommunityBookmark was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<CommunityBookmarkUpdateInput, CommunityBookmarkUncheckedUpdateInput>
+  }
+
+  /**
+   * CommunityBookmark delete
+   */
+  export type CommunityBookmarkDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CommunityBookmark
+     */
+    select?: CommunityBookmarkSelect<ExtArgs> | null
+    /**
+     * Filter which CommunityBookmark to delete.
+     */
+    where: CommunityBookmarkWhereUniqueInput
+  }
+
+  /**
+   * CommunityBookmark deleteMany
+   */
+  export type CommunityBookmarkDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which CommunityBookmarks to delete
+     */
+    where?: CommunityBookmarkWhereInput
+  }
+
+  /**
+   * CommunityBookmark without action
+   */
+  export type CommunityBookmarkDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CommunityBookmark
+     */
+    select?: CommunityBookmarkSelect<ExtArgs> | null
+  }
+
+
+  /**
+   * Model CommunityNotification
+   */
+
+  export type AggregateCommunityNotification = {
+    _count: CommunityNotificationCountAggregateOutputType | null
+    _min: CommunityNotificationMinAggregateOutputType | null
+    _max: CommunityNotificationMaxAggregateOutputType | null
+  }
+
+  export type CommunityNotificationMinAggregateOutputType = {
+    id: string | null
+    recipientId: string | null
+    actorId: string | null
+    type: string | null
+    postId: string | null
+    commentId: string | null
+    conversationId: string | null
+    readAt: Date | null
+    createdAt: Date | null
+  }
+
+  export type CommunityNotificationMaxAggregateOutputType = {
+    id: string | null
+    recipientId: string | null
+    actorId: string | null
+    type: string | null
+    postId: string | null
+    commentId: string | null
+    conversationId: string | null
+    readAt: Date | null
+    createdAt: Date | null
+  }
+
+  export type CommunityNotificationCountAggregateOutputType = {
+    id: number
+    recipientId: number
+    actorId: number
+    type: number
+    postId: number
+    commentId: number
+    conversationId: number
+    readAt: number
+    createdAt: number
+    _all: number
+  }
+
+
+  export type CommunityNotificationMinAggregateInputType = {
+    id?: true
+    recipientId?: true
+    actorId?: true
+    type?: true
+    postId?: true
+    commentId?: true
+    conversationId?: true
+    readAt?: true
+    createdAt?: true
+  }
+
+  export type CommunityNotificationMaxAggregateInputType = {
+    id?: true
+    recipientId?: true
+    actorId?: true
+    type?: true
+    postId?: true
+    commentId?: true
+    conversationId?: true
+    readAt?: true
+    createdAt?: true
+  }
+
+  export type CommunityNotificationCountAggregateInputType = {
+    id?: true
+    recipientId?: true
+    actorId?: true
+    type?: true
+    postId?: true
+    commentId?: true
+    conversationId?: true
+    readAt?: true
+    createdAt?: true
+    _all?: true
+  }
+
+  export type CommunityNotificationAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which CommunityNotification to aggregate.
+     */
+    where?: CommunityNotificationWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of CommunityNotifications to fetch.
+     */
+    orderBy?: CommunityNotificationOrderByWithRelationInput | CommunityNotificationOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: CommunityNotificationWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` CommunityNotifications from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` CommunityNotifications.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned CommunityNotifications
+    **/
+    _count?: true | CommunityNotificationCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: CommunityNotificationMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: CommunityNotificationMaxAggregateInputType
+  }
+
+  export type GetCommunityNotificationAggregateType<T extends CommunityNotificationAggregateArgs> = {
+        [P in keyof T & keyof AggregateCommunityNotification]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateCommunityNotification[P]>
+      : GetScalarType<T[P], AggregateCommunityNotification[P]>
+  }
+
+
+
+
+  export type CommunityNotificationGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: CommunityNotificationWhereInput
+    orderBy?: CommunityNotificationOrderByWithAggregationInput | CommunityNotificationOrderByWithAggregationInput[]
+    by: CommunityNotificationScalarFieldEnum[] | CommunityNotificationScalarFieldEnum
+    having?: CommunityNotificationScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: CommunityNotificationCountAggregateInputType | true
+    _min?: CommunityNotificationMinAggregateInputType
+    _max?: CommunityNotificationMaxAggregateInputType
+  }
+
+  export type CommunityNotificationGroupByOutputType = {
+    id: string
+    recipientId: string
+    actorId: string
+    type: string
+    postId: string | null
+    commentId: string | null
+    conversationId: string | null
+    readAt: Date | null
+    createdAt: Date
+    _count: CommunityNotificationCountAggregateOutputType | null
+    _min: CommunityNotificationMinAggregateOutputType | null
+    _max: CommunityNotificationMaxAggregateOutputType | null
+  }
+
+  type GetCommunityNotificationGroupByPayload<T extends CommunityNotificationGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<CommunityNotificationGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof CommunityNotificationGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], CommunityNotificationGroupByOutputType[P]>
+            : GetScalarType<T[P], CommunityNotificationGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type CommunityNotificationSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    recipientId?: boolean
+    actorId?: boolean
+    type?: boolean
+    postId?: boolean
+    commentId?: boolean
+    conversationId?: boolean
+    readAt?: boolean
+    createdAt?: boolean
+  }, ExtArgs["result"]["communityNotification"]>
+
+  export type CommunityNotificationSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    recipientId?: boolean
+    actorId?: boolean
+    type?: boolean
+    postId?: boolean
+    commentId?: boolean
+    conversationId?: boolean
+    readAt?: boolean
+    createdAt?: boolean
+  }, ExtArgs["result"]["communityNotification"]>
+
+  export type CommunityNotificationSelectScalar = {
+    id?: boolean
+    recipientId?: boolean
+    actorId?: boolean
+    type?: boolean
+    postId?: boolean
+    commentId?: boolean
+    conversationId?: boolean
+    readAt?: boolean
+    createdAt?: boolean
+  }
+
+
+  export type $CommunityNotificationPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "CommunityNotification"
+    objects: {}
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      recipientId: string
+      actorId: string
+      type: string
+      postId: string | null
+      commentId: string | null
+      conversationId: string | null
+      readAt: Date | null
+      createdAt: Date
+    }, ExtArgs["result"]["communityNotification"]>
+    composites: {}
+  }
+
+  type CommunityNotificationGetPayload<S extends boolean | null | undefined | CommunityNotificationDefaultArgs> = $Result.GetResult<Prisma.$CommunityNotificationPayload, S>
+
+  type CommunityNotificationCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = 
+    Omit<CommunityNotificationFindManyArgs, 'select' | 'include' | 'distinct'> & {
+      select?: CommunityNotificationCountAggregateInputType | true
+    }
+
+  export interface CommunityNotificationDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['CommunityNotification'], meta: { name: 'CommunityNotification' } }
+    /**
+     * Find zero or one CommunityNotification that matches the filter.
+     * @param {CommunityNotificationFindUniqueArgs} args - Arguments to find a CommunityNotification
+     * @example
+     * // Get one CommunityNotification
+     * const communityNotification = await prisma.communityNotification.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends CommunityNotificationFindUniqueArgs>(args: SelectSubset<T, CommunityNotificationFindUniqueArgs<ExtArgs>>): Prisma__CommunityNotificationClient<$Result.GetResult<Prisma.$CommunityNotificationPayload<ExtArgs>, T, "findUnique"> | null, null, ExtArgs>
+
+    /**
+     * Find one CommunityNotification that matches the filter or throw an error with `error.code='P2025'` 
+     * if no matches were found.
+     * @param {CommunityNotificationFindUniqueOrThrowArgs} args - Arguments to find a CommunityNotification
+     * @example
+     * // Get one CommunityNotification
+     * const communityNotification = await prisma.communityNotification.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends CommunityNotificationFindUniqueOrThrowArgs>(args: SelectSubset<T, CommunityNotificationFindUniqueOrThrowArgs<ExtArgs>>): Prisma__CommunityNotificationClient<$Result.GetResult<Prisma.$CommunityNotificationPayload<ExtArgs>, T, "findUniqueOrThrow">, never, ExtArgs>
+
+    /**
+     * Find the first CommunityNotification that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CommunityNotificationFindFirstArgs} args - Arguments to find a CommunityNotification
+     * @example
+     * // Get one CommunityNotification
+     * const communityNotification = await prisma.communityNotification.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends CommunityNotificationFindFirstArgs>(args?: SelectSubset<T, CommunityNotificationFindFirstArgs<ExtArgs>>): Prisma__CommunityNotificationClient<$Result.GetResult<Prisma.$CommunityNotificationPayload<ExtArgs>, T, "findFirst"> | null, null, ExtArgs>
+
+    /**
+     * Find the first CommunityNotification that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CommunityNotificationFindFirstOrThrowArgs} args - Arguments to find a CommunityNotification
+     * @example
+     * // Get one CommunityNotification
+     * const communityNotification = await prisma.communityNotification.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends CommunityNotificationFindFirstOrThrowArgs>(args?: SelectSubset<T, CommunityNotificationFindFirstOrThrowArgs<ExtArgs>>): Prisma__CommunityNotificationClient<$Result.GetResult<Prisma.$CommunityNotificationPayload<ExtArgs>, T, "findFirstOrThrow">, never, ExtArgs>
+
+    /**
+     * Find zero or more CommunityNotifications that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CommunityNotificationFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all CommunityNotifications
+     * const communityNotifications = await prisma.communityNotification.findMany()
+     * 
+     * // Get first 10 CommunityNotifications
+     * const communityNotifications = await prisma.communityNotification.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const communityNotificationWithIdOnly = await prisma.communityNotification.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends CommunityNotificationFindManyArgs>(args?: SelectSubset<T, CommunityNotificationFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CommunityNotificationPayload<ExtArgs>, T, "findMany">>
+
+    /**
+     * Create a CommunityNotification.
+     * @param {CommunityNotificationCreateArgs} args - Arguments to create a CommunityNotification.
+     * @example
+     * // Create one CommunityNotification
+     * const CommunityNotification = await prisma.communityNotification.create({
+     *   data: {
+     *     // ... data to create a CommunityNotification
+     *   }
+     * })
+     * 
+     */
+    create<T extends CommunityNotificationCreateArgs>(args: SelectSubset<T, CommunityNotificationCreateArgs<ExtArgs>>): Prisma__CommunityNotificationClient<$Result.GetResult<Prisma.$CommunityNotificationPayload<ExtArgs>, T, "create">, never, ExtArgs>
+
+    /**
+     * Create many CommunityNotifications.
+     * @param {CommunityNotificationCreateManyArgs} args - Arguments to create many CommunityNotifications.
+     * @example
+     * // Create many CommunityNotifications
+     * const communityNotification = await prisma.communityNotification.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends CommunityNotificationCreateManyArgs>(args?: SelectSubset<T, CommunityNotificationCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many CommunityNotifications and returns the data saved in the database.
+     * @param {CommunityNotificationCreateManyAndReturnArgs} args - Arguments to create many CommunityNotifications.
+     * @example
+     * // Create many CommunityNotifications
+     * const communityNotification = await prisma.communityNotification.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many CommunityNotifications and only return the `id`
+     * const communityNotificationWithIdOnly = await prisma.communityNotification.createManyAndReturn({ 
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends CommunityNotificationCreateManyAndReturnArgs>(args?: SelectSubset<T, CommunityNotificationCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CommunityNotificationPayload<ExtArgs>, T, "createManyAndReturn">>
+
+    /**
+     * Delete a CommunityNotification.
+     * @param {CommunityNotificationDeleteArgs} args - Arguments to delete one CommunityNotification.
+     * @example
+     * // Delete one CommunityNotification
+     * const CommunityNotification = await prisma.communityNotification.delete({
+     *   where: {
+     *     // ... filter to delete one CommunityNotification
+     *   }
+     * })
+     * 
+     */
+    delete<T extends CommunityNotificationDeleteArgs>(args: SelectSubset<T, CommunityNotificationDeleteArgs<ExtArgs>>): Prisma__CommunityNotificationClient<$Result.GetResult<Prisma.$CommunityNotificationPayload<ExtArgs>, T, "delete">, never, ExtArgs>
+
+    /**
+     * Update one CommunityNotification.
+     * @param {CommunityNotificationUpdateArgs} args - Arguments to update one CommunityNotification.
+     * @example
+     * // Update one CommunityNotification
+     * const communityNotification = await prisma.communityNotification.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends CommunityNotificationUpdateArgs>(args: SelectSubset<T, CommunityNotificationUpdateArgs<ExtArgs>>): Prisma__CommunityNotificationClient<$Result.GetResult<Prisma.$CommunityNotificationPayload<ExtArgs>, T, "update">, never, ExtArgs>
+
+    /**
+     * Delete zero or more CommunityNotifications.
+     * @param {CommunityNotificationDeleteManyArgs} args - Arguments to filter CommunityNotifications to delete.
+     * @example
+     * // Delete a few CommunityNotifications
+     * const { count } = await prisma.communityNotification.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends CommunityNotificationDeleteManyArgs>(args?: SelectSubset<T, CommunityNotificationDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more CommunityNotifications.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CommunityNotificationUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many CommunityNotifications
+     * const communityNotification = await prisma.communityNotification.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends CommunityNotificationUpdateManyArgs>(args: SelectSubset<T, CommunityNotificationUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one CommunityNotification.
+     * @param {CommunityNotificationUpsertArgs} args - Arguments to update or create a CommunityNotification.
+     * @example
+     * // Update or create a CommunityNotification
+     * const communityNotification = await prisma.communityNotification.upsert({
+     *   create: {
+     *     // ... data to create a CommunityNotification
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the CommunityNotification we want to update
+     *   }
+     * })
+     */
+    upsert<T extends CommunityNotificationUpsertArgs>(args: SelectSubset<T, CommunityNotificationUpsertArgs<ExtArgs>>): Prisma__CommunityNotificationClient<$Result.GetResult<Prisma.$CommunityNotificationPayload<ExtArgs>, T, "upsert">, never, ExtArgs>
+
+
+    /**
+     * Count the number of CommunityNotifications.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CommunityNotificationCountArgs} args - Arguments to filter CommunityNotifications to count.
+     * @example
+     * // Count the number of CommunityNotifications
+     * const count = await prisma.communityNotification.count({
+     *   where: {
+     *     // ... the filter for the CommunityNotifications we want to count
+     *   }
+     * })
+    **/
+    count<T extends CommunityNotificationCountArgs>(
+      args?: Subset<T, CommunityNotificationCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], CommunityNotificationCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a CommunityNotification.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CommunityNotificationAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends CommunityNotificationAggregateArgs>(args: Subset<T, CommunityNotificationAggregateArgs>): Prisma.PrismaPromise<GetCommunityNotificationAggregateType<T>>
+
+    /**
+     * Group by CommunityNotification.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CommunityNotificationGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends CommunityNotificationGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: CommunityNotificationGroupByArgs['orderBy'] }
+        : { orderBy?: CommunityNotificationGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, CommunityNotificationGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetCommunityNotificationGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the CommunityNotification model
+   */
+  readonly fields: CommunityNotificationFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for CommunityNotification.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__CommunityNotificationClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the CommunityNotification model
+   */ 
+  interface CommunityNotificationFieldRefs {
+    readonly id: FieldRef<"CommunityNotification", 'String'>
+    readonly recipientId: FieldRef<"CommunityNotification", 'String'>
+    readonly actorId: FieldRef<"CommunityNotification", 'String'>
+    readonly type: FieldRef<"CommunityNotification", 'String'>
+    readonly postId: FieldRef<"CommunityNotification", 'String'>
+    readonly commentId: FieldRef<"CommunityNotification", 'String'>
+    readonly conversationId: FieldRef<"CommunityNotification", 'String'>
+    readonly readAt: FieldRef<"CommunityNotification", 'DateTime'>
+    readonly createdAt: FieldRef<"CommunityNotification", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * CommunityNotification findUnique
+   */
+  export type CommunityNotificationFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CommunityNotification
+     */
+    select?: CommunityNotificationSelect<ExtArgs> | null
+    /**
+     * Filter, which CommunityNotification to fetch.
+     */
+    where: CommunityNotificationWhereUniqueInput
+  }
+
+  /**
+   * CommunityNotification findUniqueOrThrow
+   */
+  export type CommunityNotificationFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CommunityNotification
+     */
+    select?: CommunityNotificationSelect<ExtArgs> | null
+    /**
+     * Filter, which CommunityNotification to fetch.
+     */
+    where: CommunityNotificationWhereUniqueInput
+  }
+
+  /**
+   * CommunityNotification findFirst
+   */
+  export type CommunityNotificationFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CommunityNotification
+     */
+    select?: CommunityNotificationSelect<ExtArgs> | null
+    /**
+     * Filter, which CommunityNotification to fetch.
+     */
+    where?: CommunityNotificationWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of CommunityNotifications to fetch.
+     */
+    orderBy?: CommunityNotificationOrderByWithRelationInput | CommunityNotificationOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for CommunityNotifications.
+     */
+    cursor?: CommunityNotificationWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` CommunityNotifications from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` CommunityNotifications.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of CommunityNotifications.
+     */
+    distinct?: CommunityNotificationScalarFieldEnum | CommunityNotificationScalarFieldEnum[]
+  }
+
+  /**
+   * CommunityNotification findFirstOrThrow
+   */
+  export type CommunityNotificationFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CommunityNotification
+     */
+    select?: CommunityNotificationSelect<ExtArgs> | null
+    /**
+     * Filter, which CommunityNotification to fetch.
+     */
+    where?: CommunityNotificationWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of CommunityNotifications to fetch.
+     */
+    orderBy?: CommunityNotificationOrderByWithRelationInput | CommunityNotificationOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for CommunityNotifications.
+     */
+    cursor?: CommunityNotificationWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` CommunityNotifications from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` CommunityNotifications.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of CommunityNotifications.
+     */
+    distinct?: CommunityNotificationScalarFieldEnum | CommunityNotificationScalarFieldEnum[]
+  }
+
+  /**
+   * CommunityNotification findMany
+   */
+  export type CommunityNotificationFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CommunityNotification
+     */
+    select?: CommunityNotificationSelect<ExtArgs> | null
+    /**
+     * Filter, which CommunityNotifications to fetch.
+     */
+    where?: CommunityNotificationWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of CommunityNotifications to fetch.
+     */
+    orderBy?: CommunityNotificationOrderByWithRelationInput | CommunityNotificationOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing CommunityNotifications.
+     */
+    cursor?: CommunityNotificationWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` CommunityNotifications from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` CommunityNotifications.
+     */
+    skip?: number
+    distinct?: CommunityNotificationScalarFieldEnum | CommunityNotificationScalarFieldEnum[]
+  }
+
+  /**
+   * CommunityNotification create
+   */
+  export type CommunityNotificationCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CommunityNotification
+     */
+    select?: CommunityNotificationSelect<ExtArgs> | null
+    /**
+     * The data needed to create a CommunityNotification.
+     */
+    data: XOR<CommunityNotificationCreateInput, CommunityNotificationUncheckedCreateInput>
+  }
+
+  /**
+   * CommunityNotification createMany
+   */
+  export type CommunityNotificationCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many CommunityNotifications.
+     */
+    data: CommunityNotificationCreateManyInput | CommunityNotificationCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * CommunityNotification createManyAndReturn
+   */
+  export type CommunityNotificationCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CommunityNotification
+     */
+    select?: CommunityNotificationSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * The data used to create many CommunityNotifications.
+     */
+    data: CommunityNotificationCreateManyInput | CommunityNotificationCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * CommunityNotification update
+   */
+  export type CommunityNotificationUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CommunityNotification
+     */
+    select?: CommunityNotificationSelect<ExtArgs> | null
+    /**
+     * The data needed to update a CommunityNotification.
+     */
+    data: XOR<CommunityNotificationUpdateInput, CommunityNotificationUncheckedUpdateInput>
+    /**
+     * Choose, which CommunityNotification to update.
+     */
+    where: CommunityNotificationWhereUniqueInput
+  }
+
+  /**
+   * CommunityNotification updateMany
+   */
+  export type CommunityNotificationUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update CommunityNotifications.
+     */
+    data: XOR<CommunityNotificationUpdateManyMutationInput, CommunityNotificationUncheckedUpdateManyInput>
+    /**
+     * Filter which CommunityNotifications to update
+     */
+    where?: CommunityNotificationWhereInput
+  }
+
+  /**
+   * CommunityNotification upsert
+   */
+  export type CommunityNotificationUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CommunityNotification
+     */
+    select?: CommunityNotificationSelect<ExtArgs> | null
+    /**
+     * The filter to search for the CommunityNotification to update in case it exists.
+     */
+    where: CommunityNotificationWhereUniqueInput
+    /**
+     * In case the CommunityNotification found by the `where` argument doesn't exist, create a new CommunityNotification with this data.
+     */
+    create: XOR<CommunityNotificationCreateInput, CommunityNotificationUncheckedCreateInput>
+    /**
+     * In case the CommunityNotification was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<CommunityNotificationUpdateInput, CommunityNotificationUncheckedUpdateInput>
+  }
+
+  /**
+   * CommunityNotification delete
+   */
+  export type CommunityNotificationDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CommunityNotification
+     */
+    select?: CommunityNotificationSelect<ExtArgs> | null
+    /**
+     * Filter which CommunityNotification to delete.
+     */
+    where: CommunityNotificationWhereUniqueInput
+  }
+
+  /**
+   * CommunityNotification deleteMany
+   */
+  export type CommunityNotificationDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which CommunityNotifications to delete
+     */
+    where?: CommunityNotificationWhereInput
+  }
+
+  /**
+   * CommunityNotification without action
+   */
+  export type CommunityNotificationDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CommunityNotification
+     */
+    select?: CommunityNotificationSelect<ExtArgs> | null
+  }
+
+
+  /**
    * Enums
    */
 
@@ -3984,6 +10126,7 @@ export namespace Prisma {
     userId: 'userId',
     content: 'content',
     stickerId: 'stickerId',
+    parentId: 'parentId',
     createdAt: 'createdAt'
   };
 
@@ -3993,10 +10136,78 @@ export namespace Prisma {
   export const CommunityLikeScalarFieldEnum: {
     id: 'id',
     postId: 'postId',
-    userId: 'userId'
+    userId: 'userId',
+    createdAt: 'createdAt'
   };
 
   export type CommunityLikeScalarFieldEnum = (typeof CommunityLikeScalarFieldEnum)[keyof typeof CommunityLikeScalarFieldEnum]
+
+
+  export const DirectConversationScalarFieldEnum: {
+    id: 'id',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt',
+    lastMessageAt: 'lastMessageAt'
+  };
+
+  export type DirectConversationScalarFieldEnum = (typeof DirectConversationScalarFieldEnum)[keyof typeof DirectConversationScalarFieldEnum]
+
+
+  export const DirectParticipantScalarFieldEnum: {
+    id: 'id',
+    conversationId: 'conversationId',
+    userId: 'userId',
+    joinedAt: 'joinedAt'
+  };
+
+  export type DirectParticipantScalarFieldEnum = (typeof DirectParticipantScalarFieldEnum)[keyof typeof DirectParticipantScalarFieldEnum]
+
+
+  export const DirectMessageScalarFieldEnum: {
+    id: 'id',
+    conversationId: 'conversationId',
+    senderId: 'senderId',
+    content: 'content',
+    createdAt: 'createdAt',
+    readAt: 'readAt'
+  };
+
+  export type DirectMessageScalarFieldEnum = (typeof DirectMessageScalarFieldEnum)[keyof typeof DirectMessageScalarFieldEnum]
+
+
+  export const CommunityFollowScalarFieldEnum: {
+    id: 'id',
+    followerId: 'followerId',
+    followingId: 'followingId',
+    createdAt: 'createdAt'
+  };
+
+  export type CommunityFollowScalarFieldEnum = (typeof CommunityFollowScalarFieldEnum)[keyof typeof CommunityFollowScalarFieldEnum]
+
+
+  export const CommunityBookmarkScalarFieldEnum: {
+    id: 'id',
+    userId: 'userId',
+    postId: 'postId',
+    createdAt: 'createdAt'
+  };
+
+  export type CommunityBookmarkScalarFieldEnum = (typeof CommunityBookmarkScalarFieldEnum)[keyof typeof CommunityBookmarkScalarFieldEnum]
+
+
+  export const CommunityNotificationScalarFieldEnum: {
+    id: 'id',
+    recipientId: 'recipientId',
+    actorId: 'actorId',
+    type: 'type',
+    postId: 'postId',
+    commentId: 'commentId',
+    conversationId: 'conversationId',
+    readAt: 'readAt',
+    createdAt: 'createdAt'
+  };
+
+  export type CommunityNotificationScalarFieldEnum = (typeof CommunityNotificationScalarFieldEnum)[keyof typeof CommunityNotificationScalarFieldEnum]
 
 
   export const SortOrder: {
@@ -4171,8 +10382,11 @@ export namespace Prisma {
     userId?: StringFilter<"CommunityComment"> | string
     content?: StringNullableFilter<"CommunityComment"> | string | null
     stickerId?: StringNullableFilter<"CommunityComment"> | string | null
+    parentId?: StringNullableFilter<"CommunityComment"> | string | null
     createdAt?: DateTimeFilter<"CommunityComment"> | Date | string
     post?: XOR<CommunityPostRelationFilter, CommunityPostWhereInput>
+    parent?: XOR<CommunityCommentNullableRelationFilter, CommunityCommentWhereInput> | null
+    replies?: CommunityCommentListRelationFilter
   }
 
   export type CommunityCommentOrderByWithRelationInput = {
@@ -4181,8 +10395,11 @@ export namespace Prisma {
     userId?: SortOrder
     content?: SortOrderInput | SortOrder
     stickerId?: SortOrderInput | SortOrder
+    parentId?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     post?: CommunityPostOrderByWithRelationInput
+    parent?: CommunityCommentOrderByWithRelationInput
+    replies?: CommunityCommentOrderByRelationAggregateInput
   }
 
   export type CommunityCommentWhereUniqueInput = Prisma.AtLeast<{
@@ -4194,8 +10411,11 @@ export namespace Prisma {
     userId?: StringFilter<"CommunityComment"> | string
     content?: StringNullableFilter<"CommunityComment"> | string | null
     stickerId?: StringNullableFilter<"CommunityComment"> | string | null
+    parentId?: StringNullableFilter<"CommunityComment"> | string | null
     createdAt?: DateTimeFilter<"CommunityComment"> | Date | string
     post?: XOR<CommunityPostRelationFilter, CommunityPostWhereInput>
+    parent?: XOR<CommunityCommentNullableRelationFilter, CommunityCommentWhereInput> | null
+    replies?: CommunityCommentListRelationFilter
   }, "id">
 
   export type CommunityCommentOrderByWithAggregationInput = {
@@ -4204,6 +10424,7 @@ export namespace Prisma {
     userId?: SortOrder
     content?: SortOrderInput | SortOrder
     stickerId?: SortOrderInput | SortOrder
+    parentId?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     _count?: CommunityCommentCountOrderByAggregateInput
     _max?: CommunityCommentMaxOrderByAggregateInput
@@ -4219,6 +10440,7 @@ export namespace Prisma {
     userId?: StringWithAggregatesFilter<"CommunityComment"> | string
     content?: StringNullableWithAggregatesFilter<"CommunityComment"> | string | null
     stickerId?: StringNullableWithAggregatesFilter<"CommunityComment"> | string | null
+    parentId?: StringNullableWithAggregatesFilter<"CommunityComment"> | string | null
     createdAt?: DateTimeWithAggregatesFilter<"CommunityComment"> | Date | string
   }
 
@@ -4229,6 +10451,7 @@ export namespace Prisma {
     id?: StringFilter<"CommunityLike"> | string
     postId?: StringFilter<"CommunityLike"> | string
     userId?: StringFilter<"CommunityLike"> | string
+    createdAt?: DateTimeFilter<"CommunityLike"> | Date | string
     post?: XOR<CommunityPostRelationFilter, CommunityPostWhereInput>
   }
 
@@ -4236,6 +10459,7 @@ export namespace Prisma {
     id?: SortOrder
     postId?: SortOrder
     userId?: SortOrder
+    createdAt?: SortOrder
     post?: CommunityPostOrderByWithRelationInput
   }
 
@@ -4247,6 +10471,7 @@ export namespace Prisma {
     NOT?: CommunityLikeWhereInput | CommunityLikeWhereInput[]
     postId?: StringFilter<"CommunityLike"> | string
     userId?: StringFilter<"CommunityLike"> | string
+    createdAt?: DateTimeFilter<"CommunityLike"> | Date | string
     post?: XOR<CommunityPostRelationFilter, CommunityPostWhereInput>
   }, "id" | "postId_userId">
 
@@ -4254,6 +10479,7 @@ export namespace Prisma {
     id?: SortOrder
     postId?: SortOrder
     userId?: SortOrder
+    createdAt?: SortOrder
     _count?: CommunityLikeCountOrderByAggregateInput
     _max?: CommunityLikeMaxOrderByAggregateInput
     _min?: CommunityLikeMinOrderByAggregateInput
@@ -4266,6 +10492,339 @@ export namespace Prisma {
     id?: StringWithAggregatesFilter<"CommunityLike"> | string
     postId?: StringWithAggregatesFilter<"CommunityLike"> | string
     userId?: StringWithAggregatesFilter<"CommunityLike"> | string
+    createdAt?: DateTimeWithAggregatesFilter<"CommunityLike"> | Date | string
+  }
+
+  export type DirectConversationWhereInput = {
+    AND?: DirectConversationWhereInput | DirectConversationWhereInput[]
+    OR?: DirectConversationWhereInput[]
+    NOT?: DirectConversationWhereInput | DirectConversationWhereInput[]
+    id?: StringFilter<"DirectConversation"> | string
+    createdAt?: DateTimeFilter<"DirectConversation"> | Date | string
+    updatedAt?: DateTimeFilter<"DirectConversation"> | Date | string
+    lastMessageAt?: DateTimeFilter<"DirectConversation"> | Date | string
+    participants?: DirectParticipantListRelationFilter
+    messages?: DirectMessageListRelationFilter
+  }
+
+  export type DirectConversationOrderByWithRelationInput = {
+    id?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    lastMessageAt?: SortOrder
+    participants?: DirectParticipantOrderByRelationAggregateInput
+    messages?: DirectMessageOrderByRelationAggregateInput
+  }
+
+  export type DirectConversationWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: DirectConversationWhereInput | DirectConversationWhereInput[]
+    OR?: DirectConversationWhereInput[]
+    NOT?: DirectConversationWhereInput | DirectConversationWhereInput[]
+    createdAt?: DateTimeFilter<"DirectConversation"> | Date | string
+    updatedAt?: DateTimeFilter<"DirectConversation"> | Date | string
+    lastMessageAt?: DateTimeFilter<"DirectConversation"> | Date | string
+    participants?: DirectParticipantListRelationFilter
+    messages?: DirectMessageListRelationFilter
+  }, "id">
+
+  export type DirectConversationOrderByWithAggregationInput = {
+    id?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    lastMessageAt?: SortOrder
+    _count?: DirectConversationCountOrderByAggregateInput
+    _max?: DirectConversationMaxOrderByAggregateInput
+    _min?: DirectConversationMinOrderByAggregateInput
+  }
+
+  export type DirectConversationScalarWhereWithAggregatesInput = {
+    AND?: DirectConversationScalarWhereWithAggregatesInput | DirectConversationScalarWhereWithAggregatesInput[]
+    OR?: DirectConversationScalarWhereWithAggregatesInput[]
+    NOT?: DirectConversationScalarWhereWithAggregatesInput | DirectConversationScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"DirectConversation"> | string
+    createdAt?: DateTimeWithAggregatesFilter<"DirectConversation"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"DirectConversation"> | Date | string
+    lastMessageAt?: DateTimeWithAggregatesFilter<"DirectConversation"> | Date | string
+  }
+
+  export type DirectParticipantWhereInput = {
+    AND?: DirectParticipantWhereInput | DirectParticipantWhereInput[]
+    OR?: DirectParticipantWhereInput[]
+    NOT?: DirectParticipantWhereInput | DirectParticipantWhereInput[]
+    id?: StringFilter<"DirectParticipant"> | string
+    conversationId?: StringFilter<"DirectParticipant"> | string
+    userId?: StringFilter<"DirectParticipant"> | string
+    joinedAt?: DateTimeFilter<"DirectParticipant"> | Date | string
+    conversation?: XOR<DirectConversationRelationFilter, DirectConversationWhereInput>
+  }
+
+  export type DirectParticipantOrderByWithRelationInput = {
+    id?: SortOrder
+    conversationId?: SortOrder
+    userId?: SortOrder
+    joinedAt?: SortOrder
+    conversation?: DirectConversationOrderByWithRelationInput
+  }
+
+  export type DirectParticipantWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    conversationId_userId?: DirectParticipantConversationIdUserIdCompoundUniqueInput
+    AND?: DirectParticipantWhereInput | DirectParticipantWhereInput[]
+    OR?: DirectParticipantWhereInput[]
+    NOT?: DirectParticipantWhereInput | DirectParticipantWhereInput[]
+    conversationId?: StringFilter<"DirectParticipant"> | string
+    userId?: StringFilter<"DirectParticipant"> | string
+    joinedAt?: DateTimeFilter<"DirectParticipant"> | Date | string
+    conversation?: XOR<DirectConversationRelationFilter, DirectConversationWhereInput>
+  }, "id" | "conversationId_userId">
+
+  export type DirectParticipantOrderByWithAggregationInput = {
+    id?: SortOrder
+    conversationId?: SortOrder
+    userId?: SortOrder
+    joinedAt?: SortOrder
+    _count?: DirectParticipantCountOrderByAggregateInput
+    _max?: DirectParticipantMaxOrderByAggregateInput
+    _min?: DirectParticipantMinOrderByAggregateInput
+  }
+
+  export type DirectParticipantScalarWhereWithAggregatesInput = {
+    AND?: DirectParticipantScalarWhereWithAggregatesInput | DirectParticipantScalarWhereWithAggregatesInput[]
+    OR?: DirectParticipantScalarWhereWithAggregatesInput[]
+    NOT?: DirectParticipantScalarWhereWithAggregatesInput | DirectParticipantScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"DirectParticipant"> | string
+    conversationId?: StringWithAggregatesFilter<"DirectParticipant"> | string
+    userId?: StringWithAggregatesFilter<"DirectParticipant"> | string
+    joinedAt?: DateTimeWithAggregatesFilter<"DirectParticipant"> | Date | string
+  }
+
+  export type DirectMessageWhereInput = {
+    AND?: DirectMessageWhereInput | DirectMessageWhereInput[]
+    OR?: DirectMessageWhereInput[]
+    NOT?: DirectMessageWhereInput | DirectMessageWhereInput[]
+    id?: StringFilter<"DirectMessage"> | string
+    conversationId?: StringFilter<"DirectMessage"> | string
+    senderId?: StringFilter<"DirectMessage"> | string
+    content?: StringFilter<"DirectMessage"> | string
+    createdAt?: DateTimeFilter<"DirectMessage"> | Date | string
+    readAt?: DateTimeNullableFilter<"DirectMessage"> | Date | string | null
+    conversation?: XOR<DirectConversationRelationFilter, DirectConversationWhereInput>
+  }
+
+  export type DirectMessageOrderByWithRelationInput = {
+    id?: SortOrder
+    conversationId?: SortOrder
+    senderId?: SortOrder
+    content?: SortOrder
+    createdAt?: SortOrder
+    readAt?: SortOrderInput | SortOrder
+    conversation?: DirectConversationOrderByWithRelationInput
+  }
+
+  export type DirectMessageWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: DirectMessageWhereInput | DirectMessageWhereInput[]
+    OR?: DirectMessageWhereInput[]
+    NOT?: DirectMessageWhereInput | DirectMessageWhereInput[]
+    conversationId?: StringFilter<"DirectMessage"> | string
+    senderId?: StringFilter<"DirectMessage"> | string
+    content?: StringFilter<"DirectMessage"> | string
+    createdAt?: DateTimeFilter<"DirectMessage"> | Date | string
+    readAt?: DateTimeNullableFilter<"DirectMessage"> | Date | string | null
+    conversation?: XOR<DirectConversationRelationFilter, DirectConversationWhereInput>
+  }, "id">
+
+  export type DirectMessageOrderByWithAggregationInput = {
+    id?: SortOrder
+    conversationId?: SortOrder
+    senderId?: SortOrder
+    content?: SortOrder
+    createdAt?: SortOrder
+    readAt?: SortOrderInput | SortOrder
+    _count?: DirectMessageCountOrderByAggregateInput
+    _max?: DirectMessageMaxOrderByAggregateInput
+    _min?: DirectMessageMinOrderByAggregateInput
+  }
+
+  export type DirectMessageScalarWhereWithAggregatesInput = {
+    AND?: DirectMessageScalarWhereWithAggregatesInput | DirectMessageScalarWhereWithAggregatesInput[]
+    OR?: DirectMessageScalarWhereWithAggregatesInput[]
+    NOT?: DirectMessageScalarWhereWithAggregatesInput | DirectMessageScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"DirectMessage"> | string
+    conversationId?: StringWithAggregatesFilter<"DirectMessage"> | string
+    senderId?: StringWithAggregatesFilter<"DirectMessage"> | string
+    content?: StringWithAggregatesFilter<"DirectMessage"> | string
+    createdAt?: DateTimeWithAggregatesFilter<"DirectMessage"> | Date | string
+    readAt?: DateTimeNullableWithAggregatesFilter<"DirectMessage"> | Date | string | null
+  }
+
+  export type CommunityFollowWhereInput = {
+    AND?: CommunityFollowWhereInput | CommunityFollowWhereInput[]
+    OR?: CommunityFollowWhereInput[]
+    NOT?: CommunityFollowWhereInput | CommunityFollowWhereInput[]
+    id?: StringFilter<"CommunityFollow"> | string
+    followerId?: StringFilter<"CommunityFollow"> | string
+    followingId?: StringFilter<"CommunityFollow"> | string
+    createdAt?: DateTimeFilter<"CommunityFollow"> | Date | string
+  }
+
+  export type CommunityFollowOrderByWithRelationInput = {
+    id?: SortOrder
+    followerId?: SortOrder
+    followingId?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type CommunityFollowWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    followerId_followingId?: CommunityFollowFollowerIdFollowingIdCompoundUniqueInput
+    AND?: CommunityFollowWhereInput | CommunityFollowWhereInput[]
+    OR?: CommunityFollowWhereInput[]
+    NOT?: CommunityFollowWhereInput | CommunityFollowWhereInput[]
+    followerId?: StringFilter<"CommunityFollow"> | string
+    followingId?: StringFilter<"CommunityFollow"> | string
+    createdAt?: DateTimeFilter<"CommunityFollow"> | Date | string
+  }, "id" | "followerId_followingId">
+
+  export type CommunityFollowOrderByWithAggregationInput = {
+    id?: SortOrder
+    followerId?: SortOrder
+    followingId?: SortOrder
+    createdAt?: SortOrder
+    _count?: CommunityFollowCountOrderByAggregateInput
+    _max?: CommunityFollowMaxOrderByAggregateInput
+    _min?: CommunityFollowMinOrderByAggregateInput
+  }
+
+  export type CommunityFollowScalarWhereWithAggregatesInput = {
+    AND?: CommunityFollowScalarWhereWithAggregatesInput | CommunityFollowScalarWhereWithAggregatesInput[]
+    OR?: CommunityFollowScalarWhereWithAggregatesInput[]
+    NOT?: CommunityFollowScalarWhereWithAggregatesInput | CommunityFollowScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"CommunityFollow"> | string
+    followerId?: StringWithAggregatesFilter<"CommunityFollow"> | string
+    followingId?: StringWithAggregatesFilter<"CommunityFollow"> | string
+    createdAt?: DateTimeWithAggregatesFilter<"CommunityFollow"> | Date | string
+  }
+
+  export type CommunityBookmarkWhereInput = {
+    AND?: CommunityBookmarkWhereInput | CommunityBookmarkWhereInput[]
+    OR?: CommunityBookmarkWhereInput[]
+    NOT?: CommunityBookmarkWhereInput | CommunityBookmarkWhereInput[]
+    id?: StringFilter<"CommunityBookmark"> | string
+    userId?: StringFilter<"CommunityBookmark"> | string
+    postId?: StringFilter<"CommunityBookmark"> | string
+    createdAt?: DateTimeFilter<"CommunityBookmark"> | Date | string
+  }
+
+  export type CommunityBookmarkOrderByWithRelationInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    postId?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type CommunityBookmarkWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    userId_postId?: CommunityBookmarkUserIdPostIdCompoundUniqueInput
+    AND?: CommunityBookmarkWhereInput | CommunityBookmarkWhereInput[]
+    OR?: CommunityBookmarkWhereInput[]
+    NOT?: CommunityBookmarkWhereInput | CommunityBookmarkWhereInput[]
+    userId?: StringFilter<"CommunityBookmark"> | string
+    postId?: StringFilter<"CommunityBookmark"> | string
+    createdAt?: DateTimeFilter<"CommunityBookmark"> | Date | string
+  }, "id" | "userId_postId">
+
+  export type CommunityBookmarkOrderByWithAggregationInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    postId?: SortOrder
+    createdAt?: SortOrder
+    _count?: CommunityBookmarkCountOrderByAggregateInput
+    _max?: CommunityBookmarkMaxOrderByAggregateInput
+    _min?: CommunityBookmarkMinOrderByAggregateInput
+  }
+
+  export type CommunityBookmarkScalarWhereWithAggregatesInput = {
+    AND?: CommunityBookmarkScalarWhereWithAggregatesInput | CommunityBookmarkScalarWhereWithAggregatesInput[]
+    OR?: CommunityBookmarkScalarWhereWithAggregatesInput[]
+    NOT?: CommunityBookmarkScalarWhereWithAggregatesInput | CommunityBookmarkScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"CommunityBookmark"> | string
+    userId?: StringWithAggregatesFilter<"CommunityBookmark"> | string
+    postId?: StringWithAggregatesFilter<"CommunityBookmark"> | string
+    createdAt?: DateTimeWithAggregatesFilter<"CommunityBookmark"> | Date | string
+  }
+
+  export type CommunityNotificationWhereInput = {
+    AND?: CommunityNotificationWhereInput | CommunityNotificationWhereInput[]
+    OR?: CommunityNotificationWhereInput[]
+    NOT?: CommunityNotificationWhereInput | CommunityNotificationWhereInput[]
+    id?: StringFilter<"CommunityNotification"> | string
+    recipientId?: StringFilter<"CommunityNotification"> | string
+    actorId?: StringFilter<"CommunityNotification"> | string
+    type?: StringFilter<"CommunityNotification"> | string
+    postId?: StringNullableFilter<"CommunityNotification"> | string | null
+    commentId?: StringNullableFilter<"CommunityNotification"> | string | null
+    conversationId?: StringNullableFilter<"CommunityNotification"> | string | null
+    readAt?: DateTimeNullableFilter<"CommunityNotification"> | Date | string | null
+    createdAt?: DateTimeFilter<"CommunityNotification"> | Date | string
+  }
+
+  export type CommunityNotificationOrderByWithRelationInput = {
+    id?: SortOrder
+    recipientId?: SortOrder
+    actorId?: SortOrder
+    type?: SortOrder
+    postId?: SortOrderInput | SortOrder
+    commentId?: SortOrderInput | SortOrder
+    conversationId?: SortOrderInput | SortOrder
+    readAt?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type CommunityNotificationWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: CommunityNotificationWhereInput | CommunityNotificationWhereInput[]
+    OR?: CommunityNotificationWhereInput[]
+    NOT?: CommunityNotificationWhereInput | CommunityNotificationWhereInput[]
+    recipientId?: StringFilter<"CommunityNotification"> | string
+    actorId?: StringFilter<"CommunityNotification"> | string
+    type?: StringFilter<"CommunityNotification"> | string
+    postId?: StringNullableFilter<"CommunityNotification"> | string | null
+    commentId?: StringNullableFilter<"CommunityNotification"> | string | null
+    conversationId?: StringNullableFilter<"CommunityNotification"> | string | null
+    readAt?: DateTimeNullableFilter<"CommunityNotification"> | Date | string | null
+    createdAt?: DateTimeFilter<"CommunityNotification"> | Date | string
+  }, "id">
+
+  export type CommunityNotificationOrderByWithAggregationInput = {
+    id?: SortOrder
+    recipientId?: SortOrder
+    actorId?: SortOrder
+    type?: SortOrder
+    postId?: SortOrderInput | SortOrder
+    commentId?: SortOrderInput | SortOrder
+    conversationId?: SortOrderInput | SortOrder
+    readAt?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    _count?: CommunityNotificationCountOrderByAggregateInput
+    _max?: CommunityNotificationMaxOrderByAggregateInput
+    _min?: CommunityNotificationMinOrderByAggregateInput
+  }
+
+  export type CommunityNotificationScalarWhereWithAggregatesInput = {
+    AND?: CommunityNotificationScalarWhereWithAggregatesInput | CommunityNotificationScalarWhereWithAggregatesInput[]
+    OR?: CommunityNotificationScalarWhereWithAggregatesInput[]
+    NOT?: CommunityNotificationScalarWhereWithAggregatesInput | CommunityNotificationScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"CommunityNotification"> | string
+    recipientId?: StringWithAggregatesFilter<"CommunityNotification"> | string
+    actorId?: StringWithAggregatesFilter<"CommunityNotification"> | string
+    type?: StringWithAggregatesFilter<"CommunityNotification"> | string
+    postId?: StringNullableWithAggregatesFilter<"CommunityNotification"> | string | null
+    commentId?: StringNullableWithAggregatesFilter<"CommunityNotification"> | string | null
+    conversationId?: StringNullableWithAggregatesFilter<"CommunityNotification"> | string | null
+    readAt?: DateTimeNullableWithAggregatesFilter<"CommunityNotification"> | Date | string | null
+    createdAt?: DateTimeWithAggregatesFilter<"CommunityNotification"> | Date | string
   }
 
   export type CommunityPostCreateInput = {
@@ -4360,6 +10919,8 @@ export namespace Prisma {
     stickerId?: string | null
     createdAt?: Date | string
     post: CommunityPostCreateNestedOneWithoutCommentsInput
+    parent?: CommunityCommentCreateNestedOneWithoutRepliesInput
+    replies?: CommunityCommentCreateNestedManyWithoutParentInput
   }
 
   export type CommunityCommentUncheckedCreateInput = {
@@ -4368,7 +10929,9 @@ export namespace Prisma {
     userId: string
     content?: string | null
     stickerId?: string | null
+    parentId?: string | null
     createdAt?: Date | string
+    replies?: CommunityCommentUncheckedCreateNestedManyWithoutParentInput
   }
 
   export type CommunityCommentUpdateInput = {
@@ -4378,6 +10941,8 @@ export namespace Prisma {
     stickerId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     post?: CommunityPostUpdateOneRequiredWithoutCommentsNestedInput
+    parent?: CommunityCommentUpdateOneWithoutRepliesNestedInput
+    replies?: CommunityCommentUpdateManyWithoutParentNestedInput
   }
 
   export type CommunityCommentUncheckedUpdateInput = {
@@ -4386,7 +10951,9 @@ export namespace Prisma {
     userId?: StringFieldUpdateOperationsInput | string
     content?: NullableStringFieldUpdateOperationsInput | string | null
     stickerId?: NullableStringFieldUpdateOperationsInput | string | null
+    parentId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    replies?: CommunityCommentUncheckedUpdateManyWithoutParentNestedInput
   }
 
   export type CommunityCommentCreateManyInput = {
@@ -4395,6 +10962,7 @@ export namespace Prisma {
     userId: string
     content?: string | null
     stickerId?: string | null
+    parentId?: string | null
     createdAt?: Date | string
   }
 
@@ -4412,12 +10980,14 @@ export namespace Prisma {
     userId?: StringFieldUpdateOperationsInput | string
     content?: NullableStringFieldUpdateOperationsInput | string | null
     stickerId?: NullableStringFieldUpdateOperationsInput | string | null
+    parentId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type CommunityLikeCreateInput = {
     id?: string
     userId: string
+    createdAt?: Date | string
     post: CommunityPostCreateNestedOneWithoutLikesInput
   }
 
@@ -4425,11 +10995,13 @@ export namespace Prisma {
     id?: string
     postId: string
     userId: string
+    createdAt?: Date | string
   }
 
   export type CommunityLikeUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     userId?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     post?: CommunityPostUpdateOneRequiredWithoutLikesNestedInput
   }
 
@@ -4437,23 +11009,376 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     postId?: StringFieldUpdateOperationsInput | string
     userId?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type CommunityLikeCreateManyInput = {
     id?: string
     postId: string
     userId: string
+    createdAt?: Date | string
   }
 
   export type CommunityLikeUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
     userId?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type CommunityLikeUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
     postId?: StringFieldUpdateOperationsInput | string
     userId?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type DirectConversationCreateInput = {
+    id?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    lastMessageAt?: Date | string
+    participants?: DirectParticipantCreateNestedManyWithoutConversationInput
+    messages?: DirectMessageCreateNestedManyWithoutConversationInput
+  }
+
+  export type DirectConversationUncheckedCreateInput = {
+    id?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    lastMessageAt?: Date | string
+    participants?: DirectParticipantUncheckedCreateNestedManyWithoutConversationInput
+    messages?: DirectMessageUncheckedCreateNestedManyWithoutConversationInput
+  }
+
+  export type DirectConversationUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    lastMessageAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    participants?: DirectParticipantUpdateManyWithoutConversationNestedInput
+    messages?: DirectMessageUpdateManyWithoutConversationNestedInput
+  }
+
+  export type DirectConversationUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    lastMessageAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    participants?: DirectParticipantUncheckedUpdateManyWithoutConversationNestedInput
+    messages?: DirectMessageUncheckedUpdateManyWithoutConversationNestedInput
+  }
+
+  export type DirectConversationCreateManyInput = {
+    id?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    lastMessageAt?: Date | string
+  }
+
+  export type DirectConversationUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    lastMessageAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type DirectConversationUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    lastMessageAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type DirectParticipantCreateInput = {
+    id?: string
+    userId: string
+    joinedAt?: Date | string
+    conversation: DirectConversationCreateNestedOneWithoutParticipantsInput
+  }
+
+  export type DirectParticipantUncheckedCreateInput = {
+    id?: string
+    conversationId: string
+    userId: string
+    joinedAt?: Date | string
+  }
+
+  export type DirectParticipantUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    joinedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    conversation?: DirectConversationUpdateOneRequiredWithoutParticipantsNestedInput
+  }
+
+  export type DirectParticipantUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    conversationId?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    joinedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type DirectParticipantCreateManyInput = {
+    id?: string
+    conversationId: string
+    userId: string
+    joinedAt?: Date | string
+  }
+
+  export type DirectParticipantUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    joinedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type DirectParticipantUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    conversationId?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    joinedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type DirectMessageCreateInput = {
+    id?: string
+    senderId: string
+    content: string
+    createdAt?: Date | string
+    readAt?: Date | string | null
+    conversation: DirectConversationCreateNestedOneWithoutMessagesInput
+  }
+
+  export type DirectMessageUncheckedCreateInput = {
+    id?: string
+    conversationId: string
+    senderId: string
+    content: string
+    createdAt?: Date | string
+    readAt?: Date | string | null
+  }
+
+  export type DirectMessageUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    senderId?: StringFieldUpdateOperationsInput | string
+    content?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    readAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    conversation?: DirectConversationUpdateOneRequiredWithoutMessagesNestedInput
+  }
+
+  export type DirectMessageUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    conversationId?: StringFieldUpdateOperationsInput | string
+    senderId?: StringFieldUpdateOperationsInput | string
+    content?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    readAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type DirectMessageCreateManyInput = {
+    id?: string
+    conversationId: string
+    senderId: string
+    content: string
+    createdAt?: Date | string
+    readAt?: Date | string | null
+  }
+
+  export type DirectMessageUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    senderId?: StringFieldUpdateOperationsInput | string
+    content?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    readAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type DirectMessageUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    conversationId?: StringFieldUpdateOperationsInput | string
+    senderId?: StringFieldUpdateOperationsInput | string
+    content?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    readAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type CommunityFollowCreateInput = {
+    id?: string
+    followerId: string
+    followingId: string
+    createdAt?: Date | string
+  }
+
+  export type CommunityFollowUncheckedCreateInput = {
+    id?: string
+    followerId: string
+    followingId: string
+    createdAt?: Date | string
+  }
+
+  export type CommunityFollowUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    followerId?: StringFieldUpdateOperationsInput | string
+    followingId?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type CommunityFollowUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    followerId?: StringFieldUpdateOperationsInput | string
+    followingId?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type CommunityFollowCreateManyInput = {
+    id?: string
+    followerId: string
+    followingId: string
+    createdAt?: Date | string
+  }
+
+  export type CommunityFollowUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    followerId?: StringFieldUpdateOperationsInput | string
+    followingId?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type CommunityFollowUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    followerId?: StringFieldUpdateOperationsInput | string
+    followingId?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type CommunityBookmarkCreateInput = {
+    id?: string
+    userId: string
+    postId: string
+    createdAt?: Date | string
+  }
+
+  export type CommunityBookmarkUncheckedCreateInput = {
+    id?: string
+    userId: string
+    postId: string
+    createdAt?: Date | string
+  }
+
+  export type CommunityBookmarkUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    postId?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type CommunityBookmarkUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    postId?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type CommunityBookmarkCreateManyInput = {
+    id?: string
+    userId: string
+    postId: string
+    createdAt?: Date | string
+  }
+
+  export type CommunityBookmarkUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    postId?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type CommunityBookmarkUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    postId?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type CommunityNotificationCreateInput = {
+    id?: string
+    recipientId: string
+    actorId: string
+    type: string
+    postId?: string | null
+    commentId?: string | null
+    conversationId?: string | null
+    readAt?: Date | string | null
+    createdAt?: Date | string
+  }
+
+  export type CommunityNotificationUncheckedCreateInput = {
+    id?: string
+    recipientId: string
+    actorId: string
+    type: string
+    postId?: string | null
+    commentId?: string | null
+    conversationId?: string | null
+    readAt?: Date | string | null
+    createdAt?: Date | string
+  }
+
+  export type CommunityNotificationUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    recipientId?: StringFieldUpdateOperationsInput | string
+    actorId?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    postId?: NullableStringFieldUpdateOperationsInput | string | null
+    commentId?: NullableStringFieldUpdateOperationsInput | string | null
+    conversationId?: NullableStringFieldUpdateOperationsInput | string | null
+    readAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type CommunityNotificationUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    recipientId?: StringFieldUpdateOperationsInput | string
+    actorId?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    postId?: NullableStringFieldUpdateOperationsInput | string | null
+    commentId?: NullableStringFieldUpdateOperationsInput | string | null
+    conversationId?: NullableStringFieldUpdateOperationsInput | string | null
+    readAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type CommunityNotificationCreateManyInput = {
+    id?: string
+    recipientId: string
+    actorId: string
+    type: string
+    postId?: string | null
+    commentId?: string | null
+    conversationId?: string | null
+    readAt?: Date | string | null
+    createdAt?: Date | string
+  }
+
+  export type CommunityNotificationUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    recipientId?: StringFieldUpdateOperationsInput | string
+    actorId?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    postId?: NullableStringFieldUpdateOperationsInput | string | null
+    commentId?: NullableStringFieldUpdateOperationsInput | string | null
+    conversationId?: NullableStringFieldUpdateOperationsInput | string | null
+    readAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type CommunityNotificationUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    recipientId?: StringFieldUpdateOperationsInput | string
+    actorId?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    postId?: NullableStringFieldUpdateOperationsInput | string | null
+    commentId?: NullableStringFieldUpdateOperationsInput | string | null
+    conversationId?: NullableStringFieldUpdateOperationsInput | string | null
+    readAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type StringFilter<$PrismaModel = never> = {
@@ -4645,12 +11570,18 @@ export namespace Prisma {
     isNot?: CommunityPostWhereInput
   }
 
+  export type CommunityCommentNullableRelationFilter = {
+    is?: CommunityCommentWhereInput | null
+    isNot?: CommunityCommentWhereInput | null
+  }
+
   export type CommunityCommentCountOrderByAggregateInput = {
     id?: SortOrder
     postId?: SortOrder
     userId?: SortOrder
     content?: SortOrder
     stickerId?: SortOrder
+    parentId?: SortOrder
     createdAt?: SortOrder
   }
 
@@ -4660,6 +11591,7 @@ export namespace Prisma {
     userId?: SortOrder
     content?: SortOrder
     stickerId?: SortOrder
+    parentId?: SortOrder
     createdAt?: SortOrder
   }
 
@@ -4669,6 +11601,7 @@ export namespace Prisma {
     userId?: SortOrder
     content?: SortOrder
     stickerId?: SortOrder
+    parentId?: SortOrder
     createdAt?: SortOrder
   }
 
@@ -4681,18 +11614,233 @@ export namespace Prisma {
     id?: SortOrder
     postId?: SortOrder
     userId?: SortOrder
+    createdAt?: SortOrder
   }
 
   export type CommunityLikeMaxOrderByAggregateInput = {
     id?: SortOrder
     postId?: SortOrder
     userId?: SortOrder
+    createdAt?: SortOrder
   }
 
   export type CommunityLikeMinOrderByAggregateInput = {
     id?: SortOrder
     postId?: SortOrder
     userId?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type DirectParticipantListRelationFilter = {
+    every?: DirectParticipantWhereInput
+    some?: DirectParticipantWhereInput
+    none?: DirectParticipantWhereInput
+  }
+
+  export type DirectMessageListRelationFilter = {
+    every?: DirectMessageWhereInput
+    some?: DirectMessageWhereInput
+    none?: DirectMessageWhereInput
+  }
+
+  export type DirectParticipantOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type DirectMessageOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type DirectConversationCountOrderByAggregateInput = {
+    id?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    lastMessageAt?: SortOrder
+  }
+
+  export type DirectConversationMaxOrderByAggregateInput = {
+    id?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    lastMessageAt?: SortOrder
+  }
+
+  export type DirectConversationMinOrderByAggregateInput = {
+    id?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    lastMessageAt?: SortOrder
+  }
+
+  export type DirectConversationRelationFilter = {
+    is?: DirectConversationWhereInput
+    isNot?: DirectConversationWhereInput
+  }
+
+  export type DirectParticipantConversationIdUserIdCompoundUniqueInput = {
+    conversationId: string
+    userId: string
+  }
+
+  export type DirectParticipantCountOrderByAggregateInput = {
+    id?: SortOrder
+    conversationId?: SortOrder
+    userId?: SortOrder
+    joinedAt?: SortOrder
+  }
+
+  export type DirectParticipantMaxOrderByAggregateInput = {
+    id?: SortOrder
+    conversationId?: SortOrder
+    userId?: SortOrder
+    joinedAt?: SortOrder
+  }
+
+  export type DirectParticipantMinOrderByAggregateInput = {
+    id?: SortOrder
+    conversationId?: SortOrder
+    userId?: SortOrder
+    joinedAt?: SortOrder
+  }
+
+  export type DateTimeNullableFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
+    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
+  }
+
+  export type DirectMessageCountOrderByAggregateInput = {
+    id?: SortOrder
+    conversationId?: SortOrder
+    senderId?: SortOrder
+    content?: SortOrder
+    createdAt?: SortOrder
+    readAt?: SortOrder
+  }
+
+  export type DirectMessageMaxOrderByAggregateInput = {
+    id?: SortOrder
+    conversationId?: SortOrder
+    senderId?: SortOrder
+    content?: SortOrder
+    createdAt?: SortOrder
+    readAt?: SortOrder
+  }
+
+  export type DirectMessageMinOrderByAggregateInput = {
+    id?: SortOrder
+    conversationId?: SortOrder
+    senderId?: SortOrder
+    content?: SortOrder
+    createdAt?: SortOrder
+    readAt?: SortOrder
+  }
+
+  export type DateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
+    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeNullableWithAggregatesFilter<$PrismaModel> | Date | string | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedDateTimeNullableFilter<$PrismaModel>
+    _max?: NestedDateTimeNullableFilter<$PrismaModel>
+  }
+
+  export type CommunityFollowFollowerIdFollowingIdCompoundUniqueInput = {
+    followerId: string
+    followingId: string
+  }
+
+  export type CommunityFollowCountOrderByAggregateInput = {
+    id?: SortOrder
+    followerId?: SortOrder
+    followingId?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type CommunityFollowMaxOrderByAggregateInput = {
+    id?: SortOrder
+    followerId?: SortOrder
+    followingId?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type CommunityFollowMinOrderByAggregateInput = {
+    id?: SortOrder
+    followerId?: SortOrder
+    followingId?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type CommunityBookmarkUserIdPostIdCompoundUniqueInput = {
+    userId: string
+    postId: string
+  }
+
+  export type CommunityBookmarkCountOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    postId?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type CommunityBookmarkMaxOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    postId?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type CommunityBookmarkMinOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    postId?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type CommunityNotificationCountOrderByAggregateInput = {
+    id?: SortOrder
+    recipientId?: SortOrder
+    actorId?: SortOrder
+    type?: SortOrder
+    postId?: SortOrder
+    commentId?: SortOrder
+    conversationId?: SortOrder
+    readAt?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type CommunityNotificationMaxOrderByAggregateInput = {
+    id?: SortOrder
+    recipientId?: SortOrder
+    actorId?: SortOrder
+    type?: SortOrder
+    postId?: SortOrder
+    commentId?: SortOrder
+    conversationId?: SortOrder
+    readAt?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type CommunityNotificationMinOrderByAggregateInput = {
+    id?: SortOrder
+    recipientId?: SortOrder
+    actorId?: SortOrder
+    type?: SortOrder
+    postId?: SortOrder
+    commentId?: SortOrder
+    conversationId?: SortOrder
+    readAt?: SortOrder
+    createdAt?: SortOrder
   }
 
   export type CommunityCommentCreateNestedManyWithoutPostInput = {
@@ -4805,12 +11953,70 @@ export namespace Prisma {
     connect?: CommunityPostWhereUniqueInput
   }
 
+  export type CommunityCommentCreateNestedOneWithoutRepliesInput = {
+    create?: XOR<CommunityCommentCreateWithoutRepliesInput, CommunityCommentUncheckedCreateWithoutRepliesInput>
+    connectOrCreate?: CommunityCommentCreateOrConnectWithoutRepliesInput
+    connect?: CommunityCommentWhereUniqueInput
+  }
+
+  export type CommunityCommentCreateNestedManyWithoutParentInput = {
+    create?: XOR<CommunityCommentCreateWithoutParentInput, CommunityCommentUncheckedCreateWithoutParentInput> | CommunityCommentCreateWithoutParentInput[] | CommunityCommentUncheckedCreateWithoutParentInput[]
+    connectOrCreate?: CommunityCommentCreateOrConnectWithoutParentInput | CommunityCommentCreateOrConnectWithoutParentInput[]
+    createMany?: CommunityCommentCreateManyParentInputEnvelope
+    connect?: CommunityCommentWhereUniqueInput | CommunityCommentWhereUniqueInput[]
+  }
+
+  export type CommunityCommentUncheckedCreateNestedManyWithoutParentInput = {
+    create?: XOR<CommunityCommentCreateWithoutParentInput, CommunityCommentUncheckedCreateWithoutParentInput> | CommunityCommentCreateWithoutParentInput[] | CommunityCommentUncheckedCreateWithoutParentInput[]
+    connectOrCreate?: CommunityCommentCreateOrConnectWithoutParentInput | CommunityCommentCreateOrConnectWithoutParentInput[]
+    createMany?: CommunityCommentCreateManyParentInputEnvelope
+    connect?: CommunityCommentWhereUniqueInput | CommunityCommentWhereUniqueInput[]
+  }
+
   export type CommunityPostUpdateOneRequiredWithoutCommentsNestedInput = {
     create?: XOR<CommunityPostCreateWithoutCommentsInput, CommunityPostUncheckedCreateWithoutCommentsInput>
     connectOrCreate?: CommunityPostCreateOrConnectWithoutCommentsInput
     upsert?: CommunityPostUpsertWithoutCommentsInput
     connect?: CommunityPostWhereUniqueInput
     update?: XOR<XOR<CommunityPostUpdateToOneWithWhereWithoutCommentsInput, CommunityPostUpdateWithoutCommentsInput>, CommunityPostUncheckedUpdateWithoutCommentsInput>
+  }
+
+  export type CommunityCommentUpdateOneWithoutRepliesNestedInput = {
+    create?: XOR<CommunityCommentCreateWithoutRepliesInput, CommunityCommentUncheckedCreateWithoutRepliesInput>
+    connectOrCreate?: CommunityCommentCreateOrConnectWithoutRepliesInput
+    upsert?: CommunityCommentUpsertWithoutRepliesInput
+    disconnect?: CommunityCommentWhereInput | boolean
+    delete?: CommunityCommentWhereInput | boolean
+    connect?: CommunityCommentWhereUniqueInput
+    update?: XOR<XOR<CommunityCommentUpdateToOneWithWhereWithoutRepliesInput, CommunityCommentUpdateWithoutRepliesInput>, CommunityCommentUncheckedUpdateWithoutRepliesInput>
+  }
+
+  export type CommunityCommentUpdateManyWithoutParentNestedInput = {
+    create?: XOR<CommunityCommentCreateWithoutParentInput, CommunityCommentUncheckedCreateWithoutParentInput> | CommunityCommentCreateWithoutParentInput[] | CommunityCommentUncheckedCreateWithoutParentInput[]
+    connectOrCreate?: CommunityCommentCreateOrConnectWithoutParentInput | CommunityCommentCreateOrConnectWithoutParentInput[]
+    upsert?: CommunityCommentUpsertWithWhereUniqueWithoutParentInput | CommunityCommentUpsertWithWhereUniqueWithoutParentInput[]
+    createMany?: CommunityCommentCreateManyParentInputEnvelope
+    set?: CommunityCommentWhereUniqueInput | CommunityCommentWhereUniqueInput[]
+    disconnect?: CommunityCommentWhereUniqueInput | CommunityCommentWhereUniqueInput[]
+    delete?: CommunityCommentWhereUniqueInput | CommunityCommentWhereUniqueInput[]
+    connect?: CommunityCommentWhereUniqueInput | CommunityCommentWhereUniqueInput[]
+    update?: CommunityCommentUpdateWithWhereUniqueWithoutParentInput | CommunityCommentUpdateWithWhereUniqueWithoutParentInput[]
+    updateMany?: CommunityCommentUpdateManyWithWhereWithoutParentInput | CommunityCommentUpdateManyWithWhereWithoutParentInput[]
+    deleteMany?: CommunityCommentScalarWhereInput | CommunityCommentScalarWhereInput[]
+  }
+
+  export type CommunityCommentUncheckedUpdateManyWithoutParentNestedInput = {
+    create?: XOR<CommunityCommentCreateWithoutParentInput, CommunityCommentUncheckedCreateWithoutParentInput> | CommunityCommentCreateWithoutParentInput[] | CommunityCommentUncheckedCreateWithoutParentInput[]
+    connectOrCreate?: CommunityCommentCreateOrConnectWithoutParentInput | CommunityCommentCreateOrConnectWithoutParentInput[]
+    upsert?: CommunityCommentUpsertWithWhereUniqueWithoutParentInput | CommunityCommentUpsertWithWhereUniqueWithoutParentInput[]
+    createMany?: CommunityCommentCreateManyParentInputEnvelope
+    set?: CommunityCommentWhereUniqueInput | CommunityCommentWhereUniqueInput[]
+    disconnect?: CommunityCommentWhereUniqueInput | CommunityCommentWhereUniqueInput[]
+    delete?: CommunityCommentWhereUniqueInput | CommunityCommentWhereUniqueInput[]
+    connect?: CommunityCommentWhereUniqueInput | CommunityCommentWhereUniqueInput[]
+    update?: CommunityCommentUpdateWithWhereUniqueWithoutParentInput | CommunityCommentUpdateWithWhereUniqueWithoutParentInput[]
+    updateMany?: CommunityCommentUpdateManyWithWhereWithoutParentInput | CommunityCommentUpdateManyWithWhereWithoutParentInput[]
+    deleteMany?: CommunityCommentScalarWhereInput | CommunityCommentScalarWhereInput[]
   }
 
   export type CommunityPostCreateNestedOneWithoutLikesInput = {
@@ -4825,6 +12031,122 @@ export namespace Prisma {
     upsert?: CommunityPostUpsertWithoutLikesInput
     connect?: CommunityPostWhereUniqueInput
     update?: XOR<XOR<CommunityPostUpdateToOneWithWhereWithoutLikesInput, CommunityPostUpdateWithoutLikesInput>, CommunityPostUncheckedUpdateWithoutLikesInput>
+  }
+
+  export type DirectParticipantCreateNestedManyWithoutConversationInput = {
+    create?: XOR<DirectParticipantCreateWithoutConversationInput, DirectParticipantUncheckedCreateWithoutConversationInput> | DirectParticipantCreateWithoutConversationInput[] | DirectParticipantUncheckedCreateWithoutConversationInput[]
+    connectOrCreate?: DirectParticipantCreateOrConnectWithoutConversationInput | DirectParticipantCreateOrConnectWithoutConversationInput[]
+    createMany?: DirectParticipantCreateManyConversationInputEnvelope
+    connect?: DirectParticipantWhereUniqueInput | DirectParticipantWhereUniqueInput[]
+  }
+
+  export type DirectMessageCreateNestedManyWithoutConversationInput = {
+    create?: XOR<DirectMessageCreateWithoutConversationInput, DirectMessageUncheckedCreateWithoutConversationInput> | DirectMessageCreateWithoutConversationInput[] | DirectMessageUncheckedCreateWithoutConversationInput[]
+    connectOrCreate?: DirectMessageCreateOrConnectWithoutConversationInput | DirectMessageCreateOrConnectWithoutConversationInput[]
+    createMany?: DirectMessageCreateManyConversationInputEnvelope
+    connect?: DirectMessageWhereUniqueInput | DirectMessageWhereUniqueInput[]
+  }
+
+  export type DirectParticipantUncheckedCreateNestedManyWithoutConversationInput = {
+    create?: XOR<DirectParticipantCreateWithoutConversationInput, DirectParticipantUncheckedCreateWithoutConversationInput> | DirectParticipantCreateWithoutConversationInput[] | DirectParticipantUncheckedCreateWithoutConversationInput[]
+    connectOrCreate?: DirectParticipantCreateOrConnectWithoutConversationInput | DirectParticipantCreateOrConnectWithoutConversationInput[]
+    createMany?: DirectParticipantCreateManyConversationInputEnvelope
+    connect?: DirectParticipantWhereUniqueInput | DirectParticipantWhereUniqueInput[]
+  }
+
+  export type DirectMessageUncheckedCreateNestedManyWithoutConversationInput = {
+    create?: XOR<DirectMessageCreateWithoutConversationInput, DirectMessageUncheckedCreateWithoutConversationInput> | DirectMessageCreateWithoutConversationInput[] | DirectMessageUncheckedCreateWithoutConversationInput[]
+    connectOrCreate?: DirectMessageCreateOrConnectWithoutConversationInput | DirectMessageCreateOrConnectWithoutConversationInput[]
+    createMany?: DirectMessageCreateManyConversationInputEnvelope
+    connect?: DirectMessageWhereUniqueInput | DirectMessageWhereUniqueInput[]
+  }
+
+  export type DirectParticipantUpdateManyWithoutConversationNestedInput = {
+    create?: XOR<DirectParticipantCreateWithoutConversationInput, DirectParticipantUncheckedCreateWithoutConversationInput> | DirectParticipantCreateWithoutConversationInput[] | DirectParticipantUncheckedCreateWithoutConversationInput[]
+    connectOrCreate?: DirectParticipantCreateOrConnectWithoutConversationInput | DirectParticipantCreateOrConnectWithoutConversationInput[]
+    upsert?: DirectParticipantUpsertWithWhereUniqueWithoutConversationInput | DirectParticipantUpsertWithWhereUniqueWithoutConversationInput[]
+    createMany?: DirectParticipantCreateManyConversationInputEnvelope
+    set?: DirectParticipantWhereUniqueInput | DirectParticipantWhereUniqueInput[]
+    disconnect?: DirectParticipantWhereUniqueInput | DirectParticipantWhereUniqueInput[]
+    delete?: DirectParticipantWhereUniqueInput | DirectParticipantWhereUniqueInput[]
+    connect?: DirectParticipantWhereUniqueInput | DirectParticipantWhereUniqueInput[]
+    update?: DirectParticipantUpdateWithWhereUniqueWithoutConversationInput | DirectParticipantUpdateWithWhereUniqueWithoutConversationInput[]
+    updateMany?: DirectParticipantUpdateManyWithWhereWithoutConversationInput | DirectParticipantUpdateManyWithWhereWithoutConversationInput[]
+    deleteMany?: DirectParticipantScalarWhereInput | DirectParticipantScalarWhereInput[]
+  }
+
+  export type DirectMessageUpdateManyWithoutConversationNestedInput = {
+    create?: XOR<DirectMessageCreateWithoutConversationInput, DirectMessageUncheckedCreateWithoutConversationInput> | DirectMessageCreateWithoutConversationInput[] | DirectMessageUncheckedCreateWithoutConversationInput[]
+    connectOrCreate?: DirectMessageCreateOrConnectWithoutConversationInput | DirectMessageCreateOrConnectWithoutConversationInput[]
+    upsert?: DirectMessageUpsertWithWhereUniqueWithoutConversationInput | DirectMessageUpsertWithWhereUniqueWithoutConversationInput[]
+    createMany?: DirectMessageCreateManyConversationInputEnvelope
+    set?: DirectMessageWhereUniqueInput | DirectMessageWhereUniqueInput[]
+    disconnect?: DirectMessageWhereUniqueInput | DirectMessageWhereUniqueInput[]
+    delete?: DirectMessageWhereUniqueInput | DirectMessageWhereUniqueInput[]
+    connect?: DirectMessageWhereUniqueInput | DirectMessageWhereUniqueInput[]
+    update?: DirectMessageUpdateWithWhereUniqueWithoutConversationInput | DirectMessageUpdateWithWhereUniqueWithoutConversationInput[]
+    updateMany?: DirectMessageUpdateManyWithWhereWithoutConversationInput | DirectMessageUpdateManyWithWhereWithoutConversationInput[]
+    deleteMany?: DirectMessageScalarWhereInput | DirectMessageScalarWhereInput[]
+  }
+
+  export type DirectParticipantUncheckedUpdateManyWithoutConversationNestedInput = {
+    create?: XOR<DirectParticipantCreateWithoutConversationInput, DirectParticipantUncheckedCreateWithoutConversationInput> | DirectParticipantCreateWithoutConversationInput[] | DirectParticipantUncheckedCreateWithoutConversationInput[]
+    connectOrCreate?: DirectParticipantCreateOrConnectWithoutConversationInput | DirectParticipantCreateOrConnectWithoutConversationInput[]
+    upsert?: DirectParticipantUpsertWithWhereUniqueWithoutConversationInput | DirectParticipantUpsertWithWhereUniqueWithoutConversationInput[]
+    createMany?: DirectParticipantCreateManyConversationInputEnvelope
+    set?: DirectParticipantWhereUniqueInput | DirectParticipantWhereUniqueInput[]
+    disconnect?: DirectParticipantWhereUniqueInput | DirectParticipantWhereUniqueInput[]
+    delete?: DirectParticipantWhereUniqueInput | DirectParticipantWhereUniqueInput[]
+    connect?: DirectParticipantWhereUniqueInput | DirectParticipantWhereUniqueInput[]
+    update?: DirectParticipantUpdateWithWhereUniqueWithoutConversationInput | DirectParticipantUpdateWithWhereUniqueWithoutConversationInput[]
+    updateMany?: DirectParticipantUpdateManyWithWhereWithoutConversationInput | DirectParticipantUpdateManyWithWhereWithoutConversationInput[]
+    deleteMany?: DirectParticipantScalarWhereInput | DirectParticipantScalarWhereInput[]
+  }
+
+  export type DirectMessageUncheckedUpdateManyWithoutConversationNestedInput = {
+    create?: XOR<DirectMessageCreateWithoutConversationInput, DirectMessageUncheckedCreateWithoutConversationInput> | DirectMessageCreateWithoutConversationInput[] | DirectMessageUncheckedCreateWithoutConversationInput[]
+    connectOrCreate?: DirectMessageCreateOrConnectWithoutConversationInput | DirectMessageCreateOrConnectWithoutConversationInput[]
+    upsert?: DirectMessageUpsertWithWhereUniqueWithoutConversationInput | DirectMessageUpsertWithWhereUniqueWithoutConversationInput[]
+    createMany?: DirectMessageCreateManyConversationInputEnvelope
+    set?: DirectMessageWhereUniqueInput | DirectMessageWhereUniqueInput[]
+    disconnect?: DirectMessageWhereUniqueInput | DirectMessageWhereUniqueInput[]
+    delete?: DirectMessageWhereUniqueInput | DirectMessageWhereUniqueInput[]
+    connect?: DirectMessageWhereUniqueInput | DirectMessageWhereUniqueInput[]
+    update?: DirectMessageUpdateWithWhereUniqueWithoutConversationInput | DirectMessageUpdateWithWhereUniqueWithoutConversationInput[]
+    updateMany?: DirectMessageUpdateManyWithWhereWithoutConversationInput | DirectMessageUpdateManyWithWhereWithoutConversationInput[]
+    deleteMany?: DirectMessageScalarWhereInput | DirectMessageScalarWhereInput[]
+  }
+
+  export type DirectConversationCreateNestedOneWithoutParticipantsInput = {
+    create?: XOR<DirectConversationCreateWithoutParticipantsInput, DirectConversationUncheckedCreateWithoutParticipantsInput>
+    connectOrCreate?: DirectConversationCreateOrConnectWithoutParticipantsInput
+    connect?: DirectConversationWhereUniqueInput
+  }
+
+  export type DirectConversationUpdateOneRequiredWithoutParticipantsNestedInput = {
+    create?: XOR<DirectConversationCreateWithoutParticipantsInput, DirectConversationUncheckedCreateWithoutParticipantsInput>
+    connectOrCreate?: DirectConversationCreateOrConnectWithoutParticipantsInput
+    upsert?: DirectConversationUpsertWithoutParticipantsInput
+    connect?: DirectConversationWhereUniqueInput
+    update?: XOR<XOR<DirectConversationUpdateToOneWithWhereWithoutParticipantsInput, DirectConversationUpdateWithoutParticipantsInput>, DirectConversationUncheckedUpdateWithoutParticipantsInput>
+  }
+
+  export type DirectConversationCreateNestedOneWithoutMessagesInput = {
+    create?: XOR<DirectConversationCreateWithoutMessagesInput, DirectConversationUncheckedCreateWithoutMessagesInput>
+    connectOrCreate?: DirectConversationCreateOrConnectWithoutMessagesInput
+    connect?: DirectConversationWhereUniqueInput
+  }
+
+  export type NullableDateTimeFieldUpdateOperationsInput = {
+    set?: Date | string | null
+  }
+
+  export type DirectConversationUpdateOneRequiredWithoutMessagesNestedInput = {
+    create?: XOR<DirectConversationCreateWithoutMessagesInput, DirectConversationUncheckedCreateWithoutMessagesInput>
+    connectOrCreate?: DirectConversationCreateOrConnectWithoutMessagesInput
+    upsert?: DirectConversationUpsertWithoutMessagesInput
+    connect?: DirectConversationWhereUniqueInput
+    update?: XOR<XOR<DirectConversationUpdateToOneWithWhereWithoutMessagesInput, DirectConversationUpdateWithoutMessagesInput>, DirectConversationUncheckedUpdateWithoutMessagesInput>
   }
 
   export type NestedStringFilter<$PrismaModel = never> = {
@@ -4963,12 +12285,39 @@ export namespace Prisma {
     _max?: NestedDateTimeFilter<$PrismaModel>
   }
 
+  export type NestedDateTimeNullableFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
+    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
+  }
+
+  export type NestedDateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
+    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeNullableWithAggregatesFilter<$PrismaModel> | Date | string | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedDateTimeNullableFilter<$PrismaModel>
+    _max?: NestedDateTimeNullableFilter<$PrismaModel>
+  }
+
   export type CommunityCommentCreateWithoutPostInput = {
     id?: string
     userId: string
     content?: string | null
     stickerId?: string | null
     createdAt?: Date | string
+    parent?: CommunityCommentCreateNestedOneWithoutRepliesInput
+    replies?: CommunityCommentCreateNestedManyWithoutParentInput
   }
 
   export type CommunityCommentUncheckedCreateWithoutPostInput = {
@@ -4976,7 +12325,9 @@ export namespace Prisma {
     userId: string
     content?: string | null
     stickerId?: string | null
+    parentId?: string | null
     createdAt?: Date | string
+    replies?: CommunityCommentUncheckedCreateNestedManyWithoutParentInput
   }
 
   export type CommunityCommentCreateOrConnectWithoutPostInput = {
@@ -4992,11 +12343,13 @@ export namespace Prisma {
   export type CommunityLikeCreateWithoutPostInput = {
     id?: string
     userId: string
+    createdAt?: Date | string
   }
 
   export type CommunityLikeUncheckedCreateWithoutPostInput = {
     id?: string
     userId: string
+    createdAt?: Date | string
   }
 
   export type CommunityLikeCreateOrConnectWithoutPostInput = {
@@ -5034,6 +12387,7 @@ export namespace Prisma {
     userId?: StringFilter<"CommunityComment"> | string
     content?: StringNullableFilter<"CommunityComment"> | string | null
     stickerId?: StringNullableFilter<"CommunityComment"> | string | null
+    parentId?: StringNullableFilter<"CommunityComment"> | string | null
     createdAt?: DateTimeFilter<"CommunityComment"> | Date | string
   }
 
@@ -5060,6 +12414,7 @@ export namespace Prisma {
     id?: StringFilter<"CommunityLike"> | string
     postId?: StringFilter<"CommunityLike"> | string
     userId?: StringFilter<"CommunityLike"> | string
+    createdAt?: DateTimeFilter<"CommunityLike"> | Date | string
   }
 
   export type CommunityPostCreateWithoutCommentsInput = {
@@ -5089,6 +12444,61 @@ export namespace Prisma {
   export type CommunityPostCreateOrConnectWithoutCommentsInput = {
     where: CommunityPostWhereUniqueInput
     create: XOR<CommunityPostCreateWithoutCommentsInput, CommunityPostUncheckedCreateWithoutCommentsInput>
+  }
+
+  export type CommunityCommentCreateWithoutRepliesInput = {
+    id?: string
+    userId: string
+    content?: string | null
+    stickerId?: string | null
+    createdAt?: Date | string
+    post: CommunityPostCreateNestedOneWithoutCommentsInput
+    parent?: CommunityCommentCreateNestedOneWithoutRepliesInput
+  }
+
+  export type CommunityCommentUncheckedCreateWithoutRepliesInput = {
+    id?: string
+    postId: string
+    userId: string
+    content?: string | null
+    stickerId?: string | null
+    parentId?: string | null
+    createdAt?: Date | string
+  }
+
+  export type CommunityCommentCreateOrConnectWithoutRepliesInput = {
+    where: CommunityCommentWhereUniqueInput
+    create: XOR<CommunityCommentCreateWithoutRepliesInput, CommunityCommentUncheckedCreateWithoutRepliesInput>
+  }
+
+  export type CommunityCommentCreateWithoutParentInput = {
+    id?: string
+    userId: string
+    content?: string | null
+    stickerId?: string | null
+    createdAt?: Date | string
+    post: CommunityPostCreateNestedOneWithoutCommentsInput
+    replies?: CommunityCommentCreateNestedManyWithoutParentInput
+  }
+
+  export type CommunityCommentUncheckedCreateWithoutParentInput = {
+    id?: string
+    postId: string
+    userId: string
+    content?: string | null
+    stickerId?: string | null
+    createdAt?: Date | string
+    replies?: CommunityCommentUncheckedCreateNestedManyWithoutParentInput
+  }
+
+  export type CommunityCommentCreateOrConnectWithoutParentInput = {
+    where: CommunityCommentWhereUniqueInput
+    create: XOR<CommunityCommentCreateWithoutParentInput, CommunityCommentUncheckedCreateWithoutParentInput>
+  }
+
+  export type CommunityCommentCreateManyParentInputEnvelope = {
+    data: CommunityCommentCreateManyParentInput | CommunityCommentCreateManyParentInput[]
+    skipDuplicates?: boolean
   }
 
   export type CommunityPostUpsertWithoutCommentsInput = {
@@ -5124,6 +12534,53 @@ export namespace Prisma {
     stickerId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     likes?: CommunityLikeUncheckedUpdateManyWithoutPostNestedInput
+  }
+
+  export type CommunityCommentUpsertWithoutRepliesInput = {
+    update: XOR<CommunityCommentUpdateWithoutRepliesInput, CommunityCommentUncheckedUpdateWithoutRepliesInput>
+    create: XOR<CommunityCommentCreateWithoutRepliesInput, CommunityCommentUncheckedCreateWithoutRepliesInput>
+    where?: CommunityCommentWhereInput
+  }
+
+  export type CommunityCommentUpdateToOneWithWhereWithoutRepliesInput = {
+    where?: CommunityCommentWhereInput
+    data: XOR<CommunityCommentUpdateWithoutRepliesInput, CommunityCommentUncheckedUpdateWithoutRepliesInput>
+  }
+
+  export type CommunityCommentUpdateWithoutRepliesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    content?: NullableStringFieldUpdateOperationsInput | string | null
+    stickerId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    post?: CommunityPostUpdateOneRequiredWithoutCommentsNestedInput
+    parent?: CommunityCommentUpdateOneWithoutRepliesNestedInput
+  }
+
+  export type CommunityCommentUncheckedUpdateWithoutRepliesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    postId?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    content?: NullableStringFieldUpdateOperationsInput | string | null
+    stickerId?: NullableStringFieldUpdateOperationsInput | string | null
+    parentId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type CommunityCommentUpsertWithWhereUniqueWithoutParentInput = {
+    where: CommunityCommentWhereUniqueInput
+    update: XOR<CommunityCommentUpdateWithoutParentInput, CommunityCommentUncheckedUpdateWithoutParentInput>
+    create: XOR<CommunityCommentCreateWithoutParentInput, CommunityCommentUncheckedCreateWithoutParentInput>
+  }
+
+  export type CommunityCommentUpdateWithWhereUniqueWithoutParentInput = {
+    where: CommunityCommentWhereUniqueInput
+    data: XOR<CommunityCommentUpdateWithoutParentInput, CommunityCommentUncheckedUpdateWithoutParentInput>
+  }
+
+  export type CommunityCommentUpdateManyWithWhereWithoutParentInput = {
+    where: CommunityCommentScalarWhereInput
+    data: XOR<CommunityCommentUpdateManyMutationInput, CommunityCommentUncheckedUpdateManyWithoutParentInput>
   }
 
   export type CommunityPostCreateWithoutLikesInput = {
@@ -5190,17 +12647,217 @@ export namespace Prisma {
     comments?: CommunityCommentUncheckedUpdateManyWithoutPostNestedInput
   }
 
+  export type DirectParticipantCreateWithoutConversationInput = {
+    id?: string
+    userId: string
+    joinedAt?: Date | string
+  }
+
+  export type DirectParticipantUncheckedCreateWithoutConversationInput = {
+    id?: string
+    userId: string
+    joinedAt?: Date | string
+  }
+
+  export type DirectParticipantCreateOrConnectWithoutConversationInput = {
+    where: DirectParticipantWhereUniqueInput
+    create: XOR<DirectParticipantCreateWithoutConversationInput, DirectParticipantUncheckedCreateWithoutConversationInput>
+  }
+
+  export type DirectParticipantCreateManyConversationInputEnvelope = {
+    data: DirectParticipantCreateManyConversationInput | DirectParticipantCreateManyConversationInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type DirectMessageCreateWithoutConversationInput = {
+    id?: string
+    senderId: string
+    content: string
+    createdAt?: Date | string
+    readAt?: Date | string | null
+  }
+
+  export type DirectMessageUncheckedCreateWithoutConversationInput = {
+    id?: string
+    senderId: string
+    content: string
+    createdAt?: Date | string
+    readAt?: Date | string | null
+  }
+
+  export type DirectMessageCreateOrConnectWithoutConversationInput = {
+    where: DirectMessageWhereUniqueInput
+    create: XOR<DirectMessageCreateWithoutConversationInput, DirectMessageUncheckedCreateWithoutConversationInput>
+  }
+
+  export type DirectMessageCreateManyConversationInputEnvelope = {
+    data: DirectMessageCreateManyConversationInput | DirectMessageCreateManyConversationInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type DirectParticipantUpsertWithWhereUniqueWithoutConversationInput = {
+    where: DirectParticipantWhereUniqueInput
+    update: XOR<DirectParticipantUpdateWithoutConversationInput, DirectParticipantUncheckedUpdateWithoutConversationInput>
+    create: XOR<DirectParticipantCreateWithoutConversationInput, DirectParticipantUncheckedCreateWithoutConversationInput>
+  }
+
+  export type DirectParticipantUpdateWithWhereUniqueWithoutConversationInput = {
+    where: DirectParticipantWhereUniqueInput
+    data: XOR<DirectParticipantUpdateWithoutConversationInput, DirectParticipantUncheckedUpdateWithoutConversationInput>
+  }
+
+  export type DirectParticipantUpdateManyWithWhereWithoutConversationInput = {
+    where: DirectParticipantScalarWhereInput
+    data: XOR<DirectParticipantUpdateManyMutationInput, DirectParticipantUncheckedUpdateManyWithoutConversationInput>
+  }
+
+  export type DirectParticipantScalarWhereInput = {
+    AND?: DirectParticipantScalarWhereInput | DirectParticipantScalarWhereInput[]
+    OR?: DirectParticipantScalarWhereInput[]
+    NOT?: DirectParticipantScalarWhereInput | DirectParticipantScalarWhereInput[]
+    id?: StringFilter<"DirectParticipant"> | string
+    conversationId?: StringFilter<"DirectParticipant"> | string
+    userId?: StringFilter<"DirectParticipant"> | string
+    joinedAt?: DateTimeFilter<"DirectParticipant"> | Date | string
+  }
+
+  export type DirectMessageUpsertWithWhereUniqueWithoutConversationInput = {
+    where: DirectMessageWhereUniqueInput
+    update: XOR<DirectMessageUpdateWithoutConversationInput, DirectMessageUncheckedUpdateWithoutConversationInput>
+    create: XOR<DirectMessageCreateWithoutConversationInput, DirectMessageUncheckedCreateWithoutConversationInput>
+  }
+
+  export type DirectMessageUpdateWithWhereUniqueWithoutConversationInput = {
+    where: DirectMessageWhereUniqueInput
+    data: XOR<DirectMessageUpdateWithoutConversationInput, DirectMessageUncheckedUpdateWithoutConversationInput>
+  }
+
+  export type DirectMessageUpdateManyWithWhereWithoutConversationInput = {
+    where: DirectMessageScalarWhereInput
+    data: XOR<DirectMessageUpdateManyMutationInput, DirectMessageUncheckedUpdateManyWithoutConversationInput>
+  }
+
+  export type DirectMessageScalarWhereInput = {
+    AND?: DirectMessageScalarWhereInput | DirectMessageScalarWhereInput[]
+    OR?: DirectMessageScalarWhereInput[]
+    NOT?: DirectMessageScalarWhereInput | DirectMessageScalarWhereInput[]
+    id?: StringFilter<"DirectMessage"> | string
+    conversationId?: StringFilter<"DirectMessage"> | string
+    senderId?: StringFilter<"DirectMessage"> | string
+    content?: StringFilter<"DirectMessage"> | string
+    createdAt?: DateTimeFilter<"DirectMessage"> | Date | string
+    readAt?: DateTimeNullableFilter<"DirectMessage"> | Date | string | null
+  }
+
+  export type DirectConversationCreateWithoutParticipantsInput = {
+    id?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    lastMessageAt?: Date | string
+    messages?: DirectMessageCreateNestedManyWithoutConversationInput
+  }
+
+  export type DirectConversationUncheckedCreateWithoutParticipantsInput = {
+    id?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    lastMessageAt?: Date | string
+    messages?: DirectMessageUncheckedCreateNestedManyWithoutConversationInput
+  }
+
+  export type DirectConversationCreateOrConnectWithoutParticipantsInput = {
+    where: DirectConversationWhereUniqueInput
+    create: XOR<DirectConversationCreateWithoutParticipantsInput, DirectConversationUncheckedCreateWithoutParticipantsInput>
+  }
+
+  export type DirectConversationUpsertWithoutParticipantsInput = {
+    update: XOR<DirectConversationUpdateWithoutParticipantsInput, DirectConversationUncheckedUpdateWithoutParticipantsInput>
+    create: XOR<DirectConversationCreateWithoutParticipantsInput, DirectConversationUncheckedCreateWithoutParticipantsInput>
+    where?: DirectConversationWhereInput
+  }
+
+  export type DirectConversationUpdateToOneWithWhereWithoutParticipantsInput = {
+    where?: DirectConversationWhereInput
+    data: XOR<DirectConversationUpdateWithoutParticipantsInput, DirectConversationUncheckedUpdateWithoutParticipantsInput>
+  }
+
+  export type DirectConversationUpdateWithoutParticipantsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    lastMessageAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    messages?: DirectMessageUpdateManyWithoutConversationNestedInput
+  }
+
+  export type DirectConversationUncheckedUpdateWithoutParticipantsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    lastMessageAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    messages?: DirectMessageUncheckedUpdateManyWithoutConversationNestedInput
+  }
+
+  export type DirectConversationCreateWithoutMessagesInput = {
+    id?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    lastMessageAt?: Date | string
+    participants?: DirectParticipantCreateNestedManyWithoutConversationInput
+  }
+
+  export type DirectConversationUncheckedCreateWithoutMessagesInput = {
+    id?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    lastMessageAt?: Date | string
+    participants?: DirectParticipantUncheckedCreateNestedManyWithoutConversationInput
+  }
+
+  export type DirectConversationCreateOrConnectWithoutMessagesInput = {
+    where: DirectConversationWhereUniqueInput
+    create: XOR<DirectConversationCreateWithoutMessagesInput, DirectConversationUncheckedCreateWithoutMessagesInput>
+  }
+
+  export type DirectConversationUpsertWithoutMessagesInput = {
+    update: XOR<DirectConversationUpdateWithoutMessagesInput, DirectConversationUncheckedUpdateWithoutMessagesInput>
+    create: XOR<DirectConversationCreateWithoutMessagesInput, DirectConversationUncheckedCreateWithoutMessagesInput>
+    where?: DirectConversationWhereInput
+  }
+
+  export type DirectConversationUpdateToOneWithWhereWithoutMessagesInput = {
+    where?: DirectConversationWhereInput
+    data: XOR<DirectConversationUpdateWithoutMessagesInput, DirectConversationUncheckedUpdateWithoutMessagesInput>
+  }
+
+  export type DirectConversationUpdateWithoutMessagesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    lastMessageAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    participants?: DirectParticipantUpdateManyWithoutConversationNestedInput
+  }
+
+  export type DirectConversationUncheckedUpdateWithoutMessagesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    lastMessageAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    participants?: DirectParticipantUncheckedUpdateManyWithoutConversationNestedInput
+  }
+
   export type CommunityCommentCreateManyPostInput = {
     id?: string
     userId: string
     content?: string | null
     stickerId?: string | null
+    parentId?: string | null
     createdAt?: Date | string
   }
 
   export type CommunityLikeCreateManyPostInput = {
     id?: string
     userId: string
+    createdAt?: Date | string
   }
 
   export type CommunityCommentUpdateWithoutPostInput = {
@@ -5209,6 +12866,8 @@ export namespace Prisma {
     content?: NullableStringFieldUpdateOperationsInput | string | null
     stickerId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    parent?: CommunityCommentUpdateOneWithoutRepliesNestedInput
+    replies?: CommunityCommentUpdateManyWithoutParentNestedInput
   }
 
   export type CommunityCommentUncheckedUpdateWithoutPostInput = {
@@ -5216,7 +12875,9 @@ export namespace Prisma {
     userId?: StringFieldUpdateOperationsInput | string
     content?: NullableStringFieldUpdateOperationsInput | string | null
     stickerId?: NullableStringFieldUpdateOperationsInput | string | null
+    parentId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    replies?: CommunityCommentUncheckedUpdateManyWithoutParentNestedInput
   }
 
   export type CommunityCommentUncheckedUpdateManyWithoutPostInput = {
@@ -5224,22 +12885,120 @@ export namespace Prisma {
     userId?: StringFieldUpdateOperationsInput | string
     content?: NullableStringFieldUpdateOperationsInput | string | null
     stickerId?: NullableStringFieldUpdateOperationsInput | string | null
+    parentId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type CommunityLikeUpdateWithoutPostInput = {
     id?: StringFieldUpdateOperationsInput | string
     userId?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type CommunityLikeUncheckedUpdateWithoutPostInput = {
     id?: StringFieldUpdateOperationsInput | string
     userId?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type CommunityLikeUncheckedUpdateManyWithoutPostInput = {
     id?: StringFieldUpdateOperationsInput | string
     userId?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type CommunityCommentCreateManyParentInput = {
+    id?: string
+    postId: string
+    userId: string
+    content?: string | null
+    stickerId?: string | null
+    createdAt?: Date | string
+  }
+
+  export type CommunityCommentUpdateWithoutParentInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    content?: NullableStringFieldUpdateOperationsInput | string | null
+    stickerId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    post?: CommunityPostUpdateOneRequiredWithoutCommentsNestedInput
+    replies?: CommunityCommentUpdateManyWithoutParentNestedInput
+  }
+
+  export type CommunityCommentUncheckedUpdateWithoutParentInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    postId?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    content?: NullableStringFieldUpdateOperationsInput | string | null
+    stickerId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    replies?: CommunityCommentUncheckedUpdateManyWithoutParentNestedInput
+  }
+
+  export type CommunityCommentUncheckedUpdateManyWithoutParentInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    postId?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    content?: NullableStringFieldUpdateOperationsInput | string | null
+    stickerId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type DirectParticipantCreateManyConversationInput = {
+    id?: string
+    userId: string
+    joinedAt?: Date | string
+  }
+
+  export type DirectMessageCreateManyConversationInput = {
+    id?: string
+    senderId: string
+    content: string
+    createdAt?: Date | string
+    readAt?: Date | string | null
+  }
+
+  export type DirectParticipantUpdateWithoutConversationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    joinedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type DirectParticipantUncheckedUpdateWithoutConversationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    joinedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type DirectParticipantUncheckedUpdateManyWithoutConversationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    joinedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type DirectMessageUpdateWithoutConversationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    senderId?: StringFieldUpdateOperationsInput | string
+    content?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    readAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type DirectMessageUncheckedUpdateWithoutConversationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    senderId?: StringFieldUpdateOperationsInput | string
+    content?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    readAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type DirectMessageUncheckedUpdateManyWithoutConversationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    senderId?: StringFieldUpdateOperationsInput | string
+    content?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    readAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
 
@@ -5252,6 +13011,14 @@ export namespace Prisma {
      */
     export type CommunityPostCountOutputTypeArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = CommunityPostCountOutputTypeDefaultArgs<ExtArgs>
     /**
+     * @deprecated Use CommunityCommentCountOutputTypeDefaultArgs instead
+     */
+    export type CommunityCommentCountOutputTypeArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = CommunityCommentCountOutputTypeDefaultArgs<ExtArgs>
+    /**
+     * @deprecated Use DirectConversationCountOutputTypeDefaultArgs instead
+     */
+    export type DirectConversationCountOutputTypeArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = DirectConversationCountOutputTypeDefaultArgs<ExtArgs>
+    /**
      * @deprecated Use CommunityPostDefaultArgs instead
      */
     export type CommunityPostArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = CommunityPostDefaultArgs<ExtArgs>
@@ -5263,6 +13030,30 @@ export namespace Prisma {
      * @deprecated Use CommunityLikeDefaultArgs instead
      */
     export type CommunityLikeArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = CommunityLikeDefaultArgs<ExtArgs>
+    /**
+     * @deprecated Use DirectConversationDefaultArgs instead
+     */
+    export type DirectConversationArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = DirectConversationDefaultArgs<ExtArgs>
+    /**
+     * @deprecated Use DirectParticipantDefaultArgs instead
+     */
+    export type DirectParticipantArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = DirectParticipantDefaultArgs<ExtArgs>
+    /**
+     * @deprecated Use DirectMessageDefaultArgs instead
+     */
+    export type DirectMessageArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = DirectMessageDefaultArgs<ExtArgs>
+    /**
+     * @deprecated Use CommunityFollowDefaultArgs instead
+     */
+    export type CommunityFollowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = CommunityFollowDefaultArgs<ExtArgs>
+    /**
+     * @deprecated Use CommunityBookmarkDefaultArgs instead
+     */
+    export type CommunityBookmarkArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = CommunityBookmarkDefaultArgs<ExtArgs>
+    /**
+     * @deprecated Use CommunityNotificationDefaultArgs instead
+     */
+    export type CommunityNotificationArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = CommunityNotificationDefaultArgs<ExtArgs>
 
   /**
    * Batch Payload for updateMany & deleteMany & createMany
