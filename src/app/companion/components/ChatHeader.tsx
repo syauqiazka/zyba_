@@ -20,6 +20,8 @@ interface Props {
   setShowProModal?: (v: boolean) => void;
   isTTSEnabled?: boolean;
   setIsTTSEnabled?: (v: boolean) => void;
+  ttsProvider?: "elevenlabs" | "edge";
+  setTTSProvider?: (provider: "elevenlabs" | "edge") => void;
 }
 
 export default function ChatHeader({
@@ -31,6 +33,8 @@ export default function ChatHeader({
   setShowProModal,
   isTTSEnabled = false,
   setIsTTSEnabled,
+  ttsProvider = "edge",
+  setTTSProvider,
 }: Props) {
   const currentEmotion = activeConv?.emotionTag || "Tenang";
   const moodColor = getMoodColor(currentEmotion);
@@ -109,6 +113,22 @@ export default function ChatHeader({
           >
             {isTTSEnabled ? "🔊" : "🔇"}
           </button>
+        )}
+
+        {/* TTS Provider Selector (only when audio enabled) */}
+        {isTTSEnabled && setTTSProvider && (
+          <div className="relative">
+            <select
+              value={ttsProvider}
+              onChange={(e) => setTTSProvider(e.target.value as "elevenlabs" | "edge")}
+              className="text-xs px-2 py-1 rounded-lg border border-brown-900/10 bg-white text-brown-700 hover:bg-cream transition-colors cursor-pointer appearance-none pr-6"
+              title="Pilih TTS provider"
+            >
+              <option value="edge">Edge TTS (Free)</option>
+              <option value="elevenlabs">ElevenLabs (Premium)</option>
+            </select>
+            <div className="absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none text-brown-700 text-xs">▼</div>
+          </div>
         )}
 
         {/* Settings Gear (10.1) */}

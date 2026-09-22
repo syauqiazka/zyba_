@@ -80,6 +80,8 @@ interface CompanionContextType {
   quotaRemaining: number | null;
   isTTSEnabled: boolean;
   setIsTTSEnabled: (val: boolean) => void;
+  ttsProvider: "elevenlabs" | "edge";
+  setTTSProvider: (provider: "elevenlabs" | "edge") => void;
 }
 
 const CompanionContext = createContext<CompanionContextType | null>(null);
@@ -124,6 +126,7 @@ export function CompanionProvider({ children }: { children: React.ReactNode }) {
   const { speak } = useTTS();
   const [latestAIMessageId, setLatestAIMessageId] = useState<string | null>(null);
   const [isTTSEnabled, setIsTTSEnabled] = useState(false); // Audio mode off by default
+  const [ttsProvider, setTTSProvider] = useState<"elevenlabs" | "edge">("edge"); // Default Edge TTS
   const playedMessageIds = useRef<Set<string>>(new Set()); // Track played messages
 
   const activeConv = conversations.find((c) => c.id === activeConvId) || conversations[0];
@@ -193,10 +196,10 @@ export function CompanionProvider({ children }: { children: React.ReactNode }) {
       
       // Auto-play after small delay (let message render first)
       setTimeout(() => {
-        speak(latestMsg.content, false);
+        speak(latestMsg.content, ttsProvider === "elevenlabs");
       }, 300);
     }
-  }, [latestAIMessageId, activeConv?.messages, speak, isTTSEnabled]);
+  }, [latestAIMessageId, activeConv?.messages, speak, isTTSEnabled, ttsProvider]);
 
   const handleSendMessage = async (customText?: string) => {
     const textToSend = (customText || inputText).trim();
@@ -434,6 +437,8 @@ export function CompanionProvider({ children }: { children: React.ReactNode }) {
         quotaRemaining,
         isTTSEnabled,
         setIsTTSEnabled,
+        ttsProvider,
+        setTTSProvider,
       }}
     >
       {children}

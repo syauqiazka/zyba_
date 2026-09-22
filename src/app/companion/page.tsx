@@ -45,6 +45,8 @@ export default function CompanionPage() {
     quotaRemaining,
     isTTSEnabled,
     setIsTTSEnabled,
+    ttsProvider,
+    setTTSProvider,
   } = useCompanion();
 
   const hasMessages = (activeConv?.messages || []).length > 0;
@@ -63,6 +65,8 @@ export default function CompanionPage() {
             setShowProModal={setShowProModal}
             isTTSEnabled={isTTSEnabled}
             setIsTTSEnabled={setIsTTSEnabled}
+            ttsProvider={ttsProvider}
+            setTTSProvider={setTTSProvider}
           />
 
           {/* Crisis Banner (10.5) — calm, supportive */}
