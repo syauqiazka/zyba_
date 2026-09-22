@@ -65,8 +65,9 @@ export async function POST(req: NextRequest) {
     const outFile = path.join(tmpDir, "speech.mp3");
 
     try {
-      // edge-tts must be installed: pip install edge-tts OR npx edge-tts
-      await execAsync(`edge-tts --voice ${voice} --text "${text.replace(/"/g, "'")}" --write-media "${outFile}"`, { timeout: 15000 });
+      // Use Hermes venv edge-tts (fallback to global if not found)
+      const edgeTtsCmd = process.env.EDGE_TTS_PATH || "C:\\Users\\user\\AppData\\Local\\hermes\\hermes-agent\\venv\\Scripts\\edge-tts.exe";
+      await execAsync(`"${edgeTtsCmd}" --voice ${voice} --text "${text.replace(/"/g, "'\\'")}" --write-media "${outFile}"`, { timeout: 15000 });
       const audioBuffer = await readFile(outFile);
       await unlink(outFile).catch(() => {});
 
