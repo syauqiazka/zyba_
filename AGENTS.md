@@ -4,7 +4,7 @@ Dokumen ini adalah satu-satunya sumber acuan untuk coding agent (Hermes+9Router,
 ⚠️ Baca urutan ini sebelum coding apa pun:
 
 Bagian 8 — Status Review & Prioritas Perbaikan — 3 isu keamanan yang HARUS diperbaiki duluan.
-Bagian 27 — Checklist Final — daftar centang sebelum submit lomba/deploy.
+Bagian 28 — Checklist Final — daftar centang sebelum submit lomba/deploy.
 1. Ringkasan Produk
 ZYBA — Gen Z Wellness Support. Pendamping kesehatan mental, fisik, dan sosial berbasis AI. Alur inti: Curhat → Solusi → Program → Aksi.
 
@@ -1055,7 +1055,73 @@ MIDTRANS_SERVER_KEY tidak boleh pernah muncul di kode client-side (tidak di NEXT
 Idempotency: webhook Midtrans bisa terkirim lebih dari sekali untuk event yang sama. Cek dulu apakah Payment dengan orderId itu sudah berstatus SUCCESS sebelum memprosesnya lagi — jangan aktifkan langganan dua kali/double-charge state karena webhook duplikat.
 Jangan percaya status dari client-side callback saja (poin 5-6 di atas) — status final harus dari webhook yang tervalidasi, client callback cuma untuk UX cepat (langsung kasih tahu user "sedang diproses").
 Expiry check: butuh mekanisme (cron job/scheduled function, atau dicek on-the-fly saat load halaman) yang mengubah Subscription.status jadi EXPIRED dan User.plan balik ke FREE setelah endDate lewat — tanpa ini, user yang sudah expired akan tetap dianggap Plus selamanya.
-27. Checklist Final Sebelum Submit/Deploy
+27. Feature Gating — Batasan Nyata Free vs Plus
+Kartu perbandingan paket (Bagian 26.3) baru sekadar teks kalau batasannya tidak ditegakkan di backend. Bagian ini mendefinisikan mekanisme enforcement-nya secara konkret.
+
+27.1 Matriks Fitur
+Fitur	Zyba Free	Zyba Plus
+Pesan ke Zyba Companion	20 pesan/hari (reset tiap jam 00:00)	Unlimited
+Mood tracking	Dasar (catat mood harian, lihat riwayat)	+ Insight kebiasaan mendalam (analisis pola/korelasi, rekomendasi personal AI berbasis riwayat lengkap)
+Zyba Community	Akses baca & posting biasa	+ Program komunitas eksklusif (grup/channel khusus Plus)
+Laporan perkembangan	Tidak ada	Laporan bulanan otomatis (ringkasan mood/aktivitas/journal, di-generate tiap awal bulan)
+Rekomendasi AI	Generic (tanpa konteks riwayat personal)	Personalized (AI pakai riwayat mood/journal/aktivitas user sebagai context)
+27.2 Prinsip Enforcement
+Enforcement WAJIB di server-side, UI cuma lapisan kedua (defense in depth). Menyembunyikan tombol di frontend saja tidak cukup — user yang paham bisa panggil API langsung lewat DevTools/Postman dan bypass batasan kalau cuma dicek di client. Setiap endpoint yang berkaitan dengan fitur di tabel 27.1 harus cek plan di server sebelum memproses.
+
+27.3 Helper Terpusat
+// src/backend/billing/entitlements.ts
+import { accountDb } from "@/backend/db/accountClient";
+import { companionDb } from "@/backend/db/companionClient";
+
+export const FREE_DAILY_MESSAGE_LIMIT = 20;
+
+export async function getUserPlan(userId: string): Promise<"FREE" | "PLUS"> {
+  const user = await accountDb.user.findUnique({
+    where: { id: userId },
+    select: { plan: true },
+  });
+  return user?.plan ?? "FREE";
+}
+
+export async function checkMessageQuota(userId: string) {
+  const plan = await getUserPlan(userId);
+  if (plan === "PLUS") return { allowed: true, remaining: Infinity };
+
+  const startOfDay = new Date();
+  startOfDay.setHours(0, 0, 0, 0);
+
+  // Join Message -> Conversation aman di sini karena keduanya di Companion DB yang sama
+  // (bukan cross-database join — cek User.plan di atas itu satu-satunya query lintas DB).
+  const countToday = await companionDb.message.count({
+    where: {
+      role: "USER",
+      createdAt: { gte: startOfDay },
+      conversation: { userId },
+    },
+  });
+
+  return {
+    allowed: countToday < FREE_DAILY_MESSAGE_LIMIT,
+    remaining: Math.max(0, FREE_DAILY_MESSAGE_LIMIT - countToday),
+  };
+}
+
+export async function hasFeature(
+  userId: string,
+  feature: "advanced_insights" | "monthly_report" | "exclusive_community"
+): Promise<boolean> {
+  const plan = await getUserPlan(userId);
+  return plan === "PLUS"; // semua 3 fitur ini murni gated by plan, tidak ada logic tambahan
+}
+27.4 Titik Enforcement per Fitur
+Kirim pesan Companion (api/companion/message atau sejenisnya, lihat Bagian 19): panggil checkMessageQuota(userId) sebelum memanggil AI provider. Kalau allowed === false, return response error dengan kode khusus (mis. { error: "QUOTA_EXCEEDED", remaining: 0 }, HTTP 403) — frontend menangkap ini dan menampilkan modal "Out of Chat Limit" yang sudah dispek di Bagian 10.6, bukan generic error message.
+Insight kebiasaan mendalam (Wellness Journey/Mood Check-In advanced view): cek hasFeature(userId, "advanced_insights") di route API yang menyediakan data analisis pola — kalau false, kembalikan data dasar saja atau tampilkan CTA upgrade, jangan proses analisis berat untuk user yang tidak berhak.
+Laporan bulanan: cek hasFeature(userId, "monthly_report") sebelum men-generate/menampilkan laporan — kalau ini di-generate lewat scheduled job, job itu sendiri harus filter hanya user dengan plan PLUS.
+Program komunitas eksklusif: cek hasFeature(userId, "exclusive_community") sebelum mengizinkan akses ke grup/channel khusus di api/community/* yang terkait fitur ini.
+27.5 Sisi UI (Lapisan Kedua, Bukan Satu-satunya)
+Tampilkan sisa kuota pesan hari ini secara halus di area chat Companion untuk user Free (mis. "17/20 pesan hari ini"), supaya user tidak kaget tiba-tiba diblokir.
+Elemen UI yang terkait fitur Plus-only (insight mendalam, laporan bulanan, komunitas eksklusif) tetap ditampilkan untuk user Free tapi dalam kondisi ter-blur/terkunci dengan CTA "Upgrade untuk buka fitur ini →" — pola umum freemium, lebih persuasif daripada disembunyikan total.
+28. Checklist Final Sebelum Submit/Deploy
 Gabungan semua item wajib dari seluruh dokumen ini — centang satu-satu sebelum dianggap selesai:
 
 Konsistensi Fitur & Repo Hygiene (temuan review kedua, Bagian 8.5–8.6):
@@ -1148,4 +1214,10 @@ Zyba Plus / Payment Flow (Bagian 26):
  Webhook idempotent — payment yang sudah SUCCESS tidak diproses ulang kalau notification terkirim dobel.
  Ada mekanisme expiry (Subscription.status → EXPIRED, User.plan balik ke FREE) setelah endDate lewat.
  Sudah dites end-to-end di Sandbox: pilih paket → bayar (simulasi) → status berubah ACTIVE → badge di sidebar berubah jadi "Zyba Plus" → muncul di Riwayat Pembayaran.
+Feature Gating Free vs Plus (Bagian 27):
+
+ Kuota 20 pesan/hari untuk Free ditegakkan di server (checkMessageQuota), bukan cuma dicek di frontend.
+ Modal "Out of Chat Limit" (Bagian 10.6) muncul saat kuota habis, bukan generic error.
+ Insight mendalam, laporan bulanan, dan komunitas eksklusif masing-masing dicek hasFeature() di server sebelum diproses/ditampilkan.
+ Dites langsung: user Free coba akses fitur Plus lewat API langsung (bukan cuma UI) — pastikan tetap ditolak server, bukan cuma disembunyikan di frontend.
 Dokumen ini konsolidasi dari: review visual Figma UI kit awal, review langsung ke kode github.com/syauqiazka/zyba / zyba_, dan referensi gaya (landing page ala OpenRouter, Companion ala Claude.ai, Community ala Threads) — semua warna referensi eksternal disesuaikan ke palet ZYBA, bukan ditiru mentah-mentah.

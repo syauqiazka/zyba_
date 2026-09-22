@@ -2,9 +2,35 @@ import { NextRequest, NextResponse } from "next/server";
 import { detectRisk, CRISIS_RESOURCES } from "@/backend/crisis/crisisDetection";
 import { processMultiModelAIResponse, AIModelType } from "@/backend/ai/aiModelManager";
 import { PersonaId } from "@/backend/ai/personas";
+import { verifySessionToken } from "@/lib/auth";
+import { checkMessageQuota } from "@/backend/billing/entitlements";
 
 export async function POST(req: NextRequest) {
   try {
+    // Auth check
+    const token = req.cookies.get("auth-token")?.value;
+    if (!token) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const session = await verifySessionToken(token);
+    if (!session) {
+      return NextResponse.json({ error: "Invalid session" }, { status: 401 });
+    }
+
+    // Quota check (Bagian 27.4)
+    const quotaCheck = await checkMessageQuota(session.userId);
+    if (!quotaCheck.allowed) {
+      return NextResponse.json(
+        {
+          error: "QUOTA_EXCEEDED",
+          message: "Kamu sudah mencapai batas 20 pesan hari ini. Upgrade ke Zyba Plus untuk chat unlimited.",
+          remaining: quotaCheck.remaining,
+        },
+        { status: 403 }
+      );
+    }
+
     const body = await req.json();
     const {
       message,
@@ -45,6 +71,7 @@ export async function POST(req: NextRequest) {
       emotionTag: aiResult.emotionTag,
       modelUsed: aiResult.modelUsed,
       providerStatus: aiResult.providerStatus,
+      quotaRemaining: quotaCheck.remaining - 1, // after this message
     });
   } catch (err: any) {
     console.error("[API Companion Error]:", err);

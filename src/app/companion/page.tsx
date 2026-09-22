@@ -5,6 +5,7 @@ import ChatHeader from "./components/ChatHeader";
 import ChatMessages from "./components/ChatMessages";
 import ChatInput from "./components/ChatInput";
 import CrisisBanner from "./components/CrisisBanner";
+import QuotaExceededModal from "./components/QuotaExceededModal";
 import { useCompanion } from "./context/CompanionContext";
 import PersonaPicker from "./components/PersonaPicker";
 import { PersonaId } from "@/backend/ai/personas";
@@ -41,6 +42,7 @@ export default function CompanionPage() {
     handleSendMessage,
     activeConv,
     messagesEndRef,
+    quotaRemaining,
   } = useCompanion();
 
   const hasMessages = (activeConv?.messages || []).length > 0;
@@ -62,6 +64,18 @@ export default function CompanionPage() {
           {/* Crisis Banner (10.5) — calm, supportive */}
           {crisisAlert && (
             <CrisisBanner onClose={() => setCrisisAlert(false)} />
+          )}
+
+          {/* Quota indicator for Free users (27.5) */}
+          {quotaRemaining !== null && quotaRemaining <= 20 && (
+            <div className="px-4 py-2 bg-orange-50 border-b border-orange-200 text-center">
+              <p className="text-xs text-brown-700">
+                <span className="font-bold">{quotaRemaining}/20</span> pesan tersisa hari ini · 
+                <a href="/settings/zyba-plus" className="ml-1 text-orange-500 font-bold hover:underline">
+                  Upgrade untuk unlimited
+                </a>
+              </p>
+            </div>
           )}
 
           {/* Chat Messages / Center Empty State (Image 1 Claude.ai) */}
@@ -110,44 +124,12 @@ export default function CompanionPage() {
         </div>
       )}
 
-      {/* Pro Modal (10.6) */}
-      {showProModal && (
-        <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-orange-100 rounded-3xl p-8 max-w-md w-full shadow-2xl border border-orange-500/20 flex flex-col items-center text-center gap-5">
-            <div className="w-14 h-14 rounded-2xl bg-orange-500 text-white font-bold flex items-center justify-center text-2xl shadow-md">
-              ⚡
-            </div>
-
-            <div>
-              <h3 className="font-display font-extrabold text-xl text-brown-900">
-                Kuota Chat Harian Habis
-              </h3>
-              <p className="text-xs text-brown-700 mt-1 max-w-xs leading-relaxed">
-                Buka batas percakapan tanpa limit, model Claude 3.5 Sonnet & GPT-4o, serta analitik wellness mendalam dengan Zyba Plus.
-              </p>
-            </div>
-
-            <button
-              type="button"
-              onClick={() => {
-                alert("Fitur Zyba Plus segera hadir!");
-                setShowProModal(false);
-              }}
-              className="w-full py-3.5 rounded-full bg-orange-500 text-white text-xs font-bold shadow-md hover:opacity-95 transition-opacity"
-            >
-              Upgrade ke Zyba Plus →
-            </button>
-
-            <button
-              type="button"
-              onClick={() => setShowProModal(false)}
-              className="text-xs font-semibold text-brown-700 hover:text-brown-900 hover:underline"
-            >
-              Nanti saja
-            </button>
-          </div>
-        </div>
-      )}
+      {/* Quota Exceeded Modal (Bagian 10.6 + 27) */}
+      <QuotaExceededModal
+        isOpen={showProModal}
+        onClose={() => setShowProModal(false)}
+        remaining={quotaRemaining || 0}
+      />
 
       {/* Delete Modal */}
       {showDeleteModal && (

@@ -76,6 +76,7 @@ interface CompanionContextType {
   handleSendMessage: (customText?: string) => Promise<void>;
   activeConv: Conversation;
   messagesEndRef: React.RefObject<HTMLDivElement>;
+  quotaRemaining: number | null;
 }
 
 const CompanionContext = createContext<CompanionContextType | null>(null);
@@ -114,10 +115,23 @@ export function CompanionProvider({ children }: { children: React.ReactNode }) {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [crisisAlert, setCrisisAlert] = useState<boolean>(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [quotaRemaining, setQuotaRemaining] = useState<number | null>(null);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const activeConv = conversations.find((c) => c.id === activeConvId) || conversations[0];
+
+  // Fetch quota on mount
+  useEffect(() => {
+    fetch("/api/companion/quota")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.remaining !== undefined) {
+          setQuotaRemaining(data.remaining === Infinity ? null : data.remaining);
+        }
+      })
+      .catch((err) => console.error("[Quota Check]:", err));
+  }, []);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -176,11 +190,26 @@ export function CompanionProvider({ children }: { children: React.ReactNode }) {
         }),
       });
 
+      // Handle quota exceeded (403)
+      if (response.status === 403) {
+        const errorData = await response.json();
+        if (errorData.error === "QUOTA_EXCEEDED") {
+          setShowProModal(true);
+          setIsSending(false);
+          return;
+        }
+      }
+
       if (!response.ok) {
         throw new Error("Gagal menerima respons AI");
       }
 
       const data = await response.json();
+
+      // Update quota after successful message
+      if (data.quotaRemaining !== undefined) {
+        setQuotaRemaining(data.quotaRemaining);
+      }
 
       if (data.isRisk) {
         setCrisisAlert(true);
@@ -290,6 +319,7 @@ export function CompanionProvider({ children }: { children: React.ReactNode }) {
         handleSendMessage,
         activeConv,
         messagesEndRef,
+        quotaRemaining,
       }}
     >
       {children}
