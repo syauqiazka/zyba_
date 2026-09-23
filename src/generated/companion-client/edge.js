@@ -159,6 +159,10 @@ const config = {
         "fromEnvVar": null,
         "value": "windows",
         "native": true
+      },
+      {
+        "fromEnvVar": null,
+        "value": "rhel-openssl-3.0.x"
       }
     ],
     "previewFeatures": [],
@@ -185,8 +189,8 @@ const config = {
       }
     }
   },
-  "inlineSchema": "generator client {\n  provider = \"prisma-client-js\"\n  output   = \"../../src/generated/companion-client\"\n}\n\ndatasource db {\n  provider  = \"postgresql\"\n  url       = env(\"DATABASE_URL_COMPANION\")\n  directUrl = env(\"DIRECT_URL_COMPANION\")\n}\n\nmodel Conversation {\n  id         String   @id @default(cuid())\n  userId     String // TANPA @relation — user ada di Account DB\n  title      String   @default(\"New Conversation\")\n  emotionTag String?\n  createdAt  DateTime @default(now())\n  updatedAt  DateTime @updatedAt\n\n  messages Message[]\n\n  @@index([userId])\n  @@map(\"conversations\")\n}\n\nmodel Message {\n  id               String       @id @default(cuid())\n  conversationId   String\n  conversation     Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)\n  role             String // \"USER\" | \"ASSISTANT\"\n  content          String? // opsional kalau isinya cuma media\n  modelUsed        String? // AI model yang dipakai (gemini-3.8-flash, llama-3.3-70b, dll)\n  attachmentType   String? // \"image\" | \"audio\" | \"sticker\" | null\n  attachmentUrl    String? // URL object storage, BUKAN base64\n  audioDurationSec Int?\n  stickerId        String?\n  flaggedForRisk   Boolean      @default(false)\n  ttsAudioUrl      String? // Cached TTS audio dari ElevenLabs/Edge\n  ttsProvider      String? // \"elevenlabs\" | \"edge\" | \"browser\"\n  ttsModel         String? // Model yang digunakan (eleven_flash_v2_5)\n  ttsGeneratedAt   DateTime? // Kapan audio di-generate\n  createdAt        DateTime     @default(now())\n\n  @@index([conversationId, createdAt])\n  @@map(\"messages\")\n}\n",
-  "inlineSchemaHash": "bd5d417e29bde241d8db28c5cdf6a0f3cb20643b616a81fe8ba78830da0fdebf",
+  "inlineSchema": "generator client {\n  provider      = \"prisma-client-js\"\n  binaryTargets = [\"native\", \"rhel-openssl-3.0.x\"]\n  output        = \"../../src/generated/companion-client\"\n}\n\ndatasource db {\n  provider  = \"postgresql\"\n  url       = env(\"DATABASE_URL_COMPANION\")\n  directUrl = env(\"DIRECT_URL_COMPANION\")\n}\n\nmodel Conversation {\n  id         String   @id @default(cuid())\n  userId     String // TANPA @relation — user ada di Account DB\n  title      String   @default(\"New Conversation\")\n  emotionTag String?\n  createdAt  DateTime @default(now())\n  updatedAt  DateTime @updatedAt\n\n  messages Message[]\n\n  @@index([userId])\n  @@map(\"conversations\")\n}\n\nmodel Message {\n  id               String       @id @default(cuid())\n  conversationId   String\n  conversation     Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)\n  role             String // \"USER\" | \"ASSISTANT\"\n  content          String? // opsional kalau isinya cuma media\n  modelUsed        String? // AI model yang dipakai (gemini-3.8-flash, llama-3.3-70b, dll)\n  attachmentType   String? // \"image\" | \"audio\" | \"sticker\" | null\n  attachmentUrl    String? // URL object storage, BUKAN base64\n  audioDurationSec Int?\n  stickerId        String?\n  flaggedForRisk   Boolean      @default(false)\n  ttsAudioUrl      String? // Cached TTS audio dari ElevenLabs/Edge\n  ttsProvider      String? // \"elevenlabs\" | \"edge\" | \"browser\"\n  ttsModel         String? // Model yang digunakan (eleven_flash_v2_5)\n  ttsGeneratedAt   DateTime? // Kapan audio di-generate\n  createdAt        DateTime     @default(now())\n\n  @@index([conversationId, createdAt])\n  @@map(\"messages\")\n}\n",
+  "inlineSchemaHash": "e9b28f983de24547ff747678260b390d529816e2e446256a72d8676f23f9b48f",
   "copyEngine": true
 }
 config.dirname = '/'
