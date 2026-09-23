@@ -17,6 +17,7 @@ export interface CommunityPostItem {
 export const communityRepository = {
   async getAllPosts(take = 30, cursor?: string): Promise<CommunityPostItem[]> {
     const posts = await communityDb.communityPost.findMany({
+      where: { isHidden: false },
       take,
       ...(cursor && { skip: 1, cursor: { id: cursor } }),
       orderBy: { createdAt: "desc" },
@@ -109,7 +110,7 @@ export const communityRepository = {
     }
 
     const posts = await communityDb.communityPost.findMany({
-      where: { userId: { in: followingIds } },
+      where: { userId: { in: followingIds }, isHidden: false },
       take,
       ...(cursor && { skip: 1, cursor: { id: cursor } }),
       orderBy: { createdAt: "desc" },

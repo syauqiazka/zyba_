@@ -10,9 +10,16 @@ export async function GET(
     const { searchParams } = new URL(req.url);
     const cursor = searchParams.get("cursor");
     const limit = parseInt(searchParams.get("limit") || "20", 10);
+    const includeHidden = searchParams.get("includeHidden") === "true";
+
+    // Base where: always filter by userId; only include hidden posts when explicitly requested
+    const where: any = { userId: params.userId };
+    if (!includeHidden) {
+      where.isHidden = false;
+    }
 
     const posts = await communityDb.communityPost.findMany({
-      where: { userId: params.userId },
+      where,
       take: limit + 1,
       ...(cursor && { skip: 1, cursor: { id: cursor } }),
       orderBy: { createdAt: "desc" },
@@ -42,6 +49,7 @@ export async function GET(
         tag: "Sharing",
         content: p.content || "",
         imageUrl: p.imageUrl,
+        isHidden: p.isHidden,
         likes: p.likes.length,
         commentsCount: p.comments.length,
         repostsCount: 0,

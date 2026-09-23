@@ -18,6 +18,7 @@ model CommunityPost {
   audioUrl         String?
   audioDurationSec Int?
   stickerId        String?
+  isHidden         Boolean  @default(false)
   createdAt        DateTime @default(now())
 
   comments CommunityComment[]

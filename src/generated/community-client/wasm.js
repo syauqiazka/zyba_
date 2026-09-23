@@ -130,6 +130,7 @@ exports.Prisma.CommunityPostScalarFieldEnum = {
   audioUrl: 'audioUrl',
   audioDurationSec: 'audioDurationSec',
   stickerId: 'stickerId',
+  isHidden: 'isHidden',
   createdAt: 'createdAt'
 };
 
