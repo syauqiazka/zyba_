@@ -29,6 +29,7 @@ export async function GET(req: NextRequest) {
       });
 
       results.people = users.map(u => ({
+        id: u.id,        // used by frontend result.id for navigation
         userId: u.id,
         name: u.name,
         username: u.username || u.id,
@@ -58,6 +59,7 @@ export async function GET(req: NextRequest) {
         return {
           id: p.id,
           userId: p.userId,
+          name: author?.name || "Pengguna ZYBA",  // used by "Post by {name}" in UI
           author: author?.name || "Pengguna ZYBA",
           avatar: author?.avatarUrl || "fox",
           content: p.content || "",

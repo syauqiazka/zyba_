@@ -6,6 +6,7 @@ import { Search, User, FileText, Sprout, Check } from "lucide-react";
 
 interface SearchResult {
   id: string;
+  userId?: string;
   type: "people" | "posts";
   name?: string;
   username?: string;
@@ -67,10 +68,15 @@ export default function CommunitySearchView() {
 
   const handleResultClick = (result: SearchResult) => {
     if (result.type === "people") {
+      // result.id is the userId — navigate to their profile
       router.push(`/community/profile/${result.id}`);
     } else {
-      // For posts, scroll to post ID or navigate to post detail
-      router.push(`/community#post-${result.id}`);
+      // For posts, go to the author's profile page
+      if (result.userId) {
+        router.push(`/community/profile/${result.userId}`);
+      } else {
+        router.push(`/community`);
+      }
     }
   };
 
