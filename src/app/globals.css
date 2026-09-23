@@ -19,47 +19,127 @@
   --mood-overjoyed: #789b61;
 }
 
-* { border-color: rgba(41, 35, 31, 0.1); }
-html { scroll-behavior: smooth; }
-body {
-  @apply bg-cream text-brown-900 font-body antialiased selection:bg-orange-100 selection:text-orange-500;
-  background-image: radial-gradient(at 0% 0%, rgba(233, 130, 85, 0.1) 0, transparent 40%), radial-gradient(at 100% 100%, rgba(120, 155, 97, 0.12) 0, transparent 42%);
-  background-attachment: fixed;
-  min-height: 100vh;
+* {
+  border-color: rgba(41, 35, 31, 0.1);
+  box-sizing: border-box;
 }
 
-a, button, [role="button"] { transition: color 220ms ease, background-color 220ms ease, border-color 220ms ease, box-shadow 220ms ease, transform 220ms ease; }
-a:focus-visible, button:focus-visible { outline: 3px solid rgba(233, 130, 85, 0.45); outline-offset: 3px; }
+html {
+  /* Hilangkan smooth scroll paksa agar tidak stutter di CPU lemah */
+  scroll-behavior: auto;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
 
-/* A tactile, editorial surface language shared by every route. */
-main button:not([aria-hidden]), main a:not([aria-hidden]) { position: relative; }
-main button:hover:not(:disabled), main a:hover { transform: translateY(-1px); }
-main input, main textarea, main select { background: rgba(255, 255, 255, 0.72); border-color: rgba(41, 35, 31, 0.14); transition: border-color 220ms ease, box-shadow 220ms ease, background-color 220ms ease; }
-main input:focus, main textarea:focus, main select:focus { background: rgba(255, 255, 255, 0.96); border-color: rgba(233, 130, 85, 0.7); box-shadow: 0 0 0 4px rgba(233, 130, 85, 0.12); outline: none; }
-main .rounded-3xl, main .rounded-2xl { transition: box-shadow 260ms ease, border-color 260ms ease, background-color 260ms ease, transform 260ms ease; }
-main .rounded-3xl:hover, main .rounded-2xl:hover { border-color: rgba(233, 130, 85, 0.22); }
+/* Background gradient terisolasi di layer GPU (bebas lag scroll pada PC kentang) */
+body {
+  @apply bg-cream text-brown-900 font-body antialiased selection:bg-orange-100 selection:text-orange-500;
+  min-height: 100vh;
+  position: relative;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-image: radial-gradient(at 0% 0%, rgba(233, 130, 85, 0.08) 0, transparent 40%),
+                    radial-gradient(at 100% 100%, rgba(120, 155, 97, 0.09) 0, transparent 42%);
+  /* Force hardware acceleration layer tanpa membebani CPU saat scrolling */
+  transform: translateZ(0);
+  will-change: transform;
+}
+
+/* Ringankan transisi: gunakan hardware accelerated transform & opacity */
+a, button, [role="button"] {
+  transition: color 150ms ease-out, background-color 150ms ease-out, border-color 150ms ease-out, opacity 150ms ease-out;
+}
+a:focus-visible, button:focus-visible {
+  outline: 3px solid rgba(233, 130, 85, 0.45);
+  outline-offset: 3px;
+}
+
+main button:not([aria-hidden]), main a:not([aria-hidden]) {
+  position: relative;
+}
+
+main input, main textarea, main select {
+  background: rgba(255, 255, 255, 0.85);
+  border-color: rgba(41, 35, 31, 0.14);
+  transition: border-color 150ms ease-out, box-shadow 150ms ease-out, background-color 150ms ease-out;
+}
+main input:focus, main textarea:focus, main select:focus {
+  background: #ffffff;
+  border-color: rgba(233, 130, 85, 0.7);
+  box-shadow: 0 0 0 3px rgba(233, 130, 85, 0.15);
+  outline: none;
+}
 
 .zyba-page-heading { letter-spacing: -0.035em; }
-.zyba-soft-grid { background-image: linear-gradient(rgba(41, 35, 31, 0.035) 1px, transparent 1px), linear-gradient(90deg, rgba(41, 35, 31, 0.035) 1px, transparent 1px); background-size: 28px 28px; }
-.zyba-pill-control { border: 1px solid rgba(41, 35, 31, 0.1); background: rgba(255, 255, 255, 0.62); box-shadow: 0 8px 20px -16px rgba(41, 35, 31, 0.3); }
-.zyba-pill-control button:hover { background: rgba(233, 130, 85, 0.12); color: var(--zyba-brown-900); }
-@media (max-width: 767px) { main .rounded-3xl { border-radius: 1.25rem; } main .rounded-2xl { border-radius: 1rem; } }
+.zyba-soft-grid {
+  background-image: linear-gradient(rgba(41, 35, 31, 0.035) 1px, transparent 1px),
+                    linear-gradient(90deg, rgba(41, 35, 31, 0.035) 1px, transparent 1px);
+  background-size: 28px 28px;
+}
+.zyba-pill-control {
+  border: 1px solid rgba(41, 35, 31, 0.1);
+  background: rgba(255, 255, 255, 0.8);
+  box-shadow: 0 2px 8px -4px rgba(41, 35, 31, 0.15);
+}
+.zyba-pill-control button:hover {
+  background: rgba(233, 130, 85, 0.12);
+  color: var(--zyba-brown-900);
+}
+
+@media (max-width: 767px) {
+  main .rounded-3xl { border-radius: 1.25rem; }
+  main .rounded-2xl { border-radius: 1rem; }
+}
 
 ::-webkit-scrollbar { width: 7px; height: 7px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: rgba(41, 35, 31, 0.18); border-radius: 999px; }
 ::-webkit-scrollbar-thumb:hover { background: var(--zyba-orange-500); }
 
+/* Glass card dioptimasi untuk GPU kentang: opacity lebih tinggi + blur ringan (6px vs 18px sebelumnya) */
 .glass-card {
-  background: rgba(255, 255, 255, 0.72);
-  backdrop-filter: blur(18px);
+  background: rgba(255, 255, 255, 0.88);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
   border: 1px solid rgba(41, 35, 31, 0.08);
-  box-shadow: 0 10px 32px -16px rgba(41, 35, 31, 0.2);
+  box-shadow: 0 4px 16px -8px rgba(41, 35, 31, 0.12);
+  contain: paint;
 }
-.glass-card-hover { transition: transform 280ms cubic-bezier(0.16, 1, 0.3, 1), box-shadow 280ms ease, border-color 280ms ease, background-color 280ms ease; }
-.glass-card-hover:hover { transform: translateY(-4px); border-color: rgba(233, 130, 85, 0.3); background-color: rgba(255, 255, 255, 0.92); box-shadow: 0 20px 40px -18px rgba(41, 35, 31, 0.25); }
 
-@keyframes breathe { 0%, 100% { transform: scale(0.92); opacity: 0.8; } 50% { transform: scale(1.12); opacity: 1; } }
-.animate-breathe { animation: breathe 5s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
-@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; scroll-behavior: auto !important; } }
+.glass-card-hover {
+  transition: transform 180ms ease-out, box-shadow 180ms ease-out, border-color 180ms ease-out;
+}
+.glass-card-hover:hover {
+  transform: translateY(-2px);
+  border-color: rgba(233, 130, 85, 0.3);
+  box-shadow: 0 8px 24px -12px rgba(41, 35, 31, 0.2);
+}
 
+@keyframes breathe {
+  0%, 100% { transform: scale(0.95); opacity: 0.85; }
+  50% { transform: scale(1.08); opacity: 1; }
+}
+.animate-breathe {
+  animation: breathe 5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  will-change: transform, opacity;
+}
+
+/* Fallback otomatis jika device mengaktifkan mode hemat daya / reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  .glass-card {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    background: #ffffff !important;
+  }
+}

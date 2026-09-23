@@ -10,6 +10,9 @@ export interface DMMessage {
 export interface DMConversation {
   id: string;
   otherUserId: string;
+  otherUserName?: string;
+  otherUserUsername?: string;
+  otherUserAvatar?: string;
   lastMessage: string;
   lastMessageAt: string;
   unreadCount: number;

@@ -6,6 +6,7 @@ const PROTECTED_PATHS = [
   "/dashboard",
   "/wellness-journey",
   "/mood-check-in",
+  "/daily-assessment",
   "/activity",
   "/companion",
   "/community",

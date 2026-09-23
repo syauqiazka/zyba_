@@ -178,6 +178,20 @@ exports.Prisma.MoodEntryScalarFieldEnum = {
   createdAt: 'createdAt'
 };
 
+exports.Prisma.DailyAssessmentScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  date: 'date',
+  mood: 'mood',
+  stressLevel: 'stressLevel',
+  sleepRating: 'sleepRating',
+  energyTags: 'energyTags',
+  reflection: 'reflection',
+  flaggedForRisk: 'flaggedForRisk',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
 exports.Prisma.JournalEntryScalarFieldEnum = {
   id: 'id',
   userId: 'userId',
@@ -313,6 +327,7 @@ exports.Prisma.ModelName = {
   NotificationPref: 'NotificationPref',
   Assessment: 'Assessment',
   MoodEntry: 'MoodEntry',
+  DailyAssessment: 'DailyAssessment',
   JournalEntry: 'JournalEntry',
   ActivityLog: 'ActivityLog',
   Resource: 'Resource',

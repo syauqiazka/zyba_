@@ -34,14 +34,15 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  assessment       Assessment?
-  moodEntries      MoodEntry[]
-  journalEntries   JournalEntry[]
-  activities       ActivityLog[]
-  conversations    Conversation[]
-  posts            CommunityPost[]
-  comments         CommunityComment[]
-  notificationPref NotificationPref?
+  assessment         Assessment?
+  moodEntries        MoodEntry[]
+  dailyAssessments   DailyAssessment[]
+  journalEntries     JournalEntry[]
+  activities         ActivityLog[]
+  conversations      Conversation[]
+  posts              CommunityPost[]
+  comments           CommunityComment[]
+  notificationPref   NotificationPref?
 
   @@map("users")
 }
@@ -101,6 +102,8 @@ model Assessment {
 }
 
 // ---------- MOOD CHECK-IN ----------
+// Check-in cepat & ringan: mood + opsional stress/catatan.
+// Bisa dilakukan lebih dari sekali per hari (timestamp nyata dicatat).
 
 enum MoodLevel {
   DEPRESSED
@@ -111,16 +114,39 @@ enum MoodLevel {
 }
 
 model MoodEntry {
-  id        String    @id @default(cuid())
-  userId    String
-  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  mood      MoodLevel
-  stressLevel Int?    // 1-5, opsional dicatat bareng mood
-  note      String?
-  createdAt DateTime  @default(now())
+  id          String    @id @default(cuid())
+  userId      String
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  mood        MoodLevel
+  stressLevel Int?      // 1-5, opsional
+  note        String?   // catatan singkat opsional
+  createdAt   DateTime  @default(now())
 
   @@index([userId, createdAt])
   @@map("mood_entries")
+}
+
+// ---------- ASSESSMENT HARIAN ----------
+// Evaluasi kondisi user per hari — lebih lengkap dari Mood Check-In.
+// Satu record per user per hari (@@unique), bisa di-update (upsert).
+
+model DailyAssessment {
+  id            String    @id @default(cuid())
+  userId        String
+  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  date          String    // "YYYY-MM-DD" — key per hari
+  mood          MoodLevel
+  stressLevel   Int?      // 1-5
+  sleepRating   Int?      // 1-5
+  energyTags    String[]  // multi-select kondisi hari ini
+  reflection    String?   // free-text refleksi harian
+  flaggedForRisk Boolean  @default(false)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  @@unique([userId, date])
+  @@index([userId, createdAt])
+  @@map("daily_assessments")
 }
 
 // ---------- HEALTH / MENTAL JOURNAL ----------

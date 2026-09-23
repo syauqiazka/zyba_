@@ -2,15 +2,23 @@
 
 import React, { useState, useEffect } from "react";
 import { detectRisk } from "@/lib/crisisDetection";
-import MoodBanner from "./components/MoodBanner";
-import MoodSelectorForm, { MOODS, SLEEP_OPTIONS } from "./components/MoodSelectorForm";
+import QuickCheckInForm, { MOODS } from "./components/MoodSelectorForm";
 import CalendarWidget from "./components/CalendarWidget";
 import JournalHistory from "./components/JournalHistory";
+import MoodBanner from "./components/MoodBanner";
 import CrisisAlertModal from "./components/CrisisAlertModal";
 
 interface MoodDay {
   day: number;
   mood: string | null;
+}
+
+interface MoodEntryItem {
+  id: string;
+  mood: string;
+  stressLevel?: number | null;
+  note?: string | null;
+  createdAt: string;
 }
 
 interface JournalEntry {
@@ -23,25 +31,27 @@ interface JournalEntry {
 }
 
 export default function MoodCheckInPage() {
+  // --- Form state (simplified: mood + optional stress + optional note) ---
   const [selectedMood, setSelectedMood] = useState<typeof MOODS[number]>(MOODS[3]); // Happy default
   const [stressRating, setStressRating] = useState<number>(2);
-  const [sleepRating, setSleepRating] = useState<number | null>(null);
-  const [selectedTags, setSelectedTags] = useState<string[]>([]);
-  const [journalTitle, setJournalTitle] = useState("");
-  const [journalContent, setJournalContent] = useState("");
-  const [journalList, setJournalList] = useState<JournalEntry[]>([]); // Load dari API, mulai kosong
+  const [note, setNote] = useState("");
+
+  // --- UI state ---
   const [savedSuccess, setSavedSuccess] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
   const [crisisAlert, setCrisisAlert] = useState(false);
+
+  // --- Data state ---
   const [userStreak, setUserStreak] = useState(1);
   const [moodCalendarData, setMoodCalendarData] = useState<MoodDay[]>([]);
+  const [recentEntries, setRecentEntries] = useState<JournalEntry[]>([]);
 
   useEffect(() => {
     async function loadData() {
       try {
-        const [userRes, moodRes, journalRes] = await Promise.all([
+        const [userRes, moodRes] = await Promise.all([
           fetch("/api/user/me"),
           fetch("/api/mood"),
-          fetch("/api/journal"),
         ]);
 
         if (userRes.ok) {
@@ -55,9 +65,9 @@ export default function MoodCheckInPage() {
           const thisYear = now.getFullYear();
           const thisMonth = now.getMonth();
 
-          // Map API entries to { day, mood } for current month only
+          // Build calendar data for current month
           const calendarDays: MoodDay[] = (data.entries ?? []).flatMap(
-            (entry: { createdAt: string; mood: string }) => {
+            (entry: MoodEntryItem) => {
               const d = new Date(entry.createdAt);
               if (d.getFullYear() === thisYear && d.getMonth() === thisMonth) {
                 return [{ day: d.getDate(), mood: entry.mood }];
@@ -66,185 +76,130 @@ export default function MoodCheckInPage() {
             }
           );
 
-          // Deduplicate — keep latest entry per day (entries are desc-ordered)
+          // Deduplicate — keep latest per day
           const seen = new Set<number>();
           const unique = calendarDays.filter(({ day }) => {
             if (seen.has(day)) return false;
             seen.add(day);
             return true;
           });
-
           setMoodCalendarData(unique);
-        }
 
-        if (journalRes.ok) {
-          const data = await journalRes.json();
-          if (data.entries && data.entries.length > 0) {
-            // Map API journal entries to local JournalEntry format
-            const apiEntries: JournalEntry[] = data.entries.map(
-              (e: { id: string; title: string; content: string; mood: string; createdAt: string }) => ({
-                id: e.id,
-                title: e.title || "Catatan",
-                content: e.content,
-                mood: e.mood || "NEUTRAL",
-                date: new Date(e.createdAt).toLocaleDateString("id-ID", {
-                  day: "numeric",
-                  month: "short",
-                  year: "numeric",
-                }),
-              })
-            );
-            setJournalList(apiEntries);
-          }
+          // Build recent entries for history panel (last 5 with notes)
+          const withNotes: JournalEntry[] = (data.entries ?? [])
+            .filter((e: MoodEntryItem) => e.note)
+            .slice(0, 5)
+            .map((e: MoodEntryItem) => ({
+              id: e.id,
+              title: `Mood Check-In`,
+              content: e.note || "",
+              mood: e.mood,
+              date: new Date(e.createdAt).toLocaleDateString("id-ID", {
+                day: "numeric",
+                month: "short",
+                year: "numeric",
+              }),
+            }));
+          setRecentEntries(withNotes);
         }
-      } catch (err) {
-        // Fallback silently — journal list stays empty
+      } catch {
+        // Silently fail — UI degrades gracefully
       }
     }
     loadData();
   }, []);
 
-  const toggleTag = (tag: string) => {
-    if (selectedTags.includes(tag)) {
-      setSelectedTags(selectedTags.filter((t) => t !== tag));
-    } else {
-      setSelectedTags([...selectedTags, tag]);
-    }
-  };
+  const handleSaveCheckIn = async () => {
+    // Client-side crisis detection before sending
+    const isRisk = note ? detectRisk(note) : false;
+    if (isRisk) setCrisisAlert(true);
 
-  const handleSaveCheckIn = () => {
-    const isRisk = journalContent ? detectRisk(journalContent) : false;
-    if (isRisk) {
-      setCrisisAlert(true);
-    }
-
-    // Format metadata info from sleep and energy tags
-    const metaParts: string[] = [];
-    if (sleepRating !== null) {
-      const sleepOpt = SLEEP_OPTIONS.find((o) => o.rating === sleepRating);
-      metaParts.push(`Tidur: ${sleepOpt?.label || sleepRating + "/5"}${sleepOpt ? ` (${sleepOpt.desc})` : ""}`);
-    }
-    if (selectedTags.length > 0) {
-      metaParts.push(`Kondisi: ${selectedTags.join(", ")}`);
-    }
-
-    const metaSummary = metaParts.length > 0 ? `[${metaParts.join(" • ")}]` : "";
-    const noteForMood = metaSummary
-      ? (journalContent ? `${metaSummary}\n\n${journalContent}` : metaSummary)
-      : journalContent;
-
-    // 1. Simpan ke /api/mood
-    fetch("/api/mood", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        mood: selectedMood.value,
-        stressLevel: stressRating,
-        note: noteForMood || undefined,
-      }),
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.risk) setCrisisAlert(true);
-      })
-      .catch((err) => console.warn("Mood API sync error:", err));
-
-    // 2. Simpan ke /api/journal jika ada catatan atau judul atau tag
-    if (journalTitle.trim() || journalContent.trim() || metaParts.length > 0) {
-      const titleToSave = journalTitle.trim() || `Mood Check-In (${selectedMood.label})`;
-      const contentToSave = journalContent.trim()
-        ? (metaSummary ? `${metaSummary}\n\n${journalContent.trim()}` : journalContent.trim())
-        : metaSummary || "Check-in harian.";
-
-      const newEntry: JournalEntry = {
-        id: `j-${Date.now()}`,
-        title: titleToSave,
-        content: contentToSave,
-        mood: selectedMood.value,
-        date: "Hari Ini",
-        flaggedForRisk: isRisk,
-      };
-
-      setJournalList([newEntry, ...journalList]);
-
-      fetch("/api/journal", {
+    setIsSaving(true);
+    try {
+      const res = await fetch("/api/mood", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          title: newEntry.title,
-          content: newEntry.content,
-          mood: newEntry.mood,
+          mood: selectedMood.value,
+          stressLevel: stressRating,
+          note: note.trim() || undefined,
         }),
-      })
-        .then((res) => res.json())
-        .then((data) => {
-          if (data.isRisk) setCrisisAlert(true);
-        })
-        .catch((err) => console.warn("Journal API sync warning:", err));
+      });
+      const data = await res.json();
+      if (data.risk) setCrisisAlert(true);
+
+      // Update calendar optimistically
+      const todayNum = new Date().getDate();
+      setMoodCalendarData((prev) => {
+        const filtered = prev.filter((d) => d.day !== todayNum);
+        return [{ day: todayNum, mood: selectedMood.value }, ...filtered];
+      });
+
+      // Add to recent entries if there's a note
+      if (note.trim()) {
+        const newEntry: JournalEntry = {
+          id: `j-${Date.now()}`,
+          title: "Mood Check-In",
+          content: note.trim(),
+          mood: selectedMood.value,
+          date: "Baru saja",
+          flaggedForRisk: isRisk,
+        };
+        setRecentEntries((prev) => [newEntry, ...prev].slice(0, 5));
+      }
+
+      // Reset form
+      setNote("");
+      setSavedSuccess(true);
+      setTimeout(() => setSavedSuccess(false), 3500);
+    } catch (err) {
+      console.warn("Mood check-in error:", err);
+    } finally {
+      setIsSaving(false);
     }
-
-    // 3. Update Kalender secara langsung untuk hari ini
-    const todayNum = new Date().getDate();
-    setMoodCalendarData((prev) => {
-      const filtered = prev.filter((d) => d.day !== todayNum);
-      return [{ day: todayNum, mood: selectedMood.value }, ...filtered];
-    });
-
-    // 4. Update cache local storage
-    try {
-      const cached = localStorage.getItem("zyba_user_cache");
-      const parsed = cached ? JSON.parse(cached) : {};
-      const newStreak = userStreak;
-      localStorage.setItem(
-        "zyba_user_cache",
-        JSON.stringify({
-          ...parsed,
-          stats: {
-            ...parsed.stats,
-            stressLevel: stressRating,
-            streak: newStreak,
-          },
-        })
-      );
-    } catch {}
-
-    setJournalTitle("");
-    setJournalContent("");
-    setSavedSuccess(true);
-    setTimeout(() => setSavedSuccess(false), 3000);
   };
 
   return (
     <div className="flex flex-col gap-8 pb-12">
+      {/* Banner */}
       <MoodBanner selectedMood={selectedMood} streak={userStreak} />
 
-      {/* Main Grid: Mood Selector & Stress Rating Form */}
+      {/* Main Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-        {/* Left Form: Mood, Stress, Sleep, Energy Tags, & Journal Input */}
-        <MoodSelectorForm
-          selectedMood={selectedMood}
-          setSelectedMood={setSelectedMood}
-          stressRating={stressRating}
-          setStressRating={setStressRating}
-          sleepRating={sleepRating}
-          setSleepRating={setSleepRating}
-          selectedTags={selectedTags}
-          onToggleTag={toggleTag}
-          journalTitle={journalTitle}
-          setJournalTitle={setJournalTitle}
-          journalContent={journalContent}
-          setJournalContent={setJournalContent}
-          savedSuccess={savedSuccess}
-          onSave={handleSaveCheckIn}
-        />
+        {/* Left: Quick Check-In Form */}
+        <div className="lg:col-span-7">
+          <QuickCheckInForm
+            selectedMood={selectedMood}
+            setSelectedMood={setSelectedMood}
+            stressRating={stressRating}
+            setStressRating={setStressRating}
+            note={note}
+            setNote={setNote}
+            onSave={handleSaveCheckIn}
+            savedSuccess={savedSuccess}
+            isSaving={isSaving}
+          />
 
-        {/* Right Panel: Calendar & Journal History */}
+          {/* Info card: lebih lengkap? */}
+          <div className="mt-4 flex items-start gap-3 p-4 rounded-2xl bg-orange-50 border border-orange-500/20 text-xs text-brown-700">
+            <span className="text-base shrink-0">📋</span>
+            <p>
+              Mau evaluasi yang lebih lengkap (tidur, energi, refleksi)?{" "}
+              <a href="/daily-assessment" className="font-bold text-orange-500 hover:underline">
+                Coba Assessment Harian →
+              </a>
+            </p>
+          </div>
+        </div>
+
+        {/* Right: Calendar & Recent Entries */}
         <div className="lg:col-span-5 flex flex-col gap-6">
           <CalendarWidget moodEntries={moodCalendarData} />
-          <JournalHistory journalList={journalList} />
+          <JournalHistory journalList={recentEntries} />
         </div>
       </div>
 
+      {/* Crisis Modal */}
       <CrisisAlertModal isOpen={crisisAlert} onClose={() => setCrisisAlert(false)} />
     </div>
   );

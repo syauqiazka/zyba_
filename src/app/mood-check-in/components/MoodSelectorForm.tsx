@@ -10,102 +10,73 @@ export const MOODS = [
   { value: "OVERJOYED", label: "Overjoyed", emoji: "😄", bg: "#8FAE5D", text: "text-white" },
 ] as const;
 
-export const SLEEP_OPTIONS = [
-  { rating: 1, label: "< 4 jam", desc: "Insomnia / Buruk", icon: "😴" },
-  { rating: 2, label: "4-5 jam", desc: "Kurang Nyenyak", icon: "🥱" },
-  { rating: 3, label: "6-7 jam", desc: "Cukup Nyenyak", icon: "🛌" },
-  { rating: 4, label: "7-8 jam", desc: "Tidur Pulas", icon: "🌙" },
-  { rating: 5, label: "> 8 jam", desc: "Sangat Segar", icon: "🌟" },
-];
-
-export const ENERGY_TAGS = [
-  "⚡ Berenergi",
-  "🧘 Tenang & Fokus",
-  "☕ Butuh Kafein",
-  "💤 Mengantuk",
-  "🤯 Overthinking",
-  "🏃 Termotivasi",
-  "🥑 Sehat & Bugar",
-  "🛋️ Butuh Me-Time",
-];
-
-interface MoodSelectorFormProps {
+interface QuickCheckInFormProps {
   selectedMood: typeof MOODS[number];
   setSelectedMood: (mood: typeof MOODS[number]) => void;
   stressRating: number;
   setStressRating: (rating: number) => void;
-  sleepRating: number | null;
-  setSleepRating: (rating: number | null) => void;
-  selectedTags: string[];
-  onToggleTag: (tag: string) => void;
-  journalTitle: string;
-  setJournalTitle: (title: string) => void;
-  journalContent: string;
-  setJournalContent: (content: string) => void;
-  savedSuccess: boolean;
+  note: string;
+  setNote: (note: string) => void;
   onSave: () => void;
+  savedSuccess: boolean;
+  isSaving: boolean;
 }
 
-export default function MoodSelectorForm({
+export default function QuickCheckInForm({
   selectedMood,
   setSelectedMood,
   stressRating,
   setStressRating,
-  sleepRating,
-  setSleepRating,
-  selectedTags,
-  onToggleTag,
-  journalTitle,
-  setJournalTitle,
-  journalContent,
-  setJournalContent,
-  savedSuccess,
+  note,
+  setNote,
   onSave,
-}: MoodSelectorFormProps) {
+  savedSuccess,
+  isSaving,
+}: QuickCheckInFormProps) {
   return (
-    <div className="lg:col-span-7 glass-card rounded-3xl p-7 border border-brown-900/10 flex flex-col gap-6">
+    <div className="glass-card rounded-3xl p-7 border border-brown-900/10 bg-white flex flex-col gap-6">
       {/* 1. Mood Picker */}
       <div>
         <h2 className="font-display text-lg font-bold text-brown-900 mb-1">
-          1. Pilih Suasana Hati Saat Ini
+          Bagaimana perasaanmu sekarang?
         </h2>
-        <p className="text-xs text-brown-700">
-          Pilih 1 dari 5 skala emosi di bawah ini.
+        <p className="text-xs text-brown-700 mb-4">
+          Pilih 1 dari 5 skala emosi. Mood check-in bisa kamu lakukan kapan saja.
         </p>
-      </div>
-
-      <div className="grid grid-cols-5 gap-3">
-        {MOODS.map((m) => {
-          const isSelected = selectedMood.value === m.value;
-          return (
-            <button
-              key={m.value}
-              type="button"
-              onClick={() => setSelectedMood(m)}
-              style={{ backgroundColor: isSelected ? m.bg : undefined }}
-              className={`rounded-2xl py-4 flex flex-col items-center gap-2 border-2 transition-all cursor-pointer ${
-                isSelected
-                  ? `${m.text} border-brown-900 shadow-md scale-105 font-bold`
-                  : "bg-cream/70 border-transparent text-brown-900 hover:border-brown-900/20"
-              }`}
-            >
-              <span className="text-3xl">{m.emoji}</span>
-              <span className="text-[11px] font-semibold">{m.label}</span>
-            </button>
-          );
-        })}
+        <div className="grid grid-cols-5 gap-3">
+          {MOODS.map((m) => {
+            const isSelected = selectedMood.value === m.value;
+            return (
+              <button
+                key={m.value}
+                type="button"
+                onClick={() => setSelectedMood(m)}
+                style={{ backgroundColor: isSelected ? m.bg : undefined }}
+                className={`rounded-2xl py-5 flex flex-col items-center gap-2.5 border-2 transition-all cursor-pointer ${
+                  isSelected
+                    ? `${m.text} border-brown-900 shadow-lg scale-105 font-bold`
+                    : "bg-cream/70 border-transparent text-brown-900 hover:border-brown-900/20 hover:shadow-sm"
+                }`}
+              >
+                <span className="text-3xl">{m.emoji}</span>
+                <span className="text-[11px] font-semibold">{m.label}</span>
+              </button>
+            );
+          })}
+        </div>
       </div>
 
       <hr className="border-brown-900/10" />
 
-      {/* 2. Tingkat Stres */}
+      {/* 2. Tingkat Stres (opsional) */}
       <div>
-        <div className="flex items-center justify-between mb-2">
-          <h2 className="font-display text-lg font-bold text-brown-900">
-            2. Tingkat Stres (1 - 5)
+        <div className="flex items-center justify-between mb-3">
+          <h2 className="font-display text-base font-bold text-brown-900">
+            Tingkat Stres{" "}
+            <span className="text-xs font-normal text-brown-700">(Opsional)</span>
           </h2>
           <span className="text-xs font-extrabold px-3 py-1 rounded-full bg-orange-100 text-orange-500">
-            Level {stressRating}: {["Sangat Rendah", "Rendah", "Sedang", "Tinggi", "Sangat Tinggi"][stressRating - 1]}
+            Level {stressRating}
           </span>
         </div>
         <input
@@ -115,7 +86,7 @@ export default function MoodSelectorForm({
           step="1"
           value={stressRating}
           onChange={(e) => setStressRating(Number(e.target.value))}
-          className="w-full accent-orange-500 cursor-pointer h-2 bg-cream rounded-lg"
+          className="w-full accent-orange-500 cursor-pointer h-2 rounded-lg"
         />
         <div className="flex justify-between text-[10px] text-brown-700 font-bold mt-1">
           <span>1 - Tenang</span>
@@ -126,122 +97,40 @@ export default function MoodSelectorForm({
 
       <hr className="border-brown-900/10" />
 
-      {/* 3. Kualitas Tidur Semalam (Opsional) */}
+      {/* 3. Catatan singkat (opsional) */}
       <div>
-        <div className="flex items-center justify-between mb-1">
-          <h2 className="font-display text-lg font-bold text-brown-900">
-            3. Kualitas Tidur Semalam (Opsional)
-          </h2>
-          {sleepRating !== null && (
-            <button
-              type="button"
-              onClick={() => setSleepRating(null)}
-              className="text-[11px] text-brown-700 hover:text-orange-500 underline cursor-pointer"
-            >
-              Hapus Pilihan
-            </button>
-          )}
-        </div>
-        <p className="text-xs text-brown-700 mb-3">
-          Berapa jam kamu tidur dan bagaimana rasanya saat bangun?
-        </p>
-
-        <div className="grid grid-cols-1 sm:grid-cols-5 gap-2.5">
-          {SLEEP_OPTIONS.map((opt) => {
-            const isSelected = sleepRating === opt.rating;
-            return (
-              <button
-                key={opt.rating}
-                type="button"
-                onClick={() => setSleepRating(isSelected ? null : opt.rating)}
-                className={`p-3 rounded-2xl border-2 text-left flex sm:flex-col items-center sm:items-start justify-between sm:justify-start gap-1.5 transition-all cursor-pointer ${
-                  isSelected
-                    ? "border-green-500 bg-green-100/70 shadow-xs scale-102"
-                    : "border-brown-900/10 bg-cream/40 hover:bg-white"
-                }`}
-              >
-                <span className="text-2xl">{opt.icon}</span>
-                <div>
-                  <div className="text-xs font-bold text-brown-900">{opt.label}</div>
-                  <div className="text-[10px] text-brown-700">{opt.desc}</div>
-                </div>
-              </button>
-            );
-          })}
-        </div>
-      </div>
-
-      <hr className="border-brown-900/10" />
-
-      {/* 4. Energi & Kondisi Pikiran (Opsional) */}
-      <div>
-        <h2 className="font-display text-lg font-bold text-brown-900 mb-1">
-          4. Energi & Kondisi Pikiran (Opsional)
-        </h2>
-        <p className="text-xs text-brown-700 mb-3">
-          Pilih satu atau lebih kondisi yang menggambarkan energimu hari ini.
-        </p>
-
-        <div className="flex flex-wrap gap-2">
-          {ENERGY_TAGS.map((tag) => {
-            const isSelected = selectedTags.includes(tag);
-            return (
-              <button
-                key={tag}
-                type="button"
-                onClick={() => onToggleTag(tag)}
-                className={`px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all cursor-pointer ${
-                  isSelected
-                    ? "bg-brown-900 text-white shadow-xs scale-105"
-                    : "bg-cream/60 border border-brown-900/10 text-brown-700 hover:bg-white"
-                }`}
-              >
-                {tag}
-              </button>
-            );
-          })}
-        </div>
-      </div>
-
-      <hr className="border-brown-900/10" />
-
-      {/* 5. Health Journal Section */}
-      <div className="flex flex-col gap-3">
-        <h2 className="font-display text-lg font-bold text-brown-900">
-          5. Tambah Catatan Health Journal (Opsional)
+        <h2 className="font-display text-base font-bold text-brown-900 mb-1">
+          Catatan Singkat{" "}
+          <span className="text-xs font-normal text-brown-700">(Opsional)</span>
         </h2>
         <input
           type="text"
-          value={journalTitle}
-          onChange={(e) => setJournalTitle(e.target.value)}
-          placeholder="Judul entri (misal: Selesai Ujian, Istirahat Siang...)"
-          className="w-full rounded-2xl border border-brown-900/10 px-4 py-3 text-xs focus:outline-none focus:ring-2 focus:ring-green-500 text-brown-900 bg-cream/30"
+          value={note}
+          onChange={(e) => setNote(e.target.value)}
+          maxLength={280}
+          placeholder="Ada yang ingin kamu catat? (maks. 280 karakter)"
+          className="w-full rounded-2xl border border-brown-900/10 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 text-brown-900 bg-cream/30"
         />
-        <textarea
-          value={journalContent}
-          onChange={(e) => setJournalContent(e.target.value)}
-          placeholder="Ceritakan peristiwa atau perasaanmu hari ini..."
-          rows={4}
-          className="w-full rounded-2xl border border-brown-900/10 p-4 text-xs focus:outline-none focus:ring-2 focus:ring-green-500 text-brown-900 bg-cream/30"
-        />
+        <p className="text-[10px] text-brown-700/60 text-right mt-1">{note.length}/280</p>
+      </div>
 
-        <div className="flex items-center justify-between pt-2">
-          {savedSuccess ? (
-            <span className="text-xs font-bold text-green-500 flex items-center gap-1">
-              ✓ Check-in mood & jurnal berhasil disimpan!
-            </span>
-          ) : (
-            <span className="text-xs text-brown-700">Data tersimpan di akun ZYBA.</span>
-          )}
-
-          <button
-            type="button"
-            onClick={onSave}
-            className="bg-brown-900 hover:bg-orange-500 text-white font-bold text-xs px-6 py-3 rounded-full transition-colors shadow-md cursor-pointer"
-          >
-            Simpan Mood Check-In →
-          </button>
-        </div>
+      {/* Submit */}
+      <div className="flex items-center justify-between pt-1">
+        {savedSuccess ? (
+          <span className="text-sm font-bold text-green-500 flex items-center gap-1.5">
+            <span>✓</span> Mood berhasil dicatat!
+          </span>
+        ) : (
+          <span className="text-xs text-brown-700">Setiap check-in tersimpan dengan timestamp nyata.</span>
+        )}
+        <button
+          type="button"
+          onClick={onSave}
+          disabled={isSaving}
+          className="bg-brown-900 hover:bg-orange-500 text-white font-bold text-sm px-7 py-3 rounded-full transition-colors shadow-md cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          {isSaving ? "Menyimpan..." : "Check-in →"}
+        </button>
       </div>
     </div>
   );

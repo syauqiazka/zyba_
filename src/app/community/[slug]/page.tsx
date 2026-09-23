@@ -52,8 +52,10 @@ export default function CommunitySlugPage() {
 
   if (currentView === "MESSAGES") {
     return (
-      <div className="flex-1 min-w-0 h-full overflow-y-auto">
-        <CommunityMessagesView />
+      <div className="flex-1 min-w-0 h-full overflow-hidden flex flex-col p-2 md:p-3">
+        <React.Suspense fallback={<div className="p-8 text-center text-xs text-brown-700/60">Memuat pesan...</div>}>
+          <CommunityMessagesView />
+        </React.Suspense>
       </div>
     );
   }

@@ -37,147 +37,11 @@ export interface CommunityMessage {
   unreadCount?: number;
 }
 
-export const INITIAL_COMMUNITY_POSTS: Post[] = [
-  {
-    id: "post-1",
-    author: "Sarah Jenkins",
-    avatar: "SJ",
-    isVerified: true,
-    time: "2 jam lalu",
-    tag: "Mindfulness",
-    content:
-      "Baru saja menyelesaikan 7 hari streak breathing exercise di Zyba! Rasanya beban pikiran jauh lebih ringan menghadapi pekan ujian. Tetap semangat semuanya! #zybarocks #mindfulness",
-    likes: 34,
-    commentsCount: 2,
-    repostsCount: 5,
-    userLiked: false,
-    userReposted: false,
-    comments: [
-      {
-        id: "c-1",
-        author: "Pengguna ZYBA",
-        avatar: "AL",
-        time: "1 jam lalu",
-        content: "Keren banget Sarah! Konsistensi breathing 4-4-4 emang ngebantu banget.",
-      },
-      {
-        id: "c-2",
-        author: "Dimas Anggara",
-        avatar: "DA",
-        time: "45 mnt lalu",
-        content: "Selamat streak 7 harinya! Semangat ujiannya ya.",
-      },
-    ],
-  },
-  {
-    id: "post-2",
-    author: "Dimas Anggara",
-    avatar: "DA",
-    isVerified: false,
-    time: "5 jam lalu",
-    tag: "SleepRoutine",
-    content:
-      "Dulu sering begadang sampai subuh karena overthinking. Setelah ikuti rekomendasi sleep hygiene di ZYBA, akhirnya bisa tidur teratur jam 11 malam. Small wins count! #gratefulness #zybacare",
-    likes: 58,
-    commentsCount: 1,
-    repostsCount: 3,
-    userLiked: true,
-    userReposted: false,
-    comments: [
-      {
-        id: "c-3",
-        author: "Nadia Putri",
-        avatar: "NP",
-        time: "3 jam lalu",
-        content: "Bener banget, mematikan layar 30 menit sebelum tidur pengaruhnya besar!",
-      },
-    ],
-  },
-  {
-    id: "post-3",
-    author: "Rizky Pratama",
-    avatar: "RP",
-    isVerified: true,
-    time: "Kemarin",
-    tag: "Sharing",
-    content:
-      "Belajar untuk tidak terlalu keras pada diri sendiri hari ini. Setiap proses butuh waktu, dan istirahat bukan berarti menyerah. Hope you all have a peaceful day! #selfcare #zybarocks",
-    likes: 82,
-    commentsCount: 0,
-    repostsCount: 12,
-    userLiked: false,
-    userReposted: false,
-  },
-  {
-    id: "post-4",
-    author: "Anonim #241",
-    avatar: "?",
-    isVerified: false,
-    time: "3 jam lalu",
-    tag: "CurhatAnonim",
-    content:
-      "Kadang rasanya capek berpura-pura baik-baik saja di depan teman-teman kampus. Tapi bersyukur ada ruang aman seperti ini untuk meluapkan isi hati tanpa takut dihakimi.",
-    likes: 45,
-    commentsCount: 3,
-    repostsCount: 2,
-    userLiked: false,
-    userReposted: false,
-  },
-];
+export const INITIAL_COMMUNITY_POSTS: Post[] = [];
 
-const INITIAL_NOTIFICATIONS: CommunityNotification[] = [
-  {
-    id: "notif-1",
-    user: "Sarah Jenkins",
-    avatar: "SJ",
-    action: "like",
-    time: "15 mnt lalu",
-    targetText: "Latihan pernapasan 4-4-4 emang ngebantu banget.",
-    read: false,
-  },
-  {
-    id: "notif-2",
-    user: "Dimas Anggara",
-    avatar: "DA",
-    action: "reply",
-    time: "1 jam lalu",
-    targetText: "Membalas: 'Setuju banget, kualitas tidur bikin fokus seharian!'",
-    read: false,
-  },
-  {
-    id: "notif-3",
-    user: "Nadia Putri",
-    avatar: "NP",
-    action: "follow",
-    time: "3 jam lalu",
-    read: true,
-  },
-];
+const INITIAL_NOTIFICATIONS: CommunityNotification[] = [];
 
-const INITIAL_MESSAGES: CommunityMessage[] = [
-  {
-    id: "msg-1",
-    user: "Sarah Jenkins",
-    avatar: "SJ",
-    lastMessage: "Halo Alex, terima kasih tips latihannya ya!",
-    time: "10:30",
-    unreadCount: 1,
-  },
-  {
-    id: "msg-2",
-    user: "Dimas Anggara",
-    avatar: "DA",
-    lastMessage: "Nanti malam kita coba jam tidur teratur bareng yuk.",
-    time: "Kemarin",
-  },
-  {
-    id: "msg-3",
-    user: "Zyba Mentor Care",
-    avatar: "Z",
-    lastMessage: "Halo! Jika butuh pendampingan khusus seputar ujian, kami siap.",
-    time: "18 Sep",
-  },
-];
+const INITIAL_MESSAGES: CommunityMessage[] = [];
 
 // URL slug → CommunityView mapping
 const SLUG_TO_VIEW: Record<string, CommunityView> = {
@@ -262,7 +126,7 @@ export function CommunityProvider({ children }: { children: React.ReactNode }) {
   const [activeTab, setActiveTab] = useState<"FOR_YOU" | "FOLLOWING">("FOR_YOU");
   const [posts, setPosts] = useState<Post[]>(INITIAL_COMMUNITY_POSTS);
   const [followingPosts, setFollowingPosts] = useState<Post[]>([]);
-  const [savedPostIds, setSavedPostIds] = useState<string[]>(["post-1"]);
+  const [savedPostIds, setSavedPostIds] = useState<string[]>([]);
   const [notifications, setNotifications] = useState<CommunityNotification[]>(INITIAL_NOTIFICATIONS);
   const [messages, setMessages] = useState<CommunityMessage[]>(INITIAL_MESSAGES);
   const [showCrisisNotice, setShowCrisisNotice] = useState(false);

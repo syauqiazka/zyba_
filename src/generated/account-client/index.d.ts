@@ -34,6 +34,11 @@ export type Assessment = $Result.DefaultSelection<Prisma.$AssessmentPayload>
  */
 export type MoodEntry = $Result.DefaultSelection<Prisma.$MoodEntryPayload>
 /**
+ * Model DailyAssessment
+ * 
+ */
+export type DailyAssessment = $Result.DefaultSelection<Prisma.$DailyAssessmentPayload>
+/**
  * Model JournalEntry
  * 
  */
@@ -323,6 +328,16 @@ export class PrismaClient<
     * ```
     */
   get moodEntry(): Prisma.MoodEntryDelegate<ExtArgs>;
+
+  /**
+   * `prisma.dailyAssessment`: Exposes CRUD operations for the **DailyAssessment** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more DailyAssessments
+    * const dailyAssessments = await prisma.dailyAssessment.findMany()
+    * ```
+    */
+  get dailyAssessment(): Prisma.DailyAssessmentDelegate<ExtArgs>;
 
   /**
    * `prisma.journalEntry`: Exposes CRUD operations for the **JournalEntry** model.
@@ -818,6 +833,7 @@ export namespace Prisma {
     NotificationPref: 'NotificationPref',
     Assessment: 'Assessment',
     MoodEntry: 'MoodEntry',
+    DailyAssessment: 'DailyAssessment',
     JournalEntry: 'JournalEntry',
     ActivityLog: 'ActivityLog',
     Resource: 'Resource',
@@ -838,7 +854,7 @@ export namespace Prisma {
 
   export type TypeMap<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, ClientOptions = {}> = {
     meta: {
-      modelProps: "user" | "notificationPref" | "assessment" | "moodEntry" | "journalEntry" | "activityLog" | "resource" | "subscription" | "payment"
+      modelProps: "user" | "notificationPref" | "assessment" | "moodEntry" | "dailyAssessment" | "journalEntry" | "activityLog" | "resource" | "subscription" | "payment"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -1119,6 +1135,76 @@ export namespace Prisma {
           count: {
             args: Prisma.MoodEntryCountArgs<ExtArgs>
             result: $Utils.Optional<MoodEntryCountAggregateOutputType> | number
+          }
+        }
+      }
+      DailyAssessment: {
+        payload: Prisma.$DailyAssessmentPayload<ExtArgs>
+        fields: Prisma.DailyAssessmentFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.DailyAssessmentFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DailyAssessmentPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.DailyAssessmentFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DailyAssessmentPayload>
+          }
+          findFirst: {
+            args: Prisma.DailyAssessmentFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DailyAssessmentPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.DailyAssessmentFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DailyAssessmentPayload>
+          }
+          findMany: {
+            args: Prisma.DailyAssessmentFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DailyAssessmentPayload>[]
+          }
+          create: {
+            args: Prisma.DailyAssessmentCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DailyAssessmentPayload>
+          }
+          createMany: {
+            args: Prisma.DailyAssessmentCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.DailyAssessmentCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DailyAssessmentPayload>[]
+          }
+          delete: {
+            args: Prisma.DailyAssessmentDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DailyAssessmentPayload>
+          }
+          update: {
+            args: Prisma.DailyAssessmentUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DailyAssessmentPayload>
+          }
+          deleteMany: {
+            args: Prisma.DailyAssessmentDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.DailyAssessmentUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.DailyAssessmentUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DailyAssessmentPayload>
+          }
+          aggregate: {
+            args: Prisma.DailyAssessmentAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateDailyAssessment>
+          }
+          groupBy: {
+            args: Prisma.DailyAssessmentGroupByArgs<ExtArgs>
+            result: $Utils.Optional<DailyAssessmentGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.DailyAssessmentCountArgs<ExtArgs>
+            result: $Utils.Optional<DailyAssessmentCountAggregateOutputType> | number
           }
         }
       }
@@ -1634,6 +1720,7 @@ export namespace Prisma {
 
   export type UserCountOutputType = {
     moodEntries: number
+    dailyAssessments: number
     journalEntries: number
     activities: number
     subscriptions: number
@@ -1641,6 +1728,7 @@ export namespace Prisma {
 
   export type UserCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     moodEntries?: boolean | UserCountOutputTypeCountMoodEntriesArgs
+    dailyAssessments?: boolean | UserCountOutputTypeCountDailyAssessmentsArgs
     journalEntries?: boolean | UserCountOutputTypeCountJournalEntriesArgs
     activities?: boolean | UserCountOutputTypeCountActivitiesArgs
     subscriptions?: boolean | UserCountOutputTypeCountSubscriptionsArgs
@@ -1662,6 +1750,13 @@ export namespace Prisma {
    */
   export type UserCountOutputTypeCountMoodEntriesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: MoodEntryWhereInput
+  }
+
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountDailyAssessmentsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: DailyAssessmentWhereInput
   }
 
   /**
@@ -2025,6 +2120,7 @@ export namespace Prisma {
     updatedAt?: boolean
     assessment?: boolean | User$assessmentArgs<ExtArgs>
     moodEntries?: boolean | User$moodEntriesArgs<ExtArgs>
+    dailyAssessments?: boolean | User$dailyAssessmentsArgs<ExtArgs>
     journalEntries?: boolean | User$journalEntriesArgs<ExtArgs>
     activities?: boolean | User$activitiesArgs<ExtArgs>
     notificationPref?: boolean | User$notificationPrefArgs<ExtArgs>
@@ -2075,6 +2171,7 @@ export namespace Prisma {
   export type UserInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     assessment?: boolean | User$assessmentArgs<ExtArgs>
     moodEntries?: boolean | User$moodEntriesArgs<ExtArgs>
+    dailyAssessments?: boolean | User$dailyAssessmentsArgs<ExtArgs>
     journalEntries?: boolean | User$journalEntriesArgs<ExtArgs>
     activities?: boolean | User$activitiesArgs<ExtArgs>
     notificationPref?: boolean | User$notificationPrefArgs<ExtArgs>
@@ -2088,6 +2185,7 @@ export namespace Prisma {
     objects: {
       assessment: Prisma.$AssessmentPayload<ExtArgs> | null
       moodEntries: Prisma.$MoodEntryPayload<ExtArgs>[]
+      dailyAssessments: Prisma.$DailyAssessmentPayload<ExtArgs>[]
       journalEntries: Prisma.$JournalEntryPayload<ExtArgs>[]
       activities: Prisma.$ActivityLogPayload<ExtArgs>[]
       notificationPref: Prisma.$NotificationPrefPayload<ExtArgs> | null
@@ -2477,6 +2575,7 @@ export namespace Prisma {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     assessment<T extends User$assessmentArgs<ExtArgs> = {}>(args?: Subset<T, User$assessmentArgs<ExtArgs>>): Prisma__AssessmentClient<$Result.GetResult<Prisma.$AssessmentPayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
     moodEntries<T extends User$moodEntriesArgs<ExtArgs> = {}>(args?: Subset<T, User$moodEntriesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$MoodEntryPayload<ExtArgs>, T, "findMany"> | Null>
+    dailyAssessments<T extends User$dailyAssessmentsArgs<ExtArgs> = {}>(args?: Subset<T, User$dailyAssessmentsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DailyAssessmentPayload<ExtArgs>, T, "findMany"> | Null>
     journalEntries<T extends User$journalEntriesArgs<ExtArgs> = {}>(args?: Subset<T, User$journalEntriesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$JournalEntryPayload<ExtArgs>, T, "findMany"> | Null>
     activities<T extends User$activitiesArgs<ExtArgs> = {}>(args?: Subset<T, User$activitiesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ActivityLogPayload<ExtArgs>, T, "findMany"> | Null>
     notificationPref<T extends User$notificationPrefArgs<ExtArgs> = {}>(args?: Subset<T, User$notificationPrefArgs<ExtArgs>>): Prisma__NotificationPrefClient<$Result.GetResult<Prisma.$NotificationPrefPayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
@@ -2873,6 +2972,26 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: MoodEntryScalarFieldEnum | MoodEntryScalarFieldEnum[]
+  }
+
+  /**
+   * User.dailyAssessments
+   */
+  export type User$dailyAssessmentsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DailyAssessment
+     */
+    select?: DailyAssessmentSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DailyAssessmentInclude<ExtArgs> | null
+    where?: DailyAssessmentWhereInput
+    orderBy?: DailyAssessmentOrderByWithRelationInput | DailyAssessmentOrderByWithRelationInput[]
+    cursor?: DailyAssessmentWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: DailyAssessmentScalarFieldEnum | DailyAssessmentScalarFieldEnum[]
   }
 
   /**
@@ -5977,6 +6096,1045 @@ export namespace Prisma {
      * Choose, which related nodes to fetch as well
      */
     include?: MoodEntryInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model DailyAssessment
+   */
+
+  export type AggregateDailyAssessment = {
+    _count: DailyAssessmentCountAggregateOutputType | null
+    _avg: DailyAssessmentAvgAggregateOutputType | null
+    _sum: DailyAssessmentSumAggregateOutputType | null
+    _min: DailyAssessmentMinAggregateOutputType | null
+    _max: DailyAssessmentMaxAggregateOutputType | null
+  }
+
+  export type DailyAssessmentAvgAggregateOutputType = {
+    stressLevel: number | null
+    sleepRating: number | null
+  }
+
+  export type DailyAssessmentSumAggregateOutputType = {
+    stressLevel: number | null
+    sleepRating: number | null
+  }
+
+  export type DailyAssessmentMinAggregateOutputType = {
+    id: string | null
+    userId: string | null
+    date: string | null
+    mood: $Enums.MoodLevel | null
+    stressLevel: number | null
+    sleepRating: number | null
+    reflection: string | null
+    flaggedForRisk: boolean | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type DailyAssessmentMaxAggregateOutputType = {
+    id: string | null
+    userId: string | null
+    date: string | null
+    mood: $Enums.MoodLevel | null
+    stressLevel: number | null
+    sleepRating: number | null
+    reflection: string | null
+    flaggedForRisk: boolean | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type DailyAssessmentCountAggregateOutputType = {
+    id: number
+    userId: number
+    date: number
+    mood: number
+    stressLevel: number
+    sleepRating: number
+    energyTags: number
+    reflection: number
+    flaggedForRisk: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type DailyAssessmentAvgAggregateInputType = {
+    stressLevel?: true
+    sleepRating?: true
+  }
+
+  export type DailyAssessmentSumAggregateInputType = {
+    stressLevel?: true
+    sleepRating?: true
+  }
+
+  export type DailyAssessmentMinAggregateInputType = {
+    id?: true
+    userId?: true
+    date?: true
+    mood?: true
+    stressLevel?: true
+    sleepRating?: true
+    reflection?: true
+    flaggedForRisk?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type DailyAssessmentMaxAggregateInputType = {
+    id?: true
+    userId?: true
+    date?: true
+    mood?: true
+    stressLevel?: true
+    sleepRating?: true
+    reflection?: true
+    flaggedForRisk?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type DailyAssessmentCountAggregateInputType = {
+    id?: true
+    userId?: true
+    date?: true
+    mood?: true
+    stressLevel?: true
+    sleepRating?: true
+    energyTags?: true
+    reflection?: true
+    flaggedForRisk?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type DailyAssessmentAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which DailyAssessment to aggregate.
+     */
+    where?: DailyAssessmentWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of DailyAssessments to fetch.
+     */
+    orderBy?: DailyAssessmentOrderByWithRelationInput | DailyAssessmentOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: DailyAssessmentWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` DailyAssessments from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` DailyAssessments.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned DailyAssessments
+    **/
+    _count?: true | DailyAssessmentCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: DailyAssessmentAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: DailyAssessmentSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: DailyAssessmentMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: DailyAssessmentMaxAggregateInputType
+  }
+
+  export type GetDailyAssessmentAggregateType<T extends DailyAssessmentAggregateArgs> = {
+        [P in keyof T & keyof AggregateDailyAssessment]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateDailyAssessment[P]>
+      : GetScalarType<T[P], AggregateDailyAssessment[P]>
+  }
+
+
+
+
+  export type DailyAssessmentGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: DailyAssessmentWhereInput
+    orderBy?: DailyAssessmentOrderByWithAggregationInput | DailyAssessmentOrderByWithAggregationInput[]
+    by: DailyAssessmentScalarFieldEnum[] | DailyAssessmentScalarFieldEnum
+    having?: DailyAssessmentScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: DailyAssessmentCountAggregateInputType | true
+    _avg?: DailyAssessmentAvgAggregateInputType
+    _sum?: DailyAssessmentSumAggregateInputType
+    _min?: DailyAssessmentMinAggregateInputType
+    _max?: DailyAssessmentMaxAggregateInputType
+  }
+
+  export type DailyAssessmentGroupByOutputType = {
+    id: string
+    userId: string
+    date: string
+    mood: $Enums.MoodLevel
+    stressLevel: number | null
+    sleepRating: number | null
+    energyTags: string[]
+    reflection: string | null
+    flaggedForRisk: boolean
+    createdAt: Date
+    updatedAt: Date
+    _count: DailyAssessmentCountAggregateOutputType | null
+    _avg: DailyAssessmentAvgAggregateOutputType | null
+    _sum: DailyAssessmentSumAggregateOutputType | null
+    _min: DailyAssessmentMinAggregateOutputType | null
+    _max: DailyAssessmentMaxAggregateOutputType | null
+  }
+
+  type GetDailyAssessmentGroupByPayload<T extends DailyAssessmentGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<DailyAssessmentGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof DailyAssessmentGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], DailyAssessmentGroupByOutputType[P]>
+            : GetScalarType<T[P], DailyAssessmentGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type DailyAssessmentSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userId?: boolean
+    date?: boolean
+    mood?: boolean
+    stressLevel?: boolean
+    sleepRating?: boolean
+    energyTags?: boolean
+    reflection?: boolean
+    flaggedForRisk?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["dailyAssessment"]>
+
+  export type DailyAssessmentSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userId?: boolean
+    date?: boolean
+    mood?: boolean
+    stressLevel?: boolean
+    sleepRating?: boolean
+    energyTags?: boolean
+    reflection?: boolean
+    flaggedForRisk?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["dailyAssessment"]>
+
+  export type DailyAssessmentSelectScalar = {
+    id?: boolean
+    userId?: boolean
+    date?: boolean
+    mood?: boolean
+    stressLevel?: boolean
+    sleepRating?: boolean
+    energyTags?: boolean
+    reflection?: boolean
+    flaggedForRisk?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type DailyAssessmentInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+  export type DailyAssessmentIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+
+  export type $DailyAssessmentPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "DailyAssessment"
+    objects: {
+      user: Prisma.$UserPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      userId: string
+      date: string
+      mood: $Enums.MoodLevel
+      stressLevel: number | null
+      sleepRating: number | null
+      energyTags: string[]
+      reflection: string | null
+      flaggedForRisk: boolean
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["dailyAssessment"]>
+    composites: {}
+  }
+
+  type DailyAssessmentGetPayload<S extends boolean | null | undefined | DailyAssessmentDefaultArgs> = $Result.GetResult<Prisma.$DailyAssessmentPayload, S>
+
+  type DailyAssessmentCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = 
+    Omit<DailyAssessmentFindManyArgs, 'select' | 'include' | 'distinct'> & {
+      select?: DailyAssessmentCountAggregateInputType | true
+    }
+
+  export interface DailyAssessmentDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['DailyAssessment'], meta: { name: 'DailyAssessment' } }
+    /**
+     * Find zero or one DailyAssessment that matches the filter.
+     * @param {DailyAssessmentFindUniqueArgs} args - Arguments to find a DailyAssessment
+     * @example
+     * // Get one DailyAssessment
+     * const dailyAssessment = await prisma.dailyAssessment.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends DailyAssessmentFindUniqueArgs>(args: SelectSubset<T, DailyAssessmentFindUniqueArgs<ExtArgs>>): Prisma__DailyAssessmentClient<$Result.GetResult<Prisma.$DailyAssessmentPayload<ExtArgs>, T, "findUnique"> | null, null, ExtArgs>
+
+    /**
+     * Find one DailyAssessment that matches the filter or throw an error with `error.code='P2025'` 
+     * if no matches were found.
+     * @param {DailyAssessmentFindUniqueOrThrowArgs} args - Arguments to find a DailyAssessment
+     * @example
+     * // Get one DailyAssessment
+     * const dailyAssessment = await prisma.dailyAssessment.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends DailyAssessmentFindUniqueOrThrowArgs>(args: SelectSubset<T, DailyAssessmentFindUniqueOrThrowArgs<ExtArgs>>): Prisma__DailyAssessmentClient<$Result.GetResult<Prisma.$DailyAssessmentPayload<ExtArgs>, T, "findUniqueOrThrow">, never, ExtArgs>
+
+    /**
+     * Find the first DailyAssessment that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DailyAssessmentFindFirstArgs} args - Arguments to find a DailyAssessment
+     * @example
+     * // Get one DailyAssessment
+     * const dailyAssessment = await prisma.dailyAssessment.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends DailyAssessmentFindFirstArgs>(args?: SelectSubset<T, DailyAssessmentFindFirstArgs<ExtArgs>>): Prisma__DailyAssessmentClient<$Result.GetResult<Prisma.$DailyAssessmentPayload<ExtArgs>, T, "findFirst"> | null, null, ExtArgs>
+
+    /**
+     * Find the first DailyAssessment that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DailyAssessmentFindFirstOrThrowArgs} args - Arguments to find a DailyAssessment
+     * @example
+     * // Get one DailyAssessment
+     * const dailyAssessment = await prisma.dailyAssessment.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends DailyAssessmentFindFirstOrThrowArgs>(args?: SelectSubset<T, DailyAssessmentFindFirstOrThrowArgs<ExtArgs>>): Prisma__DailyAssessmentClient<$Result.GetResult<Prisma.$DailyAssessmentPayload<ExtArgs>, T, "findFirstOrThrow">, never, ExtArgs>
+
+    /**
+     * Find zero or more DailyAssessments that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DailyAssessmentFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all DailyAssessments
+     * const dailyAssessments = await prisma.dailyAssessment.findMany()
+     * 
+     * // Get first 10 DailyAssessments
+     * const dailyAssessments = await prisma.dailyAssessment.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const dailyAssessmentWithIdOnly = await prisma.dailyAssessment.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends DailyAssessmentFindManyArgs>(args?: SelectSubset<T, DailyAssessmentFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DailyAssessmentPayload<ExtArgs>, T, "findMany">>
+
+    /**
+     * Create a DailyAssessment.
+     * @param {DailyAssessmentCreateArgs} args - Arguments to create a DailyAssessment.
+     * @example
+     * // Create one DailyAssessment
+     * const DailyAssessment = await prisma.dailyAssessment.create({
+     *   data: {
+     *     // ... data to create a DailyAssessment
+     *   }
+     * })
+     * 
+     */
+    create<T extends DailyAssessmentCreateArgs>(args: SelectSubset<T, DailyAssessmentCreateArgs<ExtArgs>>): Prisma__DailyAssessmentClient<$Result.GetResult<Prisma.$DailyAssessmentPayload<ExtArgs>, T, "create">, never, ExtArgs>
+
+    /**
+     * Create many DailyAssessments.
+     * @param {DailyAssessmentCreateManyArgs} args - Arguments to create many DailyAssessments.
+     * @example
+     * // Create many DailyAssessments
+     * const dailyAssessment = await prisma.dailyAssessment.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends DailyAssessmentCreateManyArgs>(args?: SelectSubset<T, DailyAssessmentCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many DailyAssessments and returns the data saved in the database.
+     * @param {DailyAssessmentCreateManyAndReturnArgs} args - Arguments to create many DailyAssessments.
+     * @example
+     * // Create many DailyAssessments
+     * const dailyAssessment = await prisma.dailyAssessment.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many DailyAssessments and only return the `id`
+     * const dailyAssessmentWithIdOnly = await prisma.dailyAssessment.createManyAndReturn({ 
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends DailyAssessmentCreateManyAndReturnArgs>(args?: SelectSubset<T, DailyAssessmentCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DailyAssessmentPayload<ExtArgs>, T, "createManyAndReturn">>
+
+    /**
+     * Delete a DailyAssessment.
+     * @param {DailyAssessmentDeleteArgs} args - Arguments to delete one DailyAssessment.
+     * @example
+     * // Delete one DailyAssessment
+     * const DailyAssessment = await prisma.dailyAssessment.delete({
+     *   where: {
+     *     // ... filter to delete one DailyAssessment
+     *   }
+     * })
+     * 
+     */
+    delete<T extends DailyAssessmentDeleteArgs>(args: SelectSubset<T, DailyAssessmentDeleteArgs<ExtArgs>>): Prisma__DailyAssessmentClient<$Result.GetResult<Prisma.$DailyAssessmentPayload<ExtArgs>, T, "delete">, never, ExtArgs>
+
+    /**
+     * Update one DailyAssessment.
+     * @param {DailyAssessmentUpdateArgs} args - Arguments to update one DailyAssessment.
+     * @example
+     * // Update one DailyAssessment
+     * const dailyAssessment = await prisma.dailyAssessment.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends DailyAssessmentUpdateArgs>(args: SelectSubset<T, DailyAssessmentUpdateArgs<ExtArgs>>): Prisma__DailyAssessmentClient<$Result.GetResult<Prisma.$DailyAssessmentPayload<ExtArgs>, T, "update">, never, ExtArgs>
+
+    /**
+     * Delete zero or more DailyAssessments.
+     * @param {DailyAssessmentDeleteManyArgs} args - Arguments to filter DailyAssessments to delete.
+     * @example
+     * // Delete a few DailyAssessments
+     * const { count } = await prisma.dailyAssessment.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends DailyAssessmentDeleteManyArgs>(args?: SelectSubset<T, DailyAssessmentDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more DailyAssessments.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DailyAssessmentUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many DailyAssessments
+     * const dailyAssessment = await prisma.dailyAssessment.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends DailyAssessmentUpdateManyArgs>(args: SelectSubset<T, DailyAssessmentUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one DailyAssessment.
+     * @param {DailyAssessmentUpsertArgs} args - Arguments to update or create a DailyAssessment.
+     * @example
+     * // Update or create a DailyAssessment
+     * const dailyAssessment = await prisma.dailyAssessment.upsert({
+     *   create: {
+     *     // ... data to create a DailyAssessment
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the DailyAssessment we want to update
+     *   }
+     * })
+     */
+    upsert<T extends DailyAssessmentUpsertArgs>(args: SelectSubset<T, DailyAssessmentUpsertArgs<ExtArgs>>): Prisma__DailyAssessmentClient<$Result.GetResult<Prisma.$DailyAssessmentPayload<ExtArgs>, T, "upsert">, never, ExtArgs>
+
+
+    /**
+     * Count the number of DailyAssessments.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DailyAssessmentCountArgs} args - Arguments to filter DailyAssessments to count.
+     * @example
+     * // Count the number of DailyAssessments
+     * const count = await prisma.dailyAssessment.count({
+     *   where: {
+     *     // ... the filter for the DailyAssessments we want to count
+     *   }
+     * })
+    **/
+    count<T extends DailyAssessmentCountArgs>(
+      args?: Subset<T, DailyAssessmentCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], DailyAssessmentCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a DailyAssessment.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DailyAssessmentAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends DailyAssessmentAggregateArgs>(args: Subset<T, DailyAssessmentAggregateArgs>): Prisma.PrismaPromise<GetDailyAssessmentAggregateType<T>>
+
+    /**
+     * Group by DailyAssessment.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DailyAssessmentGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends DailyAssessmentGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: DailyAssessmentGroupByArgs['orderBy'] }
+        : { orderBy?: DailyAssessmentGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, DailyAssessmentGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetDailyAssessmentGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the DailyAssessment model
+   */
+  readonly fields: DailyAssessmentFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for DailyAssessment.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__DailyAssessmentClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    user<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the DailyAssessment model
+   */ 
+  interface DailyAssessmentFieldRefs {
+    readonly id: FieldRef<"DailyAssessment", 'String'>
+    readonly userId: FieldRef<"DailyAssessment", 'String'>
+    readonly date: FieldRef<"DailyAssessment", 'String'>
+    readonly mood: FieldRef<"DailyAssessment", 'MoodLevel'>
+    readonly stressLevel: FieldRef<"DailyAssessment", 'Int'>
+    readonly sleepRating: FieldRef<"DailyAssessment", 'Int'>
+    readonly energyTags: FieldRef<"DailyAssessment", 'String[]'>
+    readonly reflection: FieldRef<"DailyAssessment", 'String'>
+    readonly flaggedForRisk: FieldRef<"DailyAssessment", 'Boolean'>
+    readonly createdAt: FieldRef<"DailyAssessment", 'DateTime'>
+    readonly updatedAt: FieldRef<"DailyAssessment", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * DailyAssessment findUnique
+   */
+  export type DailyAssessmentFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DailyAssessment
+     */
+    select?: DailyAssessmentSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DailyAssessmentInclude<ExtArgs> | null
+    /**
+     * Filter, which DailyAssessment to fetch.
+     */
+    where: DailyAssessmentWhereUniqueInput
+  }
+
+  /**
+   * DailyAssessment findUniqueOrThrow
+   */
+  export type DailyAssessmentFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DailyAssessment
+     */
+    select?: DailyAssessmentSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DailyAssessmentInclude<ExtArgs> | null
+    /**
+     * Filter, which DailyAssessment to fetch.
+     */
+    where: DailyAssessmentWhereUniqueInput
+  }
+
+  /**
+   * DailyAssessment findFirst
+   */
+  export type DailyAssessmentFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DailyAssessment
+     */
+    select?: DailyAssessmentSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DailyAssessmentInclude<ExtArgs> | null
+    /**
+     * Filter, which DailyAssessment to fetch.
+     */
+    where?: DailyAssessmentWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of DailyAssessments to fetch.
+     */
+    orderBy?: DailyAssessmentOrderByWithRelationInput | DailyAssessmentOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for DailyAssessments.
+     */
+    cursor?: DailyAssessmentWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` DailyAssessments from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` DailyAssessments.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of DailyAssessments.
+     */
+    distinct?: DailyAssessmentScalarFieldEnum | DailyAssessmentScalarFieldEnum[]
+  }
+
+  /**
+   * DailyAssessment findFirstOrThrow
+   */
+  export type DailyAssessmentFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DailyAssessment
+     */
+    select?: DailyAssessmentSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DailyAssessmentInclude<ExtArgs> | null
+    /**
+     * Filter, which DailyAssessment to fetch.
+     */
+    where?: DailyAssessmentWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of DailyAssessments to fetch.
+     */
+    orderBy?: DailyAssessmentOrderByWithRelationInput | DailyAssessmentOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for DailyAssessments.
+     */
+    cursor?: DailyAssessmentWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` DailyAssessments from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` DailyAssessments.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of DailyAssessments.
+     */
+    distinct?: DailyAssessmentScalarFieldEnum | DailyAssessmentScalarFieldEnum[]
+  }
+
+  /**
+   * DailyAssessment findMany
+   */
+  export type DailyAssessmentFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DailyAssessment
+     */
+    select?: DailyAssessmentSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DailyAssessmentInclude<ExtArgs> | null
+    /**
+     * Filter, which DailyAssessments to fetch.
+     */
+    where?: DailyAssessmentWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of DailyAssessments to fetch.
+     */
+    orderBy?: DailyAssessmentOrderByWithRelationInput | DailyAssessmentOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing DailyAssessments.
+     */
+    cursor?: DailyAssessmentWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` DailyAssessments from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` DailyAssessments.
+     */
+    skip?: number
+    distinct?: DailyAssessmentScalarFieldEnum | DailyAssessmentScalarFieldEnum[]
+  }
+
+  /**
+   * DailyAssessment create
+   */
+  export type DailyAssessmentCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DailyAssessment
+     */
+    select?: DailyAssessmentSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DailyAssessmentInclude<ExtArgs> | null
+    /**
+     * The data needed to create a DailyAssessment.
+     */
+    data: XOR<DailyAssessmentCreateInput, DailyAssessmentUncheckedCreateInput>
+  }
+
+  /**
+   * DailyAssessment createMany
+   */
+  export type DailyAssessmentCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many DailyAssessments.
+     */
+    data: DailyAssessmentCreateManyInput | DailyAssessmentCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * DailyAssessment createManyAndReturn
+   */
+  export type DailyAssessmentCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DailyAssessment
+     */
+    select?: DailyAssessmentSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * The data used to create many DailyAssessments.
+     */
+    data: DailyAssessmentCreateManyInput | DailyAssessmentCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DailyAssessmentIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * DailyAssessment update
+   */
+  export type DailyAssessmentUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DailyAssessment
+     */
+    select?: DailyAssessmentSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DailyAssessmentInclude<ExtArgs> | null
+    /**
+     * The data needed to update a DailyAssessment.
+     */
+    data: XOR<DailyAssessmentUpdateInput, DailyAssessmentUncheckedUpdateInput>
+    /**
+     * Choose, which DailyAssessment to update.
+     */
+    where: DailyAssessmentWhereUniqueInput
+  }
+
+  /**
+   * DailyAssessment updateMany
+   */
+  export type DailyAssessmentUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update DailyAssessments.
+     */
+    data: XOR<DailyAssessmentUpdateManyMutationInput, DailyAssessmentUncheckedUpdateManyInput>
+    /**
+     * Filter which DailyAssessments to update
+     */
+    where?: DailyAssessmentWhereInput
+  }
+
+  /**
+   * DailyAssessment upsert
+   */
+  export type DailyAssessmentUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DailyAssessment
+     */
+    select?: DailyAssessmentSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DailyAssessmentInclude<ExtArgs> | null
+    /**
+     * The filter to search for the DailyAssessment to update in case it exists.
+     */
+    where: DailyAssessmentWhereUniqueInput
+    /**
+     * In case the DailyAssessment found by the `where` argument doesn't exist, create a new DailyAssessment with this data.
+     */
+    create: XOR<DailyAssessmentCreateInput, DailyAssessmentUncheckedCreateInput>
+    /**
+     * In case the DailyAssessment was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<DailyAssessmentUpdateInput, DailyAssessmentUncheckedUpdateInput>
+  }
+
+  /**
+   * DailyAssessment delete
+   */
+  export type DailyAssessmentDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DailyAssessment
+     */
+    select?: DailyAssessmentSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DailyAssessmentInclude<ExtArgs> | null
+    /**
+     * Filter which DailyAssessment to delete.
+     */
+    where: DailyAssessmentWhereUniqueInput
+  }
+
+  /**
+   * DailyAssessment deleteMany
+   */
+  export type DailyAssessmentDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which DailyAssessments to delete
+     */
+    where?: DailyAssessmentWhereInput
+  }
+
+  /**
+   * DailyAssessment without action
+   */
+  export type DailyAssessmentDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DailyAssessment
+     */
+    select?: DailyAssessmentSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DailyAssessmentInclude<ExtArgs> | null
   }
 
 
@@ -11008,6 +12166,23 @@ export namespace Prisma {
   export type MoodEntryScalarFieldEnum = (typeof MoodEntryScalarFieldEnum)[keyof typeof MoodEntryScalarFieldEnum]
 
 
+  export const DailyAssessmentScalarFieldEnum: {
+    id: 'id',
+    userId: 'userId',
+    date: 'date',
+    mood: 'mood',
+    stressLevel: 'stressLevel',
+    sleepRating: 'sleepRating',
+    energyTags: 'energyTags',
+    reflection: 'reflection',
+    flaggedForRisk: 'flaggedForRisk',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type DailyAssessmentScalarFieldEnum = (typeof DailyAssessmentScalarFieldEnum)[keyof typeof DailyAssessmentScalarFieldEnum]
+
+
   export const JournalEntryScalarFieldEnum: {
     id: 'id',
     userId: 'userId',
@@ -11320,6 +12495,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter<"User"> | Date | string
     assessment?: XOR<AssessmentNullableRelationFilter, AssessmentWhereInput> | null
     moodEntries?: MoodEntryListRelationFilter
+    dailyAssessments?: DailyAssessmentListRelationFilter
     journalEntries?: JournalEntryListRelationFilter
     activities?: ActivityLogListRelationFilter
     notificationPref?: XOR<NotificationPrefNullableRelationFilter, NotificationPrefWhereInput> | null
@@ -11346,6 +12522,7 @@ export namespace Prisma {
     updatedAt?: SortOrder
     assessment?: AssessmentOrderByWithRelationInput
     moodEntries?: MoodEntryOrderByRelationAggregateInput
+    dailyAssessments?: DailyAssessmentOrderByRelationAggregateInput
     journalEntries?: JournalEntryOrderByRelationAggregateInput
     activities?: ActivityLogOrderByRelationAggregateInput
     notificationPref?: NotificationPrefOrderByWithRelationInput
@@ -11375,6 +12552,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter<"User"> | Date | string
     assessment?: XOR<AssessmentNullableRelationFilter, AssessmentWhereInput> | null
     moodEntries?: MoodEntryListRelationFilter
+    dailyAssessments?: DailyAssessmentListRelationFilter
     journalEntries?: JournalEntryListRelationFilter
     activities?: ActivityLogListRelationFilter
     notificationPref?: XOR<NotificationPrefNullableRelationFilter, NotificationPrefWhereInput> | null
@@ -11656,6 +12834,94 @@ export namespace Prisma {
     stressLevel?: IntNullableWithAggregatesFilter<"MoodEntry"> | number | null
     note?: StringNullableWithAggregatesFilter<"MoodEntry"> | string | null
     createdAt?: DateTimeWithAggregatesFilter<"MoodEntry"> | Date | string
+  }
+
+  export type DailyAssessmentWhereInput = {
+    AND?: DailyAssessmentWhereInput | DailyAssessmentWhereInput[]
+    OR?: DailyAssessmentWhereInput[]
+    NOT?: DailyAssessmentWhereInput | DailyAssessmentWhereInput[]
+    id?: StringFilter<"DailyAssessment"> | string
+    userId?: StringFilter<"DailyAssessment"> | string
+    date?: StringFilter<"DailyAssessment"> | string
+    mood?: EnumMoodLevelFilter<"DailyAssessment"> | $Enums.MoodLevel
+    stressLevel?: IntNullableFilter<"DailyAssessment"> | number | null
+    sleepRating?: IntNullableFilter<"DailyAssessment"> | number | null
+    energyTags?: StringNullableListFilter<"DailyAssessment">
+    reflection?: StringNullableFilter<"DailyAssessment"> | string | null
+    flaggedForRisk?: BoolFilter<"DailyAssessment"> | boolean
+    createdAt?: DateTimeFilter<"DailyAssessment"> | Date | string
+    updatedAt?: DateTimeFilter<"DailyAssessment"> | Date | string
+    user?: XOR<UserRelationFilter, UserWhereInput>
+  }
+
+  export type DailyAssessmentOrderByWithRelationInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    date?: SortOrder
+    mood?: SortOrder
+    stressLevel?: SortOrderInput | SortOrder
+    sleepRating?: SortOrderInput | SortOrder
+    energyTags?: SortOrder
+    reflection?: SortOrderInput | SortOrder
+    flaggedForRisk?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    user?: UserOrderByWithRelationInput
+  }
+
+  export type DailyAssessmentWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    userId_date?: DailyAssessmentUserIdDateCompoundUniqueInput
+    AND?: DailyAssessmentWhereInput | DailyAssessmentWhereInput[]
+    OR?: DailyAssessmentWhereInput[]
+    NOT?: DailyAssessmentWhereInput | DailyAssessmentWhereInput[]
+    userId?: StringFilter<"DailyAssessment"> | string
+    date?: StringFilter<"DailyAssessment"> | string
+    mood?: EnumMoodLevelFilter<"DailyAssessment"> | $Enums.MoodLevel
+    stressLevel?: IntNullableFilter<"DailyAssessment"> | number | null
+    sleepRating?: IntNullableFilter<"DailyAssessment"> | number | null
+    energyTags?: StringNullableListFilter<"DailyAssessment">
+    reflection?: StringNullableFilter<"DailyAssessment"> | string | null
+    flaggedForRisk?: BoolFilter<"DailyAssessment"> | boolean
+    createdAt?: DateTimeFilter<"DailyAssessment"> | Date | string
+    updatedAt?: DateTimeFilter<"DailyAssessment"> | Date | string
+    user?: XOR<UserRelationFilter, UserWhereInput>
+  }, "id" | "userId_date">
+
+  export type DailyAssessmentOrderByWithAggregationInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    date?: SortOrder
+    mood?: SortOrder
+    stressLevel?: SortOrderInput | SortOrder
+    sleepRating?: SortOrderInput | SortOrder
+    energyTags?: SortOrder
+    reflection?: SortOrderInput | SortOrder
+    flaggedForRisk?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: DailyAssessmentCountOrderByAggregateInput
+    _avg?: DailyAssessmentAvgOrderByAggregateInput
+    _max?: DailyAssessmentMaxOrderByAggregateInput
+    _min?: DailyAssessmentMinOrderByAggregateInput
+    _sum?: DailyAssessmentSumOrderByAggregateInput
+  }
+
+  export type DailyAssessmentScalarWhereWithAggregatesInput = {
+    AND?: DailyAssessmentScalarWhereWithAggregatesInput | DailyAssessmentScalarWhereWithAggregatesInput[]
+    OR?: DailyAssessmentScalarWhereWithAggregatesInput[]
+    NOT?: DailyAssessmentScalarWhereWithAggregatesInput | DailyAssessmentScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"DailyAssessment"> | string
+    userId?: StringWithAggregatesFilter<"DailyAssessment"> | string
+    date?: StringWithAggregatesFilter<"DailyAssessment"> | string
+    mood?: EnumMoodLevelWithAggregatesFilter<"DailyAssessment"> | $Enums.MoodLevel
+    stressLevel?: IntNullableWithAggregatesFilter<"DailyAssessment"> | number | null
+    sleepRating?: IntNullableWithAggregatesFilter<"DailyAssessment"> | number | null
+    energyTags?: StringNullableListFilter<"DailyAssessment">
+    reflection?: StringNullableWithAggregatesFilter<"DailyAssessment"> | string | null
+    flaggedForRisk?: BoolWithAggregatesFilter<"DailyAssessment"> | boolean
+    createdAt?: DateTimeWithAggregatesFilter<"DailyAssessment"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"DailyAssessment"> | Date | string
   }
 
   export type JournalEntryWhereInput = {
@@ -12044,6 +13310,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     assessment?: AssessmentCreateNestedOneWithoutUserInput
     moodEntries?: MoodEntryCreateNestedManyWithoutUserInput
+    dailyAssessments?: DailyAssessmentCreateNestedManyWithoutUserInput
     journalEntries?: JournalEntryCreateNestedManyWithoutUserInput
     activities?: ActivityLogCreateNestedManyWithoutUserInput
     notificationPref?: NotificationPrefCreateNestedOneWithoutUserInput
@@ -12070,6 +13337,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     assessment?: AssessmentUncheckedCreateNestedOneWithoutUserInput
     moodEntries?: MoodEntryUncheckedCreateNestedManyWithoutUserInput
+    dailyAssessments?: DailyAssessmentUncheckedCreateNestedManyWithoutUserInput
     journalEntries?: JournalEntryUncheckedCreateNestedManyWithoutUserInput
     activities?: ActivityLogUncheckedCreateNestedManyWithoutUserInput
     notificationPref?: NotificationPrefUncheckedCreateNestedOneWithoutUserInput
@@ -12096,6 +13364,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     assessment?: AssessmentUpdateOneWithoutUserNestedInput
     moodEntries?: MoodEntryUpdateManyWithoutUserNestedInput
+    dailyAssessments?: DailyAssessmentUpdateManyWithoutUserNestedInput
     journalEntries?: JournalEntryUpdateManyWithoutUserNestedInput
     activities?: ActivityLogUpdateManyWithoutUserNestedInput
     notificationPref?: NotificationPrefUpdateOneWithoutUserNestedInput
@@ -12122,6 +13391,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     assessment?: AssessmentUncheckedUpdateOneWithoutUserNestedInput
     moodEntries?: MoodEntryUncheckedUpdateManyWithoutUserNestedInput
+    dailyAssessments?: DailyAssessmentUncheckedUpdateManyWithoutUserNestedInput
     journalEntries?: JournalEntryUncheckedUpdateManyWithoutUserNestedInput
     activities?: ActivityLogUncheckedUpdateManyWithoutUserNestedInput
     notificationPref?: NotificationPrefUncheckedUpdateOneWithoutUserNestedInput
@@ -12435,6 +13705,103 @@ export namespace Prisma {
     stressLevel?: NullableIntFieldUpdateOperationsInput | number | null
     note?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type DailyAssessmentCreateInput = {
+    id?: string
+    date: string
+    mood: $Enums.MoodLevel
+    stressLevel?: number | null
+    sleepRating?: number | null
+    energyTags?: DailyAssessmentCreateenergyTagsInput | string[]
+    reflection?: string | null
+    flaggedForRisk?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    user: UserCreateNestedOneWithoutDailyAssessmentsInput
+  }
+
+  export type DailyAssessmentUncheckedCreateInput = {
+    id?: string
+    userId: string
+    date: string
+    mood: $Enums.MoodLevel
+    stressLevel?: number | null
+    sleepRating?: number | null
+    energyTags?: DailyAssessmentCreateenergyTagsInput | string[]
+    reflection?: string | null
+    flaggedForRisk?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type DailyAssessmentUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    date?: StringFieldUpdateOperationsInput | string
+    mood?: EnumMoodLevelFieldUpdateOperationsInput | $Enums.MoodLevel
+    stressLevel?: NullableIntFieldUpdateOperationsInput | number | null
+    sleepRating?: NullableIntFieldUpdateOperationsInput | number | null
+    energyTags?: DailyAssessmentUpdateenergyTagsInput | string[]
+    reflection?: NullableStringFieldUpdateOperationsInput | string | null
+    flaggedForRisk?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneRequiredWithoutDailyAssessmentsNestedInput
+  }
+
+  export type DailyAssessmentUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    date?: StringFieldUpdateOperationsInput | string
+    mood?: EnumMoodLevelFieldUpdateOperationsInput | $Enums.MoodLevel
+    stressLevel?: NullableIntFieldUpdateOperationsInput | number | null
+    sleepRating?: NullableIntFieldUpdateOperationsInput | number | null
+    energyTags?: DailyAssessmentUpdateenergyTagsInput | string[]
+    reflection?: NullableStringFieldUpdateOperationsInput | string | null
+    flaggedForRisk?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type DailyAssessmentCreateManyInput = {
+    id?: string
+    userId: string
+    date: string
+    mood: $Enums.MoodLevel
+    stressLevel?: number | null
+    sleepRating?: number | null
+    energyTags?: DailyAssessmentCreateenergyTagsInput | string[]
+    reflection?: string | null
+    flaggedForRisk?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type DailyAssessmentUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    date?: StringFieldUpdateOperationsInput | string
+    mood?: EnumMoodLevelFieldUpdateOperationsInput | $Enums.MoodLevel
+    stressLevel?: NullableIntFieldUpdateOperationsInput | number | null
+    sleepRating?: NullableIntFieldUpdateOperationsInput | number | null
+    energyTags?: DailyAssessmentUpdateenergyTagsInput | string[]
+    reflection?: NullableStringFieldUpdateOperationsInput | string | null
+    flaggedForRisk?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type DailyAssessmentUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    date?: StringFieldUpdateOperationsInput | string
+    mood?: EnumMoodLevelFieldUpdateOperationsInput | $Enums.MoodLevel
+    stressLevel?: NullableIntFieldUpdateOperationsInput | number | null
+    sleepRating?: NullableIntFieldUpdateOperationsInput | number | null
+    energyTags?: DailyAssessmentUpdateenergyTagsInput | string[]
+    reflection?: NullableStringFieldUpdateOperationsInput | string | null
+    flaggedForRisk?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type JournalEntryCreateInput = {
@@ -12918,6 +14285,12 @@ export namespace Prisma {
     none?: MoodEntryWhereInput
   }
 
+  export type DailyAssessmentListRelationFilter = {
+    every?: DailyAssessmentWhereInput
+    some?: DailyAssessmentWhereInput
+    none?: DailyAssessmentWhereInput
+  }
+
   export type JournalEntryListRelationFilter = {
     every?: JournalEntryWhereInput
     some?: JournalEntryWhereInput
@@ -12947,6 +14320,10 @@ export namespace Prisma {
   }
 
   export type MoodEntryOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type DailyAssessmentOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -13341,6 +14718,61 @@ export namespace Prisma {
     _max?: NestedEnumMoodLevelFilter<$PrismaModel>
   }
 
+  export type DailyAssessmentUserIdDateCompoundUniqueInput = {
+    userId: string
+    date: string
+  }
+
+  export type DailyAssessmentCountOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    date?: SortOrder
+    mood?: SortOrder
+    stressLevel?: SortOrder
+    sleepRating?: SortOrder
+    energyTags?: SortOrder
+    reflection?: SortOrder
+    flaggedForRisk?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type DailyAssessmentAvgOrderByAggregateInput = {
+    stressLevel?: SortOrder
+    sleepRating?: SortOrder
+  }
+
+  export type DailyAssessmentMaxOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    date?: SortOrder
+    mood?: SortOrder
+    stressLevel?: SortOrder
+    sleepRating?: SortOrder
+    reflection?: SortOrder
+    flaggedForRisk?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type DailyAssessmentMinOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    date?: SortOrder
+    mood?: SortOrder
+    stressLevel?: SortOrder
+    sleepRating?: SortOrder
+    reflection?: SortOrder
+    flaggedForRisk?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type DailyAssessmentSumOrderByAggregateInput = {
+    stressLevel?: SortOrder
+    sleepRating?: SortOrder
+  }
+
   export type JournalEntryCountOrderByAggregateInput = {
     id?: SortOrder
     userId?: SortOrder
@@ -13733,6 +15165,13 @@ export namespace Prisma {
     connect?: MoodEntryWhereUniqueInput | MoodEntryWhereUniqueInput[]
   }
 
+  export type DailyAssessmentCreateNestedManyWithoutUserInput = {
+    create?: XOR<DailyAssessmentCreateWithoutUserInput, DailyAssessmentUncheckedCreateWithoutUserInput> | DailyAssessmentCreateWithoutUserInput[] | DailyAssessmentUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: DailyAssessmentCreateOrConnectWithoutUserInput | DailyAssessmentCreateOrConnectWithoutUserInput[]
+    createMany?: DailyAssessmentCreateManyUserInputEnvelope
+    connect?: DailyAssessmentWhereUniqueInput | DailyAssessmentWhereUniqueInput[]
+  }
+
   export type JournalEntryCreateNestedManyWithoutUserInput = {
     create?: XOR<JournalEntryCreateWithoutUserInput, JournalEntryUncheckedCreateWithoutUserInput> | JournalEntryCreateWithoutUserInput[] | JournalEntryUncheckedCreateWithoutUserInput[]
     connectOrCreate?: JournalEntryCreateOrConnectWithoutUserInput | JournalEntryCreateOrConnectWithoutUserInput[]
@@ -13771,6 +15210,13 @@ export namespace Prisma {
     connectOrCreate?: MoodEntryCreateOrConnectWithoutUserInput | MoodEntryCreateOrConnectWithoutUserInput[]
     createMany?: MoodEntryCreateManyUserInputEnvelope
     connect?: MoodEntryWhereUniqueInput | MoodEntryWhereUniqueInput[]
+  }
+
+  export type DailyAssessmentUncheckedCreateNestedManyWithoutUserInput = {
+    create?: XOR<DailyAssessmentCreateWithoutUserInput, DailyAssessmentUncheckedCreateWithoutUserInput> | DailyAssessmentCreateWithoutUserInput[] | DailyAssessmentUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: DailyAssessmentCreateOrConnectWithoutUserInput | DailyAssessmentCreateOrConnectWithoutUserInput[]
+    createMany?: DailyAssessmentCreateManyUserInputEnvelope
+    connect?: DailyAssessmentWhereUniqueInput | DailyAssessmentWhereUniqueInput[]
   }
 
   export type JournalEntryUncheckedCreateNestedManyWithoutUserInput = {
@@ -13856,6 +15302,20 @@ export namespace Prisma {
     deleteMany?: MoodEntryScalarWhereInput | MoodEntryScalarWhereInput[]
   }
 
+  export type DailyAssessmentUpdateManyWithoutUserNestedInput = {
+    create?: XOR<DailyAssessmentCreateWithoutUserInput, DailyAssessmentUncheckedCreateWithoutUserInput> | DailyAssessmentCreateWithoutUserInput[] | DailyAssessmentUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: DailyAssessmentCreateOrConnectWithoutUserInput | DailyAssessmentCreateOrConnectWithoutUserInput[]
+    upsert?: DailyAssessmentUpsertWithWhereUniqueWithoutUserInput | DailyAssessmentUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: DailyAssessmentCreateManyUserInputEnvelope
+    set?: DailyAssessmentWhereUniqueInput | DailyAssessmentWhereUniqueInput[]
+    disconnect?: DailyAssessmentWhereUniqueInput | DailyAssessmentWhereUniqueInput[]
+    delete?: DailyAssessmentWhereUniqueInput | DailyAssessmentWhereUniqueInput[]
+    connect?: DailyAssessmentWhereUniqueInput | DailyAssessmentWhereUniqueInput[]
+    update?: DailyAssessmentUpdateWithWhereUniqueWithoutUserInput | DailyAssessmentUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: DailyAssessmentUpdateManyWithWhereWithoutUserInput | DailyAssessmentUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: DailyAssessmentScalarWhereInput | DailyAssessmentScalarWhereInput[]
+  }
+
   export type JournalEntryUpdateManyWithoutUserNestedInput = {
     create?: XOR<JournalEntryCreateWithoutUserInput, JournalEntryUncheckedCreateWithoutUserInput> | JournalEntryCreateWithoutUserInput[] | JournalEntryUncheckedCreateWithoutUserInput[]
     connectOrCreate?: JournalEntryCreateOrConnectWithoutUserInput | JournalEntryCreateOrConnectWithoutUserInput[]
@@ -13930,6 +15390,20 @@ export namespace Prisma {
     update?: MoodEntryUpdateWithWhereUniqueWithoutUserInput | MoodEntryUpdateWithWhereUniqueWithoutUserInput[]
     updateMany?: MoodEntryUpdateManyWithWhereWithoutUserInput | MoodEntryUpdateManyWithWhereWithoutUserInput[]
     deleteMany?: MoodEntryScalarWhereInput | MoodEntryScalarWhereInput[]
+  }
+
+  export type DailyAssessmentUncheckedUpdateManyWithoutUserNestedInput = {
+    create?: XOR<DailyAssessmentCreateWithoutUserInput, DailyAssessmentUncheckedCreateWithoutUserInput> | DailyAssessmentCreateWithoutUserInput[] | DailyAssessmentUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: DailyAssessmentCreateOrConnectWithoutUserInput | DailyAssessmentCreateOrConnectWithoutUserInput[]
+    upsert?: DailyAssessmentUpsertWithWhereUniqueWithoutUserInput | DailyAssessmentUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: DailyAssessmentCreateManyUserInputEnvelope
+    set?: DailyAssessmentWhereUniqueInput | DailyAssessmentWhereUniqueInput[]
+    disconnect?: DailyAssessmentWhereUniqueInput | DailyAssessmentWhereUniqueInput[]
+    delete?: DailyAssessmentWhereUniqueInput | DailyAssessmentWhereUniqueInput[]
+    connect?: DailyAssessmentWhereUniqueInput | DailyAssessmentWhereUniqueInput[]
+    update?: DailyAssessmentUpdateWithWhereUniqueWithoutUserInput | DailyAssessmentUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: DailyAssessmentUpdateManyWithWhereWithoutUserInput | DailyAssessmentUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: DailyAssessmentScalarWhereInput | DailyAssessmentScalarWhereInput[]
   }
 
   export type JournalEntryUncheckedUpdateManyWithoutUserNestedInput = {
@@ -14062,6 +15536,29 @@ export namespace Prisma {
     upsert?: UserUpsertWithoutMoodEntriesInput
     connect?: UserWhereUniqueInput
     update?: XOR<XOR<UserUpdateToOneWithWhereWithoutMoodEntriesInput, UserUpdateWithoutMoodEntriesInput>, UserUncheckedUpdateWithoutMoodEntriesInput>
+  }
+
+  export type DailyAssessmentCreateenergyTagsInput = {
+    set: string[]
+  }
+
+  export type UserCreateNestedOneWithoutDailyAssessmentsInput = {
+    create?: XOR<UserCreateWithoutDailyAssessmentsInput, UserUncheckedCreateWithoutDailyAssessmentsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutDailyAssessmentsInput
+    connect?: UserWhereUniqueInput
+  }
+
+  export type DailyAssessmentUpdateenergyTagsInput = {
+    set?: string[]
+    push?: string | string[]
+  }
+
+  export type UserUpdateOneRequiredWithoutDailyAssessmentsNestedInput = {
+    create?: XOR<UserCreateWithoutDailyAssessmentsInput, UserUncheckedCreateWithoutDailyAssessmentsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutDailyAssessmentsInput
+    upsert?: UserUpsertWithoutDailyAssessmentsInput
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutDailyAssessmentsInput, UserUpdateWithoutDailyAssessmentsInput>, UserUncheckedUpdateWithoutDailyAssessmentsInput>
   }
 
   export type UserCreateNestedOneWithoutJournalEntriesInput = {
@@ -14645,6 +16142,42 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type DailyAssessmentCreateWithoutUserInput = {
+    id?: string
+    date: string
+    mood: $Enums.MoodLevel
+    stressLevel?: number | null
+    sleepRating?: number | null
+    energyTags?: DailyAssessmentCreateenergyTagsInput | string[]
+    reflection?: string | null
+    flaggedForRisk?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type DailyAssessmentUncheckedCreateWithoutUserInput = {
+    id?: string
+    date: string
+    mood: $Enums.MoodLevel
+    stressLevel?: number | null
+    sleepRating?: number | null
+    energyTags?: DailyAssessmentCreateenergyTagsInput | string[]
+    reflection?: string | null
+    flaggedForRisk?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type DailyAssessmentCreateOrConnectWithoutUserInput = {
+    where: DailyAssessmentWhereUniqueInput
+    create: XOR<DailyAssessmentCreateWithoutUserInput, DailyAssessmentUncheckedCreateWithoutUserInput>
+  }
+
+  export type DailyAssessmentCreateManyUserInputEnvelope = {
+    data: DailyAssessmentCreateManyUserInput | DailyAssessmentCreateManyUserInput[]
+    skipDuplicates?: boolean
+  }
+
   export type JournalEntryCreateWithoutUserInput = {
     id?: string
     title: string
@@ -14825,6 +16358,39 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"MoodEntry"> | Date | string
   }
 
+  export type DailyAssessmentUpsertWithWhereUniqueWithoutUserInput = {
+    where: DailyAssessmentWhereUniqueInput
+    update: XOR<DailyAssessmentUpdateWithoutUserInput, DailyAssessmentUncheckedUpdateWithoutUserInput>
+    create: XOR<DailyAssessmentCreateWithoutUserInput, DailyAssessmentUncheckedCreateWithoutUserInput>
+  }
+
+  export type DailyAssessmentUpdateWithWhereUniqueWithoutUserInput = {
+    where: DailyAssessmentWhereUniqueInput
+    data: XOR<DailyAssessmentUpdateWithoutUserInput, DailyAssessmentUncheckedUpdateWithoutUserInput>
+  }
+
+  export type DailyAssessmentUpdateManyWithWhereWithoutUserInput = {
+    where: DailyAssessmentScalarWhereInput
+    data: XOR<DailyAssessmentUpdateManyMutationInput, DailyAssessmentUncheckedUpdateManyWithoutUserInput>
+  }
+
+  export type DailyAssessmentScalarWhereInput = {
+    AND?: DailyAssessmentScalarWhereInput | DailyAssessmentScalarWhereInput[]
+    OR?: DailyAssessmentScalarWhereInput[]
+    NOT?: DailyAssessmentScalarWhereInput | DailyAssessmentScalarWhereInput[]
+    id?: StringFilter<"DailyAssessment"> | string
+    userId?: StringFilter<"DailyAssessment"> | string
+    date?: StringFilter<"DailyAssessment"> | string
+    mood?: EnumMoodLevelFilter<"DailyAssessment"> | $Enums.MoodLevel
+    stressLevel?: IntNullableFilter<"DailyAssessment"> | number | null
+    sleepRating?: IntNullableFilter<"DailyAssessment"> | number | null
+    energyTags?: StringNullableListFilter<"DailyAssessment">
+    reflection?: StringNullableFilter<"DailyAssessment"> | string | null
+    flaggedForRisk?: BoolFilter<"DailyAssessment"> | boolean
+    createdAt?: DateTimeFilter<"DailyAssessment"> | Date | string
+    updatedAt?: DateTimeFilter<"DailyAssessment"> | Date | string
+  }
+
   export type JournalEntryUpsertWithWhereUniqueWithoutUserInput = {
     where: JournalEntryWhereUniqueInput
     update: XOR<JournalEntryUpdateWithoutUserInput, JournalEntryUncheckedUpdateWithoutUserInput>
@@ -14957,6 +16523,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     assessment?: AssessmentCreateNestedOneWithoutUserInput
     moodEntries?: MoodEntryCreateNestedManyWithoutUserInput
+    dailyAssessments?: DailyAssessmentCreateNestedManyWithoutUserInput
     journalEntries?: JournalEntryCreateNestedManyWithoutUserInput
     activities?: ActivityLogCreateNestedManyWithoutUserInput
     subscriptions?: SubscriptionCreateNestedManyWithoutUserInput
@@ -14982,6 +16549,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     assessment?: AssessmentUncheckedCreateNestedOneWithoutUserInput
     moodEntries?: MoodEntryUncheckedCreateNestedManyWithoutUserInput
+    dailyAssessments?: DailyAssessmentUncheckedCreateNestedManyWithoutUserInput
     journalEntries?: JournalEntryUncheckedCreateNestedManyWithoutUserInput
     activities?: ActivityLogUncheckedCreateNestedManyWithoutUserInput
     subscriptions?: SubscriptionUncheckedCreateNestedManyWithoutUserInput
@@ -15023,6 +16591,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     assessment?: AssessmentUpdateOneWithoutUserNestedInput
     moodEntries?: MoodEntryUpdateManyWithoutUserNestedInput
+    dailyAssessments?: DailyAssessmentUpdateManyWithoutUserNestedInput
     journalEntries?: JournalEntryUpdateManyWithoutUserNestedInput
     activities?: ActivityLogUpdateManyWithoutUserNestedInput
     subscriptions?: SubscriptionUpdateManyWithoutUserNestedInput
@@ -15048,6 +16617,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     assessment?: AssessmentUncheckedUpdateOneWithoutUserNestedInput
     moodEntries?: MoodEntryUncheckedUpdateManyWithoutUserNestedInput
+    dailyAssessments?: DailyAssessmentUncheckedUpdateManyWithoutUserNestedInput
     journalEntries?: JournalEntryUncheckedUpdateManyWithoutUserNestedInput
     activities?: ActivityLogUncheckedUpdateManyWithoutUserNestedInput
     subscriptions?: SubscriptionUncheckedUpdateManyWithoutUserNestedInput
@@ -15072,6 +16642,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     moodEntries?: MoodEntryCreateNestedManyWithoutUserInput
+    dailyAssessments?: DailyAssessmentCreateNestedManyWithoutUserInput
     journalEntries?: JournalEntryCreateNestedManyWithoutUserInput
     activities?: ActivityLogCreateNestedManyWithoutUserInput
     notificationPref?: NotificationPrefCreateNestedOneWithoutUserInput
@@ -15097,6 +16668,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     moodEntries?: MoodEntryUncheckedCreateNestedManyWithoutUserInput
+    dailyAssessments?: DailyAssessmentUncheckedCreateNestedManyWithoutUserInput
     journalEntries?: JournalEntryUncheckedCreateNestedManyWithoutUserInput
     activities?: ActivityLogUncheckedCreateNestedManyWithoutUserInput
     notificationPref?: NotificationPrefUncheckedCreateNestedOneWithoutUserInput
@@ -15138,6 +16710,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     moodEntries?: MoodEntryUpdateManyWithoutUserNestedInput
+    dailyAssessments?: DailyAssessmentUpdateManyWithoutUserNestedInput
     journalEntries?: JournalEntryUpdateManyWithoutUserNestedInput
     activities?: ActivityLogUpdateManyWithoutUserNestedInput
     notificationPref?: NotificationPrefUpdateOneWithoutUserNestedInput
@@ -15163,6 +16736,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     moodEntries?: MoodEntryUncheckedUpdateManyWithoutUserNestedInput
+    dailyAssessments?: DailyAssessmentUncheckedUpdateManyWithoutUserNestedInput
     journalEntries?: JournalEntryUncheckedUpdateManyWithoutUserNestedInput
     activities?: ActivityLogUncheckedUpdateManyWithoutUserNestedInput
     notificationPref?: NotificationPrefUncheckedUpdateOneWithoutUserNestedInput
@@ -15188,6 +16762,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     assessment?: AssessmentCreateNestedOneWithoutUserInput
+    dailyAssessments?: DailyAssessmentCreateNestedManyWithoutUserInput
     journalEntries?: JournalEntryCreateNestedManyWithoutUserInput
     activities?: ActivityLogCreateNestedManyWithoutUserInput
     notificationPref?: NotificationPrefCreateNestedOneWithoutUserInput
@@ -15213,6 +16788,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     assessment?: AssessmentUncheckedCreateNestedOneWithoutUserInput
+    dailyAssessments?: DailyAssessmentUncheckedCreateNestedManyWithoutUserInput
     journalEntries?: JournalEntryUncheckedCreateNestedManyWithoutUserInput
     activities?: ActivityLogUncheckedCreateNestedManyWithoutUserInput
     notificationPref?: NotificationPrefUncheckedCreateNestedOneWithoutUserInput
@@ -15254,6 +16830,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     assessment?: AssessmentUpdateOneWithoutUserNestedInput
+    dailyAssessments?: DailyAssessmentUpdateManyWithoutUserNestedInput
     journalEntries?: JournalEntryUpdateManyWithoutUserNestedInput
     activities?: ActivityLogUpdateManyWithoutUserNestedInput
     notificationPref?: NotificationPrefUpdateOneWithoutUserNestedInput
@@ -15279,6 +16856,127 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     assessment?: AssessmentUncheckedUpdateOneWithoutUserNestedInput
+    dailyAssessments?: DailyAssessmentUncheckedUpdateManyWithoutUserNestedInput
+    journalEntries?: JournalEntryUncheckedUpdateManyWithoutUserNestedInput
+    activities?: ActivityLogUncheckedUpdateManyWithoutUserNestedInput
+    notificationPref?: NotificationPrefUncheckedUpdateOneWithoutUserNestedInput
+    subscriptions?: SubscriptionUncheckedUpdateManyWithoutUserNestedInput
+  }
+
+  export type UserCreateWithoutDailyAssessmentsInput = {
+    id?: string
+    email: string
+    username?: string | null
+    passwordHash: string
+    name: string
+    avatarUrl?: string | null
+    phone?: string | null
+    location?: string | null
+    bio?: string | null
+    companionPersona?: $Enums.CompanionPersona
+    plan?: $Enums.Plan
+    onboardingCompleted?: boolean
+    zybaScore?: number | null
+    stressLevel?: number | null
+    streak?: number | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    assessment?: AssessmentCreateNestedOneWithoutUserInput
+    moodEntries?: MoodEntryCreateNestedManyWithoutUserInput
+    journalEntries?: JournalEntryCreateNestedManyWithoutUserInput
+    activities?: ActivityLogCreateNestedManyWithoutUserInput
+    notificationPref?: NotificationPrefCreateNestedOneWithoutUserInput
+    subscriptions?: SubscriptionCreateNestedManyWithoutUserInput
+  }
+
+  export type UserUncheckedCreateWithoutDailyAssessmentsInput = {
+    id?: string
+    email: string
+    username?: string | null
+    passwordHash: string
+    name: string
+    avatarUrl?: string | null
+    phone?: string | null
+    location?: string | null
+    bio?: string | null
+    companionPersona?: $Enums.CompanionPersona
+    plan?: $Enums.Plan
+    onboardingCompleted?: boolean
+    zybaScore?: number | null
+    stressLevel?: number | null
+    streak?: number | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    assessment?: AssessmentUncheckedCreateNestedOneWithoutUserInput
+    moodEntries?: MoodEntryUncheckedCreateNestedManyWithoutUserInput
+    journalEntries?: JournalEntryUncheckedCreateNestedManyWithoutUserInput
+    activities?: ActivityLogUncheckedCreateNestedManyWithoutUserInput
+    notificationPref?: NotificationPrefUncheckedCreateNestedOneWithoutUserInput
+    subscriptions?: SubscriptionUncheckedCreateNestedManyWithoutUserInput
+  }
+
+  export type UserCreateOrConnectWithoutDailyAssessmentsInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutDailyAssessmentsInput, UserUncheckedCreateWithoutDailyAssessmentsInput>
+  }
+
+  export type UserUpsertWithoutDailyAssessmentsInput = {
+    update: XOR<UserUpdateWithoutDailyAssessmentsInput, UserUncheckedUpdateWithoutDailyAssessmentsInput>
+    create: XOR<UserCreateWithoutDailyAssessmentsInput, UserUncheckedCreateWithoutDailyAssessmentsInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutDailyAssessmentsInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutDailyAssessmentsInput, UserUncheckedUpdateWithoutDailyAssessmentsInput>
+  }
+
+  export type UserUpdateWithoutDailyAssessmentsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    username?: NullableStringFieldUpdateOperationsInput | string | null
+    passwordHash?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    avatarUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    location?: NullableStringFieldUpdateOperationsInput | string | null
+    bio?: NullableStringFieldUpdateOperationsInput | string | null
+    companionPersona?: EnumCompanionPersonaFieldUpdateOperationsInput | $Enums.CompanionPersona
+    plan?: EnumPlanFieldUpdateOperationsInput | $Enums.Plan
+    onboardingCompleted?: BoolFieldUpdateOperationsInput | boolean
+    zybaScore?: NullableIntFieldUpdateOperationsInput | number | null
+    stressLevel?: NullableIntFieldUpdateOperationsInput | number | null
+    streak?: NullableIntFieldUpdateOperationsInput | number | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    assessment?: AssessmentUpdateOneWithoutUserNestedInput
+    moodEntries?: MoodEntryUpdateManyWithoutUserNestedInput
+    journalEntries?: JournalEntryUpdateManyWithoutUserNestedInput
+    activities?: ActivityLogUpdateManyWithoutUserNestedInput
+    notificationPref?: NotificationPrefUpdateOneWithoutUserNestedInput
+    subscriptions?: SubscriptionUpdateManyWithoutUserNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutDailyAssessmentsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    username?: NullableStringFieldUpdateOperationsInput | string | null
+    passwordHash?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    avatarUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    location?: NullableStringFieldUpdateOperationsInput | string | null
+    bio?: NullableStringFieldUpdateOperationsInput | string | null
+    companionPersona?: EnumCompanionPersonaFieldUpdateOperationsInput | $Enums.CompanionPersona
+    plan?: EnumPlanFieldUpdateOperationsInput | $Enums.Plan
+    onboardingCompleted?: BoolFieldUpdateOperationsInput | boolean
+    zybaScore?: NullableIntFieldUpdateOperationsInput | number | null
+    stressLevel?: NullableIntFieldUpdateOperationsInput | number | null
+    streak?: NullableIntFieldUpdateOperationsInput | number | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    assessment?: AssessmentUncheckedUpdateOneWithoutUserNestedInput
+    moodEntries?: MoodEntryUncheckedUpdateManyWithoutUserNestedInput
     journalEntries?: JournalEntryUncheckedUpdateManyWithoutUserNestedInput
     activities?: ActivityLogUncheckedUpdateManyWithoutUserNestedInput
     notificationPref?: NotificationPrefUncheckedUpdateOneWithoutUserNestedInput
@@ -15305,6 +17003,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     assessment?: AssessmentCreateNestedOneWithoutUserInput
     moodEntries?: MoodEntryCreateNestedManyWithoutUserInput
+    dailyAssessments?: DailyAssessmentCreateNestedManyWithoutUserInput
     activities?: ActivityLogCreateNestedManyWithoutUserInput
     notificationPref?: NotificationPrefCreateNestedOneWithoutUserInput
     subscriptions?: SubscriptionCreateNestedManyWithoutUserInput
@@ -15330,6 +17029,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     assessment?: AssessmentUncheckedCreateNestedOneWithoutUserInput
     moodEntries?: MoodEntryUncheckedCreateNestedManyWithoutUserInput
+    dailyAssessments?: DailyAssessmentUncheckedCreateNestedManyWithoutUserInput
     activities?: ActivityLogUncheckedCreateNestedManyWithoutUserInput
     notificationPref?: NotificationPrefUncheckedCreateNestedOneWithoutUserInput
     subscriptions?: SubscriptionUncheckedCreateNestedManyWithoutUserInput
@@ -15371,6 +17071,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     assessment?: AssessmentUpdateOneWithoutUserNestedInput
     moodEntries?: MoodEntryUpdateManyWithoutUserNestedInput
+    dailyAssessments?: DailyAssessmentUpdateManyWithoutUserNestedInput
     activities?: ActivityLogUpdateManyWithoutUserNestedInput
     notificationPref?: NotificationPrefUpdateOneWithoutUserNestedInput
     subscriptions?: SubscriptionUpdateManyWithoutUserNestedInput
@@ -15396,6 +17097,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     assessment?: AssessmentUncheckedUpdateOneWithoutUserNestedInput
     moodEntries?: MoodEntryUncheckedUpdateManyWithoutUserNestedInput
+    dailyAssessments?: DailyAssessmentUncheckedUpdateManyWithoutUserNestedInput
     activities?: ActivityLogUncheckedUpdateManyWithoutUserNestedInput
     notificationPref?: NotificationPrefUncheckedUpdateOneWithoutUserNestedInput
     subscriptions?: SubscriptionUncheckedUpdateManyWithoutUserNestedInput
@@ -15421,6 +17123,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     assessment?: AssessmentCreateNestedOneWithoutUserInput
     moodEntries?: MoodEntryCreateNestedManyWithoutUserInput
+    dailyAssessments?: DailyAssessmentCreateNestedManyWithoutUserInput
     journalEntries?: JournalEntryCreateNestedManyWithoutUserInput
     notificationPref?: NotificationPrefCreateNestedOneWithoutUserInput
     subscriptions?: SubscriptionCreateNestedManyWithoutUserInput
@@ -15446,6 +17149,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     assessment?: AssessmentUncheckedCreateNestedOneWithoutUserInput
     moodEntries?: MoodEntryUncheckedCreateNestedManyWithoutUserInput
+    dailyAssessments?: DailyAssessmentUncheckedCreateNestedManyWithoutUserInput
     journalEntries?: JournalEntryUncheckedCreateNestedManyWithoutUserInput
     notificationPref?: NotificationPrefUncheckedCreateNestedOneWithoutUserInput
     subscriptions?: SubscriptionUncheckedCreateNestedManyWithoutUserInput
@@ -15487,6 +17191,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     assessment?: AssessmentUpdateOneWithoutUserNestedInput
     moodEntries?: MoodEntryUpdateManyWithoutUserNestedInput
+    dailyAssessments?: DailyAssessmentUpdateManyWithoutUserNestedInput
     journalEntries?: JournalEntryUpdateManyWithoutUserNestedInput
     notificationPref?: NotificationPrefUpdateOneWithoutUserNestedInput
     subscriptions?: SubscriptionUpdateManyWithoutUserNestedInput
@@ -15512,6 +17217,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     assessment?: AssessmentUncheckedUpdateOneWithoutUserNestedInput
     moodEntries?: MoodEntryUncheckedUpdateManyWithoutUserNestedInput
+    dailyAssessments?: DailyAssessmentUncheckedUpdateManyWithoutUserNestedInput
     journalEntries?: JournalEntryUncheckedUpdateManyWithoutUserNestedInput
     notificationPref?: NotificationPrefUncheckedUpdateOneWithoutUserNestedInput
     subscriptions?: SubscriptionUncheckedUpdateManyWithoutUserNestedInput
@@ -15537,6 +17243,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     assessment?: AssessmentCreateNestedOneWithoutUserInput
     moodEntries?: MoodEntryCreateNestedManyWithoutUserInput
+    dailyAssessments?: DailyAssessmentCreateNestedManyWithoutUserInput
     journalEntries?: JournalEntryCreateNestedManyWithoutUserInput
     activities?: ActivityLogCreateNestedManyWithoutUserInput
     notificationPref?: NotificationPrefCreateNestedOneWithoutUserInput
@@ -15562,6 +17269,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     assessment?: AssessmentUncheckedCreateNestedOneWithoutUserInput
     moodEntries?: MoodEntryUncheckedCreateNestedManyWithoutUserInput
+    dailyAssessments?: DailyAssessmentUncheckedCreateNestedManyWithoutUserInput
     journalEntries?: JournalEntryUncheckedCreateNestedManyWithoutUserInput
     activities?: ActivityLogUncheckedCreateNestedManyWithoutUserInput
     notificationPref?: NotificationPrefUncheckedCreateNestedOneWithoutUserInput
@@ -15641,6 +17349,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     assessment?: AssessmentUpdateOneWithoutUserNestedInput
     moodEntries?: MoodEntryUpdateManyWithoutUserNestedInput
+    dailyAssessments?: DailyAssessmentUpdateManyWithoutUserNestedInput
     journalEntries?: JournalEntryUpdateManyWithoutUserNestedInput
     activities?: ActivityLogUpdateManyWithoutUserNestedInput
     notificationPref?: NotificationPrefUpdateOneWithoutUserNestedInput
@@ -15666,6 +17375,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     assessment?: AssessmentUncheckedUpdateOneWithoutUserNestedInput
     moodEntries?: MoodEntryUncheckedUpdateManyWithoutUserNestedInput
+    dailyAssessments?: DailyAssessmentUncheckedUpdateManyWithoutUserNestedInput
     journalEntries?: JournalEntryUncheckedUpdateManyWithoutUserNestedInput
     activities?: ActivityLogUncheckedUpdateManyWithoutUserNestedInput
     notificationPref?: NotificationPrefUncheckedUpdateOneWithoutUserNestedInput
@@ -15769,6 +17479,19 @@ export namespace Prisma {
     createdAt?: Date | string
   }
 
+  export type DailyAssessmentCreateManyUserInput = {
+    id?: string
+    date: string
+    mood: $Enums.MoodLevel
+    stressLevel?: number | null
+    sleepRating?: number | null
+    energyTags?: DailyAssessmentCreateenergyTagsInput | string[]
+    reflection?: string | null
+    flaggedForRisk?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
   export type JournalEntryCreateManyUserInput = {
     id?: string
     title: string
@@ -15818,6 +17541,45 @@ export namespace Prisma {
     stressLevel?: NullableIntFieldUpdateOperationsInput | number | null
     note?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type DailyAssessmentUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    date?: StringFieldUpdateOperationsInput | string
+    mood?: EnumMoodLevelFieldUpdateOperationsInput | $Enums.MoodLevel
+    stressLevel?: NullableIntFieldUpdateOperationsInput | number | null
+    sleepRating?: NullableIntFieldUpdateOperationsInput | number | null
+    energyTags?: DailyAssessmentUpdateenergyTagsInput | string[]
+    reflection?: NullableStringFieldUpdateOperationsInput | string | null
+    flaggedForRisk?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type DailyAssessmentUncheckedUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    date?: StringFieldUpdateOperationsInput | string
+    mood?: EnumMoodLevelFieldUpdateOperationsInput | $Enums.MoodLevel
+    stressLevel?: NullableIntFieldUpdateOperationsInput | number | null
+    sleepRating?: NullableIntFieldUpdateOperationsInput | number | null
+    energyTags?: DailyAssessmentUpdateenergyTagsInput | string[]
+    reflection?: NullableStringFieldUpdateOperationsInput | string | null
+    flaggedForRisk?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type DailyAssessmentUncheckedUpdateManyWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    date?: StringFieldUpdateOperationsInput | string
+    mood?: EnumMoodLevelFieldUpdateOperationsInput | $Enums.MoodLevel
+    stressLevel?: NullableIntFieldUpdateOperationsInput | number | null
+    sleepRating?: NullableIntFieldUpdateOperationsInput | number | null
+    energyTags?: DailyAssessmentUpdateenergyTagsInput | string[]
+    reflection?: NullableStringFieldUpdateOperationsInput | string | null
+    flaggedForRisk?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type JournalEntryUpdateWithoutUserInput = {
@@ -15988,6 +17750,10 @@ export namespace Prisma {
      * @deprecated Use MoodEntryDefaultArgs instead
      */
     export type MoodEntryArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = MoodEntryDefaultArgs<ExtArgs>
+    /**
+     * @deprecated Use DailyAssessmentDefaultArgs instead
+     */
+    export type DailyAssessmentArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = DailyAssessmentDefaultArgs<ExtArgs>
     /**
      * @deprecated Use JournalEntryDefaultArgs instead
      */

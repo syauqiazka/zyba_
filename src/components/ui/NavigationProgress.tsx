@@ -112,8 +112,8 @@ export default function NavigationProgress() {
         style={{
           left: `calc(${progress}% - 8px)`,
           top: "-5px",
-          background: "rgba(242, 136, 75, 0.5)",
-          filter: "blur(5px)",
+          background: "rgba(242, 136, 75, 0.6)",
+          boxShadow: "0 0 8px rgba(242, 136, 75, 0.6)",
           transition: "left 120ms ease-out",
         }}
       />

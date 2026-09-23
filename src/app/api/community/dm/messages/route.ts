@@ -100,9 +100,13 @@ export async function POST(req: NextRequest) {
       data: { lastMessageAt: new Date() },
     });
 
-    // Publish via Ably for realtime delivery
-    const { publishDMMessage } = await import("@/backend/realtime/ably");
-    await publishDMMessage(conversationId, message);
+    // Publish via Ably for realtime delivery (non-blocking, never fails message send)
+    try {
+      const { publishDMMessage } = await import("@/backend/realtime/ably");
+      await publishDMMessage(conversationId, message);
+    } catch (realtimeErr) {
+      console.warn("[DM Realtime Publish warning]:", realtimeErr);
+    }
 
     return NextResponse.json({ message });
   } catch (err: any) {

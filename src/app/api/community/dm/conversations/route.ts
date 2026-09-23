@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { verifySessionToken } from "@/lib/auth";
 import { communityDb } from "@/backend/db/communityClient";
+import { accountDb } from "@/backend/db/accountClient";
 
 /**
  * GET /api/community/dm/conversations
@@ -43,17 +44,43 @@ export async function GET(req: NextRequest) {
       },
     });
 
+    const otherUserIds = Array.from(
+      new Set(
+        participations
+          .map((p) => p.conversation.participants[0]?.userId)
+          .filter((id): id is string => Boolean(id))
+      )
+    );
+
+    let usersMap = new Map<string, { name: string; username: string | null; avatarUrl: string | null }>();
+    if (otherUserIds.length > 0) {
+      try {
+        const users = await accountDb.user.findMany({
+          where: { id: { in: otherUserIds } },
+          select: { id: true, name: true, username: true, avatarUrl: true },
+        });
+        usersMap = new Map(users.map((u) => [u.id, u]));
+      } catch (err) {
+        console.warn("[DM] Could not fetch user details for conversations", err);
+      }
+    }
+
     const conversations = participations.map((p) => {
       const conv = p.conversation;
       const otherParticipant = conv.participants[0];
+      const otherId = otherParticipant?.userId || "unknown";
+      const userMeta = usersMap.get(otherId);
       const lastMsg = conv.messages[0];
 
       return {
         id: conv.id,
-        otherUserId: otherParticipant?.userId || "unknown",
+        otherUserId: otherId,
+        otherUserName: userMeta?.name || otherId,
+        otherUserUsername: userMeta?.username || null,
+        otherUserAvatar: userMeta?.avatarUrl || "🦊",
         lastMessage: lastMsg?.content || "",
         lastMessageAt: conv.lastMessageAt.toISOString(),
-        unreadCount: 0, // TODO: implement read tracking
+        unreadCount: 0,
       };
     });
 

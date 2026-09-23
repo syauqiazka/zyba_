@@ -1,10 +1,13 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { Settings, UserPlus } from "lucide-react";
 import { useCommunity } from "../context/CommunityContext";
 import PostCard from "./PostCard";
 
 export default function CommunityProfileView() {
+  const router = useRouter();
   const {
     posts,
     savedPostIds,
@@ -15,75 +18,122 @@ export default function CommunityProfileView() {
     setIsPostModalOpen,
   } = useCommunity();
 
-  const [activeTab, setActiveTab] = useState<"THREADS" | "REPLIES" | "REPOSTS" | "SAVED">("THREADS");
-  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
-  const [currentUserName, setCurrentUserName] = useState("Pengguna ZYBA");
+  const [userId, setUserId] = useState<string | null>(null);
+  const [userName, setUserName] = useState("Pengguna ZYBA");
+  const [userUsername, setUserUsername] = useState("");
+  const [userBio, setUserBio] = useState("");
+  const [followerCount, setFollowerCount] = useState(0);
+  const [followingCount, setFollowingCount] = useState(0);
+  const [activeTab, setActiveTab] = useState<"THREADS" | "REPLIES" | "SAVED">("THREADS");
 
   useEffect(() => {
-    try {
-      const cached = localStorage.getItem("zyba_user_cache");
-      if (cached) {
-        const parsed = JSON.parse(cached);
-        if (parsed.name) setCurrentUserName(parsed.name);
-      }
-    } catch {}
-    fetch("/api/user/me")
-      .then((r) => (r.ok ? r.json() : null))
-      .then((d) => {
-        if (d?.user) {
-          setCurrentUserId(d.user.id);
-          setCurrentUserName(d.user.name || "Pengguna ZYBA");
+    async function loadMe() {
+      try {
+        const res = await fetch("/api/user/me");
+        if (!res.ok) return;
+        const data = await res.json();
+        if (data.user) {
+          setUserId(data.user.id);
+          setUserName(data.user.name || "Pengguna ZYBA");
+          setUserUsername(data.user.username || "");
+          setUserBio(data.user.bio || "");
         }
-      })
-      .catch(() => {});
+      } catch {}
+    }
+    loadMe();
   }, []);
 
-  const myPosts = currentUserId ? posts.filter((p) => p.author === currentUserName) : [];
+  useEffect(() => {
+    if (!userId) return;
+    async function loadCounts() {
+      try {
+        const [fRes, fgRes] = await Promise.all([
+          fetch(`/api/community/users/${userId}/followers`),
+          fetch(`/api/community/users/${userId}/following`),
+        ]);
+        if (fRes.ok) {
+          const fData = await fRes.json();
+          setFollowerCount(fData.followers?.length ?? 0);
+        }
+        if (fgRes.ok) {
+          const fgData = await fgRes.json();
+          setFollowingCount(fgData.following?.length ?? 0);
+        }
+      } catch {}
+    }
+    loadCounts();
+  }, [userId]);
+
+  const myPosts = userId
+    ? posts.filter((p) => {
+        const authorId = (p as any).userId;
+        return authorId === userId;
+      })
+    : [];
   const mySaved = posts.filter((p) => savedPostIds.includes(p.id));
+
+  const initials = userName
+    .split(" ")
+    .map((w) => w[0])
+    .join("")
+    .toUpperCase()
+    .slice(0, 2);
 
   return (
     <div className="w-full max-w-[620px] mx-auto py-4 px-2 space-y-4 animate-in fade-in duration-200">
-      {/* Profile Header (Exact Threads Profile layout) */}
+      {/* Profile Header */}
       <div className="bg-white rounded-3xl border border-brown-900/10 p-6 shadow-xs">
         <div className="flex items-start justify-between gap-4 mb-3">
           <div>
-            <h1 className="font-bold text-xl text-brown-900">{currentUserName}</h1>
-            <p className="text-xs text-brown-700/60 flex items-center gap-1.5 mt-0.5">
-              <span>harikitte_ikou</span>
-              <span className="text-[10px] bg-cream px-2 py-0.5 rounded-full font-bold text-brown-900">
-                threads.net
-              </span>
-            </p>
+            <h1 className="font-bold text-xl text-brown-900">{userName}</h1>
+            {userUsername && (
+              <p className="text-xs text-brown-700/60 mt-0.5">@{userUsername}</p>
+            )}
           </div>
-
-          <div className="w-16 h-16 rounded-full bg-brown-900 text-white flex items-center justify-center font-bold text-2xl shadow-md shrink-0">
-            A
+          <div className="w-16 h-16 rounded-full bg-orange-100 border border-orange-200 flex items-center justify-center font-bold text-2xl text-orange-600 shadow-md shrink-0">
+            {initials}
           </div>
         </div>
 
-        <p className="text-xs text-brown-900 leading-relaxed max-w-md mb-4">
-          Menjelajahi kebiasaan mindfulness & program kebugaran mental di ZYBA. Bersama saling menguatkan, satu langkah kecil setiap hari.
-        </p>
+        {userBio && (
+          <p className="text-xs text-brown-900 leading-relaxed max-w-md mb-4">
+            {userBio}
+          </p>
+        )}
 
         <div className="flex items-center justify-between text-xs text-brown-700/60 border-t border-brown-900/6 pt-3">
           <div className="flex items-center gap-4">
-            <span><strong>248</strong> pengikut</span>
-            <span><strong>192</strong> mengikuti</span>
+            <button
+              type="button"
+              onClick={() => userId && router.push(`/community/profile/${userId}/followers`)}
+              className="hover:text-brown-900 transition-colors"
+            >
+              <strong className="text-brown-900">{followerCount}</strong> pengikut
+            </button>
+            <button
+              type="button"
+              onClick={() => userId && router.push(`/community/profile/${userId}/following`)}
+              className="hover:text-brown-900 transition-colors"
+            >
+              <strong className="text-brown-900">{followingCount}</strong> mengikuti
+            </button>
           </div>
 
-          <button
-            type="button"
-            onClick={() => setIsPostModalOpen(true)}
-            className="rounded-full bg-brown-900 text-white font-bold px-4 py-1.5 hover:bg-orange-500 transition-colors shadow-2xs"
-          >
-            + Thread Baru
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => setIsPostModalOpen(true)}
+              className="rounded-full bg-brown-900 text-white font-bold px-4 py-1.5 hover:bg-orange-500 transition-colors shadow-2xs"
+            >
+              + Thread Baru
+            </button>
+          </div>
         </div>
       </div>
 
-      {/* Profile Tabs: Threads, Replies, Reposts, Saved */}
+      {/* Tabs */}
       <div className="flex border-b border-brown-900/10 text-xs font-bold">
-        {(["THREADS", "REPLIES", "REPOSTS", "SAVED"] as const).map((tab) => (
+        {(["THREADS", "REPLIES", "SAVED"] as const).map((tab) => (
           <button
             key={tab}
             type="button"
@@ -118,17 +168,27 @@ export default function CommunityProfileView() {
               />
             ))
           )
+        ) : activeTab === "THREADS" ? (
+          myPosts.length === 0 ? (
+            <div className="py-12 text-center text-xs text-brown-700/50">
+              Belum ada postingan.
+            </div>
+          ) : (
+            myPosts.map((post) => (
+              <PostCard
+                key={post.id}
+                post={post}
+                onToggleLike={handleToggleLike}
+                onToggleRepost={handleToggleRepost}
+                onAddComment={handleAddComment}
+                onTagClick={handleTagFilter}
+              />
+            ))
+          )
         ) : (
-          myPosts.map((post) => (
-            <PostCard
-              key={post.id}
-              post={post}
-              onToggleLike={handleToggleLike}
-              onToggleRepost={handleToggleRepost}
-              onAddComment={handleAddComment}
-              onTagClick={handleTagFilter}
-            />
-          ))
+          <div className="py-12 text-center text-xs text-brown-700/50">
+            Replies coming soon.
+          </div>
         )}
       </div>
     </div>
