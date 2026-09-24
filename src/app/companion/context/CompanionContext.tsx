@@ -77,7 +77,7 @@ interface CompanionContextType {
   handleCreateNewChat: () => void;
   handleDeleteChat: () => void;
   handleSendMessage: (customText?: string) => Promise<void>;
-  activeConv: Conversation;
+  activeConv: Conversation | undefined;
   messagesEndRef: React.RefObject<HTMLDivElement>;
   quotaRemaining: number | null;
   isTTSEnabled: boolean;
@@ -112,9 +112,33 @@ export function CompanionProvider({ children }: { children: React.ReactNode }) {
   const [chatMode, setChatMode] = useState<"curhat" | "solusi">("curhat");
   const [inputText, setInputText] = useState("");
   const [isVoiceActive, setIsVoiceActive] = useState(false);
-  const [commStyle, setCommStyle] = useState<"CASUAL" | "FORMAL" | "FUN">("CASUAL");
-  const [selectedModel, setSelectedModel] = useState<AIModelType>("gemini-3.8-flash");
+
+  // Persist commStyle & selectedModel across refreshes via localStorage
+  const [commStyle, setCommStyleRaw] = useState<"CASUAL" | "FORMAL" | "FUN">("CASUAL");
+  const [selectedModel, setSelectedModelRaw] = useState<AIModelType>("gemini-3.8-flash");
   const [isSending, setIsSending] = useState(false);
+  const [_hydrated, setHydrated] = useState(false);
+
+  // Load persisted preferences on mount (client-only)
+  useEffect(() => {
+    try {
+      const savedModel = localStorage.getItem("zyba_companion_model") as AIModelType | null;
+      const savedStyle = localStorage.getItem("zyba_companion_style") as "CASUAL" | "FORMAL" | "FUN" | null;
+      if (savedModel) setSelectedModelRaw(savedModel);
+      if (savedStyle) setCommStyleRaw(savedStyle);
+    } catch {}
+    setHydrated(true);
+  }, []);
+
+  const setSelectedModel = useCallback((model: AIModelType) => {
+    setSelectedModelRaw(model);
+    try { localStorage.setItem("zyba_companion_model", model); } catch {}
+  }, []);
+
+  const setCommStyle = useCallback((style: "CASUAL" | "FORMAL" | "FUN") => {
+    setCommStyleRaw(style);
+    try { localStorage.setItem("zyba_companion_style", style); } catch {}
+  }, []);
 
   // Modals & Banners
   const [showSettingsModal, setShowSettingsModal] = useState(false);
@@ -131,7 +155,7 @@ export function CompanionProvider({ children }: { children: React.ReactNode }) {
   const [ttsProvider, setTTSProvider] = useState<"elevenlabs" | "edge">("edge"); // Default Edge TTS
   const playedMessageIds = useRef<Set<string>>(new Set()); // Track played messages
 
-  const activeConv = conversations.find((c) => c.id === activeConvId) || conversations[0];
+  const activeConv = activeConvId ? (conversations.find((c) => c.id === activeConvId) ?? undefined) : undefined;
 
   // Stop audio when switching conversations
   useEffect(() => {
@@ -220,21 +244,22 @@ export function CompanionProvider({ children }: { children: React.ReactNode }) {
     const textToSend = (customText || inputText).trim();
     if (!textToSend || isSending) return;
 
-    // Auto-create conversation if none exists
+    // Auto-create conversation if none is active (new chat state)
     let currentConvId = activeConvId;
     
-    if (!currentConvId || conversations.length === 0) {
+    if (!currentConvId) {
+      const tempId = `conv-${Date.now()}`;
       const newConv: Conversation = {
-        id: `conv-${Date.now()}`, // temporary
+        id: tempId,
         title: textToSend.slice(0, 32),
         lastMsg: textToSend,
         time: "Baru saja",
         emotionTag: "Netral",
         messages: [],
       };
-      setConversations([newConv]);
-      setActiveConvId(newConv.id);
-      currentConvId = newConv.id;
+      setConversations((prev) => [newConv, ...prev]);
+      setActiveConvId(tempId);
+      currentConvId = tempId;
       
       // Save to DB immediately and get real ID
       try {
@@ -245,12 +270,12 @@ export function CompanionProvider({ children }: { children: React.ReactNode }) {
         });
         const dbData = await dbResponse.json();
         
-        // Update local state with DB ID
+        // Update local state with DB ID (replace temp ID)
         if (dbData.conversation) {
           const dbId = dbData.conversation.id;
-          setConversations([{ ...newConv, id: dbId }]);
+          setConversations((prev) => prev.map((c) => c.id === tempId ? { ...c, id: dbId } : c));
           setActiveConvId(dbId);
-          currentConvId = dbId; // use DB ID for message API
+          currentConvId = dbId;
         }
       } catch (err) {
         console.error("[Create Conversation]:", err);
@@ -379,17 +404,11 @@ export function CompanionProvider({ children }: { children: React.ReactNode }) {
   };
 
   const handleCreateNewChat = () => {
-    const newId = `conv-${Date.now()}`;
-    const newConv: Conversation = {
-      id: newId,
-      title: "Percakapan Baru",
-      lastMsg: "Mulai percakapan baru dengan Zyba...",
-      time: formatChatListTime(new Date()),
-      emotionTag: "Netral",
-      messages: [],
-    };
-    setConversations([newConv, ...conversations]);
-    setActiveConvId(newId);
+    // Don't create a temp conversation that would vanish on refresh.
+    // Just clear the active conversation so the welcome/empty state shows.
+    // A real DB conversation is created only when the first message is sent.
+    setActiveConvId(null);
+    setInputText("");
   };
 
   const handleDeleteChat = () => {

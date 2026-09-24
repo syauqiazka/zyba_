@@ -167,7 +167,7 @@ export default function CompanionSidebar({
   // ── When collapsed, show a slim icon rail ───────────────────────────────
   if (!sidebarVisible) {
     return (
-      <aside className="hidden md:flex flex-col w-14 shrink-0 bg-[#FAF7F2] border-r border-brown-900/10 h-screen items-center py-3 gap-2 select-none transition-all duration-300 z-20">
+      <aside className="flex flex-col w-14 shrink-0 bg-[#FAF7F2] border-r border-brown-900/10 h-screen items-center py-3 gap-2 select-none transition-all duration-300 z-20">
         {/* Toggle back open */}
         <button
           type="button"
@@ -228,7 +228,7 @@ export default function CompanionSidebar({
   }
 
   return (
-    <aside className="hidden md:flex flex-col w-64 lg:w-68 shrink-0 bg-[#FAF7F2] border-r border-brown-900/10 h-screen select-none transition-all duration-300 z-20">
+    <aside className="flex flex-col w-72 md:w-64 lg:w-68 shrink-0 bg-[#FAF7F2] border-r border-brown-900/10 h-screen select-none transition-all duration-300 z-20">
       {/* ── 1. Top Header ──────────────────────────────────────────────── */}
       <div className="flex items-center justify-between px-4 py-3.5 border-b border-brown-900/8 shrink-0">
         <Link
