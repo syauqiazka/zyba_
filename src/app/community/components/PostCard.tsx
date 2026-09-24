@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useCommunity } from "../context/CommunityContext";
 import { Check } from "lucide-react";
+import { useUserStatus, UserStatusConfig } from "@/hooks/useUserStatus";
 
 export interface CommentItem {
   id: string;
@@ -99,7 +100,15 @@ const renderContent = (text: string, onTagClick?: (tag: string) => void) =>
   );
 
 // ─── Avatar ───────────────────────────────────────────────────────────────────
-function AvatarBubble({ initials, size = "md" }: { initials: string; size?: "sm" | "md" }) {
+function AvatarBubble({
+  initials,
+  size = "md",
+  statusConfig,
+}: {
+  initials: string;
+  size?: "sm" | "md";
+  statusConfig?: UserStatusConfig;
+}) {
   const sz = size === "sm" ? "w-7 h-7 text-[10px]" : "w-10 h-10 text-xs";
   const colors = [
     "bg-orange-100 text-orange-600 border-orange-200",
@@ -109,9 +118,30 @@ function AvatarBubble({ initials, size = "md" }: { initials: string; size?: "sm"
     "bg-mood-sad/20 text-orange-700 border-orange-200",
   ];
   const color = colors[(initials.charCodeAt(0) + (initials.charCodeAt(1) || 0)) % colors.length];
+  // Status dot offset depends on avatar size
+  const dotSize = size === "sm" ? "w-2.5 h-2.5 border-[2px]" : "w-3.5 h-3.5 border-[2.5px]";
   return (
-    <div className={`${sz} ${color} rounded-full border font-display font-bold flex items-center justify-center shrink-0 shadow-2xs`}>
-      {initials}
+    <div className="relative shrink-0">
+      <div className={`${sz} ${color} rounded-full border font-display font-bold flex items-center justify-center shadow-2xs`}>
+        {initials}
+      </div>
+      {/* Status Dot — only shown for current user's own posts */}
+      {statusConfig && (
+        <div
+          className={`absolute -bottom-0.5 -right-0.5 ${dotSize} rounded-full border-white flex items-center justify-center`}
+          style={{ backgroundColor: statusConfig.hexColor }}
+          title={statusConfig.label}
+        >
+          {/* DND dash mark */}
+          {statusConfig.status === "dnd" && (
+            <div className="w-1.5 h-[2px] bg-white rounded-full" />
+          )}
+          {/* Invisible inner dot */}
+          {statusConfig.status === "invisible" && (
+            <div className="w-1 h-1 rounded-full bg-white/80" />
+          )}
+        </div>
+      )}
     </div>
   );
 }
@@ -165,6 +195,7 @@ const IcMessageOff = () => <svg width="16" height="16" viewBox="0 0 24 24" fill=
 
 // ─── PostCard ─────────────────────────────────────────────────────────────────
 export default function PostCard({ post, onToggleLike, onToggleRepost, onAddComment, onTagClick, currentUserId }: PostCardProps) {
+  const myStatus = useUserStatus();
   const router = useRouter();
   const { savedPostIds = [], handleToggleSave = () => {}, handleDeletePost, handleArchivePost } = useCommunity();
   const isSaved = savedPostIds.includes(post.id);
@@ -219,7 +250,10 @@ export default function PostCard({ post, onToggleLike, onToggleRepost, onAddComm
       {/* Left: Avatar + thread line */}
       <div className="flex flex-col items-center">
         <button type="button" onClick={handleAuthorClick} className="cursor-pointer hover:opacity-80 transition-opacity">
-          <AvatarBubble initials={post.avatar} />
+          <AvatarBubble
+            initials={post.avatar}
+            statusConfig={isOwner ? myStatus : undefined}
+          />
         </button>
         {showComments && post.comments && post.comments.length > 0 && (
           <div className="w-0.5 flex-1 bg-brown-900/10 mt-2 mb-1 min-h-[20px] rounded-full" />

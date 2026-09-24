@@ -106,6 +106,8 @@ export default function ProfilePopover({
     setShowStatusMenu(false);
     try {
       localStorage.setItem("zyba_user_online_status", status);
+      // Notify same-tab components (PostCard, MessagesView)
+      window.dispatchEvent(new CustomEvent("zyba_status_change"));
     } catch {}
   };
 
