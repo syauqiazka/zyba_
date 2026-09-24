@@ -121,9 +121,25 @@ export default function ProfileSettingsModal({ user, isOpen, onClose, onUserUpda
   }, [user]);
   useEffect(() => {
     if (!isOpen) return;
+    // Load notification prefs
     fetch("/api/settings/notifications").then(r => r.ok ? r.json() : null).then(d => {
       if (d?.pref) { setNotifChatbot(d.pref.companionNotif ?? true); setNotifWellness(d.pref.wellnessNotif ?? true); setNotifCommunity(d.pref.communityNotif ?? false); }
     }).catch(() => {});
+    // Load phone & username from DB
+    fetch("/api/user/me").then(r => r.ok ? r.json() : null).then(d => {
+      if (d?.user) {
+        if (d.user.phone) setPhone(d.user.phone);
+        if (d.user.username && !username) setUsername(d.user.username);
+        if (d.user.bio && !bio) setBio(d.user.bio);
+      }
+    }).catch(() => {});
+    // Restore persona & commStyle from localStorage
+    try {
+      const savedPersona = localStorage.getItem("zyba_companion_persona") as PersonaId | null;
+      if (savedPersona) setPersona(savedPersona);
+      const savedStyle = localStorage.getItem("zyba_companion_style") as "CASUAL" | "FORMAL" | "FUN" | null;
+      if (savedStyle) setCommStyle(savedStyle);
+    } catch {}
   }, [isOpen]);
   useEffect(() => {
     const fn = (e: KeyboardEvent) => { if (e.key === "Escape") onClose(); };
@@ -184,7 +200,24 @@ export default function ProfileSettingsModal({ user, isOpen, onClose, onUserUpda
   const maskedEmailShort = email.replace(/^(.)(.*)(@.*)$/, (_, a, _b, c) => a + "***" + c);
 
   const saveName = async () => {
-    try { await fetch("/api/auth", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ action: "UPDATE_PROFILE", name, email }) }); onUserUpdate({ name }); setIsEditingName(false); ok("Nama diperbarui!"); } catch { setIsEditingName(false); }
+    try {
+      const res = await fetch("/api/user/me", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name }),
+      });
+      if (res.ok) {
+        onUserUpdate({ name });
+        // Sync to localStorage
+        try {
+          const cached = localStorage.getItem("zyba_user_cache");
+          const prev = cached ? JSON.parse(cached) : {};
+          localStorage.setItem("zyba_user_cache", JSON.stringify({ ...prev, name }));
+        } catch {}
+        setIsEditingName(false);
+        ok("Nama diperbarui!");
+      }
+    } catch { setIsEditingName(false); }
   };
   const saveUsername = async () => {
     const clean = username.trim().toLowerCase().replace(/[^a-z0-9_]/g, "");
@@ -224,11 +257,25 @@ export default function ProfileSettingsModal({ user, isOpen, onClose, onUserUpda
     }
   };
   const savePhone = async () => {
-    try { await fetch("/api/user/me", { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ phone }) }); setIsEditingPhone(false); ok("Nomor telepon disimpan!"); } catch { setIsEditingPhone(false); }
+    try {
+      const res = await fetch("/api/user/me", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ phone }),
+      });
+      if (res.ok) { setIsEditingPhone(false); ok("Nomor telepon disimpan!"); }
+    } catch { setIsEditingPhone(false); }
   };
   const savePassword = async () => {
     if (!newPassword.trim()) return;
-    try { await fetch("/api/user/me", { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ password: newPassword }) }); setIsChangingPassword(false); setNewPassword(""); ok("Password diperbarui!"); } catch { setIsChangingPassword(false); }
+    try {
+      const res = await fetch("/api/user/me", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ password: newPassword }),
+      });
+      if (res.ok) { setIsChangingPassword(false); setNewPassword(""); ok("Password diperbarui!"); }
+    } catch { setIsChangingPassword(false); }
   };
   const saveNotif = async () => {
     try { await fetch("/api/settings/notifications", { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ companionNotif: notifChatbot, wellnessNotif: notifWellness, communityNotif: notifCommunity }) }); ok("Notifikasi disimpan!"); } catch {}
@@ -464,7 +511,10 @@ export default function ProfileSettingsModal({ user, isOpen, onClose, onUserUpda
             <Section id="persona" title="Karakter Zyba">
               <div className="flex flex-col gap-3">
                 <p className="text-xs text-brown-700">Karakter ini mengubah gaya bicara dan kepribadian Zyba saat menemanimu.</p>
-                <PersonaPicker selected={persona} onChange={setPersona} />
+                <PersonaPicker selected={persona} onChange={(p) => {
+                  setPersona(p);
+                  try { localStorage.setItem("zyba_companion_persona", p); } catch {}
+                }} />
                 <Btn onClick={() => ok("Karakter disimpan!")}>Simpan</Btn>
               </div>
             </Section>
@@ -472,7 +522,10 @@ export default function ProfileSettingsModal({ user, isOpen, onClose, onUserUpda
             <Section id="gaya-bahasa" title="Gaya Bahasa AI">
               <div className="flex flex-col gap-2">
                 {(["CASUAL", "FORMAL", "FUN"] as const).map(s => (
-                  <button key={s} onClick={() => setCommStyle(s)} className={`flex items-center justify-between p-3 rounded-2xl text-xs font-bold border transition-colors ${commStyle === s ? "bg-brown-900 text-white border-brown-900" : "bg-cream text-brown-900 border-brown-900/10 hover:border-orange-500"}`}>
+                  <button key={s} onClick={() => {
+                    setCommStyle(s);
+                    try { localStorage.setItem("zyba_companion_style", s); } catch {};
+                  }} className={`flex items-center justify-between p-3 rounded-2xl text-xs font-bold border transition-colors ${commStyle === s ? "bg-brown-900 text-white border-brown-900" : "bg-cream text-brown-900 border-brown-900/10 hover:border-orange-500"}`}>
                     <span>{s === "CASUAL" ? "😊 Santai" : s === "FORMAL" ? "🎩 Formal" : "🎉 Fun"}</span>
                     {commStyle === s && <span>✓</span>}
                   </button>

@@ -10,6 +10,8 @@ import {
   calculateZybaScore,
   scoreToCondition,
 } from "@/backend/scoring/zybaScore";
+import bcrypt from "bcryptjs";
+
 
 export async function GET(req: NextRequest) {
   try {
@@ -124,6 +126,8 @@ export async function GET(req: NextRequest) {
         email: user.email,
         username: user.username || null,
         bio: user.bio || null,
+        phone: user.phone || null,
+        location: user.location || null,
         avatarUrl: resolveAvatar(user.avatarUrl),
         avatarKey: user.avatarUrl || "fox",
         plan,
@@ -159,7 +163,7 @@ export async function PATCH(req: NextRequest) {
     }
 
     const body = await req.json();
-    const { name, username, bio } = body;
+    const { name, username, bio, phone, location, password } = body;
 
     // Validate name if provided
     if (name !== undefined && !name.trim()) {
@@ -169,6 +173,13 @@ export async function PATCH(req: NextRequest) {
     const updateData: any = {};
     if (name !== undefined) updateData.name = name.trim();
     if (bio !== undefined) updateData.bio = bio.trim() || null;
+    if (phone !== undefined) updateData.phone = phone.trim() || null;
+    if (location !== undefined) updateData.location = location.trim() || null;
+
+    // Handle password change
+    if (password !== undefined && password.trim()) {
+      updateData.passwordHash = await bcrypt.hash(password.trim(), 12);
+    }
 
     // Validate username if provided
     if (username !== undefined) {
@@ -200,6 +211,8 @@ export async function PATCH(req: NextRequest) {
         email: updatedUser.email,
         username: updatedUser.username || null,
         bio: updatedUser.bio || null,
+        phone: updatedUser.phone || null,
+        location: updatedUser.location || null,
         avatarUrl: resolveAvatar(updatedUser.avatarUrl),
       },
     });
@@ -209,3 +222,5 @@ export async function PATCH(req: NextRequest) {
   }
 }
 
+// PUT is an alias of PATCH — used by settings/page.tsx
+export const PUT = PATCH;

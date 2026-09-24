@@ -7,10 +7,14 @@ import { PersonaId } from "@/backend/ai/personas";
 
 export default function SettingsPage() {
   const [name, setName] = useState("");
-  const [email, setEmail] = useState("alex@zyba.app");
-  const [phone, setPhone] = useState("+62 812-3456-7890");
-  const [location, setLocation] = useState("Jakarta, Indonesia");
-  const [bio, setBio] = useState("Mahasiswa & Gen Z Wellness Enthusiast.");
+  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
+  const [location, setLocation] = useState("");
+  const [bio, setBio] = useState("");
+  const [username, setUsername] = useState("");
+  const [plan, setPlan] = useState<"FREE" | "PLUS">("FREE");
+  const [avatarKey, setAvatarKey] = useState("fox");
+  const [isLoading, setIsLoading] = useState(true);
   const [showProfileModal, setShowProfileModal] = useState(false);
 
   const [selectedPersona, setSelectedPersona] = useState<PersonaId>("KINA");
@@ -19,34 +23,62 @@ export default function SettingsPage() {
   const [notifCommunity, setNotifCommunity] = useState(false);
   const [fingerprintEnabled, setFingerprintEnabled] = useState(true);
   const [isSaved, setIsSaved] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
 
   useEffect(() => {
+    // Load from localStorage cache first (instant render)
     try {
       const cached = localStorage.getItem("zyba_user_cache");
       if (cached) {
-        const parsed = JSON.parse(cached);
-        if (parsed.name) setName(parsed.name);
-        if (parsed.email) setEmail(parsed.email);
+        const p = JSON.parse(cached);
+        if (p.name) setName(p.name);
+        if (p.email) setEmail(p.email);
+        if (p.username) setUsername(p.username);
+        if (p.bio) setBio(p.bio);
+        if (p.phone) setPhone(p.phone);
+        if (p.location) setLocation(p.location);
+        if (p.plan) setPlan(p.plan);
+        if (p.avatarKey) setAvatarKey(p.avatarKey);
       }
+      const savedPersona = localStorage.getItem("zyba_companion_persona") as PersonaId | null;
+      if (savedPersona) setSelectedPersona(savedPersona);
     } catch {}
 
-    async function loadUser() {
+    async function loadFromDB() {
       try {
-        const res = await fetch("/api/user/me");
-        if (res.ok) {
-          const data = await res.json();
+        const [userRes, notifRes] = await Promise.all([
+          fetch("/api/user/me"),
+          fetch("/api/settings/notifications"),
+        ]);
+
+        if (userRes.ok) {
+          const data = await userRes.json();
           if (data.user) {
-            setName(data.user.name || "Alex Rivera");
-            setEmail(data.user.email || "alex@zyba.app");
-            setPhone(data.user.phone || "+62 812-3456-7890");
-            setLocation(data.user.location || "Jakarta, Indonesia");
-            setBio(data.user.bio || "Mahasiswa & Gen Z Wellness Enthusiast.");
+            const u = data.user;
+            setName(u.name || "");
+            setEmail(u.email || "");
+            setPhone(u.phone || "");
+            setLocation(u.location || "");
+            setBio(u.bio || "");
+            setUsername(u.username || "");
+            setPlan(u.plan || "FREE");
+            setAvatarKey(u.avatarKey || "fox");
+            // Sync full profile into localStorage cache
+            try {
+              const existing = localStorage.getItem("zyba_user_cache");
+              const prev = existing ? JSON.parse(existing) : {};
+              localStorage.setItem("zyba_user_cache", JSON.stringify({
+                ...prev, name: u.name, email: u.email,
+                username: u.username || prev.username, bio: u.bio || prev.bio,
+                phone: u.phone || prev.phone, location: u.location || prev.location,
+                plan: u.plan, avatarKey: u.avatarKey, avatarUrl: u.avatarUrl,
+              }));
+            } catch {}
           }
         }
-        // Load notification prefs
-        const notifRes = await fetch("/api/settings/notifications");
+
         if (notifRes.ok) {
           const { pref } = await notifRes.json();
           if (pref) {
@@ -55,19 +87,24 @@ export default function SettingsPage() {
             setNotifCommunity(pref.communityNotif ?? false);
           }
         }
-      } catch {}
+      } catch (err) {
+        console.error("[Settings] Load error:", err);
+      } finally {
+        setIsLoading(false);
+      }
     }
-    loadUser();
+    loadFromDB();
   }, []);
 
   const handleSave = async () => {
     setIsSaved(false);
+    setSaveError(null);
     try {
-      await Promise.all([
+      const [profileRes] = await Promise.all([
         fetch("/api/user/me", {
-          method: "PUT",
+          method: "PATCH",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ name, phone, location, bio }),
+          body: JSON.stringify({ name, phone, location, bio, ...(username ? { username } : {}) }),
         }),
         fetch("/api/settings/notifications", {
           method: "PUT",
@@ -75,15 +112,33 @@ export default function SettingsPage() {
           body: JSON.stringify({ companionNotif: notifChatbot, wellnessNotif: notifWellness, communityNotif: notifCommunity }),
         }),
       ]);
+
+      if (!profileRes.ok) {
+        const errData = await profileRes.json();
+        setSaveError(errData.error || "Gagal menyimpan profil");
+        return;
+      }
+
+      const profileData = await profileRes.json();
+      const updated = profileData.user;
+      // Sync localStorage
       try {
-        const cached = localStorage.getItem("zyba_user_cache");
-        const parsed = cached ? JSON.parse(cached) : {};
-        localStorage.setItem("zyba_user_cache", JSON.stringify({ ...parsed, name, email }));
+        const existing = localStorage.getItem("zyba_user_cache");
+        const prev = existing ? JSON.parse(existing) : {};
+        localStorage.setItem("zyba_user_cache", JSON.stringify({
+          ...prev,
+          name: updated.name || name, email: updated.email || email,
+          username: updated.username ?? username, bio: updated.bio ?? bio,
+          phone: updated.phone ?? phone, location: updated.location ?? location,
+        }));
       } catch {}
+      try { localStorage.setItem("zyba_companion_persona", selectedPersona); } catch {}
+
       setIsSaved(true);
       setTimeout(() => setIsSaved(false), 3000);
     } catch (err) {
       console.error("Save settings error:", err);
+      setSaveError("Terjadi kesalahan. Coba lagi.");
     }
   };
 
@@ -108,6 +163,7 @@ export default function SettingsPage() {
     try {
       const res = await fetch("/api/account/delete", { method: "DELETE" });
       if (res.ok) {
+        localStorage.clear();
         window.location.href = "/";
       } else {
         const data = await res.json();
@@ -125,14 +181,26 @@ export default function SettingsPage() {
     <div className="flex flex-col gap-8 pb-12">
       <SettingsBanner onOpenProfileModal={() => setShowProfileModal(true)} onSave={handleSave} isSaved={isSaved} />
 
+      {saveError && (
+        <div className="bg-danger/10 border border-danger/30 text-danger text-xs font-bold px-4 py-2.5 rounded-xl">
+          ⚠ {saveError}
+        </div>
+      )}
+
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-        <ProfileSection name={name} email={email} phone={phone} location={location} bio={bio}
+        <ProfileSection
+          name={name} email={email} phone={phone} location={location} bio={bio}
+          plan={plan} avatarKey={avatarKey} isLoading={isLoading}
           onNameChange={setName} onEmailChange={setEmail} onPhoneChange={setPhone}
-          onLocationChange={setLocation} onBioChange={setBio} />
+          onLocationChange={setLocation} onBioChange={setBio}
+        />
 
         <SettingsToggles
           selectedPersona={selectedPersona}
-          onPersonaChange={setSelectedPersona}
+          onPersonaChange={(p) => {
+            setSelectedPersona(p);
+            try { localStorage.setItem("zyba_companion_persona", p); } catch {}
+          }}
           notifChatbot={notifChatbot} onNotifChatbotChange={setNotifChatbot}
           notifWellness={notifWellness} onNotifWellnessChange={setNotifWellness}
           notifCommunity={notifCommunity} onNotifCommunityChange={setNotifCommunity}
@@ -161,10 +229,21 @@ export default function SettingsPage() {
         </p>
       </div>
 
-      <ProfileSettingsModal user={{ name, email }} isOpen={showProfileModal}
+      <ProfileSettingsModal
+        user={{ name, email, username, bio, handle: username ? `@${username}` : undefined }}
+        isOpen={showProfileModal}
         onClose={() => setShowProfileModal(false)}
-        onUserUpdate={(u) => { if (u.name) setName(u.name); if (u.email) setEmail(u.email); }}
-        onLogout={async () => { await fetch("/api/auth", { method: "DELETE" }); window.location.href = "/login"; }}
+        onUserUpdate={(u) => {
+          if (u.name) setName(u.name);
+          if (u.email) setEmail(u.email);
+          if (u.username !== undefined) setUsername(u.username || "");
+          if (u.bio !== undefined) setBio(u.bio || "");
+        }}
+        onLogout={async () => {
+          await fetch("/api/auth", { method: "DELETE" });
+          localStorage.clear();
+          window.location.href = "/login";
+        }}
       />
 
       {/* Konfirmasi hapus akun */}
