@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import ActivityBanner from "./components/ActivityBanner";
 import ActivityTracker from "./components/ActivityTracker";
 import AddActivityModal, {
@@ -15,6 +15,8 @@ import DailyPlan, {
 import ZybaRecommendations, {
   type Recommendation,
 } from "./components/ZybaRecommendations";
+
+const PLAN_STORAGE_KEY = "zyba_daily_plan_v2";
 
 const INITIAL_PLAN: PlannedActivity[] = [
   {
@@ -125,11 +127,34 @@ export default function SmartActivityPlannerPage() {
   const [isCompleted, setIsCompleted] = useState(false);
 
   // =========================
-  // Daily Planner
+  // Daily Planner State & Persistence
   // =========================
   const [plan, setPlan] = useState<PlannedActivity[]>(INITIAL_PLAN);
-
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+
+  // Load from localStorage on mount
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem(PLAN_STORAGE_KEY);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed)) {
+          setPlan(parsed);
+        }
+      }
+    } catch (e) {
+      console.error("Failed to load saved activity plan:", e);
+    }
+  }, []);
+
+  const updateAndSavePlan = (newPlan: PlannedActivity[]) => {
+    setPlan(newPlan);
+    try {
+      localStorage.setItem(PLAN_STORAGE_KEY, JSON.stringify(newPlan));
+    } catch (e) {
+      console.error("Failed to save activity plan:", e);
+    }
+  };
 
   // =========================
   // Helpers
@@ -172,16 +197,16 @@ export default function SmartActivityPlannerPage() {
 
     const nextCompleted = !selectedActivity.completed;
 
-    setPlan((current) =>
-      current.map((activity) =>
-        activity.id === id
-          ? {
-              ...activity,
-              completed: nextCompleted,
-            }
-          : activity,
-      ),
+    const updated = plan.map((activity) =>
+      activity.id === id
+        ? {
+            ...activity,
+            completed: nextCompleted,
+          }
+        : activity,
     );
+
+    updateAndSavePlan(updated);
 
     setActivityProgress((current) =>
       Math.min(
@@ -214,13 +239,36 @@ export default function SmartActivityPlannerPage() {
       completed: false,
     };
 
-    setPlan((current) =>
-      [...current, newActivity].sort((a, b) =>
-        a.time.localeCompare(b.time),
-      ),
+    const updated = [...plan, newActivity].sort((a, b) =>
+      a.time.localeCompare(b.time),
     );
 
+    updateAndSavePlan(updated);
     setIsAddModalOpen(false);
+  };
+
+  // =========================
+  // Delete Activity
+  // =========================
+  const deletePlanActivity = (id: string) => {
+    const activityToRemove = plan.find((a) => a.id === id);
+    if (!activityToRemove) return;
+
+    if (activityToRemove.completed) {
+      setActivityProgress((current) =>
+        Math.max(current - activityToRemove.points, 0)
+      );
+    }
+
+    const updated = plan.filter((a) => a.id !== id);
+    updateAndSavePlan(updated);
+  };
+
+  // =========================
+  // Reset To Default
+  // =========================
+  const resetToDefaultPlan = () => {
+    updateAndSavePlan(INITIAL_PLAN);
   };
 
   // =========================
@@ -248,11 +296,11 @@ export default function SmartActivityPlannerPage() {
       completed: false,
     };
 
-    setPlan((current) =>
-      [...current, newActivity].sort((a, b) =>
-        a.time.localeCompare(b.time),
-      ),
+    const updated = [...plan, newActivity].sort((a, b) =>
+      a.time.localeCompare(b.time),
     );
+
+    updateAndSavePlan(updated);
   };
 
   const completedActivities = plan.filter(
@@ -288,7 +336,9 @@ export default function SmartActivityPlannerPage() {
         activities={plan}
         completedCount={completedActivities}
         onToggle={togglePlanActivity}
+        onDelete={deletePlanActivity}
         onAdd={() => setIsAddModalOpen(true)}
+        onResetDefault={resetToDefaultPlan}
       />
 
       {/* =========================
