@@ -34,15 +34,11 @@ export default function DailyAssessmentSummary({ record, onEdit }: SummaryProps)
         <span className="text-2xl">✅</span>
         <div>
           <p className="text-sm font-bold text-brown-900">Assessment Harian Selesai!</p>
-          <p className="text-xs text-brown-700">Terakhir diperbarui pukul {updatedTime}. Kamu bisa mengedit hingga tengah malam.</p>
+          <p className="text-xs text-brown-700">Tercatat pukul {updatedTime}. Evaluasi harian hanya dapat diisi 1 kali sehari.</p>
         </div>
-        <button
-          type="button"
-          onClick={onEdit}
-          className="ml-auto text-xs font-bold text-orange-500 hover:text-brown-900 border border-orange-500/30 hover:border-brown-900/30 px-3 py-1.5 rounded-full transition-colors cursor-pointer whitespace-nowrap"
-        >
-          Edit
-        </button>
+        <span className="ml-auto text-[11px] font-bold text-green-700 bg-green-200/60 px-3 py-1.5 rounded-full whitespace-nowrap">
+          Tersimpan ✓
+        </span>
       </div>
 
       {/* Summary cards */}

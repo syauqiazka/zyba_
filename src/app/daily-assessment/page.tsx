@@ -53,13 +53,7 @@ export default function DailyAssessmentPage() {
     loadData(1);
   }, [loadData]);
 
-  const handleSubmit = async (formData: {
-    mood: string;
-    stressLevel: number;
-    sleepRating: number | null;
-    energyTags: string[];
-    reflection: string;
-  }) => {
+  const handleSubmit = async (formData: any) => {
     setIsSubmitting(true);
     try {
       const res = await fetch("/api/daily-assessment", {
@@ -76,8 +70,9 @@ export default function DailyAssessmentPage() {
       await loadData(1);
       setSavedSuccess(true);
       setTimeout(() => setSavedSuccess(false), 4000);
-    } catch (err) {
+    } catch (err: any) {
       console.error("Daily assessment submit error:", err);
+      alert(err.message || "Gagal menyimpan assessment harian");
     } finally {
       setIsSubmitting(false);
     }
@@ -103,7 +98,7 @@ export default function DailyAssessmentPage() {
               Evaluasi Kondisiku Hari Ini
             </h1>
             <p className="text-sm text-brown-700 mt-1 max-w-xl">
-              Rekam kondisi harianmu secara lengkap — mood, stres, tidur, energi, dan refleksi — untuk memantau tren kesehatanmu dari waktu ke waktu.
+              Rekam kondisi harianmu secara komprehensif — profil, mood, gejala, kualitas tidur, tingkat stres &amp; refleksi AI.
             </p>
           </div>
 
@@ -122,7 +117,7 @@ export default function DailyAssessmentPage() {
       {savedSuccess && (
         <div className="flex items-center gap-3 p-4 bg-green-100/70 border border-green-500/30 rounded-2xl animate-in fade-in duration-300">
           <span className="text-xl">✅</span>
-          <p className="text-sm font-bold text-brown-900">Assessment Harian berhasil disimpan!</p>
+          <p className="text-sm font-bold text-brown-900">Assessment Harian berhasil disimpan dan skor ZYBA diperbarui!</p>
         </div>
       )}
 
@@ -167,7 +162,7 @@ export default function DailyAssessmentPage() {
                 <div className="text-5xl">📋</div>
                 <div>
                   <h2 className="font-display text-lg font-bold text-brown-900">Belum Ada Assessment Hari Ini</h2>
-                  <p className="text-sm text-brown-700 mt-1">Mulai evaluasi harianmu sekarang.</p>
+                  <p className="text-sm text-brown-700 mt-1">Mulai evaluasi harian lengkapmu sekarang.</p>
                 </div>
                 <button
                   type="button"
@@ -183,30 +178,17 @@ export default function DailyAssessmentPage() {
               <div>
                 <div className="flex items-center justify-between mb-6">
                   <h2 className="font-display text-lg font-bold text-brown-900">
-                    {todayRecord ? "Edit Assessment Harian" : "Assessment Harian Baru"}
+                    Assessment Harian Hari Ini
                   </h2>
-                  {pageState === "form" && todayRecord && (
-                    <button
-                      type="button"
-                      onClick={() => setPageState("summary")}
-                      className="text-xs text-brown-700 hover:text-brown-900 cursor-pointer"
-                    >
-                      ← Batal
-                    </button>
-                  )}
-                  {pageState === "form" && !todayRecord && (
-                    <button
-                      type="button"
-                      onClick={() => setPageState("empty")}
-                      className="text-xs text-brown-700 hover:text-brown-900 cursor-pointer"
-                    >
-                      ← Batal
-                    </button>
-                  )}
+                  <button
+                    type="button"
+                    onClick={() => setPageState("empty")}
+                    className="text-xs text-brown-700 hover:text-brown-900 cursor-pointer"
+                  >
+                    ← Batal
+                  </button>
                 </div>
                 <DailyAssessmentForm
-                  isEdit={!!todayRecord}
-                  initialValues={todayRecord || undefined}
                   onSubmit={handleSubmit}
                   isSubmitting={isSubmitting}
                 />
@@ -218,7 +200,7 @@ export default function DailyAssessmentPage() {
                 <h2 className="font-display text-lg font-bold text-brown-900 mb-5">Ringkasan Hari Ini</h2>
                 <DailyAssessmentSummary
                   record={todayRecord}
-                  onEdit={() => setPageState("form")}
+                  onEdit={() => {}}
                 />
               </div>
             )}

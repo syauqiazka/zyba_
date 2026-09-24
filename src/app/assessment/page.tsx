@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import { detectRisk } from "@/lib/crisisDetection";
 import AssessmentNav from "./components/AssessmentNav";
@@ -22,6 +23,7 @@ const STEPS = [
 ];
 
 export default function AssessmentPage() {
+  const router = useRouter();
   const [currentStep, setCurrentStep] = useState(0);
 
   // Form State — age & weight as strings initialized to default without leading zeroes (Lampiran C.4)
@@ -47,13 +49,17 @@ export default function AssessmentPage() {
   const [calculatedScore, setCalculatedScore] = useState<number>(80);
   const [calculatedCondition, setCalculatedCondition] = useState<string>("Kondisi Baik");
 
-  // Optional: check user gender / profile on mount
+  // Jika sudah menyelesaikan onboarding, lempar langsung ke dashboard
   useEffect(() => {
     async function loadUser() {
       try {
         const res = await fetch("/api/user/me");
         if (res.ok) {
           const data = await res.json();
+          if (data.user?.onboardingCompleted) {
+            router.replace("/dashboard");
+            return;
+          }
           if (data.user?.gender) {
             setGender(data.user.gender);
           }
@@ -63,7 +69,7 @@ export default function AssessmentPage() {
       }
     }
     loadUser();
-  }, []);
+  }, [router]);
 
   const handleNext = async () => {
     if (currentStep === 9) {

@@ -52,13 +52,18 @@ export async function middleware(request: NextRequest) {
       return response;
     }
 
-    // ⚠️ GATE ASSESSMENT: User yang belum menyelesaikan assessment awal
-    // HANYA boleh mengakses /assessment. Semua route lain dialihkan ke /assessment.
+    // ⚠️ GATE ASSESSMENT:
+    // 1. User yang belum menyelesaikan assessment awal HANYA boleh mengakses /assessment.
+    // 2. User yang SUDAH menyelesaikan assessment dilarang membuka /assessment lagi (dialihkan ke /dashboard).
     const isOnboardingDone = session.onboardingCompleted === true;
     const isOnAssessment = pathname.startsWith("/assessment");
 
     if (!isOnboardingDone && !isOnAssessment) {
       return NextResponse.redirect(new URL("/assessment", request.url));
+    }
+
+    if (isOnboardingDone && isOnAssessment) {
+      return NextResponse.redirect(new URL("/dashboard", request.url));
     }
 
     return NextResponse.next();

@@ -88,7 +88,7 @@ export async function GET(req: NextRequest) {
   }
 }
 
-// ---------- POST: Buat atau update Assessment Harian (upsert by date) ----------
+// ---------- POST: Buat Assessment Harian (Hanya 1x per hari) ----------
 
 export async function POST(req: NextRequest) {
   try {
@@ -98,52 +98,123 @@ export async function POST(req: NextRequest) {
     const {
       mood,
       stressLevel,
+      stressRating,
       sleepRating,
       energyTags,
       reflection,
+      expressionText,
+      goal,
+      gender,
+      age,
+      weight,
+      soughtHelp,
+      physicalSymptoms,
+      mentalSymptoms,
+      medications,
     } = body as {
       mood: string;
       stressLevel?: number;
+      stressRating?: number;
       sleepRating?: number;
       energyTags?: string[];
       reflection?: string;
+      expressionText?: string;
+      goal?: string;
+      gender?: string;
+      age?: number | string;
+      weight?: number | string;
+      soughtHelp?: boolean | null;
+      physicalSymptoms?: string[];
+      mentalSymptoms?: string[];
+      medications?: string;
     };
 
     if (!mood) {
       return NextResponse.json({ error: "Mood wajib diisi" }, { status: 400 });
     }
 
-    // Deteksi risiko bahaya diri pada teks refleksi bebas (AGENTS.md Bagian 8 & 11)
-    const isRisk = reflection ? detectRisk(reflection) : false;
-
     const todayDate = new Date().toISOString().slice(0, 10);
 
-    // Upsert — satu record per user per hari, bisa diedit
-    const record = await (accountDb as any).dailyAssessment.upsert({
+    // 🔒 PENTING: Kunci 1x per hari (tidak bisa check-in lagi di hari yang sama)
+    const existing = await (accountDb as any).dailyAssessment.findUnique({
       where: { userId_date: { userId, date: todayDate } },
-      update: {
-        mood: mood as any,
-        stressLevel: stressLevel !== undefined ? Number(stressLevel) : null,
-        sleepRating: sleepRating !== undefined ? Number(sleepRating) : null,
-        energyTags: energyTags || [],
-        reflection: reflection || null,
-        flaggedForRisk: isRisk,
-      },
-      create: {
+    });
+
+    if (existing) {
+      return NextResponse.json(
+        {
+          error: "Kamu sudah menyelesaikan Assessment Harian hari ini. Evaluasi hanya dapat dilakukan 1 kali per hari.",
+          hasCompletedToday: true,
+          record: existing,
+        },
+        { status: 400 }
+      );
+    }
+
+    const freeText = reflection || expressionText || "";
+    // Deteksi risiko bahaya diri pada teks ekspresi/refleksi bebas (AGENTS.md Bagian 8 & 11)
+    const isRisk = freeText ? detectRisk(freeText) : false;
+
+    const finalStress = stressLevel !== undefined ? Number(stressLevel) : (stressRating !== undefined ? Number(stressRating) : 2);
+    const finalSleep = sleepRating !== undefined && sleepRating !== null ? Number(sleepRating) : null;
+
+    // Buat record DailyAssessment
+    const record = await (accountDb as any).dailyAssessment.create({
+      data: {
         userId,
         date: todayDate,
         mood: mood as any,
-        stressLevel: stressLevel !== undefined ? Number(stressLevel) : null,
-        sleepRating: sleepRating !== undefined ? Number(sleepRating) : null,
+        stressLevel: finalStress,
+        sleepRating: finalSleep,
         energyTags: energyTags || [],
-        reflection: reflection || null,
+        reflection: freeText || null,
         flaggedForRisk: isRisk,
       },
     });
 
+    // Simpan juga ke profil kesehatan assessment pengguna
+    try {
+      const { userRepository } = await import("@/backend/auth/userRepository");
+      await userRepository.saveAssessment(
+        userId,
+        {
+          goal: goal || "Stress Relief & Relaxation",
+          gender: gender || "Pria",
+          age: age ? Number(age) : 21,
+          weight: weight ? Number(weight) : 65,
+          mood,
+          soughtHelp: soughtHelp ?? false,
+          physicalSymptoms: physicalSymptoms || [],
+          sleepRating: finalSleep || 3,
+          stressRating: finalStress,
+          medications: medications || "Tidak ada",
+          mentalSymptoms: mentalSymptoms || [],
+          expressionText: freeText,
+        },
+        75, // fallback baseline
+        finalStress
+      );
+    } catch (saveErr) {
+      console.warn("[dailyAssessment] userRepository.saveAssessment fallback:", saveErr);
+    }
+
+    // Hitung ulang Zyba Score dinamis pengguna
+    let updatedScore = 75;
+    try {
+      const { calculateZybaScore } = await import("@/backend/scoring/zybaScore");
+      updatedScore = await calculateZybaScore(userId);
+      await accountDb.user.update({
+        where: { id: userId },
+        data: { zybaScore: updatedScore, stressLevel: finalStress },
+      });
+    } catch (scoreErr) {
+      console.warn("[dailyAssessment] calculateZybaScore fallback:", scoreErr);
+    }
+
     return NextResponse.json({
       success: true,
       record,
+      zybaScore: updatedScore,
       isRisk,
       crisisResources: isRisk ? CRISIS_RESOURCES : null,
     });

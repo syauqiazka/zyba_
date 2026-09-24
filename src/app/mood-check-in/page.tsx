@@ -45,6 +45,8 @@ export default function MoodCheckInPage() {
   const [userStreak, setUserStreak] = useState(1);
   const [moodCalendarData, setMoodCalendarData] = useState<MoodDay[]>([]);
   const [recentEntries, setRecentEntries] = useState<JournalEntry[]>([]);
+  const [hasCheckedInToday, setHasCheckedInToday] = useState(false);
+  const [todayEntry, setTodayEntry] = useState<MoodEntryItem | null>(null);
 
   useEffect(() => {
     async function loadData() {
@@ -61,6 +63,15 @@ export default function MoodCheckInPage() {
 
         if (moodRes.ok) {
           const data = await moodRes.json();
+          setHasCheckedInToday(!!data.hasCheckedInToday);
+          if (data.todayEntry) {
+            setTodayEntry(data.todayEntry);
+            const matchedMood = MOODS.find((m) => m.value === data.todayEntry.mood);
+            if (matchedMood) setSelectedMood(matchedMood);
+            if (data.todayEntry.stressLevel) setStressRating(data.todayEntry.stressLevel);
+            if (data.todayEntry.note) setNote(data.todayEntry.note);
+          }
+
           const now = new Date();
           const thisYear = now.getFullYear();
           const thisMonth = now.getMonth();
@@ -110,6 +121,8 @@ export default function MoodCheckInPage() {
   }, []);
 
   const handleSaveCheckIn = async () => {
+    if (hasCheckedInToday) return;
+
     // Client-side crisis detection before sending
     const isRisk = note ? detectRisk(note) : false;
     if (isRisk) setCrisisAlert(true);
@@ -126,7 +139,16 @@ export default function MoodCheckInPage() {
         }),
       });
       const data = await res.json();
+      if (!res.ok) {
+        if (data.hasCheckedInToday) {
+          setHasCheckedInToday(true);
+        }
+        throw new Error(data.error || "Gagal mencatat mood");
+      }
+
       if (data.risk) setCrisisAlert(true);
+      setHasCheckedInToday(true);
+      setTodayEntry(data.entry);
 
       // Update calendar optimistically
       const todayNum = new Date().getDate();
@@ -142,17 +164,15 @@ export default function MoodCheckInPage() {
           title: "Mood Check-In",
           content: note.trim(),
           mood: selectedMood.value,
-          date: "Baru saja",
+          date: "Hari ini",
           flaggedForRisk: isRisk,
         };
         setRecentEntries((prev) => [newEntry, ...prev].slice(0, 5));
       }
 
-      // Reset form
-      setNote("");
       setSavedSuccess(true);
       setTimeout(() => setSavedSuccess(false), 3500);
-    } catch (err) {
+    } catch (err: any) {
       console.warn("Mood check-in error:", err);
     } finally {
       setIsSaving(false);
@@ -178,8 +198,9 @@ export default function MoodCheckInPage() {
             onSave={handleSaveCheckIn}
             savedSuccess={savedSuccess}
             isSaving={isSaving}
+            hasCheckedInToday={hasCheckedInToday}
+            todayEntry={todayEntry}
           />
-
         </div>
 
         {/* Right: Calendar & Recent Entries */}

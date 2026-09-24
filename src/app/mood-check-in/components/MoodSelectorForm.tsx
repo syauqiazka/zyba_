@@ -20,6 +20,8 @@ interface QuickCheckInFormProps {
   onSave: () => void;
   savedSuccess: boolean;
   isSaving: boolean;
+  hasCheckedInToday?: boolean;
+  todayEntry?: any;
 }
 
 export default function QuickCheckInForm({
@@ -32,16 +34,40 @@ export default function QuickCheckInForm({
   onSave,
   savedSuccess,
   isSaving,
+  hasCheckedInToday,
+  todayEntry,
 }: QuickCheckInFormProps) {
   return (
     <div className="glass-card rounded-3xl p-7 border border-brown-900/10 bg-white flex flex-col gap-6">
+      {/* Banner status jika sudah check-in hari ini */}
+      {hasCheckedInToday && (
+        <div className="p-4 rounded-2xl bg-green-50 border border-green-500/30 flex items-start gap-3">
+          <span className="text-2xl shrink-0">✅</span>
+          <div>
+            <h3 className="font-display text-sm font-bold text-green-800">
+              Kamu sudah melakukan Mood Check-In hari ini!
+            </h3>
+            <p className="text-xs text-green-700 mt-0.5">
+              Check-in hanya dapat dilakukan 1 kali per hari untuk menjaga konsistensi tracking. Sampai jumpa besok!
+            </p>
+            {todayEntry?.note && (
+              <p className="text-xs text-brown-700 bg-white/70 p-2.5 rounded-xl border border-green-500/20 mt-2 italic">
+                &ldquo;{todayEntry.note}&rdquo;
+              </p>
+            )}
+          </div>
+        </div>
+      )}
+
       {/* 1. Mood Picker */}
       <div>
         <h2 className="font-display text-lg font-bold text-brown-900 mb-1">
           Bagaimana perasaanmu sekarang?
         </h2>
         <p className="text-xs text-brown-700 mb-4">
-          Pilih 1 dari 5 skala emosi. Mood check-in bisa kamu lakukan kapan saja.
+          {hasCheckedInToday
+            ? "Mood hari ini telah tercatat. Kamu dapat melihat riwayatnya di kalender samping."
+            : "Pilih 1 dari 5 skala emosi untuk mencatat kondisimu hari ini."}
         </p>
         <div className="grid grid-cols-5 gap-3">
           {MOODS.map((m) => {
@@ -50,13 +76,16 @@ export default function QuickCheckInForm({
               <button
                 key={m.value}
                 type="button"
+                disabled={hasCheckedInToday}
                 onClick={() => setSelectedMood(m)}
                 style={{ backgroundColor: isSelected ? m.bg : undefined }}
-                className={`rounded-2xl py-5 flex flex-col items-center gap-2.5 border-2 transition-all duration-200 cursor-pointer ${
+                className={`rounded-2xl py-5 flex flex-col items-center gap-2.5 border-2 transition-all duration-200 ${
+                  hasCheckedInToday ? "cursor-default" : "cursor-pointer"
+                } ${
                   isSelected
                     ? `${m.text} border-brown-900 shadow-lg scale-105 font-bold`
                     : "bg-cream/70 border-transparent text-brown-900 hover:border-orange-500/40 hover:bg-orange-500/5"
-                }`}
+                } ${hasCheckedInToday && !isSelected ? "opacity-40" : ""}`}
               >
                 <span className="text-3xl">{m.emoji}</span>
                 <span className="text-[11px] font-semibold">{m.label}</span>
@@ -108,9 +137,10 @@ export default function QuickCheckInForm({
           type="text"
           value={note}
           onChange={(e) => setNote(e.target.value)}
+          disabled={hasCheckedInToday}
           maxLength={280}
-          placeholder="Ada yang ingin kamu catat? (maks. 280 karakter)"
-          className="w-full rounded-2xl border border-brown-900/10 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 text-brown-900 bg-cream/30"
+          placeholder={hasCheckedInToday ? "Check-in hari ini sudah selesai." : "Ada yang ingin kamu catat? (maks. 280 karakter)"}
+          className="w-full rounded-2xl border border-brown-900/10 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 text-brown-900 bg-cream/30 disabled:opacity-60"
         />
         <p className="text-[10px] text-brown-700/60 text-right mt-1">{note.length}/280</p>
       </div>
@@ -122,15 +152,21 @@ export default function QuickCheckInForm({
             <span>✓</span> Mood berhasil dicatat!
           </span>
         ) : (
-          <span className="text-xs text-brown-700">Setiap check-in tersimpan dengan timestamp nyata.</span>
+          <span className="text-xs text-brown-700">
+            {hasCheckedInToday ? "Satu check-in per hari untuk akurasi data." : "Setiap check-in tersimpan dengan timestamp nyata."}
+          </span>
         )}
         <button
           type="button"
           onClick={onSave}
-          disabled={isSaving}
-          className="bg-brown-900 hover:bg-orange-500 text-white font-bold text-sm px-7 py-3 rounded-full transition-colors shadow-md cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+          disabled={isSaving || hasCheckedInToday}
+          className={`font-bold text-sm px-7 py-3 rounded-full transition-colors shadow-md ${
+            hasCheckedInToday
+              ? "bg-brown-900/30 text-brown-900/60 cursor-not-allowed"
+              : "bg-brown-900 hover:bg-orange-500 text-white cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+          }`}
         >
-          {isSaving ? "Menyimpan..." : "Check-in →"}
+          {hasCheckedInToday ? "Sudah Check-In Hari Ini ✓" : isSaving ? "Menyimpan..." : "Check-in →"}
         </button>
       </div>
     </div>

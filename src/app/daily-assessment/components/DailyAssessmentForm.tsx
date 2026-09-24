@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 
 // ---------- Types ----------
 
@@ -40,6 +40,22 @@ export const SLEEP_OPTIONS = [
   { rating: 5, label: "> 8 jam", desc: "Sangat Segar", icon: "🌟" },
 ];
 
+export const PHYSICAL_SYMPTOMS_LIST = [
+  "Pusing / Sakit Kepala",
+  "Sulit Tidur / Insomnia",
+  "Jantung Berdebar Kencang",
+  "Sesak Napas Ringan",
+  "Tubuh Terasa Lemah",
+  "Nyeri Otot / Leher Kaku",
+];
+
+export const MENTAL_SYMPTOMS_LIST = [
+  "Kecemasan Berlebih (Anxiety)",
+  "Perubahan Mood Mendadak",
+  "Sulit Berfokus saat Belajar/Kerja",
+  "Rasa Lelah Mental Berkelanjutan",
+];
+
 export const ENERGY_TAGS = [
   "Berenergi",
   "Tenang & Fokus",
@@ -51,50 +67,104 @@ export const ENERGY_TAGS = [
   "Butuh Me-Time",
 ];
 
+export const GOALS_LIST = [
+  "Stress Relief & Relaxation",
+  "Memperbaiki Kualitas Tidur",
+  "Meningkatkan Fokus & Produktivitas",
+  "Curhat & Konseling AI 24/7",
+];
+
 // ---------- DailyAssessmentForm ----------
+
+export interface DailyAssessmentSubmitData {
+  goal: string;
+  gender: string;
+  age: string;
+  weight: string;
+  mood: string;
+  soughtHelp: boolean | null;
+  physicalSymptoms: string[];
+  sleepRating: number | null;
+  stressLevel: number;
+  medications: string;
+  mentalSymptoms: string[];
+  energyTags: string[];
+  reflection: string;
+}
 
 interface FormProps {
   isEdit?: boolean;
   initialValues?: Partial<DailyRecord>;
-  onSubmit: (data: {
-    mood: string;
-    stressLevel: number;
-    sleepRating: number | null;
-    energyTags: string[];
-    reflection: string;
-  }) => Promise<void>;
+  onSubmit: (data: DailyAssessmentSubmitData) => Promise<void>;
   isSubmitting: boolean;
 }
 
-export function DailyAssessmentForm({ isEdit, initialValues, onSubmit, isSubmitting }: FormProps) {
-  const initMood = MOODS.find((m) => m.value === initialValues?.mood) || MOODS[2];
-  const [selectedMood, setSelectedMood] = useState(initMood);
-  const [stressLevel, setStressLevel] = useState(initialValues?.stressLevel ?? 2);
-  const [sleepRating, setSleepRating] = useState<number | null>(initialValues?.sleepRating ?? null);
-  const [energyTags, setEnergyTags] = useState<string[]>(initialValues?.energyTags ?? []);
-  const [reflection, setReflection] = useState(initialValues?.reflection ?? "");
+export function DailyAssessmentForm({ onSubmit, isSubmitting }: FormProps) {
   const [step, setStep] = useState(0);
 
-  const toggleTag = (tag: string) => {
-    setEnergyTags((prev) => (prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag]));
+  // Form states initialized without leading zeroes (Lampiran C.4)
+  const [goal, setGoal] = useState("Stress Relief & Relaxation");
+  const [gender, setGender] = useState("Pria");
+  const [age, setAge] = useState("21");
+  const [weight, setWeight] = useState("65");
+  const [mood, setMood] = useState("HAPPY");
+  const [soughtHelp, setSoughtHelp] = useState<boolean | null>(false);
+  const [physicalSymptoms, setPhysicalSymptoms] = useState<string[]>([]);
+  const [sleepRating, setSleepRating] = useState<number | null>(3);
+  const [stressLevel, setStressLevel] = useState(2);
+  const [medications, setMedications] = useState("Tidak ada");
+  const [mentalSymptoms, setMentalSymptoms] = useState<string[]>([]);
+  const [energyTags, setEnergyTags] = useState<string[]>(["Tenang & Fokus"]);
+  const [reflection, setReflection] = useState("");
+
+  // Helper toggle multi-select
+  const toggleItem = (list: string[], setFn: React.Dispatch<React.SetStateAction<string[]>>, item: string) => {
+    setFn((prev) => (prev.includes(item) ? prev.filter((i) => i !== item) : [...prev, item]));
   };
+
+  // D.1 Standard 3-state CSS
+  const choiceClass = (isSelected: boolean) =>
+    `relative flex items-center justify-between gap-2 p-3.5 rounded-2xl text-xs font-bold text-left border-2 transition-all duration-200 cursor-pointer ${
+      isSelected
+        ? "border-orange-500 bg-orange-100 text-brown-900"
+        : "border-brown-900/10 bg-white text-brown-700 hover:border-orange-500/40 hover:bg-orange-500/5"
+    }`;
+
+  const STEPS = [
+    { title: "Goal & Fisik", desc: "Profil umum hari ini" },
+    { title: "Mood & Medis", desc: "Suasana hati & obat" },
+    { title: "Gejala", desc: "Fisik & kesehatan mental" },
+    { title: "Tidur, Stres & Refleksi", desc: "Evaluasi & AI Screening" },
+  ];
 
   const handleSubmit = async () => {
-    await onSubmit({ mood: selectedMood.value, stressLevel, sleepRating, energyTags, reflection });
+    await onSubmit({
+      goal,
+      gender,
+      age,
+      weight,
+      mood,
+      soughtHelp,
+      physicalSymptoms,
+      sleepRating,
+      stressLevel,
+      medications,
+      mentalSymptoms,
+      energyTags,
+      reflection,
+    });
   };
-
-  const STEPS = ["Mood", "Stres & Tidur", "Kondisi & Refleksi"];
 
   return (
     <div className="flex flex-col gap-6">
-      {/* Step indicator */}
-      <div className="flex items-center gap-3 mb-2">
+      {/* Stepper Header */}
+      <div className="flex items-center gap-2 sm:gap-3 mb-2 overflow-x-auto pb-2">
         {STEPS.map((s, i) => (
-          <React.Fragment key={s}>
+          <React.Fragment key={s.title}>
             <button
               type="button"
               onClick={() => setStep(i)}
-              className={`flex items-center gap-2 text-xs font-bold transition-colors ${
+              className={`flex items-center gap-2 text-xs font-bold transition-colors whitespace-nowrap ${
                 i <= step ? "text-brown-900" : "text-brown-700/40"
               }`}
             >
@@ -109,118 +179,226 @@ export function DailyAssessmentForm({ isEdit, initialValues, onSubmit, isSubmitt
               >
                 {i < step ? "✓" : i + 1}
               </span>
-              <span className="hidden sm:inline">{s}</span>
+              <span className="hidden md:inline">{s.title}</span>
             </button>
             {i < STEPS.length - 1 && (
-              <div className={`flex-1 h-0.5 rounded-full ${i < step ? "bg-green-500" : "bg-brown-900/10"}`} />
+              <div className={`flex-1 min-w-4 h-0.5 rounded-full ${i < step ? "bg-green-500" : "bg-brown-900/10"}`} />
             )}
           </React.Fragment>
         ))}
       </div>
 
-      {/* Step 0: Mood */}
+      {/* Step 0: Goal & Profil Fisik */}
       {step === 0 && (
-        <div className="flex flex-col gap-4 animate-in fade-in duration-200">
-          <div>
-            <h2 className="font-display text-lg font-bold text-brown-900 mb-1">Bagaimana perasaanmu hari ini?</h2>
-            <p className="text-xs text-brown-700">Pilih 1 dari 5 skala emosi yang paling menggambarkan kondisimu saat ini.</p>
-          </div>
-          <div className="grid grid-cols-5 gap-3">
-            {MOODS.map((m) => {
-              const isSelected = selectedMood.value === m.value;
-              return (
-                <button
-                  key={m.value}
-                  type="button"
-                  onClick={() => setSelectedMood(m)}
-                  style={{ backgroundColor: isSelected ? m.bg : undefined }}
-                  className={`rounded-2xl py-5 flex flex-col items-center gap-2.5 border-2 transition-all cursor-pointer ${
-                    isSelected
-                      ? `${m.text} border-brown-900 shadow-lg scale-105 font-bold`
-                      : "bg-cream/70 border-transparent text-brown-900 hover:border-brown-900/20 hover:shadow-sm"
-                  }`}
-                >
-                  <span className="text-3xl">{m.emoji}</span>
-                  <span className="text-[11px] font-semibold">{m.label}</span>
-                </button>
-              );
-            })}
-          </div>
-          <div className="flex justify-end pt-2">
-            <button
-              type="button"
-              onClick={() => setStep(1)}
-              className="bg-brown-900 text-white font-bold text-sm px-6 py-3 rounded-full hover:bg-orange-500 transition-colors cursor-pointer"
-            >
-              Lanjut →
-            </button>
-          </div>
-        </div>
-      )}
-
-      {/* Step 1: Stress & Sleep */}
-      {step === 1 && (
         <div className="flex flex-col gap-6 animate-in fade-in duration-200">
-          {/* Stress */}
           <div>
-            <div className="flex items-center justify-between mb-3">
-              <h2 className="font-display text-lg font-bold text-brown-900">Level Stres</h2>
-              <span className="text-xs font-extrabold px-3 py-1 rounded-full bg-orange-100 text-orange-500">
-                Level {stressLevel}: {["Sangat Rendah", "Rendah", "Sedang", "Tinggi", "Sangat Tinggi"][stressLevel - 1]}
-              </span>
-            </div>
-            <input
-              type="range"
-              min="1"
-              max="5"
-              step="1"
-              value={stressLevel}
-              onChange={(e) => setStressLevel(Number(e.target.value))}
-              className="w-full accent-orange-500 cursor-pointer h-2 rounded-lg"
-            />
-            <div className="flex justify-between text-[10px] text-brown-700 font-bold mt-1">
-              <span>1 - Tenang</span>
-              <span>3 - Sedang</span>
-              <span>5 - Kewalahan</span>
+            <h2 className="font-display text-base sm:text-lg font-bold text-brown-900 mb-1">
+              Apa goal kesehatan utama yang ingin kamu pantau hari ini?
+            </h2>
+            <p className="text-xs text-brown-700 mb-3">Pilih fokus utamamu untuk panduan rekomendasi personal.</p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              {GOALS_LIST.map((g) => (
+                <button key={g} type="button" onClick={() => setGoal(g)} className={choiceClass(goal === g)}>
+                  <span className="flex-1">{g}</span>
+                  {goal === g && <span className="text-orange-500 font-extrabold shrink-0">✓</span>}
+                </button>
+              ))}
             </div>
           </div>
 
           <hr className="border-brown-900/10" />
 
-          {/* Sleep */}
           <div>
-            <div className="flex items-center justify-between mb-2">
-              <h2 className="font-display text-lg font-bold text-brown-900">Kualitas Tidur Semalam</h2>
-              {sleepRating !== null && (
-                <button
-                  type="button"
-                  onClick={() => setSleepRating(null)}
-                  className="text-[11px] text-brown-700 hover:text-orange-500 underline cursor-pointer"
-                >
-                  Hapus
-                </button>
-              )}
+            <h2 className="font-display text-base font-bold text-brown-900 mb-3">Informasi Profil Fisik</h2>
+            <div className="flex flex-col gap-3">
+              <label className="text-xs font-bold text-brown-900">Gender:</label>
+              <div className="flex gap-2 sm:gap-3">
+                {["Pria", "Wanita", "Lainnya"].map((gen) => (
+                  <button
+                    key={gen}
+                    type="button"
+                    onClick={() => setGender(gen)}
+                    className={`flex-1 justify-center ${choiceClass(gender === gen)}`}
+                  >
+                    <span className="flex-1 text-center">{gen}</span>
+                    {gender === gen && <span className="text-orange-500 font-extrabold shrink-0">✓</span>}
+                  </button>
+                ))}
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-2">
+                <div>
+                  <label className="text-xs font-bold text-brown-900">Usia (Tahun):</label>
+                  <input
+                    type="tel"
+                    inputMode="numeric"
+                    value={age}
+                    onChange={(e) => setAge(e.target.value.replace(/[^0-9]/g, ""))}
+                    placeholder="21"
+                    className="w-full mt-1 bg-cream rounded-2xl border border-brown-900/10 px-4 py-3 text-xs text-brown-900 font-bold focus:outline-none focus:ring-2 focus:ring-orange-500"
+                  />
+                  <span className="text-[10px] text-brown-700/60 mt-1 block">
+                    Ketik langsung usiamu (misal: 20, 22)
+                  </span>
+                </div>
+                <div>
+                  <label className="text-xs font-bold text-brown-900">Berat Badan (kg):</label>
+                  <input
+                    type="tel"
+                    inputMode="numeric"
+                    value={weight}
+                    onChange={(e) => setWeight(e.target.value.replace(/[^0-9]/g, ""))}
+                    placeholder="65"
+                    className="w-full mt-1 bg-cream rounded-2xl border border-brown-900/10 px-4 py-3 text-xs text-brown-900 font-bold focus:outline-none focus:ring-2 focus:ring-orange-500"
+                  />
+                  <span className="text-[10px] text-brown-700/60 mt-1 block">
+                    Estimasi berat badan dalam kilogram
+                  </span>
+                </div>
+              </div>
             </div>
-            <p className="text-xs text-brown-700 mb-3">Berapa jam kamu tidur dan bagaimana rasanya saat bangun?</p>
-            <div className="grid grid-cols-5 gap-2">
-              {SLEEP_OPTIONS.map((opt) => {
-                const isSel = sleepRating === opt.rating;
+          </div>
+
+          <div className="flex justify-end pt-2">
+            <button
+              type="button"
+              onClick={() => setStep(1)}
+              className="bg-brown-900 hover:bg-orange-500 text-white font-bold text-xs sm:text-sm px-7 py-3 rounded-full transition-colors cursor-pointer shadow-md"
+            >
+              Lanjut ke Mood &amp; Medis →
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Step 1: Mood & Medis */}
+      {step === 1 && (
+        <div className="flex flex-col gap-6 animate-in fade-in duration-200">
+          <div>
+            <h2 className="font-display text-base sm:text-lg font-bold text-brown-900 mb-1">
+              Bagaimana kondisi suasana hatimu hari ini?
+            </h2>
+            <p className="text-xs text-brown-700 mb-3">Pilih skala ekspresi emosi yang paling mewakili hari ini.</p>
+            <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
+              {MOODS.map((m) => {
+                const isSelected = mood === m.value;
                 return (
                   <button
-                    key={opt.rating}
+                    key={m.value}
                     type="button"
-                    onClick={() => setSleepRating(isSel ? null : opt.rating)}
-                    className={`p-3 rounded-2xl border-2 flex flex-col items-center gap-1.5 transition-all cursor-pointer ${
-                      isSel
-                        ? "border-green-500 bg-green-100/70 shadow-sm scale-105"
-                        : "border-brown-900/10 bg-cream/40 hover:bg-white"
-                    }`}
+                    onClick={() => setMood(m.value)}
+                    className={`justify-center ${choiceClass(isSelected)}`}
                   >
-                    <span className="text-2xl">{opt.icon}</span>
-                    <div className="text-center">
-                      <div className="text-[11px] font-bold text-brown-900">{opt.label}</div>
-                      <div className="text-[10px] text-brown-700">{opt.desc}</div>
-                    </div>
+                    <span className="text-xl sm:text-2xl mr-1">{m.emoji}</span>
+                    <span className="text-center">{m.label}</span>
+                    {isSelected && <span className="text-orange-500 font-extrabold ml-1">✓</span>}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          <hr className="border-brown-900/10" />
+
+          <div>
+            <h2 className="font-display text-base font-bold text-brown-900 mb-2">
+              Pernah mencari bantuan profesional (Psikolog / Psikiater)?
+            </h2>
+            <div className="flex flex-col sm:flex-row gap-3">
+              {[
+                { label: "Ya, Pernah Konsultasi", val: true },
+                { label: "Belum Pernah", val: false },
+              ].map((opt) => (
+                <button
+                  key={opt.label}
+                  type="button"
+                  onClick={() => setSoughtHelp(opt.val)}
+                  className={`flex-1 ${choiceClass(soughtHelp === opt.val)}`}
+                >
+                  <span className="flex-1">{opt.label}</span>
+                  {soughtHelp === opt.val && <span className="text-orange-500 font-extrabold shrink-0">✓</span>}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div>
+            <h2 className="font-display text-base font-bold text-brown-900 mb-2">
+              Obat atau Suplemen yang Sedang Dikonsumsi:
+            </h2>
+            <input
+              type="text"
+              value={medications}
+              onChange={(e) => setMedications(e.target.value)}
+              placeholder="Misal: Suplemen Vitamin D, atau 'Tidak ada'"
+              className="w-full bg-cream rounded-2xl border border-brown-900/10 p-3.5 text-xs font-bold text-brown-900 focus:outline-none focus:ring-2 focus:ring-orange-500"
+            />
+          </div>
+
+          <div className="flex justify-between pt-2">
+            <button
+              type="button"
+              onClick={() => setStep(0)}
+              className="text-brown-700 font-bold text-xs px-5 py-2.5 rounded-full border border-brown-900/15 hover:bg-cream transition-colors cursor-pointer"
+            >
+              ← Kembali
+            </button>
+            <button
+              type="button"
+              onClick={() => setStep(2)}
+              className="bg-brown-900 hover:bg-orange-500 text-white font-bold text-xs sm:text-sm px-7 py-3 rounded-full transition-colors cursor-pointer shadow-md"
+            >
+              Lanjut ke Gejala →
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Step 2: Gejala Fisik & Mental */}
+      {step === 2 && (
+        <div className="flex flex-col gap-6 animate-in fade-in duration-200">
+          <div>
+            <h2 className="font-display text-base sm:text-lg font-bold text-brown-900 mb-1">
+              Gejala fisik yang dirasakan saat cemas atau tertekan:
+            </h2>
+            <p className="text-xs text-brown-700 mb-3">Pilih semua yang kamu rasakan hari ini (bisa lebih dari satu).</p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              {PHYSICAL_SYMPTOMS_LIST.map((sym) => {
+                const isSel = physicalSymptoms.includes(sym);
+                return (
+                  <button
+                    key={sym}
+                    type="button"
+                    onClick={() => toggleItem(physicalSymptoms, setPhysicalSymptoms, sym)}
+                    className={choiceClass(isSel)}
+                  >
+                    <span className="flex-1">{sym}</span>
+                    {isSel && <span className="text-orange-500 font-extrabold shrink-0">✓</span>}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          <hr className="border-brown-900/10" />
+
+          <div>
+            <h2 className="font-display text-base sm:text-lg font-bold text-brown-900 mb-1">
+              Gejala kesehatan mental yang paling dominan:
+            </h2>
+            <p className="text-xs text-brown-700 mb-3">Pilih gejala yang kamu alami akhir-akhir ini.</p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              {MENTAL_SYMPTOMS_LIST.map((sym) => {
+                const isSel = mentalSymptoms.includes(sym);
+                return (
+                  <button
+                    key={sym}
+                    type="button"
+                    onClick={() => toggleItem(mentalSymptoms, setMentalSymptoms, sym)}
+                    className={choiceClass(isSel)}
+                  >
+                    <span className="flex-1">{sym}</span>
+                    {isSel && <span className="text-orange-500 font-extrabold shrink-0">✓</span>}
                   </button>
                 );
               })}
@@ -230,29 +408,79 @@ export function DailyAssessmentForm({ isEdit, initialValues, onSubmit, isSubmitt
           <div className="flex justify-between pt-2">
             <button
               type="button"
-              onClick={() => setStep(0)}
-              className="text-brown-700 font-semibold text-sm px-5 py-2.5 rounded-full border border-brown-900/15 hover:bg-cream transition-colors cursor-pointer"
+              onClick={() => setStep(1)}
+              className="text-brown-700 font-bold text-xs px-5 py-2.5 rounded-full border border-brown-900/15 hover:bg-cream transition-colors cursor-pointer"
             >
               ← Kembali
             </button>
             <button
               type="button"
-              onClick={() => setStep(2)}
-              className="bg-brown-900 text-white font-bold text-sm px-6 py-3 rounded-full hover:bg-orange-500 transition-colors cursor-pointer"
+              onClick={() => setStep(3)}
+              className="bg-brown-900 hover:bg-orange-500 text-white font-bold text-xs sm:text-sm px-7 py-3 rounded-full transition-colors cursor-pointer shadow-md"
             >
-              Lanjut →
+              Lanjut ke Evaluasi Akhir →
             </button>
           </div>
         </div>
       )}
 
-      {/* Step 2: Energy Tags & Reflection */}
-      {step === 2 && (
+      {/* Step 3: Tidur, Stres & Refleksi AI */}
+      {step === 3 && (
         <div className="flex flex-col gap-6 animate-in fade-in duration-200">
+          {/* Tidur */}
+          <div>
+            <div className="flex items-center justify-between mb-2">
+              <h2 className="font-display text-base font-bold text-brown-900">Rating Kualitas Tidur (1 - 5)</h2>
+              <span className="text-xs font-bold text-green-700 bg-green-100 px-3 py-1 rounded-full">
+                Rating: {sleepRating ?? 3} / 5
+              </span>
+            </div>
+            <input
+              type="range"
+              min="1"
+              max="5"
+              value={sleepRating ?? 3}
+              onChange={(e) => setSleepRating(Number(e.target.value))}
+              className="w-full accent-green-500 cursor-pointer h-2 bg-cream rounded-lg my-2"
+            />
+            <div className="flex justify-between text-[11px] font-bold text-brown-700">
+              <span>1 - Sangat Buruk (&lt; 4 jam)</span>
+              <span>3 - Cukup (6-7 jam)</span>
+              <span>5 - Nyenyak (&gt; 8 jam)</span>
+            </div>
+          </div>
+
+          <hr className="border-brown-900/10" />
+
+          {/* Stres */}
+          <div>
+            <div className="flex items-center justify-between mb-2">
+              <h2 className="font-display text-base font-bold text-brown-900">Rating Level Stres Harian (1 - 5)</h2>
+              <span className="text-xs font-bold text-orange-600 bg-orange-100 px-3 py-1 rounded-full">
+                Level: {stressLevel} / 5
+              </span>
+            </div>
+            <input
+              type="range"
+              min="1"
+              max="5"
+              value={stressLevel}
+              onChange={(e) => setStressLevel(Number(e.target.value))}
+              className="w-full accent-orange-500 cursor-pointer h-2 bg-cream rounded-lg my-2"
+            />
+            <div className="flex justify-between text-[11px] font-bold text-brown-700">
+              <span>1 - Sangat Santai</span>
+              <span>3 - Sedang</span>
+              <span>5 - Kewalahan / Sangat Tertekan</span>
+            </div>
+          </div>
+
+          <hr className="border-brown-900/10" />
+
           {/* Energy Tags */}
           <div>
-            <h2 className="font-display text-lg font-bold text-brown-900 mb-1">Kondisi Energi & Pikiran</h2>
-            <p className="text-xs text-brown-700 mb-3">Pilih satu atau lebih yang menggambarkan kondisimu hari ini.</p>
+            <h2 className="font-display text-base font-bold text-brown-900 mb-1">Tag Kondisi &amp; Energi Hari Ini</h2>
+            <p className="text-xs text-brown-700 mb-2.5">Pilih kata kunci yang menggambarkan energi tubuhmu saat ini:</p>
             <div className="flex flex-wrap gap-2">
               {ENERGY_TAGS.map((tag) => {
                 const isSel = energyTags.includes(tag);
@@ -260,7 +488,7 @@ export function DailyAssessmentForm({ isEdit, initialValues, onSubmit, isSubmitt
                   <button
                     key={tag}
                     type="button"
-                    onClick={() => toggleTag(tag)}
+                    onClick={() => toggleItem(energyTags, setEnergyTags, tag)}
                     className={`px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all cursor-pointer border ${
                       isSel
                         ? "bg-brown-900 text-white border-brown-900 shadow-sm"
@@ -276,26 +504,33 @@ export function DailyAssessmentForm({ isEdit, initialValues, onSubmit, isSubmitt
 
           <hr className="border-brown-900/10" />
 
-          {/* Reflection */}
+          {/* Refleksi & Ekspresi AI */}
           <div>
-            <h2 className="font-display text-lg font-bold text-brown-900 mb-1">Refleksi Harian (Opsional)</h2>
-            <p className="text-xs text-brown-700 mb-3">
-              Ceritakan peristiwa, perasaan, atau hal yang ingin kamu ingat dari hari ini.
+            <div className="flex items-center justify-between mb-1">
+              <h2 className="font-display text-base font-bold text-brown-900">
+                AI Expression &amp; Reflection Screening
+              </h2>
+              <span className="text-[10px] bg-green-100 text-green-700 font-bold px-2.5 py-0.5 rounded-full">
+                Privat &amp; Aman
+              </span>
+            </div>
+            <p className="text-xs text-brown-700 mb-2">
+              Tuliskan refleksi atau hal yang sedang membebani pikiranmu hari ini untuk analisis Zyba AI:
             </p>
             <textarea
               value={reflection}
               onChange={(e) => setReflection(e.target.value)}
-              placeholder="Tulis refleksimu di sini..."
-              rows={5}
-              className="w-full rounded-2xl border border-brown-900/10 p-4 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 text-brown-900 bg-cream/30 resize-none"
+              placeholder="Ceritakan harimu atau apa yang sedang kamu rasakan..."
+              rows={4}
+              className="w-full rounded-2xl border border-brown-900/10 p-3.5 text-xs font-medium text-brown-900 bg-cream/40 focus:outline-none focus:ring-2 focus:ring-green-500 resize-none"
             />
           </div>
 
           <div className="flex justify-between pt-2">
             <button
               type="button"
-              onClick={() => setStep(1)}
-              className="text-brown-700 font-semibold text-sm px-5 py-2.5 rounded-full border border-brown-900/15 hover:bg-cream transition-colors cursor-pointer"
+              onClick={() => setStep(2)}
+              className="text-brown-700 font-bold text-xs px-5 py-2.5 rounded-full border border-brown-900/15 hover:bg-cream transition-colors cursor-pointer"
             >
               ← Kembali
             </button>
@@ -303,9 +538,9 @@ export function DailyAssessmentForm({ isEdit, initialValues, onSubmit, isSubmitt
               type="button"
               onClick={handleSubmit}
               disabled={isSubmitting}
-              className="bg-orange-500 hover:bg-brown-900 text-white font-bold text-sm px-8 py-3 rounded-full transition-colors shadow-md cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+              className="bg-orange-500 hover:bg-brown-900 text-white font-bold text-xs sm:text-sm px-8 py-3 rounded-full transition-colors shadow-md cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {isSubmitting ? "Menyimpan..." : isEdit ? "Update Assessment →" : "Simpan Assessment →"}
+              {isSubmitting ? "Menganalisis & Menyimpan..." : "Selesaikan Assessment Harian →"}
             </button>
           </div>
         </div>
