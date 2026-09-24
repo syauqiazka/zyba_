@@ -99,6 +99,9 @@ interface CommunityContextType {
   handleToggleLike: (id: string) => Promise<void>;
   handleToggleRepost: (id: string) => void;
   handleAddComment: (postId: string, commentText: string) => Promise<void>;
+  currentUserId: string | null;
+  handleDeletePost: (postId: string) => Promise<void>;
+  handleArchivePost: (postId: string) => Promise<void>;
 }
 
 const CommunityContext = createContext<CommunityContextType | undefined>(undefined);
@@ -134,6 +137,14 @@ export function CommunityProvider({ children }: { children: React.ReactNode }) {
   const [selectedTag, setSelectedTag] = useState("Semua");
   const [isPostModalOpen, setIsPostModalOpen] = useState(false);
   const [newPostContent, setNewPostContent] = useState("");
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+
+  useEffect(() => {
+    fetch("/api/user/me")
+      .then((r) => r.json())
+      .then((d) => { if (d?.id) setCurrentUserId(String(d.id)); })
+      .catch(() => {});
+  }, []);
 
   useEffect(() => {
     async function loadPosts() {
@@ -340,6 +351,31 @@ export function CommunityProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
+  const handleDeletePost = async (postId: string) => {
+    try {
+      const res = await fetch(`/api/community/${postId}`, { method: "DELETE" });
+      if (res.ok) {
+        const updater = (prev: Post[]) => prev.filter((p) => p.id !== postId);
+        setPosts(updater);
+        setFollowingPosts(updater);
+      }
+    } catch (err) {
+      console.error("Delete post error:", err);
+    }
+  };
+
+  const handleArchivePost = async (postId: string) => {
+    try {
+      await fetch(`/api/community/${postId}/archive`, { method: "POST" });
+      // Optimistic: remove from main feed (still visible in /archive)
+      const updater = (prev: Post[]) => prev.filter((p) => p.id !== postId);
+      setPosts(updater);
+      setFollowingPosts(updater);
+    } catch (err) {
+      console.error("Archive post error:", err);
+    }
+  };
+
   return (
     <CommunityContext.Provider
       value={{
@@ -369,6 +405,9 @@ export function CommunityProvider({ children }: { children: React.ReactNode }) {
         handleToggleLike,
         handleToggleRepost,
         handleAddComment,
+        currentUserId,
+        handleDeletePost,
+        handleArchivePost,
       }}
     >
       {children}

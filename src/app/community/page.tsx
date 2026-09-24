@@ -28,6 +28,7 @@ export default function CommunityPage() {
     handleToggleLike,
     handleToggleRepost,
     handleAddComment,
+    currentUserId,
   } = useCommunity();
 
   const composeRef = useRef<HTMLDivElement>(null);
@@ -94,6 +95,7 @@ export default function CommunityPage() {
                 onToggleRepost={handleToggleRepost}
                 onAddComment={handleAddComment}
                 onTagClick={handleTagFilter}
+                currentUserId={currentUserId}
               />
             ))
           )}

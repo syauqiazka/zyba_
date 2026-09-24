@@ -16,6 +16,7 @@ export default function CommunityProfileView() {
     handleAddComment,
     handleTagFilter,
     setIsPostModalOpen,
+    currentUserId,
   } = useCommunity();
 
   const [userId, setUserId] = useState<string | null>(null);
@@ -165,6 +166,7 @@ export default function CommunityProfileView() {
                 onToggleRepost={handleToggleRepost}
                 onAddComment={handleAddComment}
                 onTagClick={handleTagFilter}
+                currentUserId={currentUserId}
               />
             ))
           )
@@ -182,6 +184,7 @@ export default function CommunityProfileView() {
                 onToggleRepost={handleToggleRepost}
                 onAddComment={handleAddComment}
                 onTagClick={handleTagFilter}
+                currentUserId={currentUserId}
               />
             ))
           )

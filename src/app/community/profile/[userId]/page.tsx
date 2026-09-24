@@ -200,7 +200,7 @@ function EditProfileModal({
 export default function ProfilePage() {
   const params = useParams();
   const router = useRouter();
-  const { handleToggleLike, handleToggleRepost, handleAddComment, handleTagFilter } = useCommunity();
+  const { handleToggleLike, handleToggleRepost, handleAddComment, handleTagFilter, currentUserId } = useCommunity();
 
   const userId = params.userId as string;
 
@@ -474,6 +474,7 @@ export default function ProfilePage() {
                     onToggleRepost={handleToggleRepost}
                     onAddComment={handleAddComment}
                     onTagClick={handleTagFilter}
+                    currentUserId={currentUserId}
                   />
                   {profile.isSelf && (
                     <button
@@ -509,6 +510,7 @@ export default function ProfilePage() {
                     onToggleRepost={handleToggleRepost}
                     onAddComment={handleAddComment}
                     onTagClick={handleTagFilter}
+                    currentUserId={currentUserId}
                   />
                   <button
                     type="button"
