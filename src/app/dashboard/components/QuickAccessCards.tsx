@@ -51,7 +51,7 @@ export default function QuickAccessCards() {
             <p className="text-xs text-brown-700 mt-1">Catat suasana hati, tingkat stres &amp; refleksi singkatmu hari ini.</p>
           </div>
           <Link
-            href="/mood-check-in"
+            href="/daily-assessment"
             className="mt-auto inline-flex items-center gap-2 bg-green-600 hover:bg-brown-900 text-white px-5 py-2.5 rounded-full text-xs font-bold transition-colors w-max shadow-sm"
           >
             Check-In Mood →

@@ -66,7 +66,7 @@ export default function StressLevelChart({
 
       <div className="flex items-center justify-between text-xs pt-2 border-t border-brown-900/10 text-brown-700">
         <span>Rata-rata: {hasData ? `${stressLevel.toFixed(1)} / 5` : "- / 5"}</span>
-        <Link href="/mood-check-in" className="font-bold text-orange-500 hover:underline">
+        <Link href="/daily-assessment" className="font-bold text-orange-500 hover:underline">
           {hasData ? "Detail Mood →" : "Check-In Mood →"}
         </Link>
       </div>

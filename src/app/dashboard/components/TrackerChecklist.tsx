@@ -58,8 +58,8 @@ export default function TrackerChecklist({
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         {[
           { key: "Zyba Hours (Breathing)", category: "Mindfulness", icon: "lungs", href: "/activity" },
-          { key: "Mood Quality Check", category: "Emotional", icon: "smile", href: "/mood-check-in" },
-          { key: "Health Journal Entry", category: "Reflection", icon: "journal", href: "/mood-check-in" },
+          { key: "Mood Quality Check", category: "Emotional", icon: "smile", href: "/daily-assessment" },
+          { key: "Health Journal Entry", category: "Reflection", icon: "journal", href: "/daily-assessment" },
           { key: "Daily Resource Reading", category: "Knowledge", icon: "book", href: "/resources" },
           { key: "Mental Journal Reflection", category: "Wellness", icon: "lotus", href: "/wellness-journey" },
           { key: "Community Activity", category: "Social Support", icon: "message", href: "/community" },

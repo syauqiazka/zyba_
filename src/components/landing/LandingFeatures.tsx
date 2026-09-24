@@ -9,7 +9,7 @@ const FEATURES = [
     title: "Mood Check-In",
     desc: "Catat mood harianmu, ZYBA bantu kenali pola dan beri insight.",
     icon: "🙂",
-    href: "/mood-check-in",
+    href: "/daily-assessment",
   },
   {
     title: "Smart Activity Planner",

@@ -9,7 +9,6 @@ import ProfileSettingsModal from "../profile/ProfileSettingsModal";
 const NAV_ITEMS = [
   { href: "/dashboard", label: "Dashboard", icon: "home" },
   { href: "/daily-assessment", label: "Assessment Harian", icon: "calendar-check" },
-  { href: "/mood-check-in", label: "Mood Check-In", icon: "smile" },
   { href: "/companion", label: "Zyba Companion", icon: "bot" },
   { href: "/activity", label: "Smart Activity Planner", icon: "activity" },
   { href: "/wellness-journey", label: "Wellness Journey", icon: "heart" },
