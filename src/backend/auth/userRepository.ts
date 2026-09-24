@@ -6,6 +6,7 @@ import { accountDb } from "@/backend/db/accountClient";
 export interface StoredUser {
   id: string;
   email: string;
+  username?: string | null;
   passwordHash: string;
   name: string;
   avatarUrl?: string | null;
@@ -125,6 +126,7 @@ function dbToStored(user: any): StoredUser {
   return {
     id: user.id,
     email: user.email,
+    username: user.username,
     passwordHash: user.passwordHash,
     name: user.name,
     avatarUrl: user.avatarUrl,

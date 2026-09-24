@@ -5,6 +5,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { AIModelType } from "@/backend/ai/aiModelManager";
 import { detectRisk } from "@/lib/crisisDetection";
 import { useTTS } from "@/hooks/useTTS";
+import { formatChatListTime } from "@/lib/dateUtils";
 
 export interface Message {
   id: string;
@@ -13,6 +14,7 @@ export interface Message {
   flaggedForRisk?: boolean;
   modelUsed?: string;
   time: string;
+  createdAt?: string;
 }
 
 export interface Conversation {
@@ -146,12 +148,13 @@ export function CompanionProvider({ children }: { children: React.ReactNode }) {
             id: c.id,
             title: c.title,
             lastMsg: c.messages[c.messages.length - 1]?.content || "Percakapan baru",
-            time: new Date(c.updatedAt).toLocaleDateString("id-ID", { day: "numeric", month: "short" }),
+            time: formatChatListTime(c.updatedAt || (c.messages.length > 0 ? c.messages[c.messages.length - 1].createdAt : undefined)),
             emotionTag: "Netral",
             messages: c.messages.map((m: any) => ({
               id: m.id,
               role: m.role,
               content: m.content,
+              createdAt: m.createdAt,
               time: new Date(m.createdAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
               modelUsed: m.modelUsed,
             })),
@@ -263,6 +266,7 @@ export function CompanionProvider({ children }: { children: React.ReactNode }) {
       role: "USER",
       content: textToSend,
       time: timeNow,
+      createdAt: new Date().toISOString(),
     };
 
     setConversations((prev) =>
@@ -273,7 +277,7 @@ export function CompanionProvider({ children }: { children: React.ReactNode }) {
             ...c,
             title: isFirstMessage ? textToSend.slice(0, 32) : c.title,
             lastMsg: textToSend,
-            time: "Baru saja",
+            time: formatChatListTime(new Date()),
             messages: [...c.messages, newUserMsg],
           };
         }
@@ -332,6 +336,7 @@ export function CompanionProvider({ children }: { children: React.ReactNode }) {
           "Aku selalu di sini mendengarkanmu. Ceritakan lebih lanjut apa yang sedang membebani pikiranmu.",
         modelUsed: data.modelUsed || selectedModel,
         time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+        createdAt: new Date().toISOString(),
       };
 
       // Auto-play TTS for AI reply
@@ -343,7 +348,7 @@ export function CompanionProvider({ children }: { children: React.ReactNode }) {
             return {
               ...c,
               lastMsg: newAiMsg.content.slice(0, 60) + "...",
-              time: "Baru saja",
+              time: formatChatListTime(new Date()),
               emotionTag: data.emotionTag || c.emotionTag || "Tenang",
               messages: [...c.messages, newAiMsg],
             };
@@ -360,6 +365,7 @@ export function CompanionProvider({ children }: { children: React.ReactNode }) {
           "Maaf Alex, koneksi sedang sibuk sejenak. Namun ingatlah untuk selalu menarik napas perlahan dan beristirahat sejenak bila terasa kewalahan.",
         modelUsed: selectedModel,
         time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+        createdAt: new Date().toISOString(),
       };
 
       setConversations((prev) =>
@@ -378,7 +384,7 @@ export function CompanionProvider({ children }: { children: React.ReactNode }) {
       id: newId,
       title: "Percakapan Baru",
       lastMsg: "Mulai percakapan baru dengan Zyba...",
-      time: "Baru saja",
+      time: formatChatListTime(new Date()),
       emotionTag: "Netral",
       messages: [],
     };

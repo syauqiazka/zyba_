@@ -5,6 +5,7 @@ export interface DMMessage {
   senderId: string;
   content: string;
   createdAt: string;
+  readAt?: string | null;
 }
 
 export interface DMConversation {

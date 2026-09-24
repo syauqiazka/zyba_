@@ -48,7 +48,7 @@ export default function CommunityActivityView() {
                   {n.avatar}
                 </div>
                 <div className="absolute -bottom-1 -right-1 w-4 h-4 rounded-full bg-orange-500 text-white flex items-center justify-center text-[9px] font-bold">
-                  {n.action === "like" ? <span className="text-[9px]">♥</span> : n.action === "reply" ? <span className="text-[9px]">↩</span> : <span className="text-[9px]">+</span>}
+                  {n.action === "like" ? <span className="text-[9px]">♥</span> : n.action === "reply" ? <span className="text-[9px]">↩</span> : n.action === "mention" ? <span className="text-[9px]">@</span> : n.action === "dm" ? <span className="text-[9px]">💬</span> : <span className="text-[9px]">+</span>}
                 </div>
               </div>
 
@@ -60,7 +60,11 @@ export default function CommunityActivityView() {
                       {n.action === "like"
                         ? "menyukai ceritamu"
                         : n.action === "reply"
-                        ? "membalas thread kamu"
+                        ? "membalas postinganmu"
+                        : n.action === "mention"
+                        ? "menyebutmu dalam sebuah postingan atau komentar"
+                        : n.action === "dm"
+                        ? "mengirim pesan langsung"
                         : "mulai mengikutimu"}
                     </span>
                   </p>

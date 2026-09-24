@@ -83,9 +83,13 @@ export default function ProfileSettingsModal({ user, isOpen, onClose, onUserUpda
 
   // Account state
   const [name, setName] = useState(user.name || "");
+  const [username, setUsername] = useState(user.username || user.handle || "");
+  const [bio, setBio] = useState(user.bio || "");
   const [email] = useState(user.email || "");
   const [phone, setPhone] = useState("");
   const [isEditingName, setIsEditingName] = useState(false);
+  const [isEditingUsername, setIsEditingUsername] = useState(false);
+  const [isEditingBio, setIsEditingBio] = useState(false);
   const [isEditingPhone, setIsEditingPhone] = useState(false);
   const [isChangingPassword, setIsChangingPassword] = useState(false);
   const [newPassword, setNewPassword] = useState("");
@@ -110,7 +114,11 @@ export default function ProfileSettingsModal({ user, isOpen, onClose, onUserUpda
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   useEffect(() => { setMounted(true); }, []);
-  useEffect(() => { setName(user.name); }, [user]);
+  useEffect(() => {
+    setName(user.name);
+    setUsername(user.username || user.handle || "");
+    setBio(user.bio || "");
+  }, [user]);
   useEffect(() => {
     if (!isOpen) return;
     fetch("/api/settings/notifications").then(r => r.ok ? r.json() : null).then(d => {
@@ -177,6 +185,43 @@ export default function ProfileSettingsModal({ user, isOpen, onClose, onUserUpda
 
   const saveName = async () => {
     try { await fetch("/api/auth", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ action: "UPDATE_PROFILE", name, email }) }); onUserUpdate({ name }); setIsEditingName(false); ok("Nama diperbarui!"); } catch { setIsEditingName(false); }
+  };
+  const saveUsername = async () => {
+    const clean = username.trim().toLowerCase().replace(/[^a-z0-9_]/g, "");
+    try {
+      const res = await fetch("/api/user/me", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username: clean }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        alert(data.error || "Gagal mengubah username");
+        return;
+      }
+      setUsername(clean);
+      onUserUpdate({ username: clean, handle: clean });
+      setIsEditingUsername(false);
+      ok("Username (@" + clean + ") berhasil disimpan!");
+    } catch {
+      setIsEditingUsername(false);
+    }
+  };
+  const saveBio = async () => {
+    try {
+      const res = await fetch("/api/user/me", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ bio: bio.trim() }),
+      });
+      if (res.ok) {
+        onUserUpdate({ bio: bio.trim() });
+        setIsEditingBio(false);
+        ok("Bio berhasil disimpan!");
+      }
+    } catch {
+      setIsEditingBio(false);
+    }
   };
   const savePhone = async () => {
     try { await fetch("/api/user/me", { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ phone }) }); setIsEditingPhone(false); ok("Nomor telepon disimpan!"); } catch { setIsEditingPhone(false); }
@@ -290,6 +335,50 @@ export default function ProfileSettingsModal({ user, isOpen, onClose, onUserUpda
                 <Row label="Nama" value={isEditingName ? undefined : <span className="text-sm font-bold text-brown-900">{name}</span>}
                   action={!isEditingName ? <Btn onClick={() => setIsEditingName(true)}>Edit</Btn> : undefined}>
                   {isEditingName && <InlineEdit value={name} onChange={setName} onSave={saveName} onCancel={() => setIsEditingName(false)} />}
+                </Row>
+                <Row label="Username (@ handle)" value={isEditingUsername ? undefined : <span className="text-sm font-semibold text-brown-900">{username ? `@${username}` : "Belum diatur"}</span>}
+                  action={!isEditingUsername ? <Btn onClick={() => setIsEditingUsername(true)}>{username ? "Edit" : "Atur"}</Btn> : undefined}>
+                  {isEditingUsername && (
+                    <div className="flex flex-col gap-1 w-full max-w-sm mt-1">
+                      <div className="flex items-center rounded-xl border border-brown-900/15 bg-white px-3 py-1.5 gap-1 focus-within:border-orange-500">
+                        <span className="text-xs text-brown-700/50 select-none">@</span>
+                        <input
+                          type="text"
+                          value={username}
+                          onChange={e => setUsername(e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, ""))}
+                          maxLength={30}
+                          placeholder="username"
+                          className="flex-1 bg-transparent text-xs text-brown-900 outline-none"
+                        />
+                      </div>
+                      <div className="flex gap-2 mt-1">
+                        <button onClick={saveUsername} className="text-xs font-bold bg-orange-500 text-white px-3.5 py-1 rounded-full hover:bg-orange-600 transition-colors">Simpan</button>
+                        <button onClick={() => setIsEditingUsername(false)} className="text-xs text-brown-700">Batal</button>
+                      </div>
+                    </div>
+                  )}
+                </Row>
+                <Row label="Bio Komunitas" value={isEditingBio ? undefined : <span className="text-xs text-brown-700 max-w-md line-clamp-2">{bio || "Belum ada bio"}</span>}
+                  action={!isEditingBio ? <Btn onClick={() => setIsEditingBio(true)}>{bio ? "Edit" : "Tambah"}</Btn> : undefined}>
+                  {isEditingBio && (
+                    <div className="flex flex-col gap-1 w-full max-w-md mt-1">
+                      <textarea
+                        value={bio}
+                        onChange={e => setBio(e.target.value)}
+                        maxLength={160}
+                        rows={2}
+                        placeholder="Ceritakan sedikit tentang dirimu..."
+                        className="w-full bg-white text-xs text-brown-900 p-2.5 rounded-xl border border-brown-900/15 outline-none focus:border-orange-500 resize-none"
+                      />
+                      <div className="flex items-center justify-between mt-1">
+                        <span className="text-[10px] text-brown-700/40">{bio.length}/160</span>
+                        <div className="flex gap-2">
+                          <button onClick={saveBio} className="text-xs font-bold bg-orange-500 text-white px-3.5 py-1 rounded-full hover:bg-orange-600 transition-colors">Simpan</button>
+                          <button onClick={() => setIsEditingBio(false)} className="text-xs text-brown-700">Batal</button>
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </Row>
                 <Row label="Email" value={
                   <div className="flex items-center gap-2">

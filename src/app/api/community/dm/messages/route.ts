@@ -44,6 +44,26 @@ export async function GET(req: NextRequest) {
       take: 100, // last 100 messages
     });
 
+    // Mark messages from other participants as read (async/non-blocking for speed)
+    communityDb.directMessage.updateMany({
+      where: {
+        conversationId,
+        senderId: { not: session.userId },
+        readAt: null,
+      },
+      data: { readAt: new Date() },
+    }).catch((err) => console.warn("[DM Mark Read error]:", err));
+
+    // Mark DM notifications for this conversation as read
+    communityDb.communityNotification.updateMany({
+      where: {
+        recipientId: session.userId,
+        conversationId,
+        readAt: null,
+      },
+      data: { readAt: new Date() },
+    }).catch((err) => console.warn("[DM Notif Mark Read error]:", err));
+
     return NextResponse.json({ messages });
   } catch (err: any) {
     console.error("[DM Get Messages]:", err);
@@ -99,6 +119,30 @@ export async function POST(req: NextRequest) {
       where: { id: conversationId },
       data: { lastMessageAt: new Date() },
     });
+
+    // Create notifications for other participants
+    try {
+      const otherParticipants = await communityDb.directParticipant.findMany({
+        where: {
+          conversationId,
+          userId: { not: session.userId },
+        },
+        select: { userId: true },
+      });
+
+      for (const p of otherParticipants) {
+        await communityDb.communityNotification.create({
+          data: {
+            recipientId: p.userId,
+            actorId: session.userId,
+            type: "dm",
+            conversationId,
+          },
+        });
+      }
+    } catch (notifErr) {
+      console.warn("[DM Notification error]:", notifErr);
+    }
 
     // Publish via Ably for realtime delivery (non-blocking, never fails message send)
     try {

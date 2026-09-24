@@ -1,5 +1,6 @@
 import { communityDb } from "@/backend/db/communityClient";
 import { accountDb } from "@/backend/db/accountClient";
+import { formatRelativeTime } from "@/lib/dateUtils";
 
 export interface CommentItem {
   id: string; author: string; avatar: string; time: string; content: string;
@@ -11,6 +12,34 @@ export interface CommunityPostItem {
   imageUrl?: string | null; likes: number; commentsCount: number;
   repostsCount: number; userLiked?: boolean; userReposted?: boolean;
   comments: CommentItem[]; createdAt: string;
+}
+
+async function handleMentions(content: string, actorId: string, postId: string, commentId?: string) {
+  try {
+    const matches = content.match(/@([a-zA-Z0-9_]+)/g);
+    if (!matches || matches.length === 0) return;
+    const usernames = [...new Set(matches.map(m => m.slice(1).toLowerCase()))];
+    const users = await accountDb.user.findMany({
+      where: {
+        username: { in: usernames },
+        NOT: { id: actorId }
+      },
+      select: { id: true, username: true }
+    });
+    for (const u of users) {
+      await communityDb.communityNotification.create({
+        data: {
+          recipientId: u.id,
+          actorId: actorId,
+          type: "mention",
+          postId: postId,
+          commentId: commentId || null,
+        }
+      });
+    }
+  } catch (err) {
+    console.warn("[handleMentions] warning:", err);
+  }
 }
 
 // Cross-DB join manual sesuai AGENTS.md 17.5
@@ -37,14 +66,22 @@ export const communityRepository = {
         id: p.id, userId: p.userId,
         author: au?.name ?? "Pengguna ZYBA",
         avatar: au?.avatarUrl ?? "fox",
-        isVerified: true, time: "Baru saja", tag: "Sharing",
+        isVerified: true,
+        time: formatRelativeTime(p.createdAt),
+        tag: "Sharing",
         content: p.content ?? "",
         imageUrl: p.imageUrl,
         likes: p.likes.length, commentsCount: p.comments.length,
         repostsCount: 0, userLiked: false, userReposted: false,
         comments: p.comments.map(c => {
           const cu = umap.get(c.userId);
-          return { id: c.id, author: cu?.name ?? "Pengguna ZYBA", avatar: cu?.avatarUrl ?? "fox", time: "Baru saja", content: c.content ?? "" };
+          return {
+            id: c.id,
+            author: cu?.name ?? "Pengguna ZYBA",
+            avatar: cu?.avatarUrl ?? "fox",
+            time: formatRelativeTime(c.createdAt),
+            content: c.content ?? ""
+          };
         }),
         createdAt: p.createdAt.toISOString(),
       };
@@ -55,20 +92,93 @@ export const communityRepository = {
     const saved = await communityDb.communityPost.create({
       data: { userId: data.userId, content: data.content, imageUrl: data.imageUrl ?? null },
     });
-    return { id: saved.id, userId: saved.userId, author: data.author, avatar: data.avatar, isVerified: true, time: "Baru saja", tag: data.tag ?? "Sharing", content: saved.content ?? "", imageUrl: saved.imageUrl, likes: 0, commentsCount: 0, repostsCount: 0, userLiked: false, userReposted: false, comments: [], createdAt: saved.createdAt.toISOString() };
+
+    // Handle mentions in post
+    handleMentions(data.content, data.userId, saved.id);
+
+    return {
+      id: saved.id,
+      userId: saved.userId,
+      author: data.author,
+      avatar: data.avatar,
+      isVerified: true,
+      time: "Baru saja",
+      tag: data.tag ?? "Sharing",
+      content: saved.content ?? "",
+      imageUrl: saved.imageUrl,
+      likes: 0,
+      commentsCount: 0,
+      repostsCount: 0,
+      userLiked: false,
+      userReposted: false,
+      comments: [],
+      createdAt: saved.createdAt.toISOString()
+    };
   },
 
   async addComment(postId: string, data: { userId: string; author: string; avatar: string; content: string }): Promise<CommentItem> {
-    const saved = await communityDb.communityComment.create({ data: { postId, userId: data.userId, content: data.content } });
+    const saved = await communityDb.communityComment.create({
+      data: { postId, userId: data.userId, content: data.content }
+    });
+
+    // Handle mentions in comment
+    handleMentions(data.content, data.userId, postId, saved.id);
+
+    // Notify post owner if not self
+    try {
+      const post = await communityDb.communityPost.findUnique({
+        where: { id: postId },
+        select: { userId: true },
+      });
+      if (post && post.userId !== data.userId) {
+        await communityDb.communityNotification.create({
+          data: {
+            recipientId: post.userId,
+            actorId: data.userId,
+            type: "reply",
+            postId,
+            commentId: saved.id,
+          },
+        });
+      }
+    } catch (err) {
+      console.warn("[addComment Notification] warning:", err);
+    }
+
     return { id: saved.id, author: data.author, avatar: data.avatar, time: "Baru saja", content: saved.content ?? "" };
   },
 
   async toggleLike(postId: string, userId: string): Promise<boolean> {
     const existing = await communityDb.communityLike.findUnique({ where: { postId_userId: { postId, userId } } });
-    if (existing) { await communityDb.communityLike.delete({ where: { id: existing.id } }); return false; }
+    if (existing) {
+      await communityDb.communityLike.delete({ where: { id: existing.id } });
+      return false;
+    }
     await communityDb.communityLike.create({ data: { postId, userId } });
+
+    // Notify post owner on like
+    try {
+      const post = await communityDb.communityPost.findUnique({
+        where: { id: postId },
+        select: { userId: true },
+      });
+      if (post && post.userId !== userId) {
+        await communityDb.communityNotification.create({
+          data: {
+            recipientId: post.userId,
+            actorId: userId,
+            type: "like",
+            postId,
+          },
+        });
+      }
+    } catch (err) {
+      console.warn("[toggleLike Notification] warning:", err);
+    }
+
     return true;
   },
+
 
   async getFollowingIds(userId: string): Promise<string[]> {
     const following = await communityDb.communityFollow.findMany({
@@ -130,14 +240,22 @@ export const communityRepository = {
         id: p.id, userId: p.userId,
         author: au?.name ?? "Pengguna ZYBA",
         avatar: au?.avatarUrl ?? "fox",
-        isVerified: true, time: "Baru saja", tag: "Sharing",
+        isVerified: true,
+        time: formatRelativeTime(p.createdAt),
+        tag: "Sharing",
         content: p.content ?? "",
         imageUrl: p.imageUrl,
         likes: p.likes.length, commentsCount: p.comments.length,
         repostsCount: 0, userLiked: false, userReposted: false,
         comments: p.comments.map(c => {
           const cu = umap.get(c.userId);
-          return { id: c.id, author: cu?.name ?? "Pengguna ZYBA", avatar: cu?.avatarUrl ?? "fox", time: "Baru saja", content: c.content ?? "" };
+          return {
+            id: c.id,
+            author: cu?.name ?? "Pengguna ZYBA",
+            avatar: cu?.avatarUrl ?? "fox",
+            time: formatRelativeTime(c.createdAt),
+            content: c.content ?? ""
+          };
         }),
         createdAt: p.createdAt.toISOString(),
       };

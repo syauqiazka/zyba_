@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { AIModelType } from "@/backend/ai/aiModelManager";
 import ModelSelector from "./ModelSelector";
 import { useTTS } from "@/hooks/useTTS";
+import { formatChatDateSeparator, isSameCalendarDay } from "@/lib/dateUtils";
 
 interface Message {
   id: string;
@@ -12,6 +13,7 @@ interface Message {
   flaggedForRisk?: boolean;
   modelUsed?: string;
   time: string;
+  createdAt?: string;
 }
 
 interface Props {
@@ -196,15 +198,27 @@ export default function ChatMessages({
   // 2. ACTIVE CHAT STREAM
   return (
     <div className="flex-1 overflow-y-auto px-4 py-6 md:px-8 space-y-6">
-      {messages.map((msg) => {
+      {messages.map((msg, idx) => {
         const isUser = msg.role === "USER";
+        const prevMsg = messages[idx - 1];
+        const showDateSeparator =
+          msg.createdAt &&
+          (!prevMsg?.createdAt || !isSameCalendarDay(prevMsg.createdAt, msg.createdAt));
+
         return (
-          <div
-            key={msg.id}
-            onMouseEnter={() => setHoveredMessageId(msg.id)}
-            onMouseLeave={() => setHoveredMessageId(null)}
-            className={`flex flex-col ${isUser ? "items-end" : "items-start"}`}
-          >
+          <React.Fragment key={msg.id}>
+            {showDateSeparator && (
+              <div className="flex items-center justify-center my-2 select-none">
+                <span className="bg-cream/90 text-brown-700/70 border border-brown-900/10 text-[11px] font-semibold px-3.5 py-1 rounded-full shadow-2xs">
+                  {formatChatDateSeparator(msg.createdAt!)}
+                </span>
+              </div>
+            )}
+            <div
+              onMouseEnter={() => setHoveredMessageId(msg.id)}
+              onMouseLeave={() => setHoveredMessageId(null)}
+              className={`flex flex-col ${isUser ? "items-end" : "items-start"}`}
+            >
             <div
               className={`flex items-start gap-3 max-w-[85%] sm:max-w-[75%] ${
                 isUser ? "flex-row-reverse" : "flex-row"
@@ -257,6 +271,7 @@ export default function ChatMessages({
               )}
             </div>
           </div>
+        </React.Fragment>
         );
       })}
 

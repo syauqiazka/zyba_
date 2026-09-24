@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { communityDb } from "@/backend/db/communityClient";
 import { accountDb } from "@/backend/db/accountClient";
+import { formatRelativeTime } from "@/lib/dateUtils";
 
 export async function GET(
   req: NextRequest,
@@ -45,7 +46,7 @@ export async function GET(
         author: author?.name || "Pengguna ZYBA",
         avatar: author?.avatarUrl || "fox",
         isVerified: true,
-        time: "Baru saja",
+        time: formatRelativeTime(p.createdAt),
         tag: "Sharing",
         content: p.content || "",
         imageUrl: p.imageUrl,
@@ -61,7 +62,7 @@ export async function GET(
             id: c.id,
             author: commenter?.name || "Pengguna ZYBA",
             avatar: commenter?.avatarUrl || "fox",
-            time: "Baru saja",
+            time: formatRelativeTime(c.createdAt),
             content: c.content || "",
           };
         }),

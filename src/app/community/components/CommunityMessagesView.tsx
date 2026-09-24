@@ -5,6 +5,7 @@ import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { useDM } from "@/hooks/useDM";
 import { MessageCircle, Search, Edit3, Send, Plus, ArrowLeft, ExternalLink } from "lucide-react";
+import { formatChatDateSeparator, isSameCalendarDay, formatChatListTime } from "@/lib/dateUtils";
 
 interface TargetUserMeta {
   id: string;
@@ -253,11 +254,8 @@ export default function CommunityMessagesView() {
                       {displayName}
                     </span>
                     {c.lastMessageAt && (
-                      <span className="text-[10px] text-brown-700/40 shrink-0 ml-1">
-                        {new Date(c.lastMessageAt).toLocaleTimeString([], {
-                          hour: "2-digit",
-                          minute: "2-digit",
-                        })}
+                      <span className="text-[10px] text-brown-700/50 shrink-0 ml-1 font-medium">
+                        {formatChatListTime(c.lastMessageAt)}
                       </span>
                     )}
                   </div>
@@ -358,37 +356,83 @@ export default function CommunityMessagesView() {
                 </div>
               )}
 
-              {activeChatLog.map((msg) => {
-                const isMe = currentUserId ? msg.senderId === currentUserId : false;
-
-                return (
-                  <div
-                    key={msg.id}
-                    className={`flex flex-col gap-1 max-w-[75%] ${isMe ? "self-end items-end" : "self-start items-start"}`}
-                  >
-                    {!isMe && (
-                      <span className="text-[10px] font-bold text-brown-700/70 ml-1">
-                        {otherName}
-                      </span>
-                    )}
-                    <div
-                      className={`px-4 py-2.5 rounded-2xl text-xs leading-relaxed break-words shadow-2xs ${
-                        isMe
-                          ? "bg-brown-900 text-white rounded-br-xs"
-                          : "bg-white border border-brown-900/10 text-brown-900 rounded-bl-xs"
-                      }`}
-                    >
-                      {msg.content}
-                    </div>
-                    <span className="text-[9px] text-brown-700/40 px-1">
-                      {new Date(msg.createdAt).toLocaleTimeString([], {
-                        hour: "2-digit",
-                        minute: "2-digit",
-                      })}
-                    </span>
-                  </div>
+              {(() => {
+                const firstUnreadIndex = activeChatLog.findIndex(
+                  (m) => currentUserId && m.senderId !== currentUserId && !m.readAt
                 );
-              })}
+
+                return activeChatLog.map((msg, idx) => {
+                  const isMe = currentUserId ? msg.senderId === currentUserId : false;
+                  const prevMsg = activeChatLog[idx - 1];
+                  const showDateSeparator =
+                    !prevMsg || !isSameCalendarDay(prevMsg.createdAt, msg.createdAt);
+                  const showUnreadSeparator = idx === firstUnreadIndex;
+
+                  return (
+                    <React.Fragment key={msg.id}>
+                      {/* Daily Date Separator */}
+                      {showDateSeparator && (
+                        <div className="flex items-center justify-center my-3 select-none">
+                          <span className="bg-cream/90 text-brown-700/70 border border-brown-900/10 text-[11px] font-semibold px-3.5 py-1 rounded-full shadow-2xs">
+                            {formatChatDateSeparator(msg.createdAt)}
+                          </span>
+                        </div>
+                      )}
+
+                      {/* Unread Message Separator */}
+                      {showUnreadSeparator && (
+                        <div className="flex items-center gap-3 my-3 select-none">
+                          <div className="flex-1 h-[1px] bg-orange-400/50" />
+                          <span className="bg-orange-100 text-orange-700 border border-orange-300 text-[10px] font-bold px-3 py-0.5 rounded-full uppercase tracking-wider shadow-2xs">
+                            Pesan Belum Dibaca
+                          </span>
+                          <div className="flex-1 h-[1px] bg-orange-400/50" />
+                        </div>
+                      )}
+
+                      {/* Chat Bubble */}
+                      <div
+                        className={`flex flex-col gap-1 max-w-[75%] ${
+                          isMe ? "self-end items-end" : "self-start items-start"
+                        }`}
+                      >
+                        {!isMe && (
+                          <span className="text-[10px] font-bold text-brown-700/70 ml-1">
+                            {otherName}
+                          </span>
+                        )}
+                        <div
+                          className={`px-4 py-2.5 rounded-2xl text-xs leading-relaxed break-words shadow-2xs ${
+                            isMe
+                              ? "bg-brown-900 text-white rounded-br-xs"
+                              : "bg-white border border-brown-900/10 text-brown-900 rounded-bl-xs"
+                          }`}
+                        >
+                          {msg.content}
+                        </div>
+                        <div className="flex items-center gap-1 text-[9px] text-brown-700/40 px-1">
+                          <span>
+                            {new Date(msg.createdAt).toLocaleTimeString([], {
+                              hour: "2-digit",
+                              minute: "2-digit",
+                            })}
+                          </span>
+                          {isMe && (
+                            <span
+                              className={`font-bold ${
+                                msg.readAt ? "text-orange-500" : "text-brown-700/40"
+                              }`}
+                              title={msg.readAt ? "Dibaca" : "Terkirim"}
+                            >
+                              {msg.readAt ? "✓✓" : "✓"}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    </React.Fragment>
+                  );
+                });
+              })()}
               <div ref={bottomRef} />
             </div>
 

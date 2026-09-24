@@ -22,7 +22,7 @@ export interface CommunityNotification {
   id: string;
   user: string;
   avatar: string;
-  action: "like" | "reply" | "mention" | "follow";
+  action: "like" | "reply" | "mention" | "follow" | "dm";
   time: string;
   targetText?: string;
   read: boolean;
@@ -174,6 +174,24 @@ export function CommunityProvider({ children }: { children: React.ReactNode }) {
       }
     }
     loadFollowingFeed();
+  }, [currentView]);
+
+  // Load real notifications from API
+  useEffect(() => {
+    async function loadNotifications() {
+      try {
+        const res = await fetch("/api/community/notifications");
+        if (res.ok) {
+          const data = await res.json();
+          if (data.notifications) {
+            setNotifications(data.notifications);
+          }
+        }
+      } catch (err) {
+        console.warn("Failed to fetch notifications:", err);
+      }
+    }
+    loadNotifications();
   }, [currentView]);
 
   const handleTagFilter = (tag: string) => {

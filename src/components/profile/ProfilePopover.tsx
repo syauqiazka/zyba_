@@ -5,6 +5,8 @@ import React, { useState, useEffect, useRef } from "react";
 export interface ProfileUser {
   name: string;
   email: string;
+  username?: string;
+  bio?: string;
   avatarUrl?: string;
   plan?: "FREE" | "PLUS";
   handle?: string;
