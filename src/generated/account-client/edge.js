@@ -313,7 +313,7 @@ const config = {
       "value": "prisma-client-js"
     },
     "output": {
-      "value": "C:\\Users\\user\\OneDrive\\Documents\\syauqi_nitip\\zyba_\\src\\generated\\account-client",
+      "value": "D:\\zybaa\\zyba_\\src\\generated\\account-client",
       "fromEnvVar": null
     },
     "config": {
@@ -331,7 +331,7 @@ const config = {
       }
     ],
     "previewFeatures": [],
-    "sourceFilePath": "C:\\Users\\user\\OneDrive\\Documents\\syauqi_nitip\\zyba_\\prisma\\account\\schema.prisma",
+    "sourceFilePath": "D:\\zybaa\\zyba_\\prisma\\account\\schema.prisma",
     "isCustomOutput": true
   },
   "relativeEnvPaths": {
@@ -345,6 +345,7 @@ const config = {
     "db"
   ],
   "activeProvider": "postgresql",
+  "postinstall": false,
   "inlineDatasources": {
     "db": {
       "url": {

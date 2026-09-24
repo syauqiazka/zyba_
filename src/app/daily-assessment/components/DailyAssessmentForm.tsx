@@ -1,6 +1,12 @@
 "use client";
 
 import React, { useState, useMemo } from "react";
+import { MOODS } from "@/lib/moods";
+import ScoreSlider, { scoreText, scoreTint } from "@/components/ScoreSlider";
+
+// MOODS sekarang satu sumber di @/lib/moods; tetap diekspor dari sini
+// supaya import lama (mis. di DailyAssessmentSummary) tidak putus.
+export { MOODS };
 
 // ---------- Types ----------
 
@@ -23,14 +29,6 @@ export interface Pagination {
   total: number;
   totalPages: number;
 }
-
-export const MOODS = [
-  { value: "DEPRESSED", label: "Depressed", emoji: "😞", bg: "#A99BE0", text: "text-white" },
-  { value: "SAD", label: "Sad", emoji: "🙁", bg: "#EE8A5E", text: "text-white" },
-  { value: "NEUTRAL", label: "Neutral", emoji: "😐", bg: "#6B5645", text: "text-white" },
-  { value: "HAPPY", label: "Happy", emoji: "🙂", bg: "#E8C24A", text: "text-brown-900" },
-  { value: "OVERJOYED", label: "Overjoyed", emoji: "😄", bg: "#8FAE5D", text: "text-white" },
-] as const;
 
 export const SLEEP_OPTIONS = [
   { rating: 1, label: "< 4 jam", desc: "Insomnia", icon: "😴" },
@@ -116,9 +114,50 @@ interface FormProps {
   initialValues?: Partial<DailyRecord>;
   onSubmit: (data: DailyAssessmentSubmitData) => Promise<void>;
   isSubmitting: boolean;
+  /** Dipanggil setiap mood diganti, supaya banner di atas ikut berubah warna */
+  onMoodChange?: (mood: string) => void;
 }
 
-export function DailyAssessmentForm({ onSubmit, isSubmitting }: FormProps) {
+// ---------- Satu pertanyaan slider: judul, badge berwarna, slider, label ----------
+
+interface ScoreQuestionProps {
+  title: string;
+  value: number;
+  onChange: (value: number) => void;
+  /** true kalau skor tinggi = negatif (stres, kecemasan): warnanya dibalik */
+  inverted?: boolean;
+  badge?: string;
+  labels: [string, string, string];
+}
+
+function ScoreQuestion({ title, value, onChange, inverted = false, badge, labels }: ScoreQuestionProps) {
+  return (
+    <div>
+      <div className="flex items-center justify-between mb-2">
+        <h3 className="font-display text-sm font-bold text-brown-900">{title}</h3>
+        <span
+          className="text-xs font-bold px-3 py-1 rounded-full transition-colors duration-300"
+          style={{
+            color: scoreText(value, 1, 5, inverted),
+            backgroundColor: scoreTint(value, 1, 5, inverted),
+          }}
+        >
+          {badge ?? `Rating ${value} / 5`}
+        </span>
+      </div>
+
+      <ScoreSlider value={value} onChange={onChange} inverted={inverted} ariaLabel={title} />
+
+      <div className="flex justify-between text-[10px] text-brown-700 font-bold mt-1">
+        <span>{labels[0]}</span>
+        <span>{labels[1]}</span>
+        <span>{labels[2]}</span>
+      </div>
+    </div>
+  );
+}
+
+export function DailyAssessmentForm({ onSubmit, isSubmitting, onMoodChange }: FormProps) {
   const [step, setStep] = useState(0);
 
   // 1. Aspek Mental (6 Pertanyaan)
@@ -162,10 +201,9 @@ export function DailyAssessmentForm({ onSubmit, isSubmitting }: FormProps) {
 
   // D.1 Standardized 3-state styling
   const choiceClass = (isSelected: boolean) =>
-    `relative flex items-center justify-between gap-2 p-3.5 rounded-2xl text-xs font-bold text-left border-2 transition-all duration-200 cursor-pointer ${
-      isSelected
-        ? "border-orange-500 bg-orange-100 text-brown-900 shadow-sm"
-        : "border-brown-900/10 bg-white text-brown-700 hover:border-orange-500/40 hover:bg-orange-500/5"
+    `relative flex items-center justify-between gap-2 p-3.5 rounded-2xl text-xs font-bold text-left border-2 transition-all duration-200 cursor-pointer ${isSelected
+      ? "border-orange-500 bg-orange-100 text-brown-900 shadow-sm"
+      : "border-brown-900/10 bg-white text-brown-700 hover:border-orange-500/40 hover:bg-orange-500/5"
     }`;
 
   // Estimasi Skor Realtime
@@ -242,13 +280,12 @@ export function DailyAssessmentForm({ onSubmit, isSubmitting }: FormProps) {
             key={s.title}
             type="button"
             onClick={() => setStep(i)}
-            className={`flex flex-col text-left p-3 rounded-2xl border transition-all ${
-              i === step
-                ? "bg-brown-900 text-white border-brown-900 shadow-md"
-                : i < step
+            className={`flex flex-col text-left p-3 rounded-2xl border transition-all ${i === step
+              ? "bg-brown-900 text-white border-brown-900 shadow-md"
+              : i < step
                 ? "bg-green-100/60 border-green-500/30 text-green-800"
                 : "bg-cream/40 border-brown-900/10 text-brown-700/60 hover:bg-cream"
-            }`}
+              }`}
           >
             <div className="flex items-center gap-1.5 text-xs font-bold mb-0.5">
               <span>{s.icon}</span>
@@ -285,7 +322,10 @@ export function DailyAssessmentForm({ onSubmit, isSubmitting }: FormProps) {
                   <button
                     key={m.value}
                     type="button"
-                    onClick={() => setMood(m.value)}
+                    onClick={() => {
+                      setMood(m.value);
+                      onMoodChange?.(m.value);
+                    }}
                     className={`justify-center ${choiceClass(isSelected)}`}
                   >
                     <span className="text-xl sm:text-2xl mr-1">{m.emoji}</span>
@@ -299,138 +339,57 @@ export function DailyAssessmentForm({ onSubmit, isSubmitting }: FormProps) {
 
           <hr className="border-brown-900/10" />
 
-          {/* 2. Stres */}
-          <div>
-            <div className="flex items-center justify-between mb-2">
-              <h3 className="font-display text-sm font-bold text-brown-900">
-                2. Tingkat Stres Harian (1 - 5)
-              </h3>
-              <span className="text-xs font-bold text-orange-600 bg-orange-100 px-3 py-1 rounded-full">
-                Level {stressLevel} / 5: {["Sangat Santai", "Rileks", "Sedang", "Tinggi", "Kewalahan"][stressLevel - 1]}
-              </span>
-            </div>
-            <input
-              type="range"
-              min="1"
-              max="5"
-              value={stressLevel}
-              onChange={(e) => setStressLevel(Number(e.target.value))}
-              className="w-full accent-orange-500 cursor-pointer h-2 bg-cream rounded-lg my-2"
-            />
-            <div className="flex justify-between text-[10px] text-brown-700 font-bold">
-              <span>1 - Sangat Tenang</span>
-              <span>3 - Normal / Sedang</span>
-              <span>5 - Kewalahan</span>
-            </div>
-          </div>
+          {/* 2. Stres (skor tinggi = negatif) */}
+          <ScoreQuestion
+            title="2. Tingkat Stres Harian (1 - 5)"
+            value={stressLevel}
+            onChange={setStressLevel}
+            inverted
+            badge={`Level ${stressLevel} / 5: ${["Sangat Santai", "Rileks", "Sedang", "Tinggi", "Kewalahan"][stressLevel - 1]}`}
+            labels={["1 - Sangat Tenang", "3 - Normal / Sedang", "5 - Kewalahan"]}
+          />
 
           <hr className="border-brown-900/10" />
 
-          {/* 3. Kecemasan (Anxiety) */}
-          <div>
-            <div className="flex items-center justify-between mb-2">
-              <h3 className="font-display text-sm font-bold text-brown-900">
-                3. Tingkat Kecemasan / Overthinking (1 - 5)
-              </h3>
-              <span className="text-xs font-bold text-orange-600 bg-orange-100 px-3 py-1 rounded-full">
-                Level {anxietyLevel} / 5
-              </span>
-            </div>
-            <input
-              type="range"
-              min="1"
-              max="5"
-              value={anxietyLevel}
-              onChange={(e) => setAnxietyLevel(Number(e.target.value))}
-              className="w-full accent-orange-500 cursor-pointer h-2 bg-cream rounded-lg my-2"
-            />
-            <div className="flex justify-between text-[10px] text-brown-700 font-bold">
-              <span>1 - Pikiran Sangat Tenang</span>
-              <span>3 - Kadang Khawatir</span>
-              <span>5 - Gelisah &amp; Overthinking Akut</span>
-            </div>
-          </div>
+          {/* 3. Kecemasan (skor tinggi = negatif) */}
+          <ScoreQuestion
+            title="3. Tingkat Kecemasan / Overthinking (1 - 5)"
+            value={anxietyLevel}
+            onChange={setAnxietyLevel}
+            inverted
+            badge={`Level ${anxietyLevel} / 5`}
+            labels={["1 - Pikiran Sangat Tenang", "3 - Kadang Khawatir", "5 - Gelisah & Overthinking Akut"]}
+          />
 
           <hr className="border-brown-900/10" />
 
           {/* 4. Kepuasan Diri */}
-          <div>
-            <div className="flex items-center justify-between mb-2">
-              <h3 className="font-display text-sm font-bold text-brown-900">
-                4. Kepuasan terhadap Diri &amp; Hari Ini (1 - 5)
-              </h3>
-              <span className="text-xs font-bold text-green-700 bg-green-100 px-3 py-1 rounded-full">
-                Rating {satisfactionLevel} / 5
-              </span>
-            </div>
-            <input
-              type="range"
-              min="1"
-              max="5"
-              value={satisfactionLevel}
-              onChange={(e) => setSatisfactionLevel(Number(e.target.value))}
-              className="w-full accent-green-500 cursor-pointer h-2 bg-cream rounded-lg my-2"
-            />
-            <div className="flex justify-between text-[10px] text-brown-700 font-bold">
-              <span>1 - Sangat Tidak Puas</span>
-              <span>3 - Cukup Baik</span>
-              <span>5 - Sangat Bersyukur &amp; Puas</span>
-            </div>
-          </div>
+          <ScoreQuestion
+            title="4. Kepuasan terhadap Diri & Hari Ini (1 - 5)"
+            value={satisfactionLevel}
+            onChange={setSatisfactionLevel}
+            labels={["1 - Sangat Tidak Puas", "3 - Cukup Baik", "5 - Sangat Bersyukur & Puas"]}
+          />
 
           <hr className="border-brown-900/10" />
 
           {/* 5. Fokus & Produktivitas */}
-          <div>
-            <div className="flex items-center justify-between mb-2">
-              <h3 className="font-display text-sm font-bold text-brown-900">
-                5. Kemampuan Fokus &amp; Produktivitas (1 - 5)
-              </h3>
-              <span className="text-xs font-bold text-green-700 bg-green-100 px-3 py-1 rounded-full">
-                Rating {productivityLevel} / 5
-              </span>
-            </div>
-            <input
-              type="range"
-              min="1"
-              max="5"
-              value={productivityLevel}
-              onChange={(e) => setProductivityLevel(Number(e.target.value))}
-              className="w-full accent-green-500 cursor-pointer h-2 bg-cream rounded-lg my-2"
-            />
-            <div className="flex justify-between text-[10px] text-brown-700 font-bold">
-              <span>1 - Sangat Terdistraksi / Sulit Fokus</span>
-              <span>3 - Cukup Selesai</span>
-              <span>5 - Sangat Produktif &amp; Flow</span>
-            </div>
-          </div>
+          <ScoreQuestion
+            title="5. Kemampuan Fokus & Produktivitas (1 - 5)"
+            value={productivityLevel}
+            onChange={setProductivityLevel}
+            labels={["1 - Sangat Terdistraksi / Sulit Fokus", "3 - Cukup Selesai", "5 - Sangat Produktif & Flow"]}
+          />
 
           <hr className="border-brown-900/10" />
 
           {/* 6. Me-Time */}
-          <div>
-            <div className="flex items-center justify-between mb-2">
-              <h3 className="font-display text-sm font-bold text-brown-900">
-                6. Waktu Istirahat untuk Diri Sendiri (Me-Time) (1 - 5)
-              </h3>
-              <span className="text-xs font-bold text-orange-600 bg-orange-100 px-3 py-1 rounded-full">
-                Rating {meTimeLevel} / 5
-              </span>
-            </div>
-            <input
-              type="range"
-              min="1"
-              max="5"
-              value={meTimeLevel}
-              onChange={(e) => setMeTimeLevel(Number(e.target.value))}
-              className="w-full accent-orange-500 cursor-pointer h-2 bg-cream rounded-lg my-2"
-            />
-            <div className="flex justify-between text-[10px] text-brown-700 font-bold">
-              <span>1 - Nol Me-time (Non-stop)</span>
-              <span>3 - Cukup untuk Bernapas</span>
-              <span>5 - Sangat Cukup &amp; Pulih</span>
-            </div>
-          </div>
+          <ScoreQuestion
+            title="6. Waktu Istirahat untuk Diri Sendiri (Me-Time) (1 - 5)"
+            value={meTimeLevel}
+            onChange={setMeTimeLevel}
+            labels={["1 - Nol Me-time (Non-stop)", "3 - Cukup untuk Bernapas", "5 - Sangat Cukup & Pulih"]}
+          />
 
           <div className="flex justify-end pt-3">
             <button
@@ -455,29 +414,12 @@ export function DailyAssessmentForm({ onSubmit, isSubmitting }: FormProps) {
           </div>
 
           {/* 7. Kualitas Tidur */}
-          <div>
-            <div className="flex items-center justify-between mb-2">
-              <h3 className="font-display text-sm font-bold text-brown-900">
-                7. Kualitas Tidur Semalam (1 - 5)
-              </h3>
-              <span className="text-xs font-bold text-green-700 bg-green-100 px-3 py-1 rounded-full">
-                Rating {sleepRating} / 5
-              </span>
-            </div>
-            <input
-              type="range"
-              min="1"
-              max="5"
-              value={sleepRating}
-              onChange={(e) => setSleepRating(Number(e.target.value))}
-              className="w-full accent-green-500 cursor-pointer h-2 bg-cream rounded-lg my-2"
-            />
-            <div className="flex justify-between text-[10px] text-brown-700 font-bold">
-              <span>1 - Sering Terbangun / Buruk</span>
-              <span>3 - Cukup Nyenyak</span>
-              <span>5 - Pulas &amp; Sangat Segar</span>
-            </div>
-          </div>
+          <ScoreQuestion
+            title="7. Kualitas Tidur Semalam (1 - 5)"
+            value={sleepRating}
+            onChange={setSleepRating}
+            labels={["1 - Sering Terbangun / Buruk", "3 - Cukup Nyenyak", "5 - Pulas & Sangat Segar"]}
+          />
 
           <hr className="border-brown-900/10" />
 
@@ -494,11 +436,10 @@ export function DailyAssessmentForm({ onSubmit, isSubmitting }: FormProps) {
                     key={opt.rating}
                     type="button"
                     onClick={() => setSleepHours(opt.rating)}
-                    className={`p-3 rounded-2xl border-2 flex flex-col items-center gap-1 transition-all cursor-pointer ${
-                      isSel
-                        ? "border-green-500 bg-green-100/70 shadow-sm scale-102"
-                        : "border-brown-900/10 bg-white hover:bg-cream/40"
-                    }`}
+                    className={`p-3 rounded-2xl border-2 flex flex-col items-center gap-1 transition-all cursor-pointer ${isSel
+                      ? "border-green-500 bg-green-100/70 shadow-sm scale-102"
+                      : "border-brown-900/10 bg-white hover:bg-cream/40"
+                      }`}
                   >
                     <span className="text-xl">{opt.icon}</span>
                     <span className="text-xs font-bold text-brown-900">{opt.label}</span>
@@ -512,29 +453,13 @@ export function DailyAssessmentForm({ onSubmit, isSubmitting }: FormProps) {
           <hr className="border-brown-900/10" />
 
           {/* 9. Level Energi Tubuh */}
-          <div>
-            <div className="flex items-center justify-between mb-2">
-              <h3 className="font-display text-sm font-bold text-brown-900">
-                9. Level Energi Tubuh Hari Ini (1 - 5)
-              </h3>
-              <span className="text-xs font-bold text-green-700 bg-green-100 px-3 py-1 rounded-full">
-                Level {energyLevel} / 5
-              </span>
-            </div>
-            <input
-              type="range"
-              min="1"
-              max="5"
-              value={energyLevel}
-              onChange={(e) => setEnergyLevel(Number(e.target.value))}
-              className="w-full accent-green-500 cursor-pointer h-2 bg-cream rounded-lg my-2"
-            />
-            <div className="flex justify-between text-[10px] text-brown-700 font-bold">
-              <span>1 - Lesu / Kehabisan Daya</span>
-              <span>3 - Cukup Berenergi</span>
-              <span>5 - Sangat Bugar &amp; Aktif</span>
-            </div>
-          </div>
+          <ScoreQuestion
+            title="9. Level Energi Tubuh Hari Ini (1 - 5)"
+            value={energyLevel}
+            onChange={setEnergyLevel}
+            badge={`Level ${energyLevel} / 5`}
+            labels={["1 - Lesu / Kehabisan Daya", "3 - Cukup Berenergi", "5 - Sangat Bugar & Aktif"]}
+          />
 
           <hr className="border-brown-900/10" />
 
@@ -624,56 +549,22 @@ export function DailyAssessmentForm({ onSubmit, isSubmitting }: FormProps) {
           </div>
 
           {/* 12. Keterhubungan Sosial */}
-          <div>
-            <div className="flex items-center justify-between mb-2">
-              <h3 className="font-display text-sm font-bold text-brown-900">
-                12. Rasa Keterhubungan dengan Lingkungan Sekitar (1 - 5)
-              </h3>
-              <span className="text-xs font-bold text-orange-600 bg-orange-100 px-3 py-1 rounded-full">
-                Rating {socialConnection} / 5
-              </span>
-            </div>
-            <input
-              type="range"
-              min="1"
-              max="5"
-              value={socialConnection}
-              onChange={(e) => setSocialConnection(Number(e.target.value))}
-              className="w-full accent-orange-500 cursor-pointer h-2 bg-cream rounded-lg my-2"
-            />
-            <div className="flex justify-between text-[10px] text-brown-700 font-bold">
-              <span>1 - Merasa Terasing / Sendiri</span>
-              <span>3 - Cukup Terhubung</span>
-              <span>5 - Sangat Dekat &amp; Terkoneksi</span>
-            </div>
-          </div>
+          <ScoreQuestion
+            title="12. Rasa Keterhubungan dengan Lingkungan Sekitar (1 - 5)"
+            value={socialConnection}
+            onChange={setSocialConnection}
+            labels={["1 - Merasa Terasing / Sendiri", "3 - Cukup Terhubung", "5 - Sangat Dekat & Terkoneksi"]}
+          />
 
           <hr className="border-brown-900/10" />
 
           {/* 13. Dukungan Emosional */}
-          <div>
-            <div className="flex items-center justify-between mb-2">
-              <h3 className="font-display text-sm font-bold text-brown-900">
-                13. Dukungan Emosional &amp; Rasa Didengar Hari Ini (1 - 5)
-              </h3>
-              <span className="text-xs font-bold text-green-700 bg-green-100 px-3 py-1 rounded-full">
-                Rating {socialSupport} / 5
-              </span>
-            </div>
-            <input
-              type="range"
-              min="1"
-              max="5"
-              value={socialSupport}
-              onChange={(e) => setSocialSupport(Number(e.target.value))}
-              className="w-full accent-green-500 cursor-pointer h-2 bg-cream rounded-lg my-2"
-            />
-            <div className="flex justify-between text-[10px] text-brown-700 font-bold">
-              <span>1 - Merasa Tidak Ada yang Peduli</span>
-              <span>3 - Cukup Didengar</span>
-              <span>5 - Didukung Penuh &amp; Diterima</span>
-            </div>
-          </div>
+          <ScoreQuestion
+            title="13. Dukungan Emosional & Rasa Didengar Hari Ini (1 - 5)"
+            value={socialSupport}
+            onChange={setSocialSupport}
+            labels={["1 - Merasa Tidak Ada yang Peduli", "3 - Cukup Didengar", "5 - Didukung Penuh & Diterima"]}
+          />
 
           <hr className="border-brown-900/10" />
 

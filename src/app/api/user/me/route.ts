@@ -1,9 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
 import { verifySessionToken } from "@/lib/auth";
-import { userRepository, computeStreak } from "@/backend/auth/userRepository";
+import {
+  userRepository,
+  computeStreak,
+} from "@/backend/auth/userRepository";
 import { resolveAvatar } from "@/lib/avatarUtils";
 import { accountDb } from "@/backend/db/accountClient";
-import { calculateZybaScore, scoreToCondition } from "@/backend/scoring/zybaScore";
+import {
+  calculateZybaScore,
+  scoreToCondition,
+} from "@/backend/scoring/zybaScore";
 
 export async function GET(req: NextRequest) {
   try {
@@ -46,7 +52,7 @@ export async function GET(req: NextRequest) {
           accountDb.user.update({
             where: { id: user.id },
             data: { zybaScore: dynamicScore },
-          }).catch(() => {}); // fire-and-forget, don't block response
+          }).catch(() => { }); // fire-and-forget, don't block response
         }
       } catch {
         // Graceful fallback to static stored score

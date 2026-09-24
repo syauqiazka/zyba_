@@ -11,14 +11,25 @@ interface JournalEntry {
 
 interface JournalHistoryProps {
   journalList: JournalEntry[];
+  /** true = tanpa kartu pembungkus, dipakai berdampingan dengan riwayat assessment */
+  embedded?: boolean;
 }
 
-export default function JournalHistory({ journalList }: JournalHistoryProps) {
-  return (
-    <div className="glass-card rounded-3xl p-6 border border-brown-900/10 flex flex-col gap-4">
+export default function JournalHistory({ journalList, embedded = false }: JournalHistoryProps) {
+  const body = (
+    <>
       <h3 className="font-display text-base font-bold text-brown-900">
         Riwayat Health Journal
+        {embedded && (
+          <span className="ml-2 text-xs font-normal text-brown-700">
+            ({journalList.length} entri)
+          </span>
+        )}
       </h3>
+
+      {journalList.length === 0 && (
+        <p className="text-xs text-brown-700/50 italic">Belum ada catatan refleksi.</p>
+      )}
 
       <div className="flex flex-col gap-3 max-h-[320px] overflow-y-auto pr-1">
         {journalList.map((j) => (
@@ -36,6 +47,16 @@ export default function JournalHistory({ journalList }: JournalHistoryProps) {
           </div>
         ))}
       </div>
+    </>
+  );
+
+  if (embedded) {
+    return <div className="flex flex-col gap-4">{body}</div>;
+  }
+
+  return (
+    <div className="glass-card rounded-3xl p-6 border border-brown-900/10 flex flex-col gap-4">
+      {body}
     </div>
   );
 }

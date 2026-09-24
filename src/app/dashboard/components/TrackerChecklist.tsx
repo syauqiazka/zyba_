@@ -58,7 +58,6 @@ export default function TrackerChecklist({
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         {[
           { key: "Zyba Hours (Breathing)", category: "Mindfulness", icon: "lungs", href: "/activity" },
-          { key: "Mood Quality Check", category: "Emotional", icon: "smile", href: "/daily-assessment" },
           { key: "Health Journal Entry", category: "Reflection", icon: "journal", href: "/daily-assessment" },
           { key: "Daily Resource Reading", category: "Knowledge", icon: "book", href: "/resources" },
           { key: "Mental Journal Reflection", category: "Wellness", icon: "lotus", href: "/wellness-journey" },
@@ -69,17 +68,15 @@ export default function TrackerChecklist({
             <div
               key={item.key}
               onClick={() => toggleTracker(item.key)}
-              className={`p-4 rounded-2xl border transition-all cursor-pointer flex items-center justify-between ${
-                isChecked
+              className={`p-4 rounded-2xl border transition-all cursor-pointer flex items-center justify-between ${isChecked
                   ? "bg-green-100/50 border-green-500/30 text-brown-900"
                   : "bg-white border-brown-900/10 hover:border-orange-500/40 text-brown-700"
-              }`}
+                }`}
             >
               <div className="flex items-center gap-3">
                 <div
-                  className={`w-6 h-6 rounded-lg flex items-center justify-center text-xs font-bold transition-colors ${
-                    isChecked ? "bg-green-500 text-white" : "border-2 border-brown-900/20 bg-cream"
-                  }`}
+                  className={`w-6 h-6 rounded-lg flex items-center justify-center text-xs font-bold transition-colors ${isChecked ? "bg-green-500 text-white" : "border-2 border-brown-900/20 bg-cream"
+                    }`}
                 >
                   {isChecked ? "✓" : ""}
                 </div>

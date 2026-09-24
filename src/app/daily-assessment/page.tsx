@@ -4,10 +4,17 @@ import React, { useState, useEffect, useCallback } from "react";
 import { DailyRecord, Pagination, DailyAssessmentForm } from "./components/DailyAssessmentForm";
 import DailyAssessmentSummary from "./components/DailyAssessmentSummary";
 import DailyAssessmentHistory from "./components/DailyAssessmentHistory";
+import MoodBanner from "./components/MoodBanner";
+import CalendarWidget from "./components/CalendarWidget";
+import JournalHistory from "./components/JournalHistory";
+import { useMoodOverview } from "./useMoodOverview";
+import { MOODS } from "@/lib/moods";
 
 type PageState = "loading" | "empty" | "form" | "summary";
 
 export default function DailyAssessmentPage() {
+  const { selectedMood, streak, calendarData, journalList, reload } = useMoodOverview();
+  const [previewMood, setPreviewMood] = useState<(typeof MOODS)[number] | null>(null);
   const [pageState, setPageState] = useState<PageState>("loading");
   const [todayRecord, setTodayRecord] = useState<DailyRecord | null>(null);
   const [history, setHistory] = useState<DailyRecord[]>([]);
@@ -17,13 +24,13 @@ export default function DailyAssessmentPage() {
   const [crisisAlert, setCrisisAlert] = useState(false);
   const [savedSuccess, setSavedSuccess] = useState(false);
 
-  // Tanggal hari ini dalam Bahasa Indonesia
-  const todayFormatted = new Intl.DateTimeFormat("id-ID", {
-    weekday: "long",
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-  }).format(new Date());
+  // Saat mengisi form, banner mengikuti mood yang sedang dipilih.
+  // Setelah tersimpan, banner memakai mood dari record hari ini.
+  const bannerMood = pageState === "summary" ? selectedMood : previewMood ?? selectedMood;
+
+  const handleMoodChange = (value: string) => {
+    setPreviewMood(MOODS.find((m) => m.value === String(value).toUpperCase()) ?? null);
+  };
 
   const loadData = useCallback(async (page = 1) => {
     try {
@@ -67,7 +74,8 @@ export default function DailyAssessmentPage() {
       if (data.isRisk) setCrisisAlert(true);
 
       // Reload data setelah submit
-      await loadData(1);
+      await Promise.all([loadData(1), reload()]);
+      setPreviewMood(null);
       setSavedSuccess(true);
       setTimeout(() => setSavedSuccess(false), 4000);
     } catch (err: any) {
@@ -84,34 +92,12 @@ export default function DailyAssessmentPage() {
 
   return (
     <div className="flex flex-col gap-8 pb-12">
-      {/* Header */}
-      <div className="glass-card p-6 rounded-3xl border border-brown-900/10 bg-gradient-to-r from-cream via-white to-orange-100/30 shadow-sm">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <div>
-            <div className="flex items-center gap-2 mb-2">
-              <span className="px-3 py-1 rounded-full text-xs font-bold bg-orange-100 text-orange-500 uppercase tracking-wider">
-                Assessment Harian
-              </span>
-              <span className="text-xs text-brown-700">{todayFormatted}</span>
-            </div>
-            <h1 className="font-display text-2xl font-extrabold text-brown-900">
-              Evaluasi Kondisiku Hari Ini
-            </h1>
-            <p className="text-sm text-brown-700 mt-1 max-w-xl">
-              Rekam kondisi harianmu secara komprehensif — profil, mood, gejala, kualitas tidur, tingkat stres &amp; refleksi AI.
-            </p>
-          </div>
-
-          {/* Status badge */}
-          <div className={`flex items-center gap-2 px-4 py-2 rounded-2xl border text-sm font-bold shrink-0 ${
-            pageState === "summary"
-              ? "bg-green-100/60 border-green-500/30 text-green-600"
-              : "bg-orange-100/60 border-orange-500/30 text-orange-600"
-          }`}>
-            <span>{pageState === "summary" ? "✅ Selesai hari ini" : "⏳ Belum diisi"}</span>
-          </div>
-        </div>
-      </div>
+      {/* Banner gabungan: header + mood, warnanya ikut mood yang dipilih */}
+      <MoodBanner
+        selectedMood={bannerMood}
+        streak={streak}
+        status={pageState === "loading" ? undefined : { done: pageState === "summary" }}
+      />
 
       {/* Success toast */}
       {savedSuccess && (
@@ -152,7 +138,7 @@ export default function DailyAssessmentPage() {
               <div className="flex flex-col gap-4 animate-pulse">
                 <div className="h-6 w-48 bg-cream rounded" />
                 <div className="grid grid-cols-5 gap-3">
-                  {[1,2,3,4,5].map((i) => <div key={i} className="h-24 bg-cream rounded-2xl" />)}
+                  {[1, 2, 3, 4, 5].map((i) => <div key={i} className="h-24 bg-cream rounded-2xl" />)}
                 </div>
               </div>
             )}
@@ -182,7 +168,10 @@ export default function DailyAssessmentPage() {
                   </h2>
                   <button
                     type="button"
-                    onClick={() => setPageState("empty")}
+                    onClick={() => {
+                      setPreviewMood(null);
+                      setPageState("empty");
+                    }}
                     className="text-xs text-brown-700 hover:text-brown-900 cursor-pointer"
                   >
                     ← Batal
@@ -191,6 +180,7 @@ export default function DailyAssessmentPage() {
                 <DailyAssessmentForm
                   onSubmit={handleSubmit}
                   isSubmitting={isSubmitting}
+                  onMoodChange={handleMoodChange}
                 />
               </div>
             )}
@@ -200,22 +190,32 @@ export default function DailyAssessmentPage() {
                 <h2 className="font-display text-lg font-bold text-brown-900 mb-5">Ringkasan Hari Ini</h2>
                 <DailyAssessmentSummary
                   record={todayRecord}
-                  onEdit={() => {}}
+                  onEdit={() => { }}
                 />
               </div>
             )}
           </div>
         </div>
 
-        {/* Right: History */}
-        <div className="lg:col-span-5">
+        {/* Right: Calendar + History */}
+        <div className="lg:col-span-5 flex flex-col gap-6">
+          <CalendarWidget moodEntries={calendarData} />
+
+          {/* Dua riwayat berdampingan dalam satu kartu, tepat di bawah kalender */}
           <div className="glass-card rounded-3xl p-6 border border-brown-900/10 bg-white">
-            <DailyAssessmentHistory
-              history={history}
-              pagination={pagination}
-              onPageChange={handlePageChange}
-              isLoading={isHistoryLoading}
-            />
+            <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+              <div className="min-w-0">
+                <DailyAssessmentHistory
+                  history={history}
+                  pagination={pagination}
+                  onPageChange={handlePageChange}
+                  isLoading={isHistoryLoading}
+                />
+              </div>
+              <div className="min-w-0 border-t pt-6 xl:border-t-0 xl:border-l xl:pt-0 xl:pl-6 border-brown-900/10">
+                <JournalHistory embedded journalList={journalList} />
+              </div>
+            </div>
           </div>
         </div>
       </div>
