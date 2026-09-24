@@ -17,10 +17,26 @@ async function getCurrentUserId(req: NextRequest): Promise<string> {
   return user.id;
 }
 
+// Helper: Dapatkan tanggal YYYY-MM-DD dalam zona waktu Indonesia (WIB / Asia/Jakarta) atau client
+function getTodayDateString(clientDate?: string | null): string {
+  if (clientDate && /^\d{4}-\d{2}-\d{2}$/.test(clientDate)) {
+    return clientDate;
+  }
+  // Default timezone Asia/Jakarta (WIB = UTC+7) agar reset tepat jam 00:00 malam waktu lokal
+  return new Intl.DateTimeFormat("en-CA", {
+    timeZone: "Asia/Jakarta",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).format(new Date());
+}
+
 // ---------- GET: Cek status hari ini + riwayat harian ----------
 
 export async function GET(req: NextRequest) {
-  const todayDate = new Date().toISOString().slice(0, 10);
+  const { searchParams } = new URL(req.url);
+  const checkDate = getTodayDateString(searchParams.get("date"));
+  const todayDate = checkDate;
   try {
     let userId: string;
     try {
@@ -34,9 +50,6 @@ export async function GET(req: NextRequest) {
         pagination: { page: 1, limit: 10, total: 0, totalPages: 0 },
       });
     }
-
-    const { searchParams } = new URL(req.url);
-    const checkDate = searchParams.get("date") || todayDate;
 
     let todayRecord = null;
     let history: any[] = [];
@@ -129,7 +142,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Mood wajib diisi" }, { status: 400 });
     }
 
-    const todayDate = new Date().toISOString().slice(0, 10);
+    const todayDate = getTodayDateString(body.clientDate || body.date);
 
     // 🔒 PENTING: Kunci 1x per hari (tidak bisa check-in lagi di hari yang sama)
     const existing = await (accountDb as any).dailyAssessment.findUnique({

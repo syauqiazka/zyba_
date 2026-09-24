@@ -38,9 +38,10 @@ export function useMoodOverview() {
 
     const reload = useCallback(async () => {
         try {
+            const clientDate = new Intl.DateTimeFormat("en-CA").format(new Date());
             const [userRes, recordRes] = await Promise.all([
                 fetch("/api/user/me"),
-                fetch("/api/daily-assessment?page=1&limit=31"),
+                fetch(`/api/daily-assessment?page=1&limit=31&date=${clientDate}`),
             ]);
 
             if (userRes.ok) {

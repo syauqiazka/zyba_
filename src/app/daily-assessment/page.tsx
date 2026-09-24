@@ -35,7 +35,8 @@ export default function DailyAssessmentPage() {
   const loadData = useCallback(async (page = 1) => {
     try {
       setIsHistoryLoading(true);
-      const res = await fetch(`/api/daily-assessment?page=${page}&limit=10`);
+      const clientDate = new Intl.DateTimeFormat("en-CA").format(new Date());
+      const res = await fetch(`/api/daily-assessment?page=${page}&limit=10&date=${clientDate}`);
       if (!res.ok) throw new Error("Failed to fetch");
       const data = await res.json();
 
@@ -63,10 +64,11 @@ export default function DailyAssessmentPage() {
   const handleSubmit = async (formData: any) => {
     setIsSubmitting(true);
     try {
+      const clientDate = new Intl.DateTimeFormat("en-CA").format(new Date());
       const res = await fetch("/api/daily-assessment", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({ ...formData, clientDate }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Gagal menyimpan");
