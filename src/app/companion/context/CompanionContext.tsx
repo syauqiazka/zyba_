@@ -3,6 +3,7 @@
 import React, { createContext, useContext, useState, useRef, useEffect, useCallback } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { AIModelType } from "@/backend/ai/aiModelManager";
+import { PersonaId } from "@/backend/ai/personas";
 import { detectRisk } from "@/lib/crisisDetection";
 import { useTTS } from "@/hooks/useTTS";
 import { formatChatListTime } from "@/lib/dateUtils";
@@ -63,19 +64,25 @@ interface CompanionContextType {
   setCommStyle: (style: "CASUAL" | "FORMAL" | "FUN") => void;
   selectedModel: AIModelType;
   setSelectedModel: (model: AIModelType) => void;
+  selectedPersona: PersonaId;
+  setSelectedPersona: (persona: PersonaId) => void;
   isSending: boolean;
   showSettingsModal: boolean;
   setShowSettingsModal: (val: boolean) => void;
+  showPersonaModal: boolean;
+  setShowPersonaModal: (val: boolean) => void;
   showProModal: boolean;
   setShowProModal: (val: boolean) => void;
   showDeleteModal: boolean;
   setShowDeleteModal: (val: boolean) => void;
+  convIdToDelete: string | null;
+  setConvIdToDelete: (id: string | null) => void;
   crisisAlert: boolean;
   setCrisisAlert: (val: boolean) => void;
   searchQuery: string;
   setSearchQuery: (query: string) => void;
   handleCreateNewChat: () => void;
-  handleDeleteChat: () => void;
+  handleDeleteChat: (idToDelete?: string) => Promise<void>;
   handleSendMessage: (customText?: string) => Promise<void>;
   activeConv: Conversation | undefined;
   messagesEndRef: React.RefObject<HTMLDivElement>;
@@ -113,9 +120,10 @@ export function CompanionProvider({ children }: { children: React.ReactNode }) {
   const [inputText, setInputText] = useState("");
   const [isVoiceActive, setIsVoiceActive] = useState(false);
 
-  // Persist commStyle & selectedModel across refreshes via localStorage
+  // Persist commStyle, selectedModel & selectedPersona across refreshes via localStorage
   const [commStyle, setCommStyleRaw] = useState<"CASUAL" | "FORMAL" | "FUN">("CASUAL");
   const [selectedModel, setSelectedModelRaw] = useState<AIModelType>("gemini-3.8-flash");
+  const [selectedPersona, setSelectedPersonaRaw] = useState<PersonaId>("KINA");
   const [isSending, setIsSending] = useState(false);
   const [_hydrated, setHydrated] = useState(false);
 
@@ -124,8 +132,12 @@ export function CompanionProvider({ children }: { children: React.ReactNode }) {
     try {
       const savedModel = localStorage.getItem("zyba_companion_model") as AIModelType | null;
       const savedStyle = localStorage.getItem("zyba_companion_style") as "CASUAL" | "FORMAL" | "FUN" | null;
+      const savedPersona = localStorage.getItem("zyba_companion_persona") as PersonaId | null;
       if (savedModel) setSelectedModelRaw(savedModel);
       if (savedStyle) setCommStyleRaw(savedStyle);
+      if (savedPersona && ["KINA", "OLLIE", "RUBI", "BRUNO"].includes(savedPersona)) {
+        setSelectedPersonaRaw(savedPersona);
+      }
     } catch {}
     setHydrated(true);
   }, []);
@@ -140,10 +152,17 @@ export function CompanionProvider({ children }: { children: React.ReactNode }) {
     try { localStorage.setItem("zyba_companion_style", style); } catch {}
   }, []);
 
+  const setSelectedPersona = useCallback((persona: PersonaId) => {
+    setSelectedPersonaRaw(persona);
+    try { localStorage.setItem("zyba_companion_persona", persona); } catch {}
+  }, []);
+
   // Modals & Banners
   const [showSettingsModal, setShowSettingsModal] = useState(false);
+  const [showPersonaModal, setShowPersonaModal] = useState(false);
   const [showProModal, setShowProModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [convIdToDelete, setConvIdToDelete] = useState<string | null>(null);
   const [crisisAlert, setCrisisAlert] = useState<boolean>(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [quotaRemaining, setQuotaRemaining] = useState<number | null>(null);
@@ -325,6 +344,7 @@ export function CompanionProvider({ children }: { children: React.ReactNode }) {
           conversationId: currentConvId, // use DB ID
           model: selectedModel,
           style: commStyle,
+          persona: selectedPersona,
         }),
       });
 
@@ -411,30 +431,38 @@ export function CompanionProvider({ children }: { children: React.ReactNode }) {
     setInputText("");
   };
 
-  const handleDeleteChat = () => {
-    if (!activeConvId) {
+  const handleDeleteChat = async (idToDelete?: string) => {
+    const targetId = idToDelete || convIdToDelete || activeConvId;
+    if (!targetId) {
       setShowDeleteModal(false);
+      setConvIdToDelete(null);
       return;
     }
 
     // Delete from DB
-    fetch(`/api/companion/conversations?id=${activeConvId}`, {
-      method: "DELETE",
-    }).catch((err) => console.error("[Delete Conversation]:", err));
+    try {
+      await fetch(`/api/companion/conversations?id=${targetId}`, {
+        method: "DELETE",
+      });
+    } catch (err) {
+      console.error("[Delete Conversation]:", err);
+    }
 
-    const filtered = conversations.filter((c) => c.id !== activeConvId);
+    const filtered = conversations.filter((c) => c.id !== targetId);
+    setConversations(filtered);
     
-    if (filtered.length === 0) {
-      // Last conversation deleted — reset to empty state
-      setConversations([]);
-      setActiveConvId(null);
-    } else {
-      // Switch to first remaining conversation
-      setConversations(filtered);
-      setActiveConvId(filtered[0].id);
+    if (targetId === activeConvId) {
+      if (filtered.length === 0) {
+        // Last conversation deleted — reset to empty state
+        setActiveConvId(null);
+      } else {
+        // Switch to first remaining conversation
+        setActiveConvId(filtered[0].id);
+      }
     }
     
     setShowDeleteModal(false);
+    setConvIdToDelete(null);
   };
 
   return (
@@ -455,13 +483,19 @@ export function CompanionProvider({ children }: { children: React.ReactNode }) {
         setCommStyle,
         selectedModel,
         setSelectedModel,
+        selectedPersona,
+        setSelectedPersona,
         isSending,
         showSettingsModal,
         setShowSettingsModal,
+        showPersonaModal,
+        setShowPersonaModal,
         showProModal,
         setShowProModal,
         showDeleteModal,
         setShowDeleteModal,
+        convIdToDelete,
+        setConvIdToDelete,
         crisisAlert,
         setCrisisAlert,
         searchQuery,

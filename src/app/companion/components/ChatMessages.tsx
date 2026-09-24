@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import { AIModelType } from "@/backend/ai/aiModelManager";
+import { PersonaId, getPersonaById } from "@/backend/ai/personas";
 import ModelSelector from "./ModelSelector";
 import { useTTS } from "@/hooks/useTTS";
 import { formatChatDateSeparator, isSameCalendarDay } from "@/lib/dateUtils";
@@ -21,6 +22,7 @@ interface Props {
   isSending: boolean;
   selectedModel: AIModelType;
   setSelectedModel?: (m: AIModelType) => void;
+  selectedPersona?: PersonaId;
   messagesEndRef: React.RefObject<HTMLDivElement>;
   onSelectPromptStarter?: (prompt: string) => void;
   onSendMessage?: (text: string) => void;
@@ -46,6 +48,7 @@ export default function ChatMessages({
   isSending,
   selectedModel,
   setSelectedModel,
+  selectedPersona = "KINA",
   messagesEndRef,
   onSelectPromptStarter,
   onSendMessage,
@@ -57,6 +60,7 @@ export default function ChatMessages({
   const [isMicActive, setIsMicActive] = useState(false);
   const [hoveredMessageId, setHoveredMessageId] = useState<string | null>(null);
   const { speak, isPlaying, isLoading } = useTTS();
+  const persona = getPersonaById(selectedPersona);
 
   const handleCenterSubmit = () => {
     if (!centerInput.trim() || isSending) return;
@@ -71,14 +75,17 @@ export default function ChatMessages({
     return (
       <div className="flex-1 overflow-y-auto p-4 sm:p-8 flex flex-col items-center justify-center text-center">
         {/* Emblem + "You're here!" */}
-        <div className="flex items-center justify-center gap-2.5 mb-7">
-          {/* Orange Starburst Claude/Zyba Emblem */}
-          <div className="relative w-6 h-6 flex items-center justify-center text-orange-600 text-2xl font-black select-none">
-            ✳
+        <div className="flex flex-col items-center justify-center gap-2 mb-7">
+          {/* Zyba Character Avatar */}
+          <div className="w-14 h-14 rounded-3xl bg-cream border-2 border-orange-500/20 flex items-center justify-center text-3xl shadow-sm select-none">
+            {persona.emoji}
           </div>
-          <h1 className="font-serif font-bold text-3xl sm:text-4xl text-brown-900 tracking-tight">
-            You&apos;re here!
+          <h1 className="font-display font-extrabold text-2xl sm:text-3xl text-brown-900 tracking-tight">
+            Halo! Aku {persona.name}
           </h1>
+          <p className="text-xs text-brown-700 max-w-md">
+            {persona.description}. Ceritakan apa saja yang ada di pikiranmu hari ini.
+          </p>
         </div>
 
         {/* Floating Center Input Box — Exact Claude.ai card */}
@@ -226,8 +233,11 @@ export default function ChatMessages({
             >
               {/* Mascot / Avatar */}
               {!isUser && (
-                <div className="w-8 h-8 rounded-xl bg-cream border border-orange-500/20 flex items-center justify-center text-sm font-bold text-orange-600 shrink-0 shadow-2xs select-none">
-                  ✳
+                <div
+                  className="w-8 h-8 rounded-xl bg-cream border border-orange-500/20 flex items-center justify-center text-base shrink-0 shadow-2xs select-none"
+                  title={persona.name}
+                >
+                  {persona.emoji}
                 </div>
               )}
 

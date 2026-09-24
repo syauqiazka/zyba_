@@ -1,5 +1,5 @@
 import { Volume2, VolumeX, Settings2, Trash2, Zap } from "lucide-react";
-
+import { PersonaId, getPersonaById } from "@/backend/ai/personas";
 import { getMoodColor } from "./ConversationList";
 
 interface Conversation {
@@ -15,7 +15,10 @@ interface Props {
   activeConv: Conversation | undefined;
   selectedModel: string;
   commStyle: string;
+  selectedPersona?: PersonaId;
+  setSelectedPersona?: (p: PersonaId) => void;
   setShowSettingsModal: (v: boolean) => void;
+  setShowPersonaModal?: (v: boolean) => void;
   setShowDeleteModal: (v: boolean) => void;
   setShowProModal?: (v: boolean) => void;
   isTTSEnabled?: boolean;
@@ -28,7 +31,10 @@ export default function ChatHeader({
   activeConv,
   selectedModel,
   commStyle,
+  selectedPersona = "KINA",
+  setSelectedPersona,
   setShowSettingsModal,
+  setShowPersonaModal,
   setShowDeleteModal,
   setShowProModal,
   isTTSEnabled = false,
@@ -38,39 +44,59 @@ export default function ChatHeader({
 }: Props) {
   const currentEmotion = activeConv?.emotionTag || "Tenang";
   const moodColor = getMoodColor(currentEmotion);
+  const persona = getPersonaById(selectedPersona);
+
+  const openPersonaModal = () => {
+    if (setShowPersonaModal) {
+      setShowPersonaModal(true);
+    } else {
+      setShowSettingsModal(true);
+    }
+  };
 
   return (
     <header className="px-6 py-3.5 border-b border-brown-900/10 flex items-center justify-between bg-white/95 sticky top-0 z-10">
       {/* Left: Mascot Avatar, Name, Online Status */}
       <div className="flex items-center gap-3">
-        <div className="relative">
-          {/* ZYBA Mascot Logo (4-petal brand) */}
-          <div className="w-10 h-10 rounded-2xl bg-cream border border-orange-500/20 flex items-center justify-center shadow-sm relative overflow-hidden">
-            <div className="absolute w-3 h-3 rounded-full bg-orange-500 -top-0.5 left-1/2 -translate-x-1/2 opacity-90" />
-            <div className="absolute w-3 h-3 rounded-full bg-green-500 -bottom-0.5 left-1/2 -translate-x-1/2 opacity-90" />
-            <div className="absolute w-3 h-3 rounded-full bg-orange-500 -left-0.5 top-1/2 -translate-y-1/2 opacity-90" />
-            <div className="absolute w-3 h-3 rounded-full bg-green-500 -right-0.5 top-1/2 -translate-y-1/2 opacity-90" />
-            <div className="w-2.5 h-2.5 rounded-full bg-brown-900 z-10" />
+        <button
+          type="button"
+          onClick={openPersonaModal}
+          className="relative group transition-transform active:scale-95"
+          title={`Ganti karakter Zyba (Saat ini: ${persona.name})`}
+        >
+          {/* ZYBA Mascot Character Avatar */}
+          <div className="w-10 h-10 rounded-2xl bg-cream border-2 border-orange-500/20 group-hover:border-orange-500 flex items-center justify-center shadow-xs text-xl transition-all">
+            <span>{persona.emoji}</span>
           </div>
           {/* Online Indicator */}
           <div
             className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full bg-green-500 border-2 border-white"
             title="Online"
           />
-        </div>
+        </button>
 
         <div className="flex flex-col">
           <div className="flex items-center gap-2">
             <h2 className="font-display font-bold text-sm text-brown-900">
-              Zyba Companion
+              Zyba • {persona.name}
             </h2>
-            <span className="flex items-center gap-1 text-[11px] text-green-500 font-semibold">
+            <button
+              type="button"
+              onClick={openPersonaModal}
+              className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-orange-100 text-orange-600 hover:bg-orange-200 transition-colors flex items-center gap-1 shadow-2xs"
+              title="Ganti karakter Zyba"
+            >
+              <span>{persona.emoji}</span>
+              <span className="hidden sm:inline">Ganti Karakter</span>
+              <span className="text-[8px]">▾</span>
+            </button>
+            <span className="hidden md:flex items-center gap-1 text-[11px] text-green-500 font-semibold">
               <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
               Online
             </span>
           </div>
           <span className="text-[10px] text-brown-700">
-            {selectedModel} • Gaya: {commStyle}
+            {persona.description} • {selectedModel}
           </span>
         </div>
       </div>

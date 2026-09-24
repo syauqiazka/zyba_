@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useCompanion, CompanionSection, SECTION_TO_SLUG } from "../context/CompanionContext";
+import { getPersonaById } from "@/backend/ai/personas";
 
 interface Conversation {
   id: string;
@@ -49,8 +50,14 @@ export default function CompanionSidebar({
     activeSection,
     setActiveSection,
     setShowSettingsModal,
+    showPersonaModal,
+    setShowPersonaModal,
+    setShowDeleteModal,
+    setConvIdToDelete,
+    selectedPersona,
     setShowProModal,
   } = useCompanion();
+  const currentPersona = getPersonaById(selectedPersona);
 
   const [searchQuery, setSearchQuery] = useState("");
   const [showSearchInput, setShowSearchInput] = useState(false);
@@ -259,7 +266,7 @@ export default function CompanionSidebar({
       </div>
 
       {/* ── 2. New Chat Button ──────────────────────────────────────────── */}
-      <div className="p-3 pb-2 shrink-0">
+      <div className="p-3 pb-1.5 shrink-0 flex flex-col gap-2">
         <button
           type="button"
           onClick={() => { setActiveSection("chat"); onNewChat(); }}
@@ -270,6 +277,29 @@ export default function CompanionSidebar({
             <line x1="5" y1="12" x2="19" y2="12" />
           </svg>
           <span>Percakapan Baru</span>
+        </button>
+
+        {/* ── Character Banner / Selector ─────────────────────────────── */}
+        <button
+          type="button"
+          onClick={() => setShowPersonaModal(true)}
+          className="w-full py-2 px-3 rounded-xl bg-cream/70 hover:bg-orange-100/70 border border-orange-500/20 text-brown-900 text-xs font-bold transition-all duration-200 flex items-center justify-between group shadow-2xs"
+          title="Klik untuk memilih karakter Zyba"
+        >
+          <div className="flex items-center gap-2 min-w-0">
+            <span className="text-base shrink-0">{currentPersona.emoji}</span>
+            <div className="text-left truncate">
+              <span className="text-xs font-extrabold text-brown-900 block truncate">
+                {currentPersona.name}
+              </span>
+              <span className="text-[10px] text-brown-700/70 font-normal block truncate">
+                {currentPersona.label.split("—")[1]?.trim() || "Pendamping"}
+              </span>
+            </div>
+          </div>
+          <span className="text-[10px] text-orange-600 bg-white/90 px-2 py-0.5 rounded-full font-bold shadow-2xs group-hover:bg-orange-500 group-hover:text-white transition-colors shrink-0">
+            Ganti
+          </span>
         </button>
       </div>
 
@@ -354,19 +384,41 @@ export default function CompanionSidebar({
             const active = conv.id === activeConvId && isActive("chat");
             const moodColor = MOOD_COLORS[conv.emotionTag] || "bg-brown-900/30";
             return (
-              <button
+              <div
                 key={conv.id}
-                type="button"
-                onClick={() => { setActiveSection("chat"); onSelectConv(conv.id); }}
-                className={`w-full flex items-center gap-2 px-3 py-2 rounded-xl text-left transition-all duration-300 group ${
+                className={`w-full flex items-center justify-between gap-1 px-2.5 py-1.5 rounded-xl transition-all duration-200 group ${
                   active
                     ? "bg-brown-900/8 text-brown-900 font-semibold"
-                    : "text-brown-700 hover:-translate-y-0.5 hover:bg-gradient-to-r hover:from-orange-100/80 hover:to-green-100/80 hover:text-brown-900 hover:shadow-sm"
+                    : "text-brown-700 hover:bg-cream/60 hover:text-brown-900"
                 }`}
               >
-                <span className={`w-1.5 h-1.5 rounded-full ${moodColor} shrink-0 opacity-70 group-hover:opacity-100`} />
-                <span className="flex-1 truncate text-xs">{conv.title}</span>
-              </button>
+                <button
+                  type="button"
+                  onClick={() => { setActiveSection("chat"); onSelectConv(conv.id); }}
+                  className="flex-1 flex items-center gap-2 text-left truncate min-w-0"
+                >
+                  <span className={`w-1.5 h-1.5 rounded-full ${moodColor} shrink-0 opacity-70 group-hover:opacity-100`} />
+                  <span className="truncate text-xs">{conv.title}</span>
+                </button>
+
+                {/* Delete button on hover */}
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setConvIdToDelete(conv.id);
+                    setShowDeleteModal(true);
+                  }}
+                  className="opacity-0 group-hover:opacity-100 p-1 text-brown-700/40 hover:text-danger hover:bg-danger/10 rounded-md transition-all shrink-0"
+                  title="Hapus percakapan"
+                  aria-label={`Hapus ${conv.title}`}
+                >
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <polyline points="3 6 5 6 21 6" />
+                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                  </svg>
+                </button>
+              </div>
             );
           })
         )}

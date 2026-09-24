@@ -30,13 +30,19 @@ export default function CompanionPage() {
     setCommStyle,
     selectedModel,
     setSelectedModel,
+    selectedPersona,
+    setSelectedPersona,
     isSending,
     showSettingsModal,
     setShowSettingsModal,
+    showPersonaModal,
+    setShowPersonaModal,
     showProModal,
     setShowProModal,
     showDeleteModal,
     setShowDeleteModal,
+    setConvIdToDelete,
+    handleDeleteChat,
     crisisAlert,
     setCrisisAlert,
     handleSendMessage,
@@ -50,17 +56,19 @@ export default function CompanionPage() {
   } = useCompanion();
 
   const hasMessages = (activeConv?.messages || []).length > 0;
-  const [selectedPersona, setSelectedPersona] = useState<PersonaId>("KINA");
 
   return (
     <div className="flex flex-col h-full min-h-0">
-      {/* Chat Window only — scope creep projects/artifacts/code dihapus (Bagian 23.1) */}
+      {/* Chat Window */}
       <div className="flex-1 flex flex-col bg-white rounded-3xl border border-brown-900/10 overflow-hidden shadow-sm min-h-0">
           <ChatHeader
             activeConv={activeConv}
             selectedModel={selectedModel}
             commStyle={commStyle}
+            selectedPersona={selectedPersona}
+            setSelectedPersona={setSelectedPersona}
             setShowSettingsModal={setShowSettingsModal}
+            setShowPersonaModal={setShowPersonaModal}
             setShowDeleteModal={setShowDeleteModal}
             setShowProModal={setShowProModal}
             isTTSEnabled={isTTSEnabled}
@@ -92,6 +100,7 @@ export default function CompanionPage() {
             isSending={isSending}
             selectedModel={selectedModel}
             setSelectedModel={setSelectedModel}
+            selectedPersona={selectedPersona}
             messagesEndRef={messagesEndRef}
             onSelectPromptStarter={(prompt) => handleSendMessage(prompt)}
             onSendMessage={(prompt) => handleSendMessage(prompt)}
@@ -117,17 +126,48 @@ export default function CompanionPage() {
           )}
       </div>
 
-      {/* Settings Modal — FASE 4: PersonaPicker (Bagian 21) */}
-      {showSettingsModal && (
-        <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl p-7 max-w-sm w-full shadow-2xl border border-brown-900/10 flex flex-col gap-5">
+      {/* Persona Selection Modal */}
+      {(showSettingsModal || showPersonaModal) && (
+        <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in duration-150">
+          <div className="bg-white rounded-3xl p-7 max-w-lg w-full shadow-2xl border border-brown-900/10 flex flex-col gap-5">
             <div className="flex items-center justify-between">
-              <h3 className="font-display font-extrabold text-base text-brown-900">Pilih Karakter Zyba</h3>
-              <button type="button" onClick={() => setShowSettingsModal(false)} className="text-brown-700 hover:text-brown-900 text-sm">✕</button>
+              <div>
+                <span className="text-xs font-bold uppercase tracking-wider text-orange-500">
+                  AI Companion
+                </span>
+                <h3 className="font-display font-extrabold text-xl text-brown-900 mt-0.5">
+                  Pilih Karakter Zyba
+                </h3>
+                <p className="text-xs text-brown-700 mt-0.5">
+                  Pilih kepribadian pendamping yang paling sesuai dengan kebutuhanmu.
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => {
+                  setShowSettingsModal(false);
+                  setShowPersonaModal(false);
+                }}
+                className="w-8 h-8 rounded-full bg-cream text-brown-700 font-bold hover:bg-brown-900 hover:text-white transition-colors flex items-center justify-center"
+              >
+                ✕
+              </button>
             </div>
-            <PersonaPicker selected={selectedPersona} onChange={setSelectedPersona} />
-            <button type="button" onClick={() => setShowSettingsModal(false)} className="w-full py-2.5 rounded-full bg-orange-500 text-white text-xs font-bold hover:bg-brown-900 transition-colors">
-              Simpan & Tutup
+            <PersonaPicker
+              selected={selectedPersona}
+              onChange={(p) => {
+                setSelectedPersona(p);
+              }}
+            />
+            <button
+              type="button"
+              onClick={() => {
+                setShowSettingsModal(false);
+                setShowPersonaModal(false);
+              }}
+              className="w-full py-3 rounded-full bg-orange-500 text-white text-xs font-bold hover:bg-orange-600 transition-colors shadow-sm"
+            >
+              Simpan Karakter
             </button>
           </div>
         </div>
@@ -142,30 +182,34 @@ export default function CompanionPage() {
 
       {/* Delete Modal */}
       {showDeleteModal && (
-        <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-xs flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in zoom-in-95 duration-150">
           <div className="bg-white rounded-3xl p-6 max-w-sm w-full shadow-xl border border-brown-900/10 flex flex-col gap-4">
-            <h3 className="font-display font-extrabold text-base text-brown-900">
+            <div className="w-12 h-12 rounded-2xl bg-danger/10 text-danger flex items-center justify-center text-2xl mx-auto">
+              🗑️
+            </div>
+            <h3 className="font-display font-extrabold text-base text-brown-900 text-center">
               Hapus Percakapan Ini?
             </h3>
-            <p className="text-xs text-brown-700">
-              Semua riwayat obrolan dalam topik ini akan dihapus secara permanen.
+            <p className="text-xs text-brown-700 text-center leading-relaxed">
+              Semua riwayat obrolan dalam topik ini akan dihapus secara permanen dari akunmu.
             </p>
             <div className="flex items-center gap-3 mt-2">
               <button
                 type="button"
-                onClick={() => setShowDeleteModal(false)}
-                className="flex-1 py-2.5 rounded-full border border-brown-900/15 text-xs font-bold text-brown-700 hover:bg-cream"
+                onClick={() => {
+                  setShowDeleteModal(false);
+                  setConvIdToDelete(null);
+                }}
+                className="flex-1 py-2.5 rounded-full border border-brown-900/15 text-xs font-bold text-brown-700 hover:bg-cream transition-colors"
               >
                 Batal
               </button>
               <button
                 type="button"
-                onClick={() => {
-                  setShowDeleteModal(false);
-                }}
-                className="flex-1 py-2.5 rounded-full bg-danger text-white text-xs font-bold hover:opacity-90"
+                onClick={() => handleDeleteChat()}
+                className="flex-1 py-2.5 rounded-full bg-danger text-white text-xs font-bold hover:bg-red-700 transition-colors shadow-sm"
               >
-                Hapus →
+                Hapus
               </button>
             </div>
           </div>
