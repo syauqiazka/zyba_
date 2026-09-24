@@ -37,7 +37,7 @@ export default function QuickAccessCards() {
           </Link>
         </div>
 
-        {/* Assessment Harian */}
+        {/* Mood Check-In Harian (D.3: was /daily-assessment, now /mood-check-in per Bagian 8.5.1) */}
         <div className="glass-card rounded-2xl p-5 flex flex-col gap-3 border border-brown-900/10 bg-gradient-to-br from-white to-green-100/20 hover:shadow-md transition-shadow">
           <div className="flex items-center gap-2">
             <div className="w-8 h-8 rounded-xl bg-green-100 flex items-center justify-center shrink-0">
@@ -48,17 +48,17 @@ export default function QuickAccessCards() {
                 <path strokeLinecap="round" strokeLinejoin="round" d="M9 16l2 2 4-4" />
               </svg>
             </div>
-            <span className="text-[10px] font-bold uppercase tracking-wider text-green-500">Assessment Harian</span>
+            <span className="text-[10px] font-bold uppercase tracking-wider text-green-500">Check-In Harian</span>
           </div>
           <div>
-            <h3 className="font-display text-sm font-bold text-brown-900">Assessment hari ini</h3>
-            <p className="text-xs text-brown-700 mt-0.5">Mood, stres, tidur, energi & refleksi harian.</p>
+            <h3 className="font-display text-sm font-bold text-brown-900">Mood Check-In hari ini</h3>
+            <p className="text-xs text-brown-700 mt-0.5">Mood, stres, tidur, energi &amp; refleksi harian.</p>
           </div>
           <Link
-            href="/daily-assessment"
+            href="/mood-check-in"
             className="mt-auto inline-flex items-center gap-1.5 bg-green-500 hover:bg-brown-900 text-white px-4 py-2 rounded-full text-xs font-bold transition-colors w-max"
           >
-            Assessment Harian →
+            Mulai Check-In →
           </Link>
         </div>
 

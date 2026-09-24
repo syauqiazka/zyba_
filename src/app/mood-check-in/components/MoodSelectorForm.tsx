@@ -52,14 +52,15 @@ export default function QuickCheckInForm({
                 type="button"
                 onClick={() => setSelectedMood(m)}
                 style={{ backgroundColor: isSelected ? m.bg : undefined }}
-                className={`rounded-2xl py-5 flex flex-col items-center gap-2.5 border-2 transition-all cursor-pointer ${
+                className={`rounded-2xl py-5 flex flex-col items-center gap-2.5 border-2 transition-all duration-200 cursor-pointer ${
                   isSelected
                     ? `${m.text} border-brown-900 shadow-lg scale-105 font-bold`
-                    : "bg-cream/70 border-transparent text-brown-900 hover:border-brown-900/20 hover:shadow-sm"
+                    : "bg-cream/70 border-transparent text-brown-900 hover:border-orange-500/40 hover:bg-orange-500/5"
                 }`}
               >
                 <span className="text-3xl">{m.emoji}</span>
                 <span className="text-[11px] font-semibold">{m.label}</span>
+                {isSelected && <span className="text-white/90 text-[9px] font-bold tracking-wider">✓ DIPILIH</span>}
               </button>
             );
           })}

@@ -63,6 +63,16 @@ export default function QuestionStep({
   handleNext,
   handlePrev,
 }: QuestionStepProps) {
+  // ─── D.1 Standardized choice button class ─────────────────────────────────
+  // 3 states: default → hover → selected
+  const choiceClass = (isSelected: boolean) =>
+    `relative flex items-center justify-between gap-2 p-3.5 rounded-2xl text-xs font-bold text-left border-2 transition-all duration-200 cursor-pointer
+    ${
+      isSelected
+        ? "border-orange-500 bg-orange-100 text-brown-900"
+        : "border-brown-900/10 bg-white text-brown-700 hover:border-orange-500/40 hover:bg-orange-500/5"
+    }`;
+
   return (
     <>
       {/* Question Contents by Step */}
@@ -83,13 +93,10 @@ export default function QuestionStep({
                   key={g}
                   type="button"
                   onClick={() => setGoal(g)}
-                  className={`p-4 rounded-2xl text-xs font-bold border-2 transition-all text-left ${
-                    goal === g
-                      ? "border-orange-500 bg-orange-100 text-brown-900 shadow-sm"
-                      : "border-brown-900/10 bg-cream/40 hover:border-brown-900/20 text-brown-700"
-                  }`}
+                  className={choiceClass(goal === g)}
                 >
-                  {g}
+                  <span className="flex-1">{g}</span>
+                  {goal === g && <span className="text-orange-500 font-extrabold shrink-0">✓</span>}
                 </button>
               ))}
             </div>
@@ -109,13 +116,10 @@ export default function QuestionStep({
                     key={gen}
                     type="button"
                     onClick={() => setGender(gen)}
-                    className={`flex-1 p-3 rounded-2xl text-xs font-bold border-2 transition-colors ${
-                      gender === gen
-                        ? "bg-brown-900 text-white border-brown-900"
-                        : "bg-cream border-brown-900/10 text-brown-700 hover:bg-cream/80"
-                    }`}
+                    className={`flex-1 justify-center ${choiceClass(gender === gen)}`}
                   >
-                    {gen}
+                    <span className="flex-1 text-center">{gen}</span>
+                    {gender === gen && <span className="text-orange-500 font-extrabold shrink-0">✓</span>}
                   </button>
                 ))}
               </div>
@@ -172,13 +176,10 @@ export default function QuestionStep({
                   key={m.val}
                   type="button"
                   onClick={() => setMood(m.val)}
-                  className={`p-3 sm:p-4 rounded-2xl text-xs font-bold border-2 transition-all ${
-                    mood === m.val
-                      ? "bg-brown-900 text-white border-brown-900 shadow-sm"
-                      : "bg-cream border-brown-900/10 text-brown-700 hover:bg-cream/80"
-                  }`}
+                  className={`justify-center ${choiceClass(mood === m.val)}`}
                 >
-                  {m.label}
+                  <span className="flex-1 text-center">{m.label}</span>
+                  {mood === m.val && <span className="text-orange-500 font-extrabold shrink-0">✓</span>}
                 </button>
               ))}
             </div>
@@ -199,13 +200,10 @@ export default function QuestionStep({
                   key={opt.label}
                   type="button"
                   onClick={() => setSoughtHelp(opt.val)}
-                  className={`flex-1 p-4 sm:p-5 rounded-2xl text-xs font-bold border-2 transition-all ${
-                    soughtHelp === opt.val
-                      ? "bg-brown-900 text-white border-brown-900 shadow-sm"
-                      : "bg-cream border-brown-900/10 text-brown-700 hover:bg-cream/80"
-                  }`}
+                  className={`flex-1 ${choiceClass(soughtHelp === opt.val)}`}
                 >
-                  {opt.label}
+                  <span className="flex-1">{opt.label}</span>
+                  {soughtHelp === opt.val && <span className="text-orange-500 font-extrabold shrink-0">✓</span>}
                 </button>
               ))}
             </div>
@@ -232,13 +230,10 @@ export default function QuestionStep({
                     key={sym}
                     type="button"
                     onClick={() => toggleSymptom(physicalSymptoms, setPhysicalSymptoms, sym)}
-                    className={`p-3.5 rounded-2xl text-xs font-bold border-2 text-left transition-all ${
-                      isSel
-                        ? "bg-green-500 text-white border-green-500 shadow-sm"
-                        : "bg-cream border-brown-900/10 text-brown-700 hover:bg-cream/80"
-                    }`}
+                    className={choiceClass(isSel)}
                   >
-                    {isSel ? "✓ " : "+ "}{sym}
+                    <span className="flex-1">{sym}</span>
+                    {isSel && <span className="text-orange-500 font-extrabold shrink-0">✓</span>}
                   </button>
                 );
               })}
@@ -325,13 +320,10 @@ export default function QuestionStep({
                     key={sym}
                     type="button"
                     onClick={() => toggleSymptom(mentalSymptoms, setMentalSymptoms, sym)}
-                    className={`p-3.5 rounded-2xl text-xs font-bold border-2 text-left transition-all ${
-                      isSel
-                        ? "bg-orange-500 text-white border-orange-500 shadow-sm"
-                        : "bg-cream border-brown-900/10 text-brown-700 hover:bg-cream/80"
-                    }`}
+                    className={choiceClass(isSel)}
                   >
-                    {isSel ? "✓ " : "+ "}{sym}
+                    <span className="flex-1">{sym}</span>
+                    {isSel && <span className="text-orange-500 font-extrabold shrink-0">✓</span>}
                   </button>
                 );
               })}

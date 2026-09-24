@@ -3,6 +3,7 @@ import { verifySessionToken } from "@/lib/auth";
 import { userRepository, computeStreak } from "@/backend/auth/userRepository";
 import { resolveAvatar } from "@/lib/avatarUtils";
 import { accountDb } from "@/backend/db/accountClient";
+import { calculateZybaScore, scoreToCondition } from "@/backend/scoring/zybaScore";
 
 export async function GET(req: NextRequest) {
   try {
@@ -34,11 +35,23 @@ export async function GET(req: NextRequest) {
     let condition = "Belum Dinilai";
 
     if (hasAssessment) {
-      zybaScore = user.zybaScore ?? latestAssessment?.calculatedScore ?? null;
-      if (zybaScore !== null) {
-        if (zybaScore >= 80) condition = "Kondisi Baik";
-        else if (zybaScore >= 60) condition = "Cukup Baik";
-        else condition = "Perlu Perhatian";
+      // D.2: Calculate Zyba Score on-demand from 7-day rolling window
+      // (Mental 50% + Fisik 25% + Sosial 25%) — falls back to static score if fails
+      try {
+        const dynamicScore = await calculateZybaScore(user.id);
+        zybaScore = dynamicScore;
+        condition = scoreToCondition(dynamicScore);
+        // Update stored score so it reflects the latest calculation
+        if (user.zybaScore !== dynamicScore) {
+          accountDb.user.update({
+            where: { id: user.id },
+            data: { zybaScore: dynamicScore },
+          }).catch(() => {}); // fire-and-forget, don't block response
+        }
+      } catch {
+        // Graceful fallback to static stored score
+        zybaScore = user.zybaScore ?? latestAssessment?.calculatedScore ?? null;
+        if (zybaScore !== null) condition = scoreToCondition(zybaScore);
       }
     }
 

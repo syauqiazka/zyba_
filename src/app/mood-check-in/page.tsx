@@ -180,16 +180,6 @@ export default function MoodCheckInPage() {
             isSaving={isSaving}
           />
 
-          {/* Info card: lebih lengkap? */}
-          <div className="mt-4 flex items-start gap-3 p-4 rounded-2xl bg-orange-50 border border-orange-500/20 text-xs text-brown-700">
-            <span className="text-base shrink-0">📋</span>
-            <p>
-              Mau evaluasi yang lebih lengkap (tidur, energi, refleksi)?{" "}
-              <a href="/daily-assessment" className="font-bold text-orange-500 hover:underline">
-                Coba Assessment Harian →
-              </a>
-            </p>
-          </div>
         </div>
 
         {/* Right: Calendar & Recent Entries */}
