@@ -1,29 +1,76 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useCommunity, CommunityView, VIEW_TO_SLUG } from "../context/CommunityContext";
 
 /**
  * Instagram-style collapsible Community Sidebar
- * - Default: icon-only (w-16), collapsed
- * - On hover: expands to full width (w-64) with smooth slide animation
- * - Active item: brown-900 fill; hover: orange→green gradient (matches dashboard)
+ * - Mobile: off-canvas drawer (w-64), always expanded, close button on top right
+ * - Desktop: default icon-only (w-16), expands on hover (w-60)
+ * - Badges: real-time counters from /api/community/badges for Pesan, Notifikasi, and Follow
  */
 export default function CommunitySidebar({ onClose }: { onClose?: () => void }) {
   const pathname = usePathname();
   const [expanded, setExpanded] = useState(false);
+  const [isDesktop, setIsDesktop] = useState(false);
   const {
     currentView,
     setCurrentView,
     setIsPostModalOpen,
-    notifications,
-    messages,
   } = useCommunity();
 
-  const unreadNotifs = notifications.filter((n) => !n.read).length;
-  const unreadMsgs = messages.filter((m) => (m.unreadCount || 0) > 0).length;
+  // Badges fetched from real API
+  const [badgeCounts, setBadgeCounts] = useState<{
+    unreadMessageCount: number;
+    newFollowerCount: number;
+    unreadNotificationCount: number;
+  }>({
+    unreadMessageCount: 0,
+    newFollowerCount: 0,
+    unreadNotificationCount: 0,
+  });
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsDesktop(window.innerWidth >= 768);
+    };
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  useEffect(() => {
+    let isMounted = true;
+    async function loadBadges() {
+      try {
+        const res = await fetch("/api/community/badges");
+        if (res.ok) {
+          const data = await res.json();
+          if (isMounted) {
+            setBadgeCounts({
+              unreadMessageCount: data.unreadMessageCount || 0,
+              newFollowerCount: data.newFollowerCount || 0,
+              unreadNotificationCount: data.unreadNotificationCount || 0,
+            });
+          }
+        }
+      } catch (err) {
+        // Fallback silently
+      }
+    }
+
+    loadBadges();
+    const interval = setInterval(loadBadges, 10000); // Poll every 10s
+    return () => {
+      isMounted = false;
+      clearInterval(interval);
+    };
+  }, [pathname]);
+
+  // Is visually expanded: always true on mobile drawer, toggleable on desktop
+  const isExpanded = !isDesktop || expanded;
 
   // Build href from view slug
   const href = (view: CommunityView) => {
@@ -38,6 +85,11 @@ export default function CommunitySidebar({ onClose }: { onClose?: () => void }) 
       return pathname === "/community" || pathname === "/community/for-you";
     }
     return pathname === h || pathname.startsWith(h + "/");
+  };
+
+  const handleItemClick = (view: CommunityView) => {
+    setCurrentView(view);
+    if (onClose) onClose();
   };
 
   // ─── Icon definitions ─────────────────────────────────────────────────────
@@ -138,16 +190,36 @@ export default function CommunitySidebar({ onClose }: { onClose?: () => void }) 
     badge?: number;
     isAction?: boolean;
   }[] = [
-      { id: "FOR_YOU", label: "Untuk Kamu", iconKey: "home" },
-      { id: "SEARCH", label: "Cari", iconKey: "search" },
-      { id: "MESSAGES", label: "Pesan", iconKey: "messages", badge: unreadMsgs > 0 ? unreadMsgs : undefined },
-      { id: "ACTIVITY", label: "Notifikasi", iconKey: "activity", badge: unreadNotifs > 0 ? unreadNotifs : undefined },
-      { id: "PROFILE", label: "Profil", iconKey: "profile" },
-      { id: "INSIGHTS", label: "Statistik", iconKey: "insights" },
-    ];
+    { id: "FOR_YOU", label: "Untuk Kamu", iconKey: "home" },
+    { id: "SEARCH", label: "Cari", iconKey: "search" },
+    {
+      id: "MESSAGES",
+      label: "Pesan",
+      iconKey: "messages",
+      badge: badgeCounts.unreadMessageCount > 0 ? badgeCounts.unreadMessageCount : undefined,
+    },
+    {
+      id: "ACTIVITY",
+      label: "Notifikasi",
+      iconKey: "activity",
+      badge: badgeCounts.unreadNotificationCount > 0 ? badgeCounts.unreadNotificationCount : undefined,
+    },
+    { id: "PROFILE", label: "Profil", iconKey: "profile" },
+    { id: "INSIGHTS", label: "Statistik", iconKey: "insights" },
+  ];
 
-  const OTHER_FEEDS: { id: CommunityView; label: string; iconKey: keyof typeof icons }[] = [
-    { id: "FOLLOWING", label: "Mengikuti", iconKey: "following" },
+  const OTHER_FEEDS: {
+    id: CommunityView;
+    label: string;
+    iconKey: keyof typeof icons;
+    badge?: number;
+  }[] = [
+    {
+      id: "FOLLOWING",
+      label: "Mengikuti",
+      iconKey: "following",
+      badge: badgeCounts.newFollowerCount > 0 ? badgeCounts.newFollowerCount : undefined,
+    },
     { id: "SAVED", label: "Disimpan", iconKey: "saved" },
     { id: "LIKED", label: "Disukai", iconKey: "liked" },
     { id: "GHOST_POSTS", label: "Postingan Tersembunyi", iconKey: "ghost" },
@@ -156,34 +228,70 @@ export default function CommunitySidebar({ onClose }: { onClose?: () => void }) 
 
   // ─── Shared item style ────────────────────────────────────────────────────
   const itemClass = (active: boolean) =>
-  `relative flex items-center w-full py-2.5 rounded-xl transition-all duration-300 cursor-pointer select-none
-   ${expanded ? "gap-3 px-3 justify-start" : "gap-0 px-0 justify-center"}
-   ${
-     active
-       ? "bg-brown-900 text-cream shadow-md shadow-brown-900/10 font-bold"
-       : "text-brown-700 hover:-translate-y-0.5 hover:bg-gradient-to-r hover:from-orange-100/80 hover:to-green-100/80 hover:text-brown-900 hover:shadow-sm"
-   }`;
+    `relative flex items-center w-full py-2.5 rounded-xl transition-all duration-300 cursor-pointer select-none
+     ${isExpanded ? "gap-3 px-3 justify-start" : "gap-0 px-0 justify-center"}
+     ${
+       active
+         ? "bg-brown-900 text-cream shadow-md shadow-brown-900/10 font-bold"
+         : "text-brown-700 hover:-translate-y-0.5 hover:bg-gradient-to-r hover:from-orange-100/80 hover:to-green-100/80 hover:text-brown-900 hover:shadow-sm"
+     }`;
+
+  const renderBadge = (badge?: number) => {
+    if (!badge || badge <= 0) return null;
+    const badgeText = badge > 9 ? "9+" : badge.toString();
+
+    if (isExpanded) {
+      return (
+        <span className="ml-auto min-w-[20px] h-5 px-1.5 rounded-full bg-orange-500 text-white text-[10px] flex items-center justify-center font-bold shrink-0 shadow-xs">
+          {badgeText}
+        </span>
+      );
+    }
+
+    return (
+      <span className="absolute top-1 right-2 min-w-[16px] h-4 px-1 rounded-full bg-orange-500 text-white text-[9px] flex items-center justify-center font-bold border border-[#FAF7F2]">
+        {badgeText}
+      </span>
+    );
+  };
 
   return (
     <aside
-      onMouseEnter={() => setExpanded(true)}
-      onMouseLeave={() => setExpanded(false)}
-      style={{ width: expanded ? 240 : 64 }}
-      className="hidden md:flex flex-col shrink-0 bg-[#FAF7F2] border-r border-brown-900/10 h-screen select-none transition-[width] duration-300 ease-in-out overflow-hidden z-30"
+      onMouseEnter={() => isDesktop && setExpanded(true)}
+      onMouseLeave={() => isDesktop && setExpanded(false)}
+      style={{ width: isDesktop ? (expanded ? 240 : 64) : 260 }}
+      className="flex flex-col shrink-0 bg-[#FAF7F2] border-r border-brown-900/10 h-screen select-none transition-[width] duration-300 ease-in-out overflow-hidden z-30 relative shadow-lg md:shadow-none"
     >
+      {/* Mobile close button */}
+      {onClose && (
+        <button
+          type="button"
+          onClick={onClose}
+          className="md:hidden absolute top-3 right-3 w-8 h-8 rounded-full bg-brown-900/5 hover:bg-brown-900/10 flex items-center justify-center text-brown-700 font-bold text-sm z-50 transition-colors"
+          aria-label="Tutup menu"
+        >
+          ✕
+        </button>
+      )}
+
       {/* ── Top logo row ─────────────────────────────────────── */}
       <div className="flex items-center h-14 px-3.5 border-b border-brown-900/8 shrink-0 gap-3 overflow-hidden">
-        {/* Hamburger / logo icon — always visible */}
+        {/* Hamburger / logo icon */}
         <div className="w-7 h-7 shrink-0 flex items-center justify-center text-brown-900/70">
           {icons.hamburger}
         </div>
 
-        {/* Label — fades in when expanded */}
+        {/* Label — visible when expanded */}
         <div
           className="flex items-center gap-2 overflow-hidden transition-all duration-300"
-          style={{ opacity: expanded ? 1 : 0, width: expanded ? "auto" : 0 }}
+          style={{ opacity: isExpanded ? 1 : 0, width: isExpanded ? "auto" : 0 }}
         >
-          <Link href="/dashboard" className="flex items-center gap-1.5 group" title="Kembali ke ZYBA">
+          <Link
+            href="/dashboard"
+            onClick={() => onClose && onClose()}
+            className="flex items-center gap-1.5 group"
+            title="Kembali ke ZYBA"
+          >
             <span className="font-bold text-sm text-brown-900 tracking-tight whitespace-nowrap">
               Zyba Community
             </span>
@@ -193,18 +301,22 @@ export default function CommunitySidebar({ onClose }: { onClose?: () => void }) 
 
       {/* ── Scrollable Nav ───────────────────────────────────── */}
       <div className="flex-1 overflow-y-auto overflow-x-hidden py-3 flex flex-col gap-4">
-
-        {/* Back to dashboard — always icon, label on expand */}
+        {/* Back to dashboard */}
         <div className="px-2.5">
           <Link
             href="/dashboard"
+            onClick={() => onClose && onClose()}
             title="Kembali ke Dashboard"
             className={`${itemClass(false)} text-xs font-semibold`}
           >
             <span className="shrink-0 flex items-center justify-center w-5">{icons.back}</span>
             <span
               className="whitespace-nowrap text-xs font-semibold transition-all duration-200"
-              style={{ opacity: expanded ? 1 : 0, maxWidth: expanded ? 200 : 0, overflow: "hidden" }}
+              style={{
+                opacity: isExpanded ? 1 : 0,
+                maxWidth: isExpanded ? 200 : 0,
+                overflow: "hidden",
+              }}
             >
               Kembali ke ZYBA
             </span>
@@ -216,30 +328,41 @@ export default function CommunitySidebar({ onClose }: { onClose?: () => void }) 
           {/* For you */}
           <button
             type="button"
-            onClick={() => setCurrentView("FOR_YOU")}
-            title="For you"
+            onClick={() => handleItemClick("FOR_YOU")}
+            title="Untuk Kamu"
             className={itemClass(isActive("FOR_YOU"))}
           >
             <span className="shrink-0 flex items-center justify-center w-5">{icons.home}</span>
             <span
               className="whitespace-nowrap text-xs font-semibold transition-all duration-200"
-              style={{ opacity: expanded ? 1 : 0, maxWidth: expanded ? 200 : 0, overflow: "hidden" }}
+              style={{
+                opacity: isExpanded ? 1 : 0,
+                maxWidth: isExpanded ? 200 : 0,
+                overflow: "hidden",
+              }}
             >
-              For you
+              Untuk Kamu
             </span>
           </button>
 
           {/* + Thread Baru */}
           <button
             type="button"
-            onClick={() => setIsPostModalOpen(true)}
+            onClick={() => {
+              setIsPostModalOpen(true);
+              if (onClose) onClose();
+            }}
             title="Thread Baru"
             className={itemClass(false)}
           >
             <span className="shrink-0 flex items-center justify-center w-5">{icons.plus}</span>
             <span
               className="whitespace-nowrap text-xs font-semibold transition-all duration-200"
-              style={{ opacity: expanded ? 1 : 0, maxWidth: expanded ? 200 : 0, overflow: "hidden" }}
+              style={{
+                opacity: isExpanded ? 1 : 0,
+                maxWidth: isExpanded ? 200 : 0,
+                overflow: "hidden",
+              }}
             >
               Thread Baru
             </span>
@@ -250,37 +373,34 @@ export default function CommunitySidebar({ onClose }: { onClose?: () => void }) 
             <button
               key={item.id}
               type="button"
-              onClick={() => setCurrentView(item.id)}
+              onClick={() => handleItemClick(item.id)}
               title={item.label}
               className={itemClass(isActive(item.id))}
             >
-              <span className="shrink-0 flex items-center justify-center w-5">{icons[item.iconKey]}</span>
+              <div className="relative shrink-0 flex items-center justify-center w-5">
+                {icons[item.iconKey]}
+              </div>
               <span
                 className="whitespace-nowrap text-xs font-semibold transition-all duration-200 flex-1 text-left"
-                style={{ opacity: expanded ? 1 : 0, maxWidth: expanded ? 200 : 0, overflow: "hidden" }}
+                style={{
+                  opacity: isExpanded ? 1 : 0,
+                  maxWidth: isExpanded ? 200 : 0,
+                  overflow: "hidden",
+                }}
               >
                 {item.label}
               </span>
-              {/* Badge — only visible when expanded */}
-              {item.badge && expanded && (
-                <span className="ml-auto w-4 h-4 rounded-full bg-orange-500 text-white text-[10px] flex items-center justify-center font-bold shrink-0">
-                  {item.badge}
-                </span>
-              )}
-              {/* Dot badge on collapsed */}
-              {item.badge && !expanded && (
-                <span className="absolute top-1.5 right-1 w-2 h-2 rounded-full bg-orange-500 border border-[#FAF7F2]" />
-              )}
+              {renderBadge(item.badge)}
             </button>
           ))}
         </nav>
 
         {/* Other Feeds Section */}
         <div className="px-2.5 border-t border-brown-900/6 pt-3">
-          {/* Section label — only when expanded */}
+          {/* Section label */}
           <div
             className="px-3 pb-1.5 transition-all duration-200 overflow-hidden"
-            style={{ opacity: expanded ? 1 : 0, maxHeight: expanded ? 32 : 0 }}
+            style={{ opacity: isExpanded ? 1 : 0, maxHeight: isExpanded ? 32 : 0 }}
           >
             <span className="text-[10px] font-bold text-brown-700/50 uppercase tracking-wider whitespace-nowrap">
               Feed Lain
@@ -292,17 +412,24 @@ export default function CommunitySidebar({ onClose }: { onClose?: () => void }) 
               <button
                 key={feed.id}
                 type="button"
-                onClick={() => setCurrentView(feed.id)}
+                onClick={() => handleItemClick(feed.id)}
                 title={feed.label}
                 className={itemClass(isActive(feed.id))}
               >
-                <span className="shrink-0 flex items-center justify-center w-5">{icons[feed.iconKey]}</span>
+                <div className="relative shrink-0 flex items-center justify-center w-5">
+                  {icons[feed.iconKey]}
+                </div>
                 <span
-                  className="whitespace-nowrap text-xs font-semibold transition-all duration-200"
-                  style={{ opacity: expanded ? 1 : 0, maxWidth: expanded ? 200 : 0, overflow: "hidden" }}
+                  className="whitespace-nowrap text-xs font-semibold transition-all duration-200 flex-1 text-left"
+                  style={{
+                    opacity: isExpanded ? 1 : 0,
+                    maxWidth: isExpanded ? 200 : 0,
+                    overflow: "hidden",
+                  }}
                 >
                   {feed.label}
                 </span>
+                {renderBadge(feed.badge)}
               </button>
             ))}
           </nav>

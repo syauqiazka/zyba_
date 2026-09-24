@@ -8,10 +8,10 @@ interface QuestionStepProps {
   setGoal: React.Dispatch<React.SetStateAction<string>>;
   gender: string;
   setGender: React.Dispatch<React.SetStateAction<string>>;
-  age: number;
-  setAge: React.Dispatch<React.SetStateAction<number>>;
-  weight: number;
-  setWeight: React.Dispatch<React.SetStateAction<number>>;
+  age: string;
+  setAge: React.Dispatch<React.SetStateAction<string>>;
+  weight: string;
+  setWeight: React.Dispatch<React.SetStateAction<string>>;
   mood: string;
   setMood: React.Dispatch<React.SetStateAction<string>>;
   soughtHelp: boolean | null;
@@ -34,11 +34,34 @@ interface QuestionStepProps {
 }
 
 export default function QuestionStep({
-  currentStep, goal, setGoal, gender, setGender, age, setAge, weight, setWeight,
-  mood, setMood, soughtHelp, setSoughtHelp, physicalSymptoms, setPhysicalSymptoms,
-  sleepRating, setSleepRating, stressRating, setStressRating, medications, setMedications,
-  mentalSymptoms, setMentalSymptoms, expressionText, setExpressionText,
-  toggleSymptom, handleNext, handlePrev,
+  currentStep,
+  goal,
+  setGoal,
+  gender,
+  setGender,
+  age,
+  setAge,
+  weight,
+  setWeight,
+  mood,
+  setMood,
+  soughtHelp,
+  setSoughtHelp,
+  physicalSymptoms,
+  setPhysicalSymptoms,
+  sleepRating,
+  setSleepRating,
+  stressRating,
+  setStressRating,
+  medications,
+  setMedications,
+  mentalSymptoms,
+  setMentalSymptoms,
+  expressionText,
+  setExpressionText,
+  toggleSymptom,
+  handleNext,
+  handlePrev,
 }: QuestionStepProps) {
   return (
     <>
@@ -46,10 +69,10 @@ export default function QuestionStep({
       <div className="flex flex-col gap-6">
         {currentStep === 0 && (
           <div className="flex flex-col gap-4">
-            <h2 className="font-display text-xl font-bold text-brown-900">
+            <h2 className="font-display text-lg sm:text-xl font-bold text-brown-900 leading-snug">
               Apa goal kesehatan utama yang ingin kamu capai di ZYBA?
             </h2>
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {[
                 "Stress Relief & Relaxation",
                 "Memperbaiki Kualitas Tidur",
@@ -58,6 +81,7 @@ export default function QuestionStep({
               ].map((g) => (
                 <button
                   key={g}
+                  type="button"
                   onClick={() => setGoal(g)}
                   className={`p-4 rounded-2xl text-xs font-bold border-2 transition-all text-left ${
                     goal === g
@@ -74,18 +98,21 @@ export default function QuestionStep({
 
         {currentStep === 1 && (
           <div className="flex flex-col gap-4">
-            <h2 className="font-display text-xl font-bold text-brown-900">
+            <h2 className="font-display text-lg sm:text-xl font-bold text-brown-900 leading-snug">
               Informasi Profil Fisik
             </h2>
             <div className="flex flex-col gap-3">
               <label className="text-xs font-bold text-brown-900">Gender:</label>
-              <div className="flex gap-3">
+              <div className="flex gap-2 sm:gap-3">
                 {["Pria", "Wanita", "Lainnya"].map((gen) => (
                   <button
                     key={gen}
+                    type="button"
                     onClick={() => setGender(gen)}
-                    className={`flex-1 p-3 rounded-2xl text-xs font-bold border-2 ${
-                      gender === gen ? "bg-brown-900 text-white border-brown-900" : "bg-cream border-brown-900/10 text-brown-700"
+                    className={`flex-1 p-3 rounded-2xl text-xs font-bold border-2 transition-colors ${
+                      gender === gen
+                        ? "bg-brown-900 text-white border-brown-900"
+                        : "bg-cream border-brown-900/10 text-brown-700 hover:bg-cream/80"
                     }`}
                   >
                     {gen}
@@ -93,24 +120,35 @@ export default function QuestionStep({
                 ))}
               </div>
 
-              <div className="grid grid-cols-2 gap-4 mt-2">
+              {/* Usia & Berat Badan — Fixed to pattern BENAR in Lampiran C.4 */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-2">
                 <div>
                   <label className="text-xs font-bold text-brown-900">Usia (Tahun):</label>
                   <input
-                    type="number"
+                    type="tel"
+                    inputMode="numeric"
                     value={age}
-                    onChange={(e) => setAge(Number(e.target.value))}
-                    className="w-full mt-1 bg-cream rounded-2xl border border-brown-900/10 px-4 py-3 text-xs text-brown-900 font-bold focus:outline-none"
+                    onChange={(e) => setAge(e.target.value.replace(/[^0-9]/g, ""))}
+                    placeholder="21"
+                    className="w-full mt-1 bg-cream rounded-2xl border border-brown-900/10 px-4 py-3 text-xs text-brown-900 font-bold focus:outline-none focus:ring-2 focus:ring-orange-500"
                   />
+                  <span className="text-[10px] text-brown-700/60 mt-1 block">
+                    Ketik langsung usiamu (misal: 17, 21, 25)
+                  </span>
                 </div>
                 <div>
                   <label className="text-xs font-bold text-brown-900">Berat Badan (kg):</label>
                   <input
-                    type="number"
+                    type="tel"
+                    inputMode="numeric"
                     value={weight}
-                    onChange={(e) => setWeight(Number(e.target.value))}
-                    className="w-full mt-1 bg-cream rounded-2xl border border-brown-900/10 px-4 py-3 text-xs text-brown-900 font-bold focus:outline-none"
+                    onChange={(e) => setWeight(e.target.value.replace(/[^0-9]/g, ""))}
+                    placeholder="65"
+                    className="w-full mt-1 bg-cream rounded-2xl border border-brown-900/10 px-4 py-3 text-xs text-brown-900 font-bold focus:outline-none focus:ring-2 focus:ring-orange-500"
                   />
+                  <span className="text-[10px] text-brown-700/60 mt-1 block">
+                    Estimasi berat badan dalam kilogram
+                  </span>
                 </div>
               </div>
             </div>
@@ -119,10 +157,10 @@ export default function QuestionStep({
 
         {currentStep === 2 && (
           <div className="flex flex-col gap-4">
-            <h2 className="font-display text-xl font-bold text-brown-900">
+            <h2 className="font-display text-lg sm:text-xl font-bold text-brown-900 leading-snug">
               Bagaimana kondisi suasana hatimu secara umum?
             </h2>
-            <div className="grid grid-cols-5 gap-2">
+            <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
               {[
                 { val: "DEPRESSED", label: "Depressed 😞" },
                 { val: "SAD", label: "Sad 🙁" },
@@ -132,9 +170,12 @@ export default function QuestionStep({
               ].map((m) => (
                 <button
                   key={m.val}
+                  type="button"
                   onClick={() => setMood(m.val)}
-                  className={`p-4 rounded-2xl text-xs font-bold border-2 ${
-                    mood === m.val ? "bg-brown-900 text-white border-brown-900" : "bg-cream border-brown-900/10 text-brown-700"
+                  className={`p-3 sm:p-4 rounded-2xl text-xs font-bold border-2 transition-all ${
+                    mood === m.val
+                      ? "bg-brown-900 text-white border-brown-900 shadow-sm"
+                      : "bg-cream border-brown-900/10 text-brown-700 hover:bg-cream/80"
                   }`}
                 >
                   {m.label}
@@ -146,19 +187,22 @@ export default function QuestionStep({
 
         {currentStep === 3 && (
           <div className="flex flex-col gap-4">
-            <h2 className="font-display text-xl font-bold text-brown-900">
+            <h2 className="font-display text-lg sm:text-xl font-bold text-brown-900 leading-snug">
               Pernah mencari bantuan profesional (Psikolog / Psikiater)?
             </h2>
-            <div className="flex gap-4">
+            <div className="flex flex-col sm:flex-row gap-3">
               {[
                 { label: "Ya, Pernah Konsultasi", val: true },
                 { label: "Belum Pernah", val: false },
               ].map((opt) => (
                 <button
                   key={opt.label}
+                  type="button"
                   onClick={() => setSoughtHelp(opt.val)}
-                  className={`flex-1 p-5 rounded-2xl text-xs font-bold border-2 ${
-                    soughtHelp === opt.val ? "bg-brown-900 text-white border-brown-900" : "bg-cream border-brown-900/10 text-brown-700"
+                  className={`flex-1 p-4 sm:p-5 rounded-2xl text-xs font-bold border-2 transition-all ${
+                    soughtHelp === opt.val
+                      ? "bg-brown-900 text-white border-brown-900 shadow-sm"
+                      : "bg-cream border-brown-900/10 text-brown-700 hover:bg-cream/80"
                   }`}
                 >
                   {opt.label}
@@ -170,10 +214,10 @@ export default function QuestionStep({
 
         {currentStep === 4 && (
           <div className="flex flex-col gap-4">
-            <h2 className="font-display text-xl font-bold text-brown-900">
+            <h2 className="font-display text-lg sm:text-xl font-bold text-brown-900 leading-snug">
               Gejala fisik yang sering kamu alami saat cemas/stres:
             </h2>
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {[
                 "Pusing / Sakit Kepala",
                 "Sulit Tidur / Insomnia",
@@ -186,9 +230,12 @@ export default function QuestionStep({
                 return (
                   <button
                     key={sym}
+                    type="button"
                     onClick={() => toggleSymptom(physicalSymptoms, setPhysicalSymptoms, sym)}
                     className={`p-3.5 rounded-2xl text-xs font-bold border-2 text-left transition-all ${
-                      isSel ? "bg-green-500 text-white border-green-500" : "bg-cream border-brown-900/10 text-brown-700"
+                      isSel
+                        ? "bg-green-500 text-white border-green-500 shadow-sm"
+                        : "bg-cream border-brown-900/10 text-brown-700 hover:bg-cream/80"
                     }`}
                   >
                     {isSel ? "✓ " : "+ "}{sym}
@@ -201,7 +248,7 @@ export default function QuestionStep({
 
         {currentStep === 5 && (
           <div className="flex flex-col gap-4">
-            <h2 className="font-display text-xl font-bold text-brown-900">
+            <h2 className="font-display text-lg sm:text-xl font-bold text-brown-900 leading-snug">
               Rating Kualitas Tidur (1 - 5)
             </h2>
             <input
@@ -214,7 +261,9 @@ export default function QuestionStep({
             />
             <div className="flex justify-between text-xs font-bold text-brown-900">
               <span>1 - Sangat Buruk</span>
-              <span className="text-green-500">Rating: {sleepRating} / 5</span>
+              <span className="text-green-600 bg-green-100 px-3 py-1 rounded-full font-extrabold">
+                Rating: {sleepRating} / 5
+              </span>
               <span>5 - Nyenyak Sekali</span>
             </div>
           </div>
@@ -222,7 +271,7 @@ export default function QuestionStep({
 
         {currentStep === 6 && (
           <div className="flex flex-col gap-4">
-            <h2 className="font-display text-xl font-bold text-brown-900">
+            <h2 className="font-display text-lg sm:text-xl font-bold text-brown-900 leading-snug">
               Rating Level Stres Harian (1 - 5)
             </h2>
             <input
@@ -235,7 +284,9 @@ export default function QuestionStep({
             />
             <div className="flex justify-between text-xs font-bold text-brown-900">
               <span>1 - Sangat Santai</span>
-              <span className="text-orange-500">Rating: {stressRating} / 5</span>
+              <span className="text-orange-600 bg-orange-100 px-3 py-1 rounded-full font-extrabold">
+                Rating: {stressRating} / 5
+              </span>
               <span>5 - Sangat Tertekan</span>
             </div>
           </div>
@@ -243,7 +294,7 @@ export default function QuestionStep({
 
         {currentStep === 7 && (
           <div className="flex flex-col gap-4">
-            <h2 className="font-display text-xl font-bold text-brown-900">
+            <h2 className="font-display text-lg sm:text-xl font-bold text-brown-900 leading-snug">
               Obat atau Suplemen yang Sedang Dikonsumsi:
             </h2>
             <input
@@ -251,17 +302,17 @@ export default function QuestionStep({
               value={medications}
               onChange={(e) => setMedications(e.target.value)}
               placeholder="Misal: Suplemen Vitamin D, obat tidur, dll (atau 'Tidak Ada')"
-              className="w-full bg-cream rounded-2xl border border-brown-900/10 p-4 text-xs font-bold text-brown-900 focus:outline-none"
+              className="w-full bg-cream rounded-2xl border border-brown-900/10 p-4 text-xs font-bold text-brown-900 focus:outline-none focus:ring-2 focus:ring-orange-500"
             />
           </div>
         )}
 
         {currentStep === 8 && (
           <div className="flex flex-col gap-4">
-            <h2 className="font-display text-xl font-bold text-brown-900">
+            <h2 className="font-display text-lg sm:text-xl font-bold text-brown-900 leading-snug">
               Gejala kesehatan mental yang paling sering dirasakan:
             </h2>
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {[
                 "Kecemasan Berlebih (Anxiety)",
                 "Perubahan Mood Mendadak",
@@ -272,9 +323,12 @@ export default function QuestionStep({
                 return (
                   <button
                     key={sym}
+                    type="button"
                     onClick={() => toggleSymptom(mentalSymptoms, setMentalSymptoms, sym)}
                     className={`p-3.5 rounded-2xl text-xs font-bold border-2 text-left transition-all ${
-                      isSel ? "bg-orange-500 text-white border-orange-500" : "bg-cream border-brown-900/10 text-brown-700"
+                      isSel
+                        ? "bg-orange-500 text-white border-orange-500 shadow-sm"
+                        : "bg-cream border-brown-900/10 text-brown-700 hover:bg-cream/80"
                     }`}
                   >
                     {isSel ? "✓ " : "+ "}{sym}
@@ -287,11 +341,11 @@ export default function QuestionStep({
 
         {currentStep === 9 && (
           <div className="flex flex-col gap-4">
-            <div className="flex items-center justify-between">
-              <h2 className="font-display text-xl font-bold text-brown-900">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+              <h2 className="font-display text-lg sm:text-xl font-bold text-brown-900 leading-snug">
                 AI Expression & Reflection Screening
               </h2>
-              <span className="text-[10px] bg-green-100 text-green-500 font-bold px-2 py-0.5 rounded-full">
+              <span className="text-[10px] bg-green-100 text-green-700 font-bold px-2.5 py-1 rounded-full self-start sm:self-auto">
                 Keamanan Konten Terverifikasi
               </span>
             </div>
@@ -303,10 +357,10 @@ export default function QuestionStep({
             <textarea
               value={expressionText}
               onChange={(e) => setExpressionText(e.target.value)}
-              rows={5}
+              rows={4}
               className="w-full rounded-2xl border border-brown-900/10 p-4 text-xs font-medium text-brown-900 bg-cream/40 focus:outline-none focus:ring-2 focus:ring-green-500"
             />
-            <span className="text-[10px] text-brown-700">
+            <span className="text-[10px] text-brown-700/70">
               *Teks ini diproses secara rahasia oleh sistem Zyba AI untuk menghasilkan evaluasi skor awal.
             </span>
           </div>
@@ -319,7 +373,7 @@ export default function QuestionStep({
           type="button"
           onClick={handlePrev}
           disabled={currentStep === 0}
-          className="px-6 py-3 rounded-full border border-brown-900/10 text-xs font-bold text-brown-700 hover:bg-cream disabled:opacity-30"
+          className="px-5 sm:px-6 py-2.5 sm:py-3 rounded-full border border-brown-900/10 text-xs font-bold text-brown-700 hover:bg-cream disabled:opacity-30 transition-colors"
         >
           ← Sebelumnya
         </button>
@@ -327,7 +381,7 @@ export default function QuestionStep({
         <button
           type="button"
           onClick={handleNext}
-          className="px-8 py-3 rounded-full bg-brown-900 hover:bg-orange-500 text-white text-xs font-bold transition-colors shadow-md"
+          className="px-6 sm:px-8 py-2.5 sm:py-3 rounded-full bg-brown-900 hover:bg-orange-500 text-white text-xs font-bold transition-colors shadow-md active:scale-98"
         >
           {currentStep === 9 ? "Selesaikan & Hitung Skor →" : "Lanjut →"}
         </button>

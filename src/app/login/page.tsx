@@ -7,12 +7,18 @@ import SignInCard from "./components/SignInCard";
 import ForgotPasswordCard from "./components/ForgotPasswordCard";
 import ProfileSecurityFlow from "./components/ProfileSecurityFlow";
 
-function LoginContent() {
+function LoginContent({ defaultMode }: { defaultMode?: "SIGN_IN" | "FORGOT_PASSWORD" | "SIGN_UP" }) {
   const router = useRouter();
   const searchParams = useSearchParams();
 
   // Mode: "SIGN_IN" (Frame 1) | "FORGOT_PASSWORD" (Frame 2) | "SIGN_UP" (Profile Security Setup)
-  const initialTab = searchParams.get("tab") === "signup" ? "SIGN_UP" : "SIGN_IN";
+  const tabParam = searchParams.get("tab");
+  const initialTab =
+    tabParam === "signup"
+      ? "SIGN_UP"
+      : tabParam === "signin" || tabParam === "login"
+      ? "SIGN_IN"
+      : defaultMode || "SIGN_IN";
   const [authMode, setAuthMode] = useState<"SIGN_IN" | "FORGOT_PASSWORD" | "SIGN_UP">(initialTab);
 
   // Form Fields for Sign In
@@ -22,11 +28,13 @@ function LoginContent() {
   const [loginError, setLoginError] = useState("");
 
   useEffect(() => {
-    const tabParam = searchParams.get("tab");
-    if (tabParam === "signup") {
+    const tab = searchParams.get("tab");
+    if (tab === "signup") {
       setAuthMode("SIGN_UP");
-    } else if (tabParam === "signin" || tabParam === "login") {
+    } else if (tab === "signin" || tab === "login") {
       setAuthMode("SIGN_IN");
+    } else if (defaultMode) {
+      setAuthMode(defaultMode);
     }
 
     const errorParam = searchParams.get("error");
@@ -41,7 +49,7 @@ function LoginContent() {
         setLoginError("Terjadi kendala saat login dengan Google.");
       }
     }
-  }, [searchParams]);
+  }, [searchParams, defaultMode]);
 
   // Sign In Handler
   const handleSignIn = async () => {
@@ -183,7 +191,11 @@ function LoginContent() {
   );
 }
 
-export default function LoginPage() {
+export default function LoginPage({
+  defaultMode,
+}: {
+  defaultMode?: "SIGN_IN" | "FORGOT_PASSWORD" | "SIGN_UP";
+}) {
   return (
     <Suspense
       fallback={
@@ -192,7 +204,7 @@ export default function LoginPage() {
         </div>
       }
     >
-      <LoginContent />
+      <LoginContent defaultMode={defaultMode} />
     </Suspense>
   );
 }

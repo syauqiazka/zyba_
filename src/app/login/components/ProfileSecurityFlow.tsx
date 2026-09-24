@@ -89,6 +89,7 @@ export default function ProfileSecurityFlow({
     initialEmail && initialEmail !== "alex@zyba.app" ? initialEmail : ""
   );
   const [password, setPassword] = useState("");
+  const [phone, setPhone] = useState("");
   const [gender, setGender] = useState("Pria");
   const [location, setLocation] = useState("Jakarta, DKI Jakarta");
 
@@ -256,6 +257,8 @@ export default function ProfileSecurityFlow({
           action: "UPDATE_PROFILE",
           email: email.trim(),
           name: fullName || undefined,
+          phone: phone.trim() || undefined,
+          location: location || undefined,
           avatarUrl: avatar,
         }),
       });
@@ -419,6 +422,20 @@ export default function ProfileSecurityFlow({
                     )}
                   </div>
                 )}
+              </div>
+
+              <div>
+                <label className="text-xs font-bold text-brown-900 pl-1 block mb-1">
+                  Nomor Telepon / WhatsApp
+                </label>
+                <input
+                  type="tel"
+                  inputMode="numeric"
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value.replace(/[^0-9]/g, ""))}
+                  placeholder="08123456789"
+                  className="w-full bg-cream/40 border border-brown-900/15 rounded-full px-4 py-2.5 text-xs text-brown-900 focus:outline-none focus:ring-2 focus:ring-orange-500 font-medium"
+                />
               </div>
 
               <div className="grid grid-cols-2 gap-3">

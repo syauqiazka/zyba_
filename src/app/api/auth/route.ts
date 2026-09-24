@@ -64,6 +64,8 @@ export async function POST(request: NextRequest) {
 
       const updated = await userRepository.update(targetEmail, {
         name: name || undefined,
+        phone: body.phone || undefined,
+        location: body.location || undefined,
         avatarUrl: body.avatarUrl || undefined,
         communicationStyle: body.communicationStyle || undefined,
         onboardingCompleted: true,
