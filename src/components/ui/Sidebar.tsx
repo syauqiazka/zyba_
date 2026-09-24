@@ -15,7 +15,6 @@ const NAV_ITEMS = [
   { href: "/wellness-journey", label: "Wellness Journey", icon: "heart" },
   { href: "/community", label: "Zyba Community", icon: "users" },
   { href: "/resources", label: "Resources", icon: "book" },
-  { href: "/settings", label: "Settings", icon: "settings" },
 ];
 
 export default function Sidebar({ onClose }: { onClose?: () => void }) {
