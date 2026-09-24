@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 
 // ---------- Types ----------
 
@@ -36,7 +36,7 @@ export const SLEEP_OPTIONS = [
   { rating: 1, label: "< 4 jam", desc: "Insomnia", icon: "😴" },
   { rating: 2, label: "4-5 jam", desc: "Kurang Nyenyak", icon: "🥱" },
   { rating: 3, label: "6-7 jam", desc: "Cukup", icon: "🛌" },
-  { rating: 4, label: "7-8 jam", desc: "Pulas", icon: "🌙" },
+  { rating: 4, label: "7-8 jam", desc: "Pulas & Optimal", icon: "🌙" },
   { rating: 5, label: "> 8 jam", desc: "Sangat Segar", icon: "🌟" },
 ];
 
@@ -74,22 +74,41 @@ export const GOALS_LIST = [
   "Curhat & Konseling AI 24/7",
 ];
 
-// ---------- DailyAssessmentForm ----------
-
 export interface DailyAssessmentSubmitData {
+  // Mental (6)
+  mood: string;
+  stressLevel: number;
+  anxietyLevel: number;
+  satisfactionLevel: number;
+  productivityLevel: number;
+  meTimeLevel: number;
+
+  // Fisik (5)
+  sleepRating: number;
+  sleepHours: number | string;
+  energyLevel: number;
+  eatingHabit: number;
+  physicalActivity: number;
+
+  // Sosial (3)
+  socialConnection: number;
+  socialSupport: number;
+  communityInteraction: number;
+
+  // Gratitude & Refleksi
+  gratitude: string;
+  reflection: string;
+
+  // Konteks baseline & profil
   goal: string;
   gender: string;
   age: string;
   weight: string;
-  mood: string;
   soughtHelp: boolean | null;
   physicalSymptoms: string[];
-  sleepRating: number | null;
-  stressLevel: number;
-  medications: string;
   mentalSymptoms: string[];
+  medications: string;
   energyTags: string[];
-  reflection: string;
 }
 
 interface FormProps {
@@ -102,183 +121,163 @@ interface FormProps {
 export function DailyAssessmentForm({ onSubmit, isSubmitting }: FormProps) {
   const [step, setStep] = useState(0);
 
-  // Form states initialized without leading zeroes (Lampiran C.4)
+  // 1. Aspek Mental (6 Pertanyaan)
+  const [mood, setMood] = useState("HAPPY");
+  const [stressLevel, setStressLevel] = useState(2); // 1: tenang, 5: tertekan
+  const [anxietyLevel, setAnxietyLevel] = useState(2); // 1: sangat rileks, 5: sangat cemas
+  const [satisfactionLevel, setSatisfactionLevel] = useState(4); // 1: tidak puas, 5: puas
+  const [productivityLevel, setProductivityLevel] = useState(3); // 1: terdistraksi, 5: sangat fokus
+  const [meTimeLevel, setMeTimeLevel] = useState(3); // 1: kurang sekali, 5: cukup
+
+  // 2. Aspek Fisik (5 Pertanyaan)
+  const [sleepRating, setSleepRating] = useState<number>(4); // 1-5
+  const [sleepHours, setSleepHours] = useState<number>(4); // 1-5 (pilihan SLEEP_OPTIONS)
+  const [energyLevel, setEnergyLevel] = useState(3); // 1: drop/lelah, 5: bugar
+  const [eatingHabit, setEatingHabit] = useState(4); // 1: tidak teratur, 5: sangat teratur
+  const [physicalActivity, setPhysicalActivity] = useState(3); // 1: sedentari, 5: aktif olahraga
+
+  // 3. Aspek Sosial (3 Pertanyaan)
+  const [socialConnection, setSocialConnection] = useState(4); // 1: terisolasi, 5: terhubung
+  const [socialSupport, setSocialSupport] = useState(4); // 1: tidak didukung, 5: didengar & didukung
+  const [communityInteraction, setCommunityInteraction] = useState(3); // 1: minim, 5: aktif berinteraksi
+
+  // 4. Gratitude & Refleksi Bebas
+  const [gratitude, setGratitude] = useState("");
+  const [reflection, setReflection] = useState("");
+
+  // Profil & Gejala Tambahan
   const [goal, setGoal] = useState("Stress Relief & Relaxation");
   const [gender, setGender] = useState("Pria");
   const [age, setAge] = useState("21");
   const [weight, setWeight] = useState("65");
-  const [mood, setMood] = useState("HAPPY");
   const [soughtHelp, setSoughtHelp] = useState<boolean | null>(false);
   const [physicalSymptoms, setPhysicalSymptoms] = useState<string[]>([]);
-  const [sleepRating, setSleepRating] = useState<number | null>(3);
-  const [stressLevel, setStressLevel] = useState(2);
-  const [medications, setMedications] = useState("Tidak ada");
   const [mentalSymptoms, setMentalSymptoms] = useState<string[]>([]);
+  const [medications, setMedications] = useState("Tidak ada");
   const [energyTags, setEnergyTags] = useState<string[]>(["Tenang & Fokus"]);
-  const [reflection, setReflection] = useState("");
 
-  // Helper toggle multi-select
   const toggleItem = (list: string[], setFn: React.Dispatch<React.SetStateAction<string[]>>, item: string) => {
     setFn((prev) => (prev.includes(item) ? prev.filter((i) => i !== item) : [...prev, item]));
   };
 
-  // D.1 Standard 3-state CSS
+  // D.1 Standardized 3-state styling
   const choiceClass = (isSelected: boolean) =>
     `relative flex items-center justify-between gap-2 p-3.5 rounded-2xl text-xs font-bold text-left border-2 transition-all duration-200 cursor-pointer ${
       isSelected
-        ? "border-orange-500 bg-orange-100 text-brown-900"
+        ? "border-orange-500 bg-orange-100 text-brown-900 shadow-sm"
         : "border-brown-900/10 bg-white text-brown-700 hover:border-orange-500/40 hover:bg-orange-500/5"
     }`;
 
+  // Estimasi Skor Realtime
+  const estimatedScores = useMemo(() => {
+    const moodMap: Record<string, number> = { DEPRESSED: 1, SAD: 2, NEUTRAL: 3, HAPPY: 4, OVERJOYED: 5 };
+    const moodVal = moodMap[mood] ?? 3;
+    const moodScore = ((moodVal - 1) / 4) * 100;
+    const stressScore = ((5 - stressLevel) / 4) * 100;
+    const anxietyScore = ((5 - anxietyLevel) / 4) * 100;
+    const satisfactionScore = ((satisfactionLevel - 1) / 4) * 100;
+    const productivityScore = ((productivityLevel - 1) / 4) * 100;
+    const meTimeScore = ((meTimeLevel - 1) / 4) * 100;
+    const mental = Math.round((moodScore + stressScore + anxietyScore + satisfactionScore + productivityScore + meTimeScore) / 6);
+
+    const sleepScore = ((sleepRating - 1) / 4) * 100;
+    const sleepHoursScore = sleepHours === 4 ? 100 : sleepHours === 3 ? 85 : sleepHours === 5 ? 80 : sleepHours === 2 ? 55 : 30;
+    const energyScore = ((energyLevel - 1) / 4) * 100;
+    const eatingScore = ((eatingHabit - 1) / 4) * 100;
+    const activityScore = ((physicalActivity - 1) / 4) * 100;
+    const fisik = Math.round((sleepScore + sleepHoursScore + energyScore + eatingScore + activityScore) / 5);
+
+    const connScore = ((socialConnection - 1) / 4) * 100;
+    const suppScore = ((socialSupport - 1) / 4) * 100;
+    const commScore = ((communityInteraction - 1) / 4) * 100;
+    const sosial = Math.round((connScore + suppScore + commScore) / 3);
+
+    const zyba = Math.round(mental * 0.5 + fisik * 0.25 + sosial * 0.25);
+    return { mental, fisik, sosial, zyba };
+  }, [mood, stressLevel, anxietyLevel, satisfactionLevel, productivityLevel, meTimeLevel, sleepRating, sleepHours, energyLevel, eatingHabit, physicalActivity, socialConnection, socialSupport, communityInteraction]);
+
   const STEPS = [
-    { title: "Goal & Fisik", desc: "Profil umum hari ini" },
-    { title: "Mood & Medis", desc: "Suasana hati & obat" },
-    { title: "Gejala", desc: "Fisik & kesehatan mental" },
-    { title: "Tidur, Stres & Refleksi", desc: "Evaluasi & AI Screening" },
+    { title: "Aspek Mental", icon: "🧠", subtitle: "6 Pertanyaan Emosi & Fokus" },
+    { title: "Aspek Fisik", icon: "⚡", subtitle: "5 Pertanyaan Tidur & Tubuh" },
+    { title: "Aspek Sosial", icon: "🤝", subtitle: "3 Pertanyaan Koneksi & Dukungan" },
+    { title: "Gratitude & Refleksi", icon: "💛", subtitle: "Hal Positif & AI Screening" },
   ];
 
   const handleSubmit = async () => {
     await onSubmit({
+      mood,
+      stressLevel,
+      anxietyLevel,
+      satisfactionLevel,
+      productivityLevel,
+      meTimeLevel,
+      sleepRating,
+      sleepHours,
+      energyLevel,
+      eatingHabit,
+      physicalActivity,
+      socialConnection,
+      socialSupport,
+      communityInteraction,
+      gratitude,
+      reflection,
       goal,
       gender,
       age,
       weight,
-      mood,
       soughtHelp,
       physicalSymptoms,
-      sleepRating,
-      stressLevel,
-      medications,
       mentalSymptoms,
+      medications,
       energyTags,
-      reflection,
     });
   };
 
   return (
     <div className="flex flex-col gap-6">
-      {/* Stepper Header */}
-      <div className="flex items-center gap-2 sm:gap-3 mb-2 overflow-x-auto pb-2">
+      {/* Stepper Tabs */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 border-b border-brown-900/10 pb-4">
         {STEPS.map((s, i) => (
-          <React.Fragment key={s.title}>
-            <button
-              type="button"
-              onClick={() => setStep(i)}
-              className={`flex items-center gap-2 text-xs font-bold transition-colors whitespace-nowrap ${
-                i <= step ? "text-brown-900" : "text-brown-700/40"
-              }`}
-            >
-              <span
-                className={`w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-extrabold border-2 transition-all ${
-                  i < step
-                    ? "bg-green-500 border-green-500 text-white"
-                    : i === step
-                    ? "bg-brown-900 border-brown-900 text-white"
-                    : "bg-cream border-brown-900/20 text-brown-700/50"
-                }`}
-              >
-                {i < step ? "✓" : i + 1}
-              </span>
-              <span className="hidden md:inline">{s.title}</span>
-            </button>
-            {i < STEPS.length - 1 && (
-              <div className={`flex-1 min-w-4 h-0.5 rounded-full ${i < step ? "bg-green-500" : "bg-brown-900/10"}`} />
-            )}
-          </React.Fragment>
+          <button
+            key={s.title}
+            type="button"
+            onClick={() => setStep(i)}
+            className={`flex flex-col text-left p-3 rounded-2xl border transition-all ${
+              i === step
+                ? "bg-brown-900 text-white border-brown-900 shadow-md"
+                : i < step
+                ? "bg-green-100/60 border-green-500/30 text-green-800"
+                : "bg-cream/40 border-brown-900/10 text-brown-700/60 hover:bg-cream"
+            }`}
+          >
+            <div className="flex items-center gap-1.5 text-xs font-bold mb-0.5">
+              <span>{s.icon}</span>
+              <span>{s.title}</span>
+              {i < step && <span className="ml-auto text-[10px] text-green-600 font-extrabold">✓</span>}
+            </div>
+            <span className={`text-[10px] truncate ${i === step ? "text-cream/80" : "text-brown-700/70"}`}>
+              {s.subtitle}
+            </span>
+          </button>
         ))}
       </div>
 
-      {/* Step 0: Goal & Profil Fisik */}
+      {/* STEP 0: Aspek Mental (6 Pertanyaan) */}
       {step === 0 && (
         <div className="flex flex-col gap-6 animate-in fade-in duration-200">
-          <div>
-            <h2 className="font-display text-base sm:text-lg font-bold text-brown-900 mb-1">
-              Apa goal kesehatan utama yang ingin kamu pantau hari ini?
-            </h2>
-            <p className="text-xs text-brown-700 mb-3">Pilih fokus utamamu untuk panduan rekomendasi personal.</p>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              {GOALS_LIST.map((g) => (
-                <button key={g} type="button" onClick={() => setGoal(g)} className={choiceClass(goal === g)}>
-                  <span className="flex-1">{g}</span>
-                  {goal === g && <span className="text-orange-500 font-extrabold shrink-0">✓</span>}
-                </button>
-              ))}
-            </div>
+          <div className="flex items-center gap-2 p-3 bg-orange-100/50 rounded-2xl border border-orange-500/20 text-xs text-brown-800">
+            <span className="text-base">🧠</span>
+            <span className="font-semibold">
+              Aspek Mental berkontribusi <strong>50%</strong> pada kalkulasi Zyba Score harianmu.
+            </span>
           </div>
 
-          <hr className="border-brown-900/10" />
-
+          {/* 1. Mood */}
           <div>
-            <h2 className="font-display text-base font-bold text-brown-900 mb-3">Informasi Profil Fisik</h2>
-            <div className="flex flex-col gap-3">
-              <label className="text-xs font-bold text-brown-900">Gender:</label>
-              <div className="flex gap-2 sm:gap-3">
-                {["Pria", "Wanita", "Lainnya"].map((gen) => (
-                  <button
-                    key={gen}
-                    type="button"
-                    onClick={() => setGender(gen)}
-                    className={`flex-1 justify-center ${choiceClass(gender === gen)}`}
-                  >
-                    <span className="flex-1 text-center">{gen}</span>
-                    {gender === gen && <span className="text-orange-500 font-extrabold shrink-0">✓</span>}
-                  </button>
-                ))}
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-2">
-                <div>
-                  <label className="text-xs font-bold text-brown-900">Usia (Tahun):</label>
-                  <input
-                    type="tel"
-                    inputMode="numeric"
-                    value={age}
-                    onChange={(e) => setAge(e.target.value.replace(/[^0-9]/g, ""))}
-                    placeholder="21"
-                    className="w-full mt-1 bg-cream rounded-2xl border border-brown-900/10 px-4 py-3 text-xs text-brown-900 font-bold focus:outline-none focus:ring-2 focus:ring-orange-500"
-                  />
-                  <span className="text-[10px] text-brown-700/60 mt-1 block">
-                    Ketik langsung usiamu (misal: 20, 22)
-                  </span>
-                </div>
-                <div>
-                  <label className="text-xs font-bold text-brown-900">Berat Badan (kg):</label>
-                  <input
-                    type="tel"
-                    inputMode="numeric"
-                    value={weight}
-                    onChange={(e) => setWeight(e.target.value.replace(/[^0-9]/g, ""))}
-                    placeholder="65"
-                    className="w-full mt-1 bg-cream rounded-2xl border border-brown-900/10 px-4 py-3 text-xs text-brown-900 font-bold focus:outline-none focus:ring-2 focus:ring-orange-500"
-                  />
-                  <span className="text-[10px] text-brown-700/60 mt-1 block">
-                    Estimasi berat badan dalam kilogram
-                  </span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div className="flex justify-end pt-2">
-            <button
-              type="button"
-              onClick={() => setStep(1)}
-              className="bg-brown-900 hover:bg-orange-500 text-white font-bold text-xs sm:text-sm px-7 py-3 rounded-full transition-colors cursor-pointer shadow-md"
-            >
-              Lanjut ke Mood &amp; Medis →
-            </button>
-          </div>
-        </div>
-      )}
-
-      {/* Step 1: Mood & Medis */}
-      {step === 1 && (
-        <div className="flex flex-col gap-6 animate-in fade-in duration-200">
-          <div>
-            <h2 className="font-display text-base sm:text-lg font-bold text-brown-900 mb-1">
-              Bagaimana kondisi suasana hatimu hari ini?
-            </h2>
-            <p className="text-xs text-brown-700 mb-3">Pilih skala ekspresi emosi yang paling mewakili hari ini.</p>
+            <h3 className="font-display text-sm sm:text-base font-bold text-brown-900 mb-1">
+              1. Bagaimana kondisi suasana hatimu hari ini?
+            </h3>
+            <p className="text-xs text-brown-700 mb-3">Pilih skala ekspresi emosi yang paling mewakili:</p>
             <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
               {MOODS.map((m) => {
                 const isSelected = mood === m.value;
@@ -290,7 +289,7 @@ export function DailyAssessmentForm({ onSubmit, isSubmitting }: FormProps) {
                     className={`justify-center ${choiceClass(isSelected)}`}
                   >
                     <span className="text-xl sm:text-2xl mr-1">{m.emoji}</span>
-                    <span className="text-center">{m.label}</span>
+                    <span>{m.label}</span>
                     {isSelected && <span className="text-orange-500 font-extrabold ml-1">✓</span>}
                   </button>
                 );
@@ -300,164 +299,14 @@ export function DailyAssessmentForm({ onSubmit, isSubmitting }: FormProps) {
 
           <hr className="border-brown-900/10" />
 
-          <div>
-            <h2 className="font-display text-base font-bold text-brown-900 mb-2">
-              Pernah mencari bantuan profesional (Psikolog / Psikiater)?
-            </h2>
-            <div className="flex flex-col sm:flex-row gap-3">
-              {[
-                { label: "Ya, Pernah Konsultasi", val: true },
-                { label: "Belum Pernah", val: false },
-              ].map((opt) => (
-                <button
-                  key={opt.label}
-                  type="button"
-                  onClick={() => setSoughtHelp(opt.val)}
-                  className={`flex-1 ${choiceClass(soughtHelp === opt.val)}`}
-                >
-                  <span className="flex-1">{opt.label}</span>
-                  {soughtHelp === opt.val && <span className="text-orange-500 font-extrabold shrink-0">✓</span>}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          <div>
-            <h2 className="font-display text-base font-bold text-brown-900 mb-2">
-              Obat atau Suplemen yang Sedang Dikonsumsi:
-            </h2>
-            <input
-              type="text"
-              value={medications}
-              onChange={(e) => setMedications(e.target.value)}
-              placeholder="Misal: Suplemen Vitamin D, atau 'Tidak ada'"
-              className="w-full bg-cream rounded-2xl border border-brown-900/10 p-3.5 text-xs font-bold text-brown-900 focus:outline-none focus:ring-2 focus:ring-orange-500"
-            />
-          </div>
-
-          <div className="flex justify-between pt-2">
-            <button
-              type="button"
-              onClick={() => setStep(0)}
-              className="text-brown-700 font-bold text-xs px-5 py-2.5 rounded-full border border-brown-900/15 hover:bg-cream transition-colors cursor-pointer"
-            >
-              ← Kembali
-            </button>
-            <button
-              type="button"
-              onClick={() => setStep(2)}
-              className="bg-brown-900 hover:bg-orange-500 text-white font-bold text-xs sm:text-sm px-7 py-3 rounded-full transition-colors cursor-pointer shadow-md"
-            >
-              Lanjut ke Gejala →
-            </button>
-          </div>
-        </div>
-      )}
-
-      {/* Step 2: Gejala Fisik & Mental */}
-      {step === 2 && (
-        <div className="flex flex-col gap-6 animate-in fade-in duration-200">
-          <div>
-            <h2 className="font-display text-base sm:text-lg font-bold text-brown-900 mb-1">
-              Gejala fisik yang dirasakan saat cemas atau tertekan:
-            </h2>
-            <p className="text-xs text-brown-700 mb-3">Pilih semua yang kamu rasakan hari ini (bisa lebih dari satu).</p>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              {PHYSICAL_SYMPTOMS_LIST.map((sym) => {
-                const isSel = physicalSymptoms.includes(sym);
-                return (
-                  <button
-                    key={sym}
-                    type="button"
-                    onClick={() => toggleItem(physicalSymptoms, setPhysicalSymptoms, sym)}
-                    className={choiceClass(isSel)}
-                  >
-                    <span className="flex-1">{sym}</span>
-                    {isSel && <span className="text-orange-500 font-extrabold shrink-0">✓</span>}
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-
-          <hr className="border-brown-900/10" />
-
-          <div>
-            <h2 className="font-display text-base sm:text-lg font-bold text-brown-900 mb-1">
-              Gejala kesehatan mental yang paling dominan:
-            </h2>
-            <p className="text-xs text-brown-700 mb-3">Pilih gejala yang kamu alami akhir-akhir ini.</p>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              {MENTAL_SYMPTOMS_LIST.map((sym) => {
-                const isSel = mentalSymptoms.includes(sym);
-                return (
-                  <button
-                    key={sym}
-                    type="button"
-                    onClick={() => toggleItem(mentalSymptoms, setMentalSymptoms, sym)}
-                    className={choiceClass(isSel)}
-                  >
-                    <span className="flex-1">{sym}</span>
-                    {isSel && <span className="text-orange-500 font-extrabold shrink-0">✓</span>}
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-
-          <div className="flex justify-between pt-2">
-            <button
-              type="button"
-              onClick={() => setStep(1)}
-              className="text-brown-700 font-bold text-xs px-5 py-2.5 rounded-full border border-brown-900/15 hover:bg-cream transition-colors cursor-pointer"
-            >
-              ← Kembali
-            </button>
-            <button
-              type="button"
-              onClick={() => setStep(3)}
-              className="bg-brown-900 hover:bg-orange-500 text-white font-bold text-xs sm:text-sm px-7 py-3 rounded-full transition-colors cursor-pointer shadow-md"
-            >
-              Lanjut ke Evaluasi Akhir →
-            </button>
-          </div>
-        </div>
-      )}
-
-      {/* Step 3: Tidur, Stres & Refleksi AI */}
-      {step === 3 && (
-        <div className="flex flex-col gap-6 animate-in fade-in duration-200">
-          {/* Tidur */}
+          {/* 2. Stres */}
           <div>
             <div className="flex items-center justify-between mb-2">
-              <h2 className="font-display text-base font-bold text-brown-900">Rating Kualitas Tidur (1 - 5)</h2>
-              <span className="text-xs font-bold text-green-700 bg-green-100 px-3 py-1 rounded-full">
-                Rating: {sleepRating ?? 3} / 5
-              </span>
-            </div>
-            <input
-              type="range"
-              min="1"
-              max="5"
-              value={sleepRating ?? 3}
-              onChange={(e) => setSleepRating(Number(e.target.value))}
-              className="w-full accent-green-500 cursor-pointer h-2 bg-cream rounded-lg my-2"
-            />
-            <div className="flex justify-between text-[11px] font-bold text-brown-700">
-              <span>1 - Sangat Buruk (&lt; 4 jam)</span>
-              <span>3 - Cukup (6-7 jam)</span>
-              <span>5 - Nyenyak (&gt; 8 jam)</span>
-            </div>
-          </div>
-
-          <hr className="border-brown-900/10" />
-
-          {/* Stres */}
-          <div>
-            <div className="flex items-center justify-between mb-2">
-              <h2 className="font-display text-base font-bold text-brown-900">Rating Level Stres Harian (1 - 5)</h2>
+              <h3 className="font-display text-sm font-bold text-brown-900">
+                2. Tingkat Stres Harian (1 - 5)
+              </h3>
               <span className="text-xs font-bold text-orange-600 bg-orange-100 px-3 py-1 rounded-full">
-                Level: {stressLevel} / 5
+                Level {stressLevel} / 5: {["Sangat Santai", "Rileks", "Sedang", "Tinggi", "Kewalahan"][stressLevel - 1]}
               </span>
             </div>
             <input
@@ -468,34 +317,192 @@ export function DailyAssessmentForm({ onSubmit, isSubmitting }: FormProps) {
               onChange={(e) => setStressLevel(Number(e.target.value))}
               className="w-full accent-orange-500 cursor-pointer h-2 bg-cream rounded-lg my-2"
             />
-            <div className="flex justify-between text-[11px] font-bold text-brown-700">
-              <span>1 - Sangat Santai</span>
-              <span>3 - Sedang</span>
-              <span>5 - Kewalahan / Sangat Tertekan</span>
+            <div className="flex justify-between text-[10px] text-brown-700 font-bold">
+              <span>1 - Sangat Tenang</span>
+              <span>3 - Normal / Sedang</span>
+              <span>5 - Kewalahan</span>
             </div>
           </div>
 
           <hr className="border-brown-900/10" />
 
-          {/* Energy Tags */}
+          {/* 3. Kecemasan (Anxiety) */}
           <div>
-            <h2 className="font-display text-base font-bold text-brown-900 mb-1">Tag Kondisi &amp; Energi Hari Ini</h2>
-            <p className="text-xs text-brown-700 mb-2.5">Pilih kata kunci yang menggambarkan energi tubuhmu saat ini:</p>
-            <div className="flex flex-wrap gap-2">
-              {ENERGY_TAGS.map((tag) => {
-                const isSel = energyTags.includes(tag);
+            <div className="flex items-center justify-between mb-2">
+              <h3 className="font-display text-sm font-bold text-brown-900">
+                3. Tingkat Kecemasan / Overthinking (1 - 5)
+              </h3>
+              <span className="text-xs font-bold text-orange-600 bg-orange-100 px-3 py-1 rounded-full">
+                Level {anxietyLevel} / 5
+              </span>
+            </div>
+            <input
+              type="range"
+              min="1"
+              max="5"
+              value={anxietyLevel}
+              onChange={(e) => setAnxietyLevel(Number(e.target.value))}
+              className="w-full accent-orange-500 cursor-pointer h-2 bg-cream rounded-lg my-2"
+            />
+            <div className="flex justify-between text-[10px] text-brown-700 font-bold">
+              <span>1 - Pikiran Sangat Tenang</span>
+              <span>3 - Kadang Khawatir</span>
+              <span>5 - Gelisah &amp; Overthinking Akut</span>
+            </div>
+          </div>
+
+          <hr className="border-brown-900/10" />
+
+          {/* 4. Kepuasan Diri */}
+          <div>
+            <div className="flex items-center justify-between mb-2">
+              <h3 className="font-display text-sm font-bold text-brown-900">
+                4. Kepuasan terhadap Diri &amp; Hari Ini (1 - 5)
+              </h3>
+              <span className="text-xs font-bold text-green-700 bg-green-100 px-3 py-1 rounded-full">
+                Rating {satisfactionLevel} / 5
+              </span>
+            </div>
+            <input
+              type="range"
+              min="1"
+              max="5"
+              value={satisfactionLevel}
+              onChange={(e) => setSatisfactionLevel(Number(e.target.value))}
+              className="w-full accent-green-500 cursor-pointer h-2 bg-cream rounded-lg my-2"
+            />
+            <div className="flex justify-between text-[10px] text-brown-700 font-bold">
+              <span>1 - Sangat Tidak Puas</span>
+              <span>3 - Cukup Baik</span>
+              <span>5 - Sangat Bersyukur &amp; Puas</span>
+            </div>
+          </div>
+
+          <hr className="border-brown-900/10" />
+
+          {/* 5. Fokus & Produktivitas */}
+          <div>
+            <div className="flex items-center justify-between mb-2">
+              <h3 className="font-display text-sm font-bold text-brown-900">
+                5. Kemampuan Fokus &amp; Produktivitas (1 - 5)
+              </h3>
+              <span className="text-xs font-bold text-green-700 bg-green-100 px-3 py-1 rounded-full">
+                Rating {productivityLevel} / 5
+              </span>
+            </div>
+            <input
+              type="range"
+              min="1"
+              max="5"
+              value={productivityLevel}
+              onChange={(e) => setProductivityLevel(Number(e.target.value))}
+              className="w-full accent-green-500 cursor-pointer h-2 bg-cream rounded-lg my-2"
+            />
+            <div className="flex justify-between text-[10px] text-brown-700 font-bold">
+              <span>1 - Sangat Terdistraksi / Sulit Fokus</span>
+              <span>3 - Cukup Selesai</span>
+              <span>5 - Sangat Produktif &amp; Flow</span>
+            </div>
+          </div>
+
+          <hr className="border-brown-900/10" />
+
+          {/* 6. Me-Time */}
+          <div>
+            <div className="flex items-center justify-between mb-2">
+              <h3 className="font-display text-sm font-bold text-brown-900">
+                6. Waktu Istirahat untuk Diri Sendiri (Me-Time) (1 - 5)
+              </h3>
+              <span className="text-xs font-bold text-orange-600 bg-orange-100 px-3 py-1 rounded-full">
+                Rating {meTimeLevel} / 5
+              </span>
+            </div>
+            <input
+              type="range"
+              min="1"
+              max="5"
+              value={meTimeLevel}
+              onChange={(e) => setMeTimeLevel(Number(e.target.value))}
+              className="w-full accent-orange-500 cursor-pointer h-2 bg-cream rounded-lg my-2"
+            />
+            <div className="flex justify-between text-[10px] text-brown-700 font-bold">
+              <span>1 - Nol Me-time (Non-stop)</span>
+              <span>3 - Cukup untuk Bernapas</span>
+              <span>5 - Sangat Cukup &amp; Pulih</span>
+            </div>
+          </div>
+
+          <div className="flex justify-end pt-3">
+            <button
+              type="button"
+              onClick={() => setStep(1)}
+              className="bg-brown-900 hover:bg-orange-500 text-white font-bold text-xs sm:text-sm px-7 py-3 rounded-full transition-colors cursor-pointer shadow-md"
+            >
+              Lanjut ke Aspek Fisik (5 Soal) →
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* STEP 1: Aspek Fisik (5 Pertanyaan) */}
+      {step === 1 && (
+        <div className="flex flex-col gap-6 animate-in fade-in duration-200">
+          <div className="flex items-center gap-2 p-3 bg-green-100/50 rounded-2xl border border-green-500/20 text-xs text-brown-800">
+            <span className="text-base">⚡</span>
+            <span className="font-semibold">
+              Aspek Fisik berkontribusi <strong>25%</strong> pada kalkulasi Zyba Score harianmu.
+            </span>
+          </div>
+
+          {/* 7. Kualitas Tidur */}
+          <div>
+            <div className="flex items-center justify-between mb-2">
+              <h3 className="font-display text-sm font-bold text-brown-900">
+                7. Kualitas Tidur Semalam (1 - 5)
+              </h3>
+              <span className="text-xs font-bold text-green-700 bg-green-100 px-3 py-1 rounded-full">
+                Rating {sleepRating} / 5
+              </span>
+            </div>
+            <input
+              type="range"
+              min="1"
+              max="5"
+              value={sleepRating}
+              onChange={(e) => setSleepRating(Number(e.target.value))}
+              className="w-full accent-green-500 cursor-pointer h-2 bg-cream rounded-lg my-2"
+            />
+            <div className="flex justify-between text-[10px] text-brown-700 font-bold">
+              <span>1 - Sering Terbangun / Buruk</span>
+              <span>3 - Cukup Nyenyak</span>
+              <span>5 - Pulas &amp; Sangat Segar</span>
+            </div>
+          </div>
+
+          <hr className="border-brown-900/10" />
+
+          {/* 8. Durasi Jam Tidur */}
+          <div>
+            <h3 className="font-display text-sm font-bold text-brown-900 mb-2">
+              8. Durasi Jam Tidur Semalam:
+            </h3>
+            <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
+              {SLEEP_OPTIONS.map((opt) => {
+                const isSel = sleepHours === opt.rating;
                 return (
                   <button
-                    key={tag}
+                    key={opt.rating}
                     type="button"
-                    onClick={() => toggleItem(energyTags, setEnergyTags, tag)}
-                    className={`px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all cursor-pointer border ${
+                    onClick={() => setSleepHours(opt.rating)}
+                    className={`p-3 rounded-2xl border-2 flex flex-col items-center gap-1 transition-all cursor-pointer ${
                       isSel
-                        ? "bg-brown-900 text-white border-brown-900 shadow-sm"
-                        : "bg-cream/60 border-brown-900/15 text-brown-700 hover:bg-white"
+                        ? "border-green-500 bg-green-100/70 shadow-sm scale-102"
+                        : "border-brown-900/10 bg-white hover:bg-cream/40"
                     }`}
                   >
-                    {tag}
+                    <span className="text-xl">{opt.icon}</span>
+                    <span className="text-xs font-bold text-brown-900">{opt.label}</span>
+                    <span className="text-[10px] text-brown-700">{opt.desc}</span>
                   </button>
                 );
               })}
@@ -504,35 +511,301 @@ export function DailyAssessmentForm({ onSubmit, isSubmitting }: FormProps) {
 
           <hr className="border-brown-900/10" />
 
-          {/* Refleksi & Ekspresi AI */}
+          {/* 9. Level Energi Tubuh */}
+          <div>
+            <div className="flex items-center justify-between mb-2">
+              <h3 className="font-display text-sm font-bold text-brown-900">
+                9. Level Energi Tubuh Hari Ini (1 - 5)
+              </h3>
+              <span className="text-xs font-bold text-green-700 bg-green-100 px-3 py-1 rounded-full">
+                Level {energyLevel} / 5
+              </span>
+            </div>
+            <input
+              type="range"
+              min="1"
+              max="5"
+              value={energyLevel}
+              onChange={(e) => setEnergyLevel(Number(e.target.value))}
+              className="w-full accent-green-500 cursor-pointer h-2 bg-cream rounded-lg my-2"
+            />
+            <div className="flex justify-between text-[10px] text-brown-700 font-bold">
+              <span>1 - Lesu / Kehabisan Daya</span>
+              <span>3 - Cukup Berenergi</span>
+              <span>5 - Sangat Bugar &amp; Aktif</span>
+            </div>
+          </div>
+
+          <hr className="border-brown-900/10" />
+
+          {/* 10. Pola Makan Teratur */}
+          <div>
+            <h3 className="font-display text-sm font-bold text-brown-900 mb-2">
+              10. Keteraturan Pola Makan Hari Ini:
+            </h3>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+              {[
+                { rating: 5, label: "Teratur 3x Sehat & Cukup Air", sub: "Pola makan optimal" },
+                { rating: 3, label: "Kurang Teratur (1-2x Makan)", sub: "Jadwal makan bergeser" },
+                { rating: 1, label: "Telat / Tidak Nafsu Makan", sub: "Melewatkan makanan utama" },
+              ].map((m) => (
+                <button
+                  key={m.label}
+                  type="button"
+                  onClick={() => setEatingHabit(m.rating)}
+                  className={choiceClass(eatingHabit === m.rating)}
+                >
+                  <div className="flex flex-col">
+                    <span className="text-xs font-bold text-brown-900">{m.label}</span>
+                    <span className="text-[10px] text-brown-700">{m.sub}</span>
+                  </div>
+                  {eatingHabit === m.rating && <span className="text-orange-500 font-extrabold shrink-0">✓</span>}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <hr className="border-brown-900/10" />
+
+          {/* 11. Aktivitas Fisik */}
+          <div>
+            <h3 className="font-display text-sm font-bold text-brown-900 mb-2">
+              11. Aktivitas Fisik &amp; Gerak Tubuh Hari Ini:
+            </h3>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+              {[
+                { rating: 5, label: "Olahraga / Workout Aktif", sub: "> 30 menit (Gym/Lari/Cardio)" },
+                { rating: 3, label: "Jalan Santai / Peregangan Ringan", sub: "Aktivitas ringan harian" },
+                { rating: 1, label: "Sedentari (Duduk Seharian)", sub: "Minim gerak fisik" },
+              ].map((a) => (
+                <button
+                  key={a.label}
+                  type="button"
+                  onClick={() => setPhysicalActivity(a.rating)}
+                  className={choiceClass(physicalActivity === a.rating)}
+                >
+                  <div className="flex flex-col">
+                    <span className="text-xs font-bold text-brown-900">{a.label}</span>
+                    <span className="text-[10px] text-brown-700">{a.sub}</span>
+                  </div>
+                  {physicalActivity === a.rating && <span className="text-orange-500 font-extrabold shrink-0">✓</span>}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="flex justify-between pt-3">
+            <button
+              type="button"
+              onClick={() => setStep(0)}
+              className="text-brown-700 font-bold text-xs px-5 py-2.5 rounded-full border border-brown-900/15 hover:bg-cream transition-colors cursor-pointer"
+            >
+              ← Kembali ke Mental
+            </button>
+            <button
+              type="button"
+              onClick={() => setStep(2)}
+              className="bg-brown-900 hover:bg-orange-500 text-white font-bold text-xs sm:text-sm px-7 py-3 rounded-full transition-colors cursor-pointer shadow-md"
+            >
+              Lanjut ke Aspek Sosial (3 Soal) →
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* STEP 2: Aspek Sosial (3 Pertanyaan) */}
+      {step === 2 && (
+        <div className="flex flex-col gap-6 animate-in fade-in duration-200">
+          <div className="flex items-center gap-2 p-3 bg-cream/70 rounded-2xl border border-brown-900/10 text-xs text-brown-800">
+            <span className="text-base">🤝</span>
+            <span className="font-semibold">
+              Aspek Sosial berkontribusi <strong>25%</strong> pada kalkulasi Zyba Score harianmu.
+            </span>
+          </div>
+
+          {/* 12. Keterhubungan Sosial */}
+          <div>
+            <div className="flex items-center justify-between mb-2">
+              <h3 className="font-display text-sm font-bold text-brown-900">
+                12. Rasa Keterhubungan dengan Lingkungan Sekitar (1 - 5)
+              </h3>
+              <span className="text-xs font-bold text-orange-600 bg-orange-100 px-3 py-1 rounded-full">
+                Rating {socialConnection} / 5
+              </span>
+            </div>
+            <input
+              type="range"
+              min="1"
+              max="5"
+              value={socialConnection}
+              onChange={(e) => setSocialConnection(Number(e.target.value))}
+              className="w-full accent-orange-500 cursor-pointer h-2 bg-cream rounded-lg my-2"
+            />
+            <div className="flex justify-between text-[10px] text-brown-700 font-bold">
+              <span>1 - Merasa Terasing / Sendiri</span>
+              <span>3 - Cukup Terhubung</span>
+              <span>5 - Sangat Dekat &amp; Terkoneksi</span>
+            </div>
+          </div>
+
+          <hr className="border-brown-900/10" />
+
+          {/* 13. Dukungan Emosional */}
+          <div>
+            <div className="flex items-center justify-between mb-2">
+              <h3 className="font-display text-sm font-bold text-brown-900">
+                13. Dukungan Emosional &amp; Rasa Didengar Hari Ini (1 - 5)
+              </h3>
+              <span className="text-xs font-bold text-green-700 bg-green-100 px-3 py-1 rounded-full">
+                Rating {socialSupport} / 5
+              </span>
+            </div>
+            <input
+              type="range"
+              min="1"
+              max="5"
+              value={socialSupport}
+              onChange={(e) => setSocialSupport(Number(e.target.value))}
+              className="w-full accent-green-500 cursor-pointer h-2 bg-cream rounded-lg my-2"
+            />
+            <div className="flex justify-between text-[10px] text-brown-700 font-bold">
+              <span>1 - Merasa Tidak Ada yang Peduli</span>
+              <span>3 - Cukup Didengar</span>
+              <span>5 - Didukung Penuh &amp; Diterima</span>
+            </div>
+          </div>
+
+          <hr className="border-brown-900/10" />
+
+          {/* 14. Interaksi Komunitas */}
+          <div>
+            <h3 className="font-display text-sm font-bold text-brown-900 mb-2">
+              14. Interaksi Sosial &amp; Komunitas Hari Ini:
+            </h3>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+              {[
+                { rating: 5, label: "Aktif Berbincang & Berkomunitas", sub: "Sharing cerita / ngobrol hangat" },
+                { rating: 3, label: "Interaksi Seperlunya", sub: "Tugas kuliah/kerja atau pesan singkat" },
+                { rating: 1, label: "Isolasi Mandiri / Minim Interaksi", sub: "Tidak berkomunikasi dengan siapa pun" },
+              ].map((c) => (
+                <button
+                  key={c.label}
+                  type="button"
+                  onClick={() => setCommunityInteraction(c.rating)}
+                  className={choiceClass(communityInteraction === c.rating)}
+                >
+                  <div className="flex flex-col">
+                    <span className="text-xs font-bold text-brown-900">{c.label}</span>
+                    <span className="text-[10px] text-brown-700">{c.sub}</span>
+                  </div>
+                  {communityInteraction === c.rating && <span className="text-orange-500 font-extrabold shrink-0">✓</span>}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="flex justify-between pt-3">
+            <button
+              type="button"
+              onClick={() => setStep(1)}
+              className="text-brown-700 font-bold text-xs px-5 py-2.5 rounded-full border border-brown-900/15 hover:bg-cream transition-colors cursor-pointer"
+            >
+              ← Kembali ke Fisik
+            </button>
+            <button
+              type="button"
+              onClick={() => setStep(3)}
+              className="bg-brown-900 hover:bg-orange-500 text-white font-bold text-xs sm:text-sm px-7 py-3 rounded-full transition-colors cursor-pointer shadow-md"
+            >
+              Lanjut ke Gratitude &amp; Refleksi →
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* STEP 3: Gratitude, Refleksi & Estimasi Skor */}
+      {step === 3 && (
+        <div className="flex flex-col gap-6 animate-in fade-in duration-200">
+          {/* Live Skor Estimate Card */}
+          <div className="p-5 rounded-3xl bg-gradient-to-br from-cream via-white to-orange-50 border border-orange-500/20 shadow-sm flex flex-col gap-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <span className="text-[10px] font-bold uppercase tracking-wider text-orange-600 bg-orange-100 px-2.5 py-0.5 rounded-full">
+                  Estimasi Realtime
+                </span>
+                <h4 className="font-display text-base font-extrabold text-brown-900 mt-1">
+                  Zyba Score Hari Ini: {estimatedScores.zyba}/100
+                </h4>
+              </div>
+              <div className="w-12 h-12 rounded-2xl bg-orange-500 text-white font-display font-extrabold flex items-center justify-center text-lg shadow-md">
+                {estimatedScores.zyba}
+              </div>
+            </div>
+
+            <div className="grid grid-cols-3 gap-2 text-center pt-2 border-t border-brown-900/10">
+              <div className="p-2.5 rounded-xl bg-white border border-brown-900/5">
+                <span className="text-[10px] text-brown-700 font-semibold block">Mental (50%)</span>
+                <span className="font-display font-bold text-sm text-brown-900">{estimatedScores.mental}</span>
+              </div>
+              <div className="p-2.5 rounded-xl bg-white border border-brown-900/5">
+                <span className="text-[10px] text-brown-700 font-semibold block">Fisik (25%)</span>
+                <span className="font-display font-bold text-sm text-brown-900">{estimatedScores.fisik}</span>
+              </div>
+              <div className="p-2.5 rounded-xl bg-white border border-brown-900/5">
+                <span className="text-[10px] text-brown-700 font-semibold block">Sosial (25%)</span>
+                <span className="font-display font-bold text-sm text-brown-900">{estimatedScores.sosial}</span>
+              </div>
+            </div>
+          </div>
+
+          {/* 15. Gratitude */}
+          <div>
+            <h3 className="font-display text-sm font-bold text-brown-900 mb-1">
+              15. Hal Positif / Gratitude Hari Ini (Opsional) 🌟
+            </h3>
+            <p className="text-xs text-brown-700 mb-2">
+              Satu hal kecil atau pencapaian yang membuatmu bersyukur hari ini:
+            </p>
+            <input
+              type="text"
+              value={gratitude}
+              onChange={(e) => setGratitude(e.target.value)}
+              placeholder="Misal: 'Berhasil bangun pagi dan minum teh hangat dengan tenang...'"
+              className="w-full bg-cream rounded-2xl border border-brown-900/10 p-3.5 text-xs font-bold text-brown-900 focus:outline-none focus:ring-2 focus:ring-orange-500"
+            />
+          </div>
+
+          <hr className="border-brown-900/10" />
+
+          {/* 16. Refleksi Bebas & Screening */}
           <div>
             <div className="flex items-center justify-between mb-1">
-              <h2 className="font-display text-base font-bold text-brown-900">
-                AI Expression &amp; Reflection Screening
-              </h2>
-              <span className="text-[10px] bg-green-100 text-green-700 font-bold px-2.5 py-0.5 rounded-full">
-                Privat &amp; Aman
+              <h3 className="font-display text-sm font-bold text-brown-900">
+                16. Refleksi Bebas &amp; AI Screening
+              </h3>
+              <span className="text-[10px] bg-green-100 text-green-700 font-bold px-2 py-0.5 rounded-full">
+                Privat &amp; Terproteksi
               </span>
             </div>
             <p className="text-xs text-brown-700 mb-2">
-              Tuliskan refleksi atau hal yang sedang membebani pikiranmu hari ini untuk analisis Zyba AI:
+              Tuliskan secara bebas apa yang sedang ada di pikiran atau perasaanmu saat ini:
             </p>
             <textarea
               value={reflection}
               onChange={(e) => setReflection(e.target.value)}
-              placeholder="Ceritakan harimu atau apa yang sedang kamu rasakan..."
+              placeholder="Ceritakan apa saja yang ingin kamu luapkan hari ini..."
               rows={4}
               className="w-full rounded-2xl border border-brown-900/10 p-3.5 text-xs font-medium text-brown-900 bg-cream/40 focus:outline-none focus:ring-2 focus:ring-green-500 resize-none"
             />
           </div>
 
-          <div className="flex justify-between pt-2">
+          <div className="flex justify-between pt-3">
             <button
               type="button"
               onClick={() => setStep(2)}
               className="text-brown-700 font-bold text-xs px-5 py-2.5 rounded-full border border-brown-900/15 hover:bg-cream transition-colors cursor-pointer"
             >
-              ← Kembali
+              ← Kembali ke Sosial
             </button>
             <button
               type="button"
@@ -540,7 +813,7 @@ export function DailyAssessmentForm({ onSubmit, isSubmitting }: FormProps) {
               disabled={isSubmitting}
               className="bg-orange-500 hover:bg-brown-900 text-white font-bold text-xs sm:text-sm px-8 py-3 rounded-full transition-colors shadow-md cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {isSubmitting ? "Menganalisis & Menyimpan..." : "Selesaikan Assessment Harian →"}
+              {isSubmitting ? "Menyimpan & Menghitung..." : "Simpan Assessment 15 Soal →"}
             </button>
           </div>
         </div>

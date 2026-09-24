@@ -99,7 +99,19 @@ export async function POST(req: NextRequest) {
       mood,
       stressLevel,
       stressRating,
+      anxietyLevel,
+      satisfactionLevel,
+      productivityLevel,
+      meTimeLevel,
       sleepRating,
+      sleepHours,
+      energyLevel,
+      eatingHabit,
+      physicalActivity,
+      socialConnection,
+      socialSupport,
+      communityInteraction,
+      gratitude,
       energyTags,
       reflection,
       expressionText,
@@ -111,23 +123,7 @@ export async function POST(req: NextRequest) {
       physicalSymptoms,
       mentalSymptoms,
       medications,
-    } = body as {
-      mood: string;
-      stressLevel?: number;
-      stressRating?: number;
-      sleepRating?: number;
-      energyTags?: string[];
-      reflection?: string;
-      expressionText?: string;
-      goal?: string;
-      gender?: string;
-      age?: number | string;
-      weight?: number | string;
-      soughtHelp?: boolean | null;
-      physicalSymptoms?: string[];
-      mentalSymptoms?: string[];
-      medications?: string;
-    };
+    } = body as any;
 
     if (!mood) {
       return NextResponse.json({ error: "Mood wajib diisi" }, { status: 400 });
@@ -158,6 +154,27 @@ export async function POST(req: NextRequest) {
     const finalStress = stressLevel !== undefined ? Number(stressLevel) : (stressRating !== undefined ? Number(stressRating) : 2);
     const finalSleep = sleepRating !== undefined && sleepRating !== null ? Number(sleepRating) : null;
 
+    // Hitung Zyba Score langsung dari 15 pertanyaan (Mental, Fisik, Sosial)
+    const { calculateZybaScoreFromDailyAnswers } = await import("@/backend/scoring/zybaScore");
+    const scores = calculateZybaScoreFromDailyAnswers({
+      mood,
+      stressLevel: finalStress,
+      anxietyLevel: Number(anxietyLevel) || finalStress,
+      satisfactionLevel: Number(satisfactionLevel) || 3,
+      productivityLevel: Number(productivityLevel) || 3,
+      meTimeLevel: Number(meTimeLevel) || 3,
+      sleepRating: finalSleep || 3,
+      sleepHours: sleepHours ?? 3,
+      energyLevel: Number(energyLevel) || 3,
+      eatingHabit: Number(eatingHabit) || 3,
+      physicalActivity: Number(physicalActivity) || 3,
+      socialConnection: Number(socialConnection) || 3,
+      socialSupport: Number(socialSupport) || 3,
+      communityInteraction: Number(communityInteraction) || 3,
+      gratitude: gratitude || undefined,
+      reflection: freeText || undefined,
+    });
+
     // Buat record DailyAssessment
     const record = await (accountDb as any).dailyAssessment.create({
       data: {
@@ -167,7 +184,7 @@ export async function POST(req: NextRequest) {
         stressLevel: finalStress,
         sleepRating: finalSleep,
         energyTags: energyTags || [],
-        reflection: freeText || null,
+        reflection: gratitude ? `[Hal Positif]: ${gratitude}\n[Refleksi]: ${freeText}` : (freeText || null),
         flaggedForRisk: isRisk,
       },
     });
@@ -191,30 +208,28 @@ export async function POST(req: NextRequest) {
           mentalSymptoms: mentalSymptoms || [],
           expressionText: freeText,
         },
-        75, // fallback baseline
+        scores.zybaScore,
         finalStress
       );
     } catch (saveErr) {
       console.warn("[dailyAssessment] userRepository.saveAssessment fallback:", saveErr);
     }
 
-    // Hitung ulang Zyba Score dinamis pengguna
-    let updatedScore = 75;
+    // Update Zyba Score pengguna di database
     try {
-      const { calculateZybaScore } = await import("@/backend/scoring/zybaScore");
-      updatedScore = await calculateZybaScore(userId);
       await accountDb.user.update({
         where: { id: userId },
-        data: { zybaScore: updatedScore, stressLevel: finalStress },
+        data: { zybaScore: scores.zybaScore, stressLevel: finalStress },
       });
-    } catch (scoreErr) {
-      console.warn("[dailyAssessment] calculateZybaScore fallback:", scoreErr);
+    } catch (userErr) {
+      console.warn("[dailyAssessment] user update fallback:", userErr);
     }
 
     return NextResponse.json({
       success: true,
       record,
-      zybaScore: updatedScore,
+      zybaScore: scores.zybaScore,
+      scores,
       isRisk,
       crisisResources: isRisk ? CRISIS_RESOURCES : null,
     });
