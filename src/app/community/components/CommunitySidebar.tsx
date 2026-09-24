@@ -45,7 +45,7 @@ export default function CommunitySidebar({ onClose }: { onClose?: () => void }) 
     let isMounted = true;
     async function loadBadges() {
       try {
-        const res = await fetch("/api/community/badges");
+        const res = await fetch("/api/community/badges", { cache: "no-store" });
         if (res.ok) {
           const data = await res.json();
           if (isMounted) {
@@ -62,9 +62,19 @@ export default function CommunitySidebar({ onClose }: { onClose?: () => void }) 
     }
 
     loadBadges();
-    const interval = setInterval(loadBadges, 10000); // Poll every 10s
+
+    // Listen for instant badge updates dispatched by views/hooks
+    const handleBadgeUpdate = () => {
+      loadBadges();
+    };
+    window.addEventListener("zyba_badge_update", handleBadgeUpdate);
+
+    // Live polling every 4s for fresh badge updates
+    const interval = setInterval(loadBadges, 4000);
+
     return () => {
       isMounted = false;
+      window.removeEventListener("zyba_badge_update", handleBadgeUpdate);
       clearInterval(interval);
     };
   }, [pathname]);

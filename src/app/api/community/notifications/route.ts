@@ -91,14 +91,26 @@ export async function PATCH(req: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { notificationId } = await req.json();
+    const body = await req.json().catch(() => ({}));
+    const { notificationId, markAllRead } = body;
 
-    await communityDb.communityNotification.update({
-      where: { id: notificationId, recipientId: session.userId },
-      data: { readAt: new Date() },
-    });
+    if (markAllRead) {
+      await communityDb.communityNotification.updateMany({
+        where: { recipientId: session.userId, readAt: null },
+        data: { readAt: new Date() },
+      });
+      return NextResponse.json({ success: true, allRead: true });
+    }
 
-    return NextResponse.json({ success: true });
+    if (notificationId) {
+      await communityDb.communityNotification.updateMany({
+        where: { id: notificationId, recipientId: session.userId },
+        data: { readAt: new Date() },
+      });
+      return NextResponse.json({ success: true });
+    }
+
+    return NextResponse.json({ error: "Missing notificationId or markAllRead" }, { status: 400 });
   } catch (error: any) {
     console.error("Mark notification read error:", error);
     return NextResponse.json(

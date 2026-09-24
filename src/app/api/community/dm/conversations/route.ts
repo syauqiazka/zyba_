@@ -65,6 +65,22 @@ export async function GET(req: NextRequest) {
       }
     }
 
+    // Compute real unread count for each conversation
+    const convIds = participations.map((p) => p.conversationId);
+    let unreadMap = new Map<string, number>();
+    if (convIds.length > 0) {
+      const unreadGroups = await communityDb.directMessage.groupBy({
+        by: ["conversationId"],
+        where: {
+          conversationId: { in: convIds },
+          senderId: { not: userId },
+          readAt: null,
+        },
+        _count: { id: true },
+      });
+      unreadMap = new Map(unreadGroups.map((g) => [g.conversationId, g._count.id]));
+    }
+
     const conversations = participations.map((p) => {
       const conv = p.conversation;
       const otherParticipant = conv.participants[0];
@@ -80,7 +96,7 @@ export async function GET(req: NextRequest) {
         otherUserAvatar: userMeta?.avatarUrl || "🦊",
         lastMessage: lastMsg?.content || "",
         lastMessageAt: conv.lastMessageAt.toISOString(),
-        unreadCount: 0,
+        unreadCount: unreadMap.get(conv.id) || 0,
       };
     });
 

@@ -20,91 +20,177 @@ export interface DMConversation {
 }
 
 /**
- * DM Hook - polling fallback (Ably client-side has webpack issues with Next.js)
- * Server still publishes via Ably for future WebSocket support
+ * useDM Hook
+ * Realtime messaging with reactive polling (tanpa harus reload).
+ * - Polling pesan aktif setiap 2.5 detik
+ * - Polling daftar obrolan & unread badge setiap 5 detik
+ * - Auto mark-as-read & update badge count instan
  */
 export function useDM() {
   const [conversations, setConversations] = useState<DMConversation[]>([]);
   const [messages, setMessages] = useState<Record<string, DMMessage[]>>({});
-  const [isConnected] = useState(true); // always "connected" in polling mode
-  const pollIntervalRef = useRef<NodeJS.Timeout | null>(null);
-  const activeConvIdRef = useRef<string | null>(null);
+  const [activeConvId, setActiveConvId] = useState<string | null>(null);
+  const [isConnected, setIsConnected] = useState(true);
 
-  // Load conversations
+  const activeConvIdRef = useRef<string | null>(null);
+  activeConvIdRef.current = activeConvId;
+
+  // ── 1. Load Conversations ──────────────────────────────────────────
   const loadConversations = useCallback(async () => {
     try {
-      const res = await fetch("/api/community/dm/conversations");
+      const res = await fetch("/api/community/dm/conversations", { cache: "no-store" });
+      if (!res.ok) return;
       const data = await res.json();
-      if (data.conversations) {
+      if (Array.isArray(data.conversations)) {
         setConversations(data.conversations);
       }
     } catch (err) {
-      console.error("[DM] Load conversations failed:", err);
+      console.warn("[DM] Load conversations failed:", err);
     }
   }, []);
 
-  // Load messages for conversation
-  const loadMessages = useCallback(async (conversationId: string) => {
+  // ── 2. Load Messages for a Conversation ────────────────────────────
+  const loadMessages = useCallback(async (convId: string) => {
+    if (!convId) return;
     try {
-      const res = await fetch(`/api/community/dm/messages?conversationId=${conversationId}`);
+      const res = await fetch(`/api/community/dm/messages?conversationId=${encodeURIComponent(convId)}`, {
+        cache: "no-store",
+      });
+      if (!res.ok) return;
       const data = await res.json();
-      if (data.messages) {
-        setMessages((prev) => ({ ...prev, [conversationId]: data.messages }));
+      if (Array.isArray(data.messages)) {
+        setMessages((prev) => {
+          const current = prev[convId] || [];
+          // Hanya update jika berbeda untuk cegah re-render berlebih
+          if (
+            current.length !== data.messages.length ||
+            current[current.length - 1]?.id !== data.messages[data.messages.length - 1]?.id ||
+            current[current.length - 1]?.readAt !== data.messages[data.messages.length - 1]?.readAt
+          ) {
+            return { ...prev, [convId]: data.messages };
+          }
+          return prev;
+        });
+
+        // Jika pesan berhasil dimuat, unread di percakapan ini otomatis di-clear
+        setConversations((prev) =>
+          prev.map((c) => (c.id === convId && c.unreadCount > 0 ? { ...c, unreadCount: 0 } : c))
+        );
+
+        // Notifikasi ke sidebar untuk update badge
+        if (typeof window !== "undefined") {
+          window.dispatchEvent(new CustomEvent("zyba_badge_update"));
+        }
       }
     } catch (err) {
-      console.error("[DM] Load messages failed:", err);
+      console.warn("[DM] Load messages failed:", err);
     }
   }, []);
 
-  // Poll active conversation for new messages (5s interval)
+  // ── 3. Polling Obrolan Aktif (setiap 2.5s) ───────────────────────────
   useEffect(() => {
-    if (activeConvIdRef.current) {
-      pollIntervalRef.current = setInterval(() => {
-        loadMessages(activeConvIdRef.current!);
-      }, 5000);
-    }
+    if (!activeConvId) return;
 
-    return () => {
-      if (pollIntervalRef.current) {
-        clearInterval(pollIntervalRef.current);
-        pollIntervalRef.current = null;
+    // Load langsung pertama kali
+    loadMessages(activeConvId);
+
+    const interval = setInterval(() => {
+      if (activeConvIdRef.current) {
+        loadMessages(activeConvIdRef.current);
       }
-    };
-  }, [loadMessages]);
+    }, 2500);
 
-  // Subscribe = start polling
-  const subscribeToConversation = useCallback((conversationId: string) => {
-    activeConvIdRef.current = conversationId;
-    console.log(`[DM] Polling dm:${conversationId}`);
+    return () => clearInterval(interval);
+  }, [activeConvId, loadMessages]);
+
+  // ── 4. Polling Daftar Conversations (setiap 5s) ──────────────────────
+  useEffect(() => {
+    loadConversations();
+
+    const interval = setInterval(() => {
+      loadConversations();
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, [loadConversations]);
+
+  // ── 5. Subscribe to conversation ─────────────────────────────────────
+  const subscribeToConversation = useCallback((convId: string) => {
+    setActiveConvId(convId);
   }, []);
 
-  // Send message
-  const sendMessage = useCallback(async (conversationId: string, content: string) => {
-    try {
-      const res = await fetch("/api/community/dm/messages", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ conversationId, content }),
-      });
+  // ── 6. Send Message ──────────────────────────────────────────────────
+  const sendMessage = useCallback(
+    async (convId: string, content: string) => {
+      if (!convId || !content.trim()) return;
 
-      const data = await res.json();
-      
-      // Optimistic update
-      if (data.message) {
+      const trimmed = content.trim();
+
+      // Optimistic message
+      const tempId = "temp_" + Date.now();
+      const optimisticMsg: DMMessage = {
+        id: tempId,
+        senderId: "me", // akan di-replace dengan pesan asli dari server
+        content: trimmed,
+        createdAt: new Date().toISOString(),
+        readAt: null,
+      };
+
+      setMessages((prev) => ({
+        ...prev,
+        [convId]: [...(prev[convId] || []), optimisticMsg],
+      }));
+
+      // Update percakapan di list seketika
+      setConversations((prev) =>
+        prev.map((c) =>
+          c.id === convId
+            ? { ...c, lastMessage: trimmed, lastMessageAt: new Date().toISOString() }
+            : c
+        )
+      );
+
+      try {
+        const res = await fetch("/api/community/dm/messages", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ conversationId: convId, content: trimmed }),
+        });
+
+        if (!res.ok) {
+          throw new Error("Failed to send message");
+        }
+
+        const data = await res.json();
+        if (data.message) {
+          // Replace optimistic message dengan real message dari database
+          setMessages((prev) => ({
+            ...prev,
+            [convId]: (prev[convId] || []).map((m) => (m.id === tempId ? data.message : m)),
+          }));
+        }
+
+        // Trigger update badge & conversations
+        loadConversations();
+        if (typeof window !== "undefined") {
+          window.dispatchEvent(new CustomEvent("zyba_badge_update"));
+        }
+
+        return data.message;
+      } catch (err) {
+        console.error("[DM] Send message failed:", err);
+        // Rollback optimistic message jika gagal
         setMessages((prev) => ({
           ...prev,
-          [conversationId]: [...(prev[conversationId] || []), data.message],
+          [convId]: (prev[convId] || []).filter((m) => m.id !== tempId),
         }));
+        throw err;
       }
+    },
+    [loadConversations]
+  );
 
-      return data.message;
-    } catch (err) {
-      console.error("[DM] Send message failed:", err);
-      throw err;
-    }
-  }, []);
-
-  // Create or get conversation
+  // ── 7. Get or Create Conversation ────────────────────────────────────
   const getOrCreateConversation = useCallback(async (otherUserId: string) => {
     try {
       const res = await fetch("/api/community/dm/conversations", {
@@ -113,8 +199,12 @@ export function useDM() {
         body: JSON.stringify({ otherUserId }),
       });
 
+      if (!res.ok) {
+        throw new Error("Failed to create conversation");
+      }
+
       const data = await res.json();
-      return data.conversationId;
+      return data.conversationId as string;
     } catch (err) {
       console.error("[DM] Create conversation failed:", err);
       throw err;
@@ -124,6 +214,8 @@ export function useDM() {
   return {
     conversations,
     messages,
+    activeConvId,
+    setActiveConvId,
     isConnected,
     loadConversations,
     loadMessages,

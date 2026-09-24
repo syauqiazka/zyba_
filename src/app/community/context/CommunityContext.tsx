@@ -26,6 +26,11 @@ export interface CommunityNotification {
   time: string;
   targetText?: string;
   read: boolean;
+  actorId?: string;
+  recipientId?: string;
+  postId?: string;
+  commentId?: string;
+  conversationId?: string;
 }
 
 export interface CommunityMessage {

@@ -109,6 +109,9 @@ export default function CommunityMessagesView() {
     if (activeConvId) {
       loadMessages(activeConvId);
       subscribeToConversation(activeConvId);
+      if (typeof window !== "undefined") {
+        window.dispatchEvent(new CustomEvent("zyba_badge_update"));
+      }
     }
   }, [activeConvId, loadMessages, subscribeToConversation]);
 
