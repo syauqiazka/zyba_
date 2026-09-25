@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import ProfilePopover, { ProfileUser } from "../profile/ProfilePopover";
 import ProfileSettingsModal from "../profile/ProfileSettingsModal";
+import { isAvatarUrl } from "@/lib/avatarUtils";
 
 const NAV_ITEMS = [
   { href: "/dashboard", label: "Dashboard", icon: "home" },
@@ -207,7 +208,9 @@ export default function Sidebar({ onClose }: { onClose?: () => void }) {
             >
               <div className="relative shrink-0">
                 <div className="w-8 h-8 rounded-full bg-green-500 text-white font-display font-bold flex items-center justify-center text-xs shadow-sm overflow-hidden">
-                  {currentUser.avatarUrl && currentUser.avatarUrl.length <= 4 ? (
+                  {isAvatarUrl(currentUser.avatarUrl) ? (
+                    <img src={currentUser.avatarUrl!} alt={currentUser.name} className="w-full h-full object-cover" />
+                  ) : currentUser.avatarUrl && currentUser.avatarUrl.length <= 4 ? (
                     <span className="text-base">{currentUser.avatarUrl}</span>
                   ) : (
                     <span>{currentUser.name ? currentUser.name.slice(0, 2).toUpperCase() : "ZY"}</span>

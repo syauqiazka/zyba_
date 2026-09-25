@@ -5,6 +5,7 @@ import { createPortal } from "react-dom";
 import { ProfileUser } from "./ProfilePopover";
 import PersonaPicker from "@/app/companion/components/PersonaPicker";
 import { PersonaId } from "@/backend/ai/personas";
+import { isAvatarUrl, resolveAvatar } from "@/lib/avatarUtils";
 
 interface ProfileSettingsModalProps {
   user: ProfileUser;
@@ -95,6 +96,12 @@ export default function ProfileSettingsModal({ user, isOpen, onClose, onUserUpda
   const [newPassword, setNewPassword] = useState("");
   const [revealEmail, setRevealEmail] = useState(false);
 
+  // Avatar state
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(user.avatarUrl || null);
+  const [isUploadingAvatar, setIsUploadingAvatar] = useState(false);
+  const [avatarError, setAvatarError] = useState<string | null>(null);
+  const avatarInputRef = useRef<HTMLInputElement>(null);
+
   // Companion
   const [persona, setPersona] = useState<PersonaId>("KINA");
   const [commStyle, setCommStyle] = useState<"CASUAL" | "FORMAL" | "FUN">("CASUAL");
@@ -118,6 +125,7 @@ export default function ProfileSettingsModal({ user, isOpen, onClose, onUserUpda
     setName(user.name);
     setUsername(user.username || user.handle || "");
     setBio(user.bio || "");
+    setAvatarUrl(user.avatarUrl || null);
   }, [user]);
   useEffect(() => {
     if (!isOpen) return;
@@ -198,6 +206,69 @@ export default function ProfileSettingsModal({ user, isOpen, onClose, onUserUpda
   const ok = (msg: string) => { setSaveMsg(msg); setTimeout(() => setSaveMsg(null), 3000); };
   const maskedEmail = email.replace(/^(.)(.*)(@.*)$/, (_, a, b, c) => a + "*".repeat(Math.min(b.length, 6)) + c);
   const maskedEmailShort = email.replace(/^(.)(.*)(@.*)$/, (_, a, _b, c) => a + "***" + c);
+
+  const handleUploadAvatar = async (file: File) => {
+    if (!file.type.startsWith("image/")) {
+      setAvatarError("Hanya file gambar (JPG, PNG, WEBP, GIF) yang diizinkan.");
+      return;
+    }
+    if (file.size > 8 * 1024 * 1024) {
+      setAvatarError("Ukuran foto maksimal 8MB.");
+      return;
+    }
+    setIsUploadingAvatar(true);
+    setAvatarError(null);
+    try {
+      const fd = new FormData();
+      fd.append("file", file);
+      const res = await fetch("/api/user/avatar", {
+        method: "POST",
+        body: fd,
+      });
+      const data = await res.json();
+      if (!res.ok || !data.avatarUrl) {
+        throw new Error(data.error || "Gagal mengunggah foto profil.");
+      }
+      setAvatarUrl(data.avatarUrl);
+      onUserUpdate({ avatarUrl: data.avatarUrl });
+      try {
+        const cached = localStorage.getItem("zyba_user_cache");
+        const prev = cached ? JSON.parse(cached) : {};
+        localStorage.setItem("zyba_user_cache", JSON.stringify({ ...prev, avatarUrl: data.avatarUrl }));
+      } catch {}
+      ok("Foto profil berhasil diperbarui!");
+    } catch (err: any) {
+      setAvatarError(err.message || "Gagal upload foto");
+    } finally {
+      setIsUploadingAvatar(false);
+    }
+  };
+
+  const handleSelectPresetAvatar = async (emojiKey: string) => {
+    setIsUploadingAvatar(true);
+    setAvatarError(null);
+    try {
+      const res = await fetch("/api/user/avatar", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ avatarUrl: emojiKey }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Gagal mengubah avatar.");
+      setAvatarUrl(emojiKey);
+      onUserUpdate({ avatarUrl: emojiKey });
+      try {
+        const cached = localStorage.getItem("zyba_user_cache");
+        const prev = cached ? JSON.parse(cached) : {};
+        localStorage.setItem("zyba_user_cache", JSON.stringify({ ...prev, avatarUrl: emojiKey }));
+      } catch {}
+      ok("Avatar berhasil diubah!");
+    } catch (err: any) {
+      setAvatarError(err.message || "Gagal ubah avatar");
+    } finally {
+      setIsUploadingAvatar(false);
+    }
+  };
 
   const saveName = async () => {
     try {
@@ -379,6 +450,93 @@ export default function ProfileSettingsModal({ user, isOpen, onClose, onUserUpda
             {/* ── PENGATURAN AKUN ────────────────────────────────────── */}
             <Section id="profile-info" title="Info Profil">
               <div className="bg-cream/50 rounded-2xl p-5 flex flex-col gap-4 border border-brown-900/10">
+                {/* Foto Profil / Avatar */}
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-brown-900/10">
+                  <div className="flex items-center gap-4">
+                    <div className="relative group shrink-0">
+                      <div className="w-16 h-16 rounded-full bg-green-500 border-2 border-orange-200 flex items-center justify-center text-2xl font-bold text-white shadow-md overflow-hidden">
+                        {isAvatarUrl(avatarUrl) ? (
+                          <img src={avatarUrl!} alt={name} className="w-full h-full object-cover" />
+                        ) : avatarUrl && avatarUrl.length <= 4 ? (
+                          <span>{resolveAvatar(avatarUrl)}</span>
+                        ) : (
+                          <span>{name ? name.slice(0, 2).toUpperCase() : "ZY"}</span>
+                        )}
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => avatarInputRef.current?.click()}
+                        disabled={isUploadingAvatar}
+                        title="Upload foto kustom"
+                        className="absolute inset-0 bg-black/40 rounded-full flex items-center justify-center text-white opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
+                      >
+                        <span className="text-xs font-bold">Ubah</span>
+                      </button>
+                    </div>
+
+                    <div className="flex flex-col">
+                      <span className="text-sm font-bold text-brown-900">Foto Profil</span>
+                      <span className="text-xs text-brown-700/70">
+                        Upload foto kustom dari galeri atau pilih ikon ZYBA
+                      </span>
+                      {avatarError && (
+                        <span className="text-xs text-danger font-semibold mt-1">⚠ {avatarError}</span>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-2">
+                    <input
+                      ref={avatarInputRef}
+                      type="file"
+                      accept="image/png,image/jpeg,image/webp,image/gif"
+                      className="hidden"
+                      onChange={(e) => {
+                        const f = e.target.files?.[0];
+                        if (f) handleUploadAvatar(f);
+                      }}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => avatarInputRef.current?.click()}
+                      disabled={isUploadingAvatar}
+                      className="text-xs font-bold bg-orange-500 text-white px-4 py-2 rounded-full hover:bg-orange-600 transition-colors shadow-2xs flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
+                    >
+                      {isUploadingAvatar ? "Mengunggah..." : "📷 Upload Foto"}
+                    </button>
+                  </div>
+                </div>
+
+                {/* Preset Avatars Row */}
+                <div className="flex items-center gap-2 flex-wrap pb-4 border-b border-brown-900/10">
+                  <span className="text-xs font-semibold text-brown-700/70 mr-1">Pilihan Emoji:</span>
+                  {[
+                    { key: "fox", emoji: "🦊" },
+                    { key: "panda", emoji: "🐼" },
+                    { key: "lion", emoji: "🦁" },
+                    { key: "rabbit", emoji: "🐰" },
+                    { key: "koala", emoji: "🐨" },
+                    { key: "cat", emoji: "🐱" },
+                    { key: "leaf", emoji: "🌿" },
+                    { key: "flower", emoji: "🌸" },
+                  ].map((item) => (
+                    <button
+                      key={item.key}
+                      type="button"
+                      onClick={() => handleSelectPresetAvatar(item.key)}
+                      disabled={isUploadingAvatar}
+                      className={`w-8 h-8 rounded-full border flex items-center justify-center text-base hover:scale-110 transition-transform cursor-pointer ${
+                        avatarUrl === item.key || avatarUrl === item.emoji
+                          ? "border-orange-500 bg-orange-100 ring-2 ring-orange-500/20"
+                          : "border-brown-900/15 bg-white hover:bg-cream"
+                      }`}
+                      title={item.key}
+                    >
+                      {item.emoji}
+                    </button>
+                  ))}
+                </div>
+
                 <Row label="Nama" value={isEditingName ? undefined : <span className="text-sm font-bold text-brown-900">{name}</span>}
                   action={!isEditingName ? <Btn onClick={() => setIsEditingName(true)}>Edit</Btn> : undefined}>
                   {isEditingName && <InlineEdit value={name} onChange={setName} onSave={saveName} onCancel={() => setIsEditingName(false)} />}

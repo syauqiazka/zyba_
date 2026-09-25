@@ -377,6 +377,7 @@ export async function PATCH(
       phone,
       location,
       password,
+      avatarUrl,
     } = body;
 
     if (
@@ -396,6 +397,12 @@ export async function PATCH(
 
     const updateData: any =
       {};
+
+    if (
+      avatarUrl !== undefined
+    ) {
+      updateData.avatarUrl = avatarUrl;
+    }
 
     if (
       name !== undefined

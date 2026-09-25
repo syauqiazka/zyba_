@@ -1,4 +1,4 @@
-﻿/** Map avatar key (safe ASCII string) -> emoji for display */
+/** Map avatar key (safe ASCII string) -> emoji for display */
 export const AVATAR_EMOJI_MAP: Record<string, string> = {
   fox: "🦊",
   panda: "🐼",
@@ -25,7 +25,9 @@ export function isAvatarUrl(avatarUrl?: string | null): boolean {
   return (
     avatarUrl.startsWith("http://") ||
     avatarUrl.startsWith("https://") ||
-    avatarUrl.startsWith("data:image/")
+    avatarUrl.startsWith("data:image/") ||
+    avatarUrl.startsWith("/") ||
+    avatarUrl.startsWith("blob:")
   );
 }
 
@@ -33,7 +35,7 @@ export function isAvatarUrl(avatarUrl?: string | null): boolean {
 export function resolveAvatar(avatarUrl?: string | null): string {
   if (!avatarUrl) return "🦊";
   if (isAvatarUrl(avatarUrl)) return avatarUrl;
-  return AVATAR_EMOJI_MAP[avatarUrl] || "🦊";
+  return AVATAR_EMOJI_MAP[avatarUrl] || avatarUrl || "🦊";
 }
 
 /** Get initials from name for fallback display */

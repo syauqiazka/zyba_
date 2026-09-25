@@ -69,23 +69,28 @@ export async function POST(req: NextRequest) {
     }
 
     // Handle new post
-    if (!content || !content.trim()) {
+    const hasContent = Boolean(content && content.trim());
+    const hasImage = Boolean(imageUrl && String(imageUrl).trim());
+
+    if (!hasContent && !hasImage) {
       return NextResponse.json(
-        { error: "Konten postingan tidak boleh kosong." },
+        { error: "Konten atau foto postingan tidak boleh kosong." },
         { status: 400 }
       );
     }
 
+    const cleanContent = hasContent ? content.trim() : "";
+
     // Safety: detectRisk() dari crisisDetection.ts wajib dipanggil di semua teks bebas (AGENTS.md Bagian 12)
-    const isRisk = detectRisk(content);
+    const isRisk = cleanContent ? detectRisk(cleanContent) : false;
 
     const savedPost = await communityRepository.createPost({
       userId,
       author: authorName,
       avatar: avatarUrl,
-      content: content.trim(),
+      content: cleanContent,
       tag: tag || "Sharing",
-      imageUrl: imageUrl || null,
+      imageUrl: hasImage ? String(imageUrl).trim() : null,
     });
 
     return NextResponse.json({

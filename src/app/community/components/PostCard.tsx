@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useCommunity } from "../context/CommunityContext";
 import { Check } from "lucide-react";
 import { useUserStatus, UserStatusConfig } from "@/hooks/useUserStatus";
+import { isAvatarUrl, resolveAvatar } from "@/lib/avatarUtils";
 
 export interface CommentItem {
   id: string;
@@ -22,6 +23,7 @@ export interface Post {
   isVerified: boolean;
   time: string;
   content: string;
+  imageUrl?: string | null;
   mediaUrl?: string;
   likes: number;
   commentsCount: number;
@@ -30,6 +32,7 @@ export interface Post {
   userReposted?: boolean;
   tag: string;
   comments?: CommentItem[];
+  createdAt?: string;
 }
 
 interface PostCardProps {
@@ -117,13 +120,22 @@ function AvatarBubble({
     "bg-mood-happy/30 text-yellow-700 border-yellow-200",
     "bg-mood-sad/20 text-orange-700 border-orange-200",
   ];
-  const color = colors[(initials.charCodeAt(0) + (initials.charCodeAt(1) || 0)) % colors.length];
+  const charCode = (initials || "Z").charCodeAt(0) + ((initials || "Y").charCodeAt(1) || 0);
+  const color = colors[charCode % colors.length];
   // Status dot offset depends on avatar size
   const dotSize = size === "sm" ? "w-2.5 h-2.5 border-[2px]" : "w-3.5 h-3.5 border-[2.5px]";
+
+  const isImg = isAvatarUrl(initials);
+  const resolved = resolveAvatar(initials);
+
   return (
     <div className="relative shrink-0">
-      <div className={`${sz} ${color} rounded-full border font-display font-bold flex items-center justify-center shadow-2xs`}>
-        {initials}
+      <div className={`${sz} ${isImg ? "bg-cream border-brown-900/10" : color} rounded-full border font-display font-bold flex items-center justify-center shadow-2xs overflow-hidden`}>
+        {isImg ? (
+          <img src={initials} alt="Avatar" className="w-full h-full object-cover rounded-full" />
+        ) : (
+          <span>{resolved}</span>
+        )}
       </div>
       {/* Status Dot — only shown for current user's own posts */}
       {statusConfig && (
@@ -359,9 +371,15 @@ export default function PostCard({ post, onToggleLike, onToggleRepost, onAddComm
         </p>
 
         {/* Media */}
-        {post.mediaUrl && (
-          <div className="mb-3">
-            <img src={post.mediaUrl} alt="Media" className="rounded-2xl max-h-72 w-full object-cover border border-brown-900/8" />
+        {(post.imageUrl || post.mediaUrl) && (
+          <div className="mb-3 rounded-2xl overflow-hidden border border-brown-900/10 bg-black/5 max-h-[480px]">
+            <img
+              src={post.imageUrl || post.mediaUrl}
+              alt="Attachment"
+              className="rounded-2xl max-h-[480px] w-full object-cover cursor-pointer hover:opacity-95 transition-opacity"
+              onClick={() => window.open((post.imageUrl || post.mediaUrl)!, "_blank")}
+              loading="lazy"
+            />
           </div>
         )}
 

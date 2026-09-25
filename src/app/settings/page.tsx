@@ -14,6 +14,7 @@ export default function SettingsPage() {
   const [username, setUsername] = useState("");
   const [plan, setPlan] = useState<"FREE" | "PLUS">("FREE");
   const [avatarKey, setAvatarKey] = useState("fox");
+  const [avatarUrl, setAvatarUrl] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [showProfileModal, setShowProfileModal] = useState(false);
 
@@ -41,6 +42,7 @@ export default function SettingsPage() {
         if (p.location) setLocation(p.location);
         if (p.plan) setPlan(p.plan);
         if (p.avatarKey) setAvatarKey(p.avatarKey);
+        if (p.avatarUrl) setAvatarUrl(p.avatarUrl);
       }
       const savedPersona = localStorage.getItem("zyba_companion_persona") as PersonaId | null;
       if (savedPersona) setSelectedPersona(savedPersona);
@@ -65,6 +67,7 @@ export default function SettingsPage() {
             setUsername(u.username || "");
             setPlan(u.plan || "FREE");
             setAvatarKey(u.avatarKey || "fox");
+            if (u.avatarUrl) setAvatarUrl(u.avatarUrl);
             // Sync full profile into localStorage cache
             try {
               const existing = localStorage.getItem("zyba_user_cache");
@@ -190,9 +193,9 @@ export default function SettingsPage() {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
         <ProfileSection
           name={name} email={email} phone={phone} location={location} bio={bio}
-          plan={plan} avatarKey={avatarKey} isLoading={isLoading}
+          plan={plan} avatarKey={avatarKey} avatarUrl={avatarUrl} isLoading={isLoading}
           onNameChange={setName} onEmailChange={setEmail} onPhoneChange={setPhone}
-          onLocationChange={setLocation} onBioChange={setBio}
+          onLocationChange={setLocation} onBioChange={setBio} onAvatarChange={setAvatarUrl}
         />
 
         <SettingsToggles

@@ -2,9 +2,10 @@
 
 import React, { useState, useEffect, useCallback } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { ArrowLeft, MessageCircle, Pencil, X, EyeOff, Eye } from "lucide-react";
+import { ArrowLeft, MessageCircle, Pencil, X, EyeOff, Eye, Camera, Loader2 } from "lucide-react";
 import { useCommunity } from "../../context/CommunityContext";
 import PostCard from "../../components/PostCard";
+import { isAvatarUrl, resolveAvatar } from "@/lib/avatarUtils";
 
 interface ProfileData {
   userId: string;
@@ -47,13 +48,16 @@ function EditProfileModal({
 }: {
   profile: ProfileData;
   onClose: () => void;
-  onSaved: (updated: { name: string; username: string | null; bio: string | null }) => void;
+  onSaved: (updated: { name: string; username: string | null; bio: string | null; avatarUrl?: string | null }) => void;
 }) {
   const [name, setName] = useState(profile.name);
   const [username, setUsername] = useState(profile.username || "");
   const [bio, setBio] = useState(profile.bio || "");
+  const [avatarUrl, setAvatarUrl] = useState(profile.avatarUrl || "");
+  const [uploadingAvatar, setUploadingAvatar] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const avatarInputRef = useRef<HTMLInputElement>(null);
 
   const handleSave = async () => {
     setSaving(true);
@@ -62,7 +66,7 @@ function EditProfileModal({
       const res = await fetch(`/api/user/profile/${profile.userId}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, username, bio }),
+        body: JSON.stringify({ name, username, bio, ...(avatarUrl ? { avatarUrl } : {}) }),
       });
       const data = await res.json();
       if (!res.ok) {
@@ -73,6 +77,7 @@ function EditProfileModal({
         name: data.user.name,
         username: data.user.username,
         bio: data.user.bio,
+        avatarUrl: data.user.avatarUrl || avatarUrl,
       });
       onClose();
     } catch {
@@ -111,10 +116,61 @@ function EditProfileModal({
         </div>
 
         {/* Avatar preview */}
-        <div className="flex justify-center mb-5">
-          <div className="w-16 h-16 rounded-full bg-orange-100 border-2 border-orange-300 flex items-center justify-center font-display font-bold text-2xl text-orange-600 shadow-md">
-            {name.split(" ").map((p) => p[0]).join("").toUpperCase().slice(0, 2)}
+        <div className="flex flex-col items-center gap-2 mb-5">
+          <input
+            ref={avatarInputRef}
+            type="file"
+            accept="image/png,image/jpeg,image/webp,image/gif"
+            className="hidden"
+            onChange={async (e) => {
+              const file = e.target.files?.[0];
+              if (!file) return;
+              setUploadingAvatar(true);
+              try {
+                const fd = new FormData();
+                fd.append("file", file);
+                const res = await fetch("/api/user/avatar", { method: "POST", body: fd });
+                const d = await res.json();
+                if (d.avatarUrl) {
+                  setAvatarUrl(d.avatarUrl);
+                  try {
+                    const cached = localStorage.getItem("zyba_user_cache");
+                    const prev = cached ? JSON.parse(cached) : {};
+                    localStorage.setItem("zyba_user_cache", JSON.stringify({ ...prev, avatarUrl: d.avatarUrl }));
+                  } catch {}
+                }
+              } catch {} finally {
+                setUploadingAvatar(false);
+              }
+            }}
+          />
+          <div className="relative group shrink-0">
+            <div className="w-18 h-18 rounded-full bg-orange-100 border-2 border-orange-300 flex items-center justify-center font-display font-bold text-2xl text-orange-600 shadow-md overflow-hidden">
+              {isAvatarUrl(avatarUrl) ? (
+                <img src={avatarUrl} alt={name} className="w-full h-full object-cover" />
+              ) : avatarUrl && avatarUrl.length <= 4 ? (
+                <span>{resolveAvatar(avatarUrl)}</span>
+              ) : (
+                <span>{name.split(" ").map((p) => p[0]).join("").toUpperCase().slice(0, 2)}</span>
+              )}
+            </div>
+            <button
+              type="button"
+              onClick={() => avatarInputRef.current?.click()}
+              disabled={uploadingAvatar}
+              className="absolute inset-0 bg-black/40 rounded-full flex items-center justify-center text-white opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
+            >
+              <Pencil size={18} />
+            </button>
           </div>
+          <button
+            type="button"
+            onClick={() => avatarInputRef.current?.click()}
+            disabled={uploadingAvatar}
+            className="text-xs font-semibold text-orange-600 hover:underline cursor-pointer"
+          >
+            {uploadingAvatar ? "Mengunggah foto..." : "Ubah Foto Profil"}
+          </button>
         </div>
 
         {/* Fields */}
@@ -347,8 +403,8 @@ export default function ProfilePage() {
         <EditProfileModal
           profile={profile}
           onClose={() => setShowEditModal(false)}
-          onSaved={({ name, username, bio }) => {
-            setProfile((prev) => prev ? { ...prev, name, username, bio } : prev);
+          onSaved={({ name, username, bio, avatarUrl }) => {
+            setProfile((prev) => prev ? { ...prev, name, username, bio, ...(avatarUrl !== undefined ? { avatarUrl } : {}) } : prev);
           }}
         />
       )}
@@ -363,8 +419,14 @@ export default function ProfilePage() {
                 <p className="text-xs text-brown-700/60 mt-0.5">@{profile.username}</p>
               </div>
 
-              <div className="w-16 h-16 rounded-full bg-orange-100 border border-orange-200 flex items-center justify-center font-bold text-2xl text-orange-600 shadow-md shrink-0">
-                {initials}
+              <div className="w-16 h-16 rounded-full bg-orange-100 border border-orange-200 flex items-center justify-center font-bold text-2xl text-orange-600 shadow-md shrink-0 overflow-hidden">
+                {isAvatarUrl(profile.avatarUrl) ? (
+                  <img src={profile.avatarUrl!} alt={profile.name} className="w-full h-full object-cover" />
+                ) : profile.avatarUrl && profile.avatarUrl.length <= 4 ? (
+                  <span>{resolveAvatar(profile.avatarUrl)}</span>
+                ) : (
+                  <span>{initials}</span>
+                )}
               </div>
             </div>
 

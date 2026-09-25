@@ -124,8 +124,8 @@ export default function CommunityPage() {
         onContentChange={setNewPostContent}
         onTagChange={handleTagFilter}
         onClose={() => setIsPostModalOpen(false)}
-        onSubmit={async () => {
-          await handleAddPost(newPostContent, selectedTag);
+        onSubmit={async (imageUrl) => {
+          await handleAddPost(newPostContent, selectedTag, imageUrl);
           setNewPostContent("");
           setIsPostModalOpen(false);
         }}

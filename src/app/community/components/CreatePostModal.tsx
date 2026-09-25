@@ -1,8 +1,8 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
-import { X, ChevronDown } from "lucide-react";
-import { useCommunity } from "../context/CommunityContext";
+import React, { useState, useEffect, useRef } from "react";
+import { X, ChevronDown, Image as ImageIcon, Loader2 } from "lucide-react";
+import { isAvatarUrl, resolveAvatar } from "@/lib/avatarUtils";
 
 const TAG_OPTIONS = ["Sharing", "Mindfulness", "SleepRoutine", "ZybaRocks", "MentalHealth", "SelfCare"];
 
@@ -13,7 +13,7 @@ interface CreatePostModalProps {
   onContentChange: (content: string) => void;
   onTagChange: (tag: string) => void;
   onClose: () => void;
-  onSubmit: () => void;
+  onSubmit: (imageUrl?: string | null) => Promise<void> | void;
 }
 
 export default function CreatePostModal({
@@ -26,25 +26,131 @@ export default function CreatePostModal({
   onSubmit,
 }: CreatePostModalProps) {
   const [showTagDropdown, setShowTagDropdown] = useState(false);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [isUploading, setIsUploading] = useState(false);
+  const [uploadError, setUploadError] = useState<string | null>(null);
+  const [userProfile, setUserProfile] = useState<{ name: string; avatarUrl?: string | null } | null>(null);
+
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    if (open) setShowTagDropdown(false);
+    if (open) {
+      setShowTagDropdown(false);
+      setUploadError(null);
+      // Fetch user profile info for modal header
+      fetch("/api/user/me")
+        .then((r) => r.json())
+        .then((data) => {
+          if (data?.user) {
+            setUserProfile({
+              name: data.user.name || "Pengguna ZYBA",
+              avatarUrl: data.user.avatarUrl,
+            });
+          }
+        })
+        .catch(() => {});
+    } else {
+      setSelectedFile(null);
+      if (imagePreview) {
+        URL.revokeObjectURL(imagePreview);
+        setImagePreview(null);
+      }
+    }
   }, [open]);
 
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith("image/")) {
+      setUploadError("Hanya file gambar (JPG, PNG, WEBP, GIF) yang didukung.");
+      return;
+    }
+
+    if (file.size > 10 * 1024 * 1024) {
+      setUploadError("Ukuran foto maksimal 10MB.");
+      return;
+    }
+
+    setUploadError(null);
+    setSelectedFile(file);
+    if (imagePreview) URL.revokeObjectURL(imagePreview);
+    setImagePreview(URL.createObjectURL(file));
+  };
+
+  const handleRemoveImage = () => {
+    setSelectedFile(null);
+    if (imagePreview) {
+      URL.revokeObjectURL(imagePreview);
+      setImagePreview(null);
+    }
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  };
+
+  const handleSubmit = async () => {
+    const hasContent = Boolean(newPostContent && newPostContent.trim());
+    if (!hasContent && !selectedFile) return;
+
+    setIsUploading(true);
+    setUploadError(null);
+
+    let uploadedUrl: string | null = null;
+    try {
+      if (selectedFile) {
+        const formData = new FormData();
+        formData.append("file", selectedFile);
+
+        const uploadRes = await fetch("/api/upload", {
+          method: "POST",
+          body: formData,
+        });
+
+        const uploadData = await uploadRes.json();
+        if (!uploadRes.ok || !uploadData.url) {
+          throw new Error(uploadData.error || "Gagal mengunggah foto.");
+        }
+        uploadedUrl = uploadData.url;
+      }
+
+      await onSubmit(uploadedUrl);
+      setSelectedFile(null);
+      setImagePreview(null);
+    } catch (err: any) {
+      setUploadError(err.message || "Gagal mempublikasikan postingan.");
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
   if (!open) return null;
+
+  const canSubmit = (newPostContent.trim().length > 0 || selectedFile !== null) && !isUploading;
+  const authorAvatar = userProfile?.avatarUrl;
+  const isImgAvatar = isAvatarUrl(authorAvatar);
 
   return (
     <div
       role="dialog"
       aria-label="New thread"
-      className="fixed bottom-20 right-4 sm:right-8 z-50 w-[calc(100vw-2rem)] sm:w-[480px] bg-white rounded-3xl shadow-2xl border border-brown-900/12 p-5 flex flex-col gap-3 animate-in fade-in slide-in-from-bottom-5 duration-200"
+      className="fixed bottom-20 right-4 sm:right-8 z-50 w-[calc(100vw-2rem)] sm:w-[500px] bg-white rounded-3xl shadow-2xl border border-brown-900/12 p-5 flex flex-col gap-3 animate-in fade-in slide-in-from-bottom-5 duration-200"
     >
+      {/* Hidden file input */}
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="image/png,image/jpeg,image/webp,image/gif"
+        className="hidden"
+        onChange={handleFileChange}
+      />
+
       {/* Header */}
       <div className="flex items-center justify-between pb-3 border-b border-brown-900/6">
         <button
           type="button"
           onClick={onClose}
-          className="text-xs font-semibold text-brown-700/70 hover:text-brown-900 transition-colors"
+          disabled={isUploading}
+          className="text-xs font-semibold text-brown-700/70 hover:text-brown-900 transition-colors disabled:opacity-50"
         >
           Batal
         </button>
@@ -52,30 +158,39 @@ export default function CreatePostModal({
           Postingan Baru
         </span>
         <div className="flex items-center gap-2 text-brown-700/50">
-          <button type="button" className="hover:text-brown-900 p-1" title="Drafts">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-              <polyline points="14 2 14 8 20 8" />
-            </svg>
-          </button>
-          <button type="button" className="hover:text-brown-900 p-1" title="Options">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor">
-              <circle cx="5" cy="12" r="2" />
-              <circle cx="12" cy="12" r="2" />
-              <circle cx="19" cy="12" r="2" />
-            </svg>
-          </button>
+          <span className="text-[11px] font-medium text-brown-700/60">
+            {selectedFile ? "Foto terpilih" : "Publik"}
+          </span>
         </div>
       </div>
 
+      {/* Upload Error Banner */}
+      {uploadError && (
+        <div className="bg-red-50 border border-red-200 text-red-700 text-xs px-3 py-2 rounded-xl flex items-center justify-between">
+          <span>⚠ {uploadError}</span>
+          <button type="button" onClick={() => setUploadError(null)} className="text-red-500 hover:text-red-800 ml-2">
+            ✕
+          </button>
+        </div>
+      )}
+
       {/* User info + topic */}
       <div className="flex items-start gap-3 pt-1">
-        <div className="w-9 h-9 rounded-full bg-orange-100 border border-orange-200 flex items-center justify-center font-bold text-xs text-orange-600 shrink-0 shadow-2xs">
-          A
+        <div className="w-10 h-10 rounded-full bg-orange-100 border border-orange-200 flex items-center justify-center font-bold text-xs text-orange-600 shrink-0 shadow-2xs overflow-hidden">
+          {isImgAvatar ? (
+            <img src={authorAvatar!} alt="Avatar" className="w-full h-full object-cover" />
+          ) : authorAvatar ? (
+            <span className="text-base">{resolveAvatar(authorAvatar)}</span>
+          ) : (
+            <span>{userProfile?.name ? userProfile.name.slice(0, 2).toUpperCase() : "ZY"}</span>
+          )}
         </div>
+
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-1.5 flex-wrap">
-            <span className="text-xs font-bold text-brown-900">Pengguna ZYBA</span>
+            <span className="text-xs font-bold text-brown-900">
+              {userProfile?.name || "Pengguna ZYBA"}
+            </span>
             <span className="text-[11px] text-brown-700/40">›</span>
             <div className="relative">
               <button
@@ -113,76 +228,90 @@ export default function CreatePostModal({
           <textarea
             value={newPostContent}
             onChange={(e) => onContentChange(e.target.value)}
-            placeholder="Ada cerita apa hari ini?"
-            rows={3}
+            placeholder="Ada cerita apa hari ini? Tulis curhat atau bagikan foto..."
+            rows={selectedFile ? 2 : 4}
             autoFocus
             className="w-full text-xs text-brown-900 placeholder:text-brown-700/40 resize-none focus:outline-none bg-transparent pt-2 leading-relaxed"
           />
+
+          {/* Image Preview Box */}
+          {imagePreview && (
+            <div className="relative mt-2 rounded-2xl overflow-hidden border border-brown-900/10 bg-cream/30 group max-h-56">
+              <img
+                src={imagePreview}
+                alt="Upload preview"
+                className="w-full h-44 object-cover"
+              />
+              <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center pointer-events-none" />
+              <button
+                type="button"
+                onClick={handleRemoveImage}
+                title="Hapus foto"
+                className="absolute top-2 right-2 w-7 h-7 rounded-full bg-brown-900/80 text-white flex items-center justify-center hover:bg-red-500 transition-colors shadow-md cursor-pointer"
+              >
+                <X size={14} />
+              </button>
+              <div className="absolute bottom-2 left-2 bg-brown-900/70 text-white text-[10px] px-2 py-0.5 rounded-md backdrop-blur-xs font-mono">
+                {selectedFile?.name} ({(selectedFile ? selectedFile.size / 1024 : 0).toFixed(0)} KB)
+              </div>
+            </div>
+          )}
         </div>
       </div>
 
       {/* Media Icons Row */}
-      <div className="flex items-center gap-3.5 text-brown-700/50 pl-12">
-        <button type="button" className="hover:text-brown-900 transition-colors" title="Add photo">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
-            <circle cx="8.5" cy="8.5" r="1.5" />
-            <polyline points="21 15 16 10 5 21" />
-          </svg>
+      <div className="flex items-center gap-2 text-brown-700/60 pl-13 pt-1">
+        <button
+          type="button"
+          onClick={() => fileInputRef.current?.click()}
+          className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl text-xs font-medium border transition-colors cursor-pointer ${
+            selectedFile
+              ? "bg-orange-50 border-orange-200 text-orange-600 font-bold"
+              : "border-brown-900/10 hover:bg-cream hover:text-brown-900"
+          }`}
+          title="Unggah Foto"
+        >
+          <ImageIcon size={15} className={selectedFile ? "text-orange-500" : ""} />
+          <span>{selectedFile ? "Ganti Foto" : "Foto"}</span>
         </button>
-        <button type="button" className="hover:text-brown-900 transition-colors font-mono text-[11px] font-bold border border-current px-1 rounded" title="Add GIF">GIF</button>
-        <button type="button" className="hover:text-brown-900 transition-colors" title="Add emoji">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <circle cx="12" cy="12" r="10" />
-            <path d="M8 14s1.5 2 4 2 4-2 4-2" />
-            <line x1="9" y1="9" x2="9.01" y2="9" />
-            <line x1="15" y1="9" x2="15.01" y2="9" />
-          </svg>
-        </button>
-        <button type="button" className="hover:text-brown-900 transition-colors" title="Create poll">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <line x1="18" y1="20" x2="18" y2="10" />
-            <line x1="12" y1="20" x2="12" y2="4" />
-            <line x1="6" y1="20" x2="6" y2="14" />
-          </svg>
-        </button>
-        <button type="button" className="hover:text-brown-900 transition-colors" title="Add location">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
-            <circle cx="12" cy="10" r="3" />
-          </svg>
-        </button>
-        <button type="button" className="hover:text-brown-900 transition-colors" title="Voice note">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <path d="M9 18V5l12-2v13" />
-            <circle cx="6" cy="18" r="3" />
-            <circle cx="18" cy="16" r="3" />
-          </svg>
-        </button>
+
+        <span className="text-[11px] text-brown-700/40">
+          Format: PNG, JPG, WEBP, GIF (maks. 10MB)
+        </span>
       </div>
 
       {/* Footer */}
       <div className="pt-3 border-t border-brown-900/6 flex items-center justify-between">
-        <span className="text-[10px] text-brown-700/40">Siapa saja bisa melihat</span>
-        <div className="flex gap-2">
+        <span className="text-[10px] text-brown-700/40">
+          Privasi: Semua anggota Zyba Community
+        </span>
+        <div className="flex gap-2 items-center">
           <button
             type="button"
             onClick={onClose}
+            disabled={isUploading}
             className="rounded-full px-4 py-2 text-xs font-semibold text-brown-700 hover:bg-cream transition-colors"
           >
             Batal
           </button>
           <button
             type="button"
-            onClick={onSubmit}
-            disabled={!newPostContent.trim()}
-            className={`rounded-full px-5 py-2 text-xs font-bold transition-all ${
-              newPostContent.trim()
-                ? "bg-orange-500 text-white hover:bg-brown-900 active:scale-95 shadow-2xs"
+            onClick={handleSubmit}
+            disabled={!canSubmit}
+            className={`rounded-full px-5 py-2 text-xs font-bold transition-all flex items-center gap-1.5 ${
+              canSubmit
+                ? "bg-orange-500 text-white hover:bg-brown-900 active:scale-95 shadow-2xs cursor-pointer"
                 : "bg-brown-900/10 text-brown-900/30 cursor-not-allowed"
             }`}
           >
-            Posting
+            {isUploading ? (
+              <>
+                <Loader2 size={13} className="animate-spin" />
+                <span>Mengunggah...</span>
+              </>
+            ) : (
+              <span>Posting</span>
+            )}
           </button>
         </div>
       </div>

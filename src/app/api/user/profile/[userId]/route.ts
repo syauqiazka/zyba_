@@ -68,7 +68,7 @@ export async function PATCH(
     }
 
     const body = await req.json();
-    const { name, username, bio } = body;
+    const { name, username, bio, avatarUrl } = body;
 
     // Validate
     if (name !== undefined && (!name || !name.trim())) {
@@ -91,6 +91,7 @@ export async function PATCH(
           ...(name !== undefined && { name: name.trim() }),
           username: cleanUsername,
           ...(bio !== undefined && { bio: bio.trim() || null }),
+          ...(avatarUrl !== undefined && { avatarUrl }),
         },
         select: { id: true, name: true, username: true, avatarUrl: true, bio: true },
       });
@@ -102,6 +103,7 @@ export async function PATCH(
       data: {
         ...(name !== undefined && { name: name.trim() }),
         ...(bio !== undefined && { bio: bio.trim() || null }),
+        ...(avatarUrl !== undefined && { avatarUrl }),
       },
       select: { id: true, name: true, username: true, avatarUrl: true, bio: true },
     });

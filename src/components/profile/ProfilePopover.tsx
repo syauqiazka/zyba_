@@ -18,6 +18,7 @@ import {
   Heart,
   Smile,
 } from "lucide-react";
+import { isAvatarUrl } from "@/lib/avatarUtils";
 
 export interface ProfileUser {
   name: string;
@@ -187,10 +188,10 @@ export default function ProfilePopover({
           >
             <div className="w-20 h-20 rounded-full bg-[#FAF7F2] p-1.5 shadow-lg border-4 border-[#FAF7F2]">
               <div className="w-full h-full rounded-full bg-green-500 flex items-center justify-center text-3xl overflow-hidden font-display font-bold text-white shadow-inner relative">
-                {user.avatarUrl && user.avatarUrl.length <= 4 ? (
+                {isAvatarUrl(user.avatarUrl) ? (
+                  <img src={user.avatarUrl!} alt={user.name} className="w-full h-full object-cover" />
+                ) : user.avatarUrl && user.avatarUrl.length <= 4 ? (
                   <span>{user.avatarUrl}</span>
-                ) : user.avatarUrl && user.avatarUrl.startsWith("http") ? (
-                  <img src={user.avatarUrl} alt={user.name} className="w-full h-full object-cover" />
                 ) : (
                   <span>{user.name ? user.name.slice(0, 2).toUpperCase() : "ZY"}</span>
                 )}

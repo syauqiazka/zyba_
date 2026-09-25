@@ -100,7 +100,7 @@ interface CommunityContextType {
   messages: CommunityMessage[];
   showCrisisNotice: boolean;
   setShowCrisisNotice: (show: boolean) => void;
-  handleAddPost: (content: string, tag: string) => Promise<void>;
+  handleAddPost: (content: string, tag: string, imageUrl?: string | null) => Promise<void>;
   handleToggleLike: (id: string) => Promise<void>;
   handleToggleRepost: (id: string) => void;
   handleAddComment: (postId: string, commentText: string) => Promise<void>;
@@ -329,8 +329,8 @@ export function CommunityProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  const handleAddPost = async (content: string, tag: string) => {
-    const isRisk = detectRisk(content);
+  const handleAddPost = async (content: string, tag: string, imageUrl?: string | null) => {
+    const isRisk = content ? detectRisk(content) : false;
     if (isRisk) {
       setShowCrisisNotice(true);
     }
@@ -339,7 +339,7 @@ export function CommunityProvider({ children }: { children: React.ReactNode }) {
       const res = await fetch("/api/community", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ content, tag }),
+        body: JSON.stringify({ content, tag, imageUrl: imageUrl || null }),
       });
       const data = await res.json();
       if (data.post) {
