@@ -6114,11 +6114,13 @@ export namespace Prisma {
   export type DailyAssessmentAvgAggregateOutputType = {
     stressLevel: number | null
     sleepRating: number | null
+    calculatedScore: number | null
   }
 
   export type DailyAssessmentSumAggregateOutputType = {
     stressLevel: number | null
     sleepRating: number | null
+    calculatedScore: number | null
   }
 
   export type DailyAssessmentMinAggregateOutputType = {
@@ -6130,6 +6132,7 @@ export namespace Prisma {
     sleepRating: number | null
     reflection: string | null
     flaggedForRisk: boolean | null
+    calculatedScore: number | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -6143,6 +6146,7 @@ export namespace Prisma {
     sleepRating: number | null
     reflection: string | null
     flaggedForRisk: boolean | null
+    calculatedScore: number | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -6157,6 +6161,7 @@ export namespace Prisma {
     energyTags: number
     reflection: number
     flaggedForRisk: number
+    calculatedScore: number
     createdAt: number
     updatedAt: number
     _all: number
@@ -6166,11 +6171,13 @@ export namespace Prisma {
   export type DailyAssessmentAvgAggregateInputType = {
     stressLevel?: true
     sleepRating?: true
+    calculatedScore?: true
   }
 
   export type DailyAssessmentSumAggregateInputType = {
     stressLevel?: true
     sleepRating?: true
+    calculatedScore?: true
   }
 
   export type DailyAssessmentMinAggregateInputType = {
@@ -6182,6 +6189,7 @@ export namespace Prisma {
     sleepRating?: true
     reflection?: true
     flaggedForRisk?: true
+    calculatedScore?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -6195,6 +6203,7 @@ export namespace Prisma {
     sleepRating?: true
     reflection?: true
     flaggedForRisk?: true
+    calculatedScore?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -6209,6 +6218,7 @@ export namespace Prisma {
     energyTags?: true
     reflection?: true
     flaggedForRisk?: true
+    calculatedScore?: true
     createdAt?: true
     updatedAt?: true
     _all?: true
@@ -6310,6 +6320,7 @@ export namespace Prisma {
     energyTags: string[]
     reflection: string | null
     flaggedForRisk: boolean
+    calculatedScore: number | null
     createdAt: Date
     updatedAt: Date
     _count: DailyAssessmentCountAggregateOutputType | null
@@ -6343,6 +6354,7 @@ export namespace Prisma {
     energyTags?: boolean
     reflection?: boolean
     flaggedForRisk?: boolean
+    calculatedScore?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
@@ -6358,6 +6370,7 @@ export namespace Prisma {
     energyTags?: boolean
     reflection?: boolean
     flaggedForRisk?: boolean
+    calculatedScore?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
@@ -6373,6 +6386,7 @@ export namespace Prisma {
     energyTags?: boolean
     reflection?: boolean
     flaggedForRisk?: boolean
+    calculatedScore?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
@@ -6399,6 +6413,7 @@ export namespace Prisma {
       energyTags: string[]
       reflection: string | null
       flaggedForRisk: boolean
+      calculatedScore: number | null
       createdAt: Date
       updatedAt: Date
     }, ExtArgs["result"]["dailyAssessment"]>
@@ -6804,6 +6819,7 @@ export namespace Prisma {
     readonly energyTags: FieldRef<"DailyAssessment", 'String[]'>
     readonly reflection: FieldRef<"DailyAssessment", 'String'>
     readonly flaggedForRisk: FieldRef<"DailyAssessment", 'Boolean'>
+    readonly calculatedScore: FieldRef<"DailyAssessment", 'Int'>
     readonly createdAt: FieldRef<"DailyAssessment", 'DateTime'>
     readonly updatedAt: FieldRef<"DailyAssessment", 'DateTime'>
   }
@@ -12176,6 +12192,7 @@ export namespace Prisma {
     energyTags: 'energyTags',
     reflection: 'reflection',
     flaggedForRisk: 'flaggedForRisk',
+    calculatedScore: 'calculatedScore',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
   };
@@ -12849,6 +12866,7 @@ export namespace Prisma {
     energyTags?: StringNullableListFilter<"DailyAssessment">
     reflection?: StringNullableFilter<"DailyAssessment"> | string | null
     flaggedForRisk?: BoolFilter<"DailyAssessment"> | boolean
+    calculatedScore?: IntNullableFilter<"DailyAssessment"> | number | null
     createdAt?: DateTimeFilter<"DailyAssessment"> | Date | string
     updatedAt?: DateTimeFilter<"DailyAssessment"> | Date | string
     user?: XOR<UserRelationFilter, UserWhereInput>
@@ -12864,6 +12882,7 @@ export namespace Prisma {
     energyTags?: SortOrder
     reflection?: SortOrderInput | SortOrder
     flaggedForRisk?: SortOrder
+    calculatedScore?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     user?: UserOrderByWithRelationInput
@@ -12883,6 +12902,7 @@ export namespace Prisma {
     energyTags?: StringNullableListFilter<"DailyAssessment">
     reflection?: StringNullableFilter<"DailyAssessment"> | string | null
     flaggedForRisk?: BoolFilter<"DailyAssessment"> | boolean
+    calculatedScore?: IntNullableFilter<"DailyAssessment"> | number | null
     createdAt?: DateTimeFilter<"DailyAssessment"> | Date | string
     updatedAt?: DateTimeFilter<"DailyAssessment"> | Date | string
     user?: XOR<UserRelationFilter, UserWhereInput>
@@ -12898,6 +12918,7 @@ export namespace Prisma {
     energyTags?: SortOrder
     reflection?: SortOrderInput | SortOrder
     flaggedForRisk?: SortOrder
+    calculatedScore?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     _count?: DailyAssessmentCountOrderByAggregateInput
@@ -12920,6 +12941,7 @@ export namespace Prisma {
     energyTags?: StringNullableListFilter<"DailyAssessment">
     reflection?: StringNullableWithAggregatesFilter<"DailyAssessment"> | string | null
     flaggedForRisk?: BoolWithAggregatesFilter<"DailyAssessment"> | boolean
+    calculatedScore?: IntNullableWithAggregatesFilter<"DailyAssessment"> | number | null
     createdAt?: DateTimeWithAggregatesFilter<"DailyAssessment"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"DailyAssessment"> | Date | string
   }
@@ -13716,6 +13738,7 @@ export namespace Prisma {
     energyTags?: DailyAssessmentCreateenergyTagsInput | string[]
     reflection?: string | null
     flaggedForRisk?: boolean
+    calculatedScore?: number | null
     createdAt?: Date | string
     updatedAt?: Date | string
     user: UserCreateNestedOneWithoutDailyAssessmentsInput
@@ -13731,6 +13754,7 @@ export namespace Prisma {
     energyTags?: DailyAssessmentCreateenergyTagsInput | string[]
     reflection?: string | null
     flaggedForRisk?: boolean
+    calculatedScore?: number | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -13744,6 +13768,7 @@ export namespace Prisma {
     energyTags?: DailyAssessmentUpdateenergyTagsInput | string[]
     reflection?: NullableStringFieldUpdateOperationsInput | string | null
     flaggedForRisk?: BoolFieldUpdateOperationsInput | boolean
+    calculatedScore?: NullableIntFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     user?: UserUpdateOneRequiredWithoutDailyAssessmentsNestedInput
@@ -13759,6 +13784,7 @@ export namespace Prisma {
     energyTags?: DailyAssessmentUpdateenergyTagsInput | string[]
     reflection?: NullableStringFieldUpdateOperationsInput | string | null
     flaggedForRisk?: BoolFieldUpdateOperationsInput | boolean
+    calculatedScore?: NullableIntFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -13773,6 +13799,7 @@ export namespace Prisma {
     energyTags?: DailyAssessmentCreateenergyTagsInput | string[]
     reflection?: string | null
     flaggedForRisk?: boolean
+    calculatedScore?: number | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -13786,6 +13813,7 @@ export namespace Prisma {
     energyTags?: DailyAssessmentUpdateenergyTagsInput | string[]
     reflection?: NullableStringFieldUpdateOperationsInput | string | null
     flaggedForRisk?: BoolFieldUpdateOperationsInput | boolean
+    calculatedScore?: NullableIntFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -13800,6 +13828,7 @@ export namespace Prisma {
     energyTags?: DailyAssessmentUpdateenergyTagsInput | string[]
     reflection?: NullableStringFieldUpdateOperationsInput | string | null
     flaggedForRisk?: BoolFieldUpdateOperationsInput | boolean
+    calculatedScore?: NullableIntFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -14733,6 +14762,7 @@ export namespace Prisma {
     energyTags?: SortOrder
     reflection?: SortOrder
     flaggedForRisk?: SortOrder
+    calculatedScore?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -14740,6 +14770,7 @@ export namespace Prisma {
   export type DailyAssessmentAvgOrderByAggregateInput = {
     stressLevel?: SortOrder
     sleepRating?: SortOrder
+    calculatedScore?: SortOrder
   }
 
   export type DailyAssessmentMaxOrderByAggregateInput = {
@@ -14751,6 +14782,7 @@ export namespace Prisma {
     sleepRating?: SortOrder
     reflection?: SortOrder
     flaggedForRisk?: SortOrder
+    calculatedScore?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -14764,6 +14796,7 @@ export namespace Prisma {
     sleepRating?: SortOrder
     reflection?: SortOrder
     flaggedForRisk?: SortOrder
+    calculatedScore?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -14771,6 +14804,7 @@ export namespace Prisma {
   export type DailyAssessmentSumOrderByAggregateInput = {
     stressLevel?: SortOrder
     sleepRating?: SortOrder
+    calculatedScore?: SortOrder
   }
 
   export type JournalEntryCountOrderByAggregateInput = {
@@ -16151,6 +16185,7 @@ export namespace Prisma {
     energyTags?: DailyAssessmentCreateenergyTagsInput | string[]
     reflection?: string | null
     flaggedForRisk?: boolean
+    calculatedScore?: number | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -16164,6 +16199,7 @@ export namespace Prisma {
     energyTags?: DailyAssessmentCreateenergyTagsInput | string[]
     reflection?: string | null
     flaggedForRisk?: boolean
+    calculatedScore?: number | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -16387,6 +16423,7 @@ export namespace Prisma {
     energyTags?: StringNullableListFilter<"DailyAssessment">
     reflection?: StringNullableFilter<"DailyAssessment"> | string | null
     flaggedForRisk?: BoolFilter<"DailyAssessment"> | boolean
+    calculatedScore?: IntNullableFilter<"DailyAssessment"> | number | null
     createdAt?: DateTimeFilter<"DailyAssessment"> | Date | string
     updatedAt?: DateTimeFilter<"DailyAssessment"> | Date | string
   }
@@ -17488,6 +17525,7 @@ export namespace Prisma {
     energyTags?: DailyAssessmentCreateenergyTagsInput | string[]
     reflection?: string | null
     flaggedForRisk?: boolean
+    calculatedScore?: number | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -17552,6 +17590,7 @@ export namespace Prisma {
     energyTags?: DailyAssessmentUpdateenergyTagsInput | string[]
     reflection?: NullableStringFieldUpdateOperationsInput | string | null
     flaggedForRisk?: BoolFieldUpdateOperationsInput | boolean
+    calculatedScore?: NullableIntFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -17565,6 +17604,7 @@ export namespace Prisma {
     energyTags?: DailyAssessmentUpdateenergyTagsInput | string[]
     reflection?: NullableStringFieldUpdateOperationsInput | string | null
     flaggedForRisk?: BoolFieldUpdateOperationsInput | boolean
+    calculatedScore?: NullableIntFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -17578,6 +17618,7 @@ export namespace Prisma {
     energyTags?: DailyAssessmentUpdateenergyTagsInput | string[]
     reflection?: NullableStringFieldUpdateOperationsInput | string | null
     flaggedForRisk?: BoolFieldUpdateOperationsInput | boolean
+    calculatedScore?: NullableIntFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }

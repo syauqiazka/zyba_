@@ -113,18 +113,23 @@ model MoodEntry {
 }
 
 model DailyAssessment {
-  id             String    @id @default(cuid())
-  userId         String
-  user           User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  date           String // "YYYY-MM-DD" — key per hari
+  id     String @id @default(cuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  date           String
   mood           MoodLevel
-  stressLevel    Int? // 1-5
-  sleepRating    Int? // 1-5
-  energyTags     String[] // multi-select kondisi hari ini
-  reflection     String? // free-text refleksi harian
+  stressLevel    Int?
+  sleepRating    Int?
+  energyTags     String[]
+  reflection     String?
   flaggedForRisk Boolean   @default(false)
-  createdAt      DateTime  @default(now())
-  updatedAt      DateTime  @updatedAt
+
+  // ⭐ SCORE HARIAN
+  calculatedScore Int?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@unique([userId, date])
   @@index([userId, createdAt])

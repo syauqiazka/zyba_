@@ -188,6 +188,7 @@ exports.Prisma.DailyAssessmentScalarFieldEnum = {
   energyTags: 'energyTags',
   reflection: 'reflection',
   flaggedForRisk: 'flaggedForRisk',
+  calculatedScore: 'calculatedScore',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };

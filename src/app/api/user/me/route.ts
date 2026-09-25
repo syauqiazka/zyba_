@@ -7,7 +7,6 @@ import {
 import { resolveAvatar } from "@/lib/avatarUtils";
 import { accountDb } from "@/backend/db/accountClient";
 import {
-  calculateZybaScore,
   scoreToCondition,
 } from "@/backend/scoring/zybaScore";
 import bcrypt from "bcryptjs";
@@ -36,34 +35,40 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
-    const latestAssessment = await userRepository.getLatestAssessment(user.id);
-    const hasAssessment = Boolean(latestAssessment || (user.zybaScore !== null && user.zybaScore !== undefined));
+    const latestAssessment =
+      await userRepository.getLatestAssessment(
+        user.id
+      );
 
-    let zybaScore: number | null = null;
-    let condition = "Belum Dinilai";
+    /*
+     * Zyba Score diambil dari User.zybaScore.
+     *
+     * Daily Assessment POST sudah meng-update:
+     * user.zybaScore = scores.zybaScore
+     *
+     * Jadi tidak dihitung ulang di sini.
+     */
+    const zybaScore =
+      user.zybaScore ?? null;
 
-    if (hasAssessment) {
-      // D.2: Calculate Zyba Score on-demand from 7-day rolling window
-      // (Mental 50% + Fisik 25% + Sosial 25%) — falls back to static score if fails
-      try {
-        const dynamicScore = await calculateZybaScore(user.id);
-        zybaScore = dynamicScore;
-        condition = scoreToCondition(dynamicScore);
-        // Update stored score so it reflects the latest calculation
-        if (user.zybaScore !== dynamicScore) {
-          accountDb.user.update({
-            where: { id: user.id },
-            data: { zybaScore: dynamicScore },
-          }).catch(() => { }); // fire-and-forget, don't block response
-        }
-      } catch {
-        // Graceful fallback to static stored score
-        zybaScore = user.zybaScore ?? latestAssessment?.calculatedScore ?? null;
-        if (zybaScore !== null) condition = scoreToCondition(zybaScore);
-      }
-    }
+    const hasAssessment =
+      Boolean(
+        latestAssessment ||
+        zybaScore !== null
+      );
 
-    const stressLabels: Record<number, string> = {
+    /*
+     * Condition berdasarkan score terbaru.
+     */
+    const condition =
+      zybaScore !== null
+        ? scoreToCondition(zybaScore)
+        : "Belum Dinilai";
+
+    const stressLabels: Record<
+      number,
+      string
+    > = {
       1: "Level 1 - Sangat Rendah",
       2: "Level 2 - Rendah",
       3: "Level 3 - Sedang",
