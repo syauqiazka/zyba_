@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { ArrowLeft, MessageCircle, Pencil, X, EyeOff, Eye, Camera, Loader2 } from "lucide-react";
 import { useCommunity } from "../../context/CommunityContext";
