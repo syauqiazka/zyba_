@@ -84,6 +84,15 @@ Pola untuk tiap fitur di AGENTS.md (bagian 4 — Taksonomi Layar):
 
 Aplikasi memiliki fallback storage lokal di `data/*.json` (dipakai oleh `backend/db/prisma.ts` dan `userRepository.ts` ketika koneksi Neon Postgres mengalami cold-start atau timeout >250ms).
 
+
+cd /home/bismillahjogja/public_html
+git pull origin main
+pnpm install
+pnpm run db:generate:all
+pnpm run build
+
+pnpm exec pm2 restart JHIC
+
 > **Peringatan Penting Keamanan & Hosting:**
 > - Direktori `data/*.json` dimasukkan ke `.gitignore` karena berisi bcrypt hash password dan data asesmen pengguna demo. Jangan pernah menonaktifkan aturan ini di repositori git.
 > - Pada platform hosting serverless dengan sistem berkas ephemeral (seperti Vercel, Netlify, atau Render), sistem berkas lokal bersifat sementara dan **tidak persistent** saat redeploy. Data fallback lokal hanya berfungsi sebagai proteksi transien demo, bukan pengganti database persisten.
