@@ -9,6 +9,12 @@ export interface InitialAssessment {
     sleepQualityRating?: number | null;
 
     flaggedForRisk?: boolean;
+
+    calculatedScore?: number | null;
+    zybaScore?: number | null;
+    score?: number | null;
+
+    condition?: string | null;
 }
 
 export interface DailyAssessment {
@@ -18,54 +24,510 @@ export interface DailyAssessment {
 
     mood?: string | null;
     stressLevel?: number | null;
+    anxietyLevel?: number | null;
+    satisfactionLevel?: number | null;
+    productivityLevel?: number | null;
+    meTimeLevel?: number | null;
+
     sleepRating?: number | null;
+    sleepHours?: number | string | null;
+    energyLevel?: number | null;
+    eatingHabit?: number | null;
+    physicalActivity?: number | null;
+
+    socialConnection?: number | null;
+    socialSupport?: number | null;
+    communityInteraction?: number | null;
 
     energyTags?: string[];
+    gratitude?: string | null;
     reflection?: string | null;
 
+    goal?: string | null;
+    gender?: string | null;
+    age?: string | null;
+    weight?: string | null;
+
+    soughtHelp?: boolean | null;
+    physicalSymptoms?: string[];
+    mentalSymptoms?: string[];
+    medications?: string | null;
+
     flaggedForRisk?: boolean;
+
+    calculatedScore?: number | null;
+    zybaScore?: number | null;
+    score?: number | null;
+
+    condition?: string | null;
 }
+
+export type AssessmentMetric =
+    | InitialAssessment
+    | DailyAssessment;
+
+/* =====================================================
+   TIMESTAMP
+===================================================== */
 
 function getTimestamp(
-    item: InitialAssessment | DailyAssessment
-) {
-    return new Date(
-        item.createdAt ?? 0
-    ).getTime();
+    item: AssessmentMetric
+): number {
+    if (item.createdAt) {
+        const time =
+            new Date(
+                item.createdAt
+            ).getTime();
+
+        if (Number.isFinite(time)) {
+            return time;
+        }
+    }
+
+    if (
+        "date" in item &&
+        item.date
+    ) {
+        const time =
+            new Date(
+                `${item.date}T00:00:00+07:00`
+            ).getTime();
+
+        if (Number.isFinite(time)) {
+            return time;
+        }
+    }
+
+    return 0;
 }
 
-/**
- * Ambil sumber assessment sesuai tipe akun.
+/* =====================================================
+   NORMALIZE SCORE
+===================================================== */
+
+function normalizeScore(
+    value: unknown
+): number | null {
+    if (
+        value === null ||
+        value === undefined ||
+        value === ""
+    ) {
+        return null;
+    }
+
+    const score =
+        Number(value);
+
+    if (
+        !Number.isFinite(score)
+    ) {
+        return null;
+    }
+
+    return Math.min(
+        100,
+        Math.max(
+            0,
+            Math.round(score)
+        )
+    );
+}
+
+/* =====================================================
+   SCORE YANG SUDAH TERSIMPAN
+===================================================== */
+
+function getStoredScore(
+    item: AssessmentMetric
+): number | null {
+    return normalizeScore(
+        item.calculatedScore ??
+        item.zybaScore ??
+        item.score
+    );
+}
+
+/* =====================================================
+   HELPER ANGKA
+===================================================== */
+
+function numberOrNull(
+    value: unknown
+): number | null {
+    if (
+        value === null ||
+        value === undefined ||
+        value === ""
+    ) {
+        return null;
+    }
+
+    const result =
+        Number(value);
+
+    return Number.isFinite(
+        result
+    )
+        ? result
+        : null;
+}
+
+/* =====================================================
+   HITUNG SCORE DAILY ASSESSMENT
  *
- * AKUN BARU:
- * assessment awal + daily
+ * Rumus HARUS sama dengan DailyAssessmentForm:
  *
- * AKUN LAMA:
- * daily saja
- */
+ * Mental = 50%
+ * Fisik  = 25%
+ * Sosial = 25%
+===================================================== */
+
+export function calculateDailyZybaScore(
+    item: DailyAssessment
+): number | null {
+    /*
+     * Kalau backend sudah menyimpan score,
+     * pakai score tersebut.
+     */
+    const storedScore =
+        getStoredScore(item);
+
+    if (
+        storedScore !== null
+    ) {
+        return storedScore;
+    }
+
+    /*
+     * ===================================================
+     * MENTAL
+     * ===================================================
+     */
+
+    const moodMap: Record<
+        string,
+        number
+    > = {
+        DEPRESSED: 1,
+        SAD: 2,
+        NEUTRAL: 3,
+        HAPPY: 4,
+        OVERJOYED: 5,
+    };
+
+    const moodValue =
+        moodMap[
+        String(
+            item.mood ?? ""
+        ).toUpperCase()
+        ] ?? 3;
+
+    const moodScore =
+        ((moodValue - 1) / 4) *
+        100;
+
+    const stress =
+        numberOrNull(
+            item.stressLevel
+        );
+
+    const anxiety =
+        numberOrNull(
+            item.anxietyLevel
+        );
+
+    const satisfaction =
+        numberOrNull(
+            item.satisfactionLevel
+        );
+
+    const productivity =
+        numberOrNull(
+            item.productivityLevel
+        );
+
+    const meTime =
+        numberOrNull(
+            item.meTimeLevel
+        );
+
+    /*
+     * Kalau data inti mental belum ada,
+     * belum bisa menghitung score dari record.
+     */
+    if (
+        stress === null ||
+        anxiety === null ||
+        satisfaction === null ||
+        productivity === null ||
+        meTime === null
+    ) {
+        return null;
+    }
+
+    const stressScore =
+        ((5 - stress) / 4) *
+        100;
+
+    const anxietyScore =
+        ((5 - anxiety) / 4) *
+        100;
+
+    const satisfactionScore =
+        ((satisfaction - 1) / 4) *
+        100;
+
+    const productivityScore =
+        ((productivity - 1) / 4) *
+        100;
+
+    const meTimeScore =
+        ((meTime - 1) / 4) *
+        100;
+
+    const mental =
+        Math.round(
+            (
+                moodScore +
+                stressScore +
+                anxietyScore +
+                satisfactionScore +
+                productivityScore +
+                meTimeScore
+            ) / 6
+        );
+
+    /*
+     * ===================================================
+     * FISIK
+     * ===================================================
+     */
+
+    const sleepRating =
+        numberOrNull(
+            item.sleepRating
+        );
+
+    const sleepHoursRaw =
+        item.sleepHours;
+
+    const sleepHours =
+        numberOrNull(
+            sleepHoursRaw
+        );
+
+    const energyLevel =
+        numberOrNull(
+            item.energyLevel
+        );
+
+    const eatingHabit =
+        numberOrNull(
+            item.eatingHabit
+        );
+
+    const physicalActivity =
+        numberOrNull(
+            item.physicalActivity
+        );
+
+    if (
+        sleepRating === null ||
+        sleepHours === null ||
+        energyLevel === null ||
+        eatingHabit === null ||
+        physicalActivity === null
+    ) {
+        return null;
+    }
+
+    const sleepScore =
+        ((sleepRating - 1) / 4) *
+        100;
+
+    /*
+     * SAMA persis dengan DailyAssessmentForm.
+     */
+    const sleepHoursScore =
+        sleepHours === 4
+            ? 100
+            : sleepHours === 3
+                ? 85
+                : sleepHours === 5
+                    ? 80
+                    : sleepHours === 2
+                        ? 55
+                        : 30;
+
+    const energyScore =
+        ((energyLevel - 1) / 4) *
+        100;
+
+    const eatingScore =
+        ((eatingHabit - 1) / 4) *
+        100;
+
+    const activityScore =
+        ((physicalActivity - 1) / 4) *
+        100;
+
+    const fisik =
+        Math.round(
+            (
+                sleepScore +
+                sleepHoursScore +
+                energyScore +
+                eatingScore +
+                activityScore
+            ) / 5
+        );
+
+    /*
+     * ===================================================
+     * SOSIAL
+     * ===================================================
+     */
+
+    const socialConnection =
+        numberOrNull(
+            item.socialConnection
+        );
+
+    const socialSupport =
+        numberOrNull(
+            item.socialSupport
+        );
+
+    const communityInteraction =
+        numberOrNull(
+            item.communityInteraction
+        );
+
+    if (
+        socialConnection === null ||
+        socialSupport === null ||
+        communityInteraction === null
+    ) {
+        return null;
+    }
+
+    const connectionScore =
+        ((socialConnection - 1) /
+            4) *
+        100;
+
+    const supportScore =
+        ((socialSupport - 1) / 4) *
+        100;
+
+    const communityScore =
+        ((communityInteraction -
+            1) /
+            4) *
+        100;
+
+    const sosial =
+        Math.round(
+            (
+                connectionScore +
+                supportScore +
+                communityScore
+            ) / 3
+        );
+
+    /*
+     * ===================================================
+     * FINAL ZYBA SCORE
+     * ===================================================
+     */
+
+    const zyba =
+        Math.round(
+            mental * 0.5 +
+            fisik * 0.25 +
+            sosial * 0.25
+        );
+
+    return Math.min(
+        100,
+        Math.max(
+            0,
+            zyba
+        )
+    );
+}
+
+/* =====================================================
+   GET SCORE ASSESSMENT
+===================================================== */
+
+function getAssessmentScore(
+    item: AssessmentMetric
+): number | null {
+    /*
+     * Daily Assessment
+     */
+    if (
+        "mood" in item
+    ) {
+        return calculateDailyZybaScore(
+            item
+        );
+    }
+
+    /*
+     * Initial Assessment
+     */
+    return getStoredScore(
+        item
+    );
+}
+
+/* =====================================================
+   SOURCES
+===================================================== */
+
 export function getAssessmentSources({
     isNewAccount,
     initialAssessment,
     dailyAssessments,
 }: {
     isNewAccount: boolean;
-    initialAssessment?: InitialAssessment | null;
-    dailyAssessments: DailyAssessment[];
-}) {
-    const records: (
-        | InitialAssessment
-        | DailyAssessment
-    )[] = [];
 
+    initialAssessment?:
+    | InitialAssessment
+    | null;
+
+    dailyAssessments:
+    DailyAssessment[];
+}) {
+    const records: AssessmentMetric[] =
+        [];
+
+    /*
+     * Assessment awal hanya untuk
+     * akun baru.
+     */
     if (
         isNewAccount &&
         initialAssessment
     ) {
-        records.push(initialAssessment);
+        records.push(
+            initialAssessment
+        );
     }
 
-    records.push(...dailyAssessments);
+    /*
+     * Daily selalu masuk.
+     */
+    records.push(
+        ...dailyAssessments
+    );
 
+    /*
+     * Terbaru → terlama.
+     */
     return records.sort(
         (a, b) =>
             getTimestamp(b) -
@@ -73,14 +535,10 @@ export function getAssessmentSources({
     );
 }
 
-/**
- * Zyba Score.
- *
- * Karena schema DailyAssessment saat ini
- * TIDAK punya zybaScore, dashboard menggunakan
- * nilai User.zybaScore yang dihitung/disimpan
- * oleh backend.
- */
+/* =====================================================
+   GET LATEST ZYBA SCORE
+===================================================== */
+
 export function getLatestZybaScore({
     userZybaScore,
     initialAssessment,
@@ -88,59 +546,163 @@ export function getLatestZybaScore({
     isNewAccount,
 }: {
     userZybaScore?: number | null;
-    initialAssessment?: InitialAssessment | null;
-    dailyAssessments: DailyAssessment[];
+
+    initialAssessment?:
+    | InitialAssessment
+    | null;
+
+    dailyAssessments:
+    DailyAssessment[];
+
     isNewAccount: boolean;
 }) {
-    const sources = getAssessmentSources({
-        isNewAccount,
-        initialAssessment,
-        dailyAssessments,
-    });
+    /*
+     * Urutkan daily terbaru.
+     */
+    const sortedDaily =
+        [...dailyAssessments].sort(
+            (a, b) =>
+                getTimestamp(b) -
+                getTimestamp(a)
+        );
 
-    const hasAssessment =
-        sources.length > 0 ||
-        userZybaScore !== null &&
-        userZybaScore !== undefined;
+    /*
+     * ===================================================
+     * PRIORITAS 1:
+     * DAILY TERBARU
+     * ===================================================
+     */
+    for (
+        const daily of sortedDaily
+    ) {
+        const score =
+            calculateDailyZybaScore(
+                daily
+            );
+
+        if (
+            score !== null
+        ) {
+            return {
+                score,
+
+                hasAssessment:
+                    true,
+
+                latest:
+                    daily,
+
+                latestScored:
+                    daily,
+            };
+        }
+    }
+
+    /*
+     * ===================================================
+     * PRIORITAS 2:
+     * ASSESSMENT AWAL
+     * ===================================================
+     */
+    if (
+        isNewAccount &&
+        initialAssessment
+    ) {
+        const initialScore =
+            getAssessmentScore(
+                initialAssessment
+            );
+
+        if (
+            initialScore !== null
+        ) {
+            return {
+                score:
+                    initialScore,
+
+                hasAssessment:
+                    true,
+
+                latest:
+                    initialAssessment,
+
+                latestScored:
+                    initialAssessment,
+            };
+        }
+    }
+
+    /*
+     * ===================================================
+     * PRIORITAS 3:
+     * USER SCORE LAMA
+     * ===================================================
+     *
+     * Hanya fallback kalau assessment
+     * belum menyediakan data score.
+     */
+    const fallback =
+        normalizeScore(
+            userZybaScore
+        );
 
     return {
         score:
-            userZybaScore ?? null,
+            fallback,
 
-        hasAssessment,
+        hasAssessment:
+            sortedDaily.length > 0 ||
+            Boolean(
+                initialAssessment
+            ) ||
+            fallback !== null,
 
         latest:
-            sources.length > 0
-                ? sources[0]
-                : null,
+            sortedDaily[0] ??
+            initialAssessment ??
+            null,
+
+        latestScored:
+            null,
     };
 }
 
-/**
- * Stress minggu ini.
- *
- * Akun baru:
- * assessment awal + daily
- *
- * Akun lama:
- * daily saja
- */
+/* =====================================================
+   WEEKLY STRESS
+===================================================== */
+
 export function getWeeklyStressData({
     isNewAccount,
     initialAssessment,
     dailyAssessments,
 }: {
     isNewAccount: boolean;
-    initialAssessment?: InitialAssessment | null;
-    dailyAssessments: DailyAssessment[];
-}) {
-    const now = new Date();
 
-    /**
-     * Awal minggu = Senin.
-     */
+    initialAssessment?:
+    | InitialAssessment
+    | null;
+
+    dailyAssessments:
+    DailyAssessment[];
+}) {
+    const now =
+        new Date();
+
+    const jakartaNow =
+        new Date(
+            now.toLocaleString(
+                "en-US",
+                {
+                    timeZone:
+                        "Asia/Jakarta",
+                }
+            )
+        );
+
     const startOfWeek =
-        new Date(now);
+        new Date(
+            jakartaNow
+        );
 
     startOfWeek.setHours(
         0,
@@ -158,17 +720,18 @@ export function getWeeklyStressData({
             : day - 1;
 
     startOfWeek.setDate(
-        startOfWeek.getDate() - diff
+        startOfWeek.getDate() -
+        diff
     );
 
-    /**
-     * Akhir minggu = Minggu.
-     */
     const endOfWeek =
-        new Date(startOfWeek);
+        new Date(
+            startOfWeek
+        );
 
     endOfWeek.setDate(
-        endOfWeek.getDate() + 6
+        endOfWeek.getDate() +
+        6
     );
 
     endOfWeek.setHours(
@@ -178,9 +741,6 @@ export function getWeeklyStressData({
         999
     );
 
-    /**
-     * Daily selalu masuk.
-     */
     const records: {
         date: string;
         stressLevel: number;
@@ -190,49 +750,76 @@ export function getWeeklyStressData({
     dailyAssessments.forEach(
         (item) => {
             if (
-                item.stressLevel === null ||
-                item.stressLevel === undefined
+                item.stressLevel ===
+                null ||
+                item.stressLevel ===
+                undefined
+            ) {
+                return;
+            }
+
+            const timestamp =
+                getTimestamp(item);
+
+            if (
+                timestamp === 0
             ) {
                 return;
             }
 
             const date =
-                item.createdAt
-                    ? new Date(item.createdAt)
-                    : item.date
-                        ? new Date(item.date)
-                        : null;
+                new Date(
+                    timestamp
+                );
 
-            if (!date) return;
+            const jakartaDate =
+                new Intl.DateTimeFormat(
+                    "en-CA",
+                    {
+                        timeZone:
+                            "Asia/Jakarta",
+                        year: "numeric",
+                        month: "2-digit",
+                        day: "2-digit",
+                    }
+                ).format(date);
+
+            const target =
+                new Date(
+                    `${jakartaDate}T00:00:00`
+                );
 
             if (
-                date >= startOfWeek &&
-                date <= endOfWeek
+                target < startOfWeek ||
+                target > endOfWeek
             ) {
-                records.push({
-                    date: item.date ??
-                        date.toISOString().slice(0, 10),
-
-                    stressLevel:
-                        Number(item.stressLevel),
-
-                    createdAt:
-                        item.createdAt,
-                });
+                return;
             }
+
+            records.push({
+                date:
+                    jakartaDate,
+
+                stressLevel:
+                    Number(
+                        item.stressLevel
+                    ),
+
+                createdAt:
+                    item.createdAt,
+            });
         }
     );
 
-    /**
-     * Assessment awal hanya ikut untuk AKUN BARU.
-     *
-     * Hanya dimasukkan kalau tanggalnya
-     * memang berada di minggu berjalan.
+    /*
+     * Assessment awal hanya untuk akun baru.
      */
     if (
         isNewAccount &&
-        initialAssessment?.stressLevel !== null &&
-        initialAssessment?.stressLevel !== undefined &&
+        initialAssessment?.stressLevel !==
+        null &&
+        initialAssessment?.stressLevel !==
+        undefined &&
         initialAssessment?.createdAt
     ) {
         const date =
@@ -240,14 +827,32 @@ export function getWeeklyStressData({
                 initialAssessment.createdAt
             );
 
+        const jakartaDate =
+            new Intl.DateTimeFormat(
+                "en-CA",
+                {
+                    timeZone:
+                        "Asia/Jakarta",
+                    year: "numeric",
+                    month: "2-digit",
+                    day: "2-digit",
+                }
+            ).format(date);
+
+        const target =
+            new Date(
+                `${jakartaDate}T00:00:00`
+            );
+
         if (
-            date >= startOfWeek &&
-            date <= endOfWeek
+            target >=
+            startOfWeek &&
+            target <=
+            endOfWeek
         ) {
             records.push({
-                date: date
-                    .toISOString()
-                    .slice(0, 10),
+                date:
+                    jakartaDate,
 
                 stressLevel:
                     Number(
@@ -260,16 +865,18 @@ export function getWeeklyStressData({
         }
     }
 
-    /**
-     * Urutkan terbaru.
+    /*
+     * Terbaru dulu.
      */
     records.sort(
         (a, b) =>
             new Date(
-                b.createdAt ?? b.date
+                b.createdAt ??
+                `${b.date}T00:00:00+07:00`
             ).getTime() -
             new Date(
-                a.createdAt ?? a.date
+                a.createdAt ??
+                `${a.date}T00:00:00+07:00`
             ).getTime()
     );
 
@@ -283,41 +890,50 @@ export function getWeeklyStressData({
         "Min",
     ];
 
-    const days = dayNames.map(
-        (dayName, index) => {
-            const target =
-                new Date(startOfWeek);
-
-            target.setDate(
-                startOfWeek.getDate() +
+    const days =
+        dayNames.map(
+            (
+                dayName,
                 index
-            );
+            ) => {
+                const target =
+                    new Date(
+                        startOfWeek
+                    );
 
-            const targetDate =
-                target
-                    .toISOString()
-                    .slice(0, 10);
-
-            /**
-             * Kalau ada beberapa record
-             * di tanggal yang sama, ambil
-             * yang paling baru.
-             */
-            const record =
-                records.find(
-                    (item) =>
-                        item.date === targetDate
+                target.setDate(
+                    startOfWeek.getDate() +
+                    index
                 );
 
-            return {
-                day: dayName,
-                date: targetDate,
-                stressLevel:
-                    record?.stressLevel ??
-                    null,
-            };
-        }
-    );
+                const targetDate =
+                    target
+                        .toISOString()
+                        .slice(
+                            0,
+                            10
+                        );
+
+                const record =
+                    records.find(
+                        (item) =>
+                            item.date ===
+                            targetDate
+                    );
+
+                return {
+                    day:
+                        dayName,
+
+                    date:
+                        targetDate,
+
+                    stressLevel:
+                        record?.stressLevel ??
+                        null,
+                };
+            }
+        );
 
     const values =
         records.map(
@@ -330,10 +946,14 @@ export function getWeeklyStressData({
             ? Number(
                 (
                     values.reduce(
-                        (sum, value) =>
+                        (
+                            sum,
+                            value
+                        ) =>
                             sum + value,
                         0
-                    ) / values.length
+                    ) /
+                    values.length
                 ).toFixed(1)
             )
             : null;
@@ -341,6 +961,7 @@ export function getWeeklyStressData({
     return {
         days,
         average,
-        count: values.length,
+        count:
+            values.length,
     };
 }

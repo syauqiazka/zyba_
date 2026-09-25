@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
@@ -13,13 +14,6 @@ interface DailyAssessmentRecord {
   date?: string | null;
   createdAt?: string | null;
   stressLevel?: number | null;
-}
-
-interface StressLevelChartProps {
-  // Props lama tetap dipertahankan supaya tidak merusak Dashboard.
-  weeklyData?: WeeklyStressData[];
-  average?: number | null;
-  stressLabel?: string;
 }
 
 const DAY_NAMES = [
@@ -157,9 +151,7 @@ function getStressTheme(stressLevel: number | null) {
   };
 }
 
-function getStressLabel(
-  stressLevel: number | null,
-) {
+function getStressLabel(stressLevel: number | null) {
   if (
     stressLevel === null ||
     stressLevel === undefined
@@ -175,16 +167,11 @@ function getStressLabel(
   return STRESS_LABELS[safeLevel];
 }
 
-export default function StressLevelChart({
-  weeklyData: fallbackWeeklyData = [],
-}: StressLevelChartProps) {
+export default function StressLevelChart() {
   const [weeklyData, setWeeklyData] =
-    useState<WeeklyStressData[]>(
-      fallbackWeeklyData,
-    );
+    useState<WeeklyStressData[]>([]);
 
   const [loading, setLoading] = useState(true);
-
   const [error, setError] = useState(false);
 
   useEffect(() => {
@@ -195,12 +182,6 @@ export default function StressLevelChart({
         setLoading(true);
         setError(false);
 
-        /*
-         * Daily Assessment adalah sumber data utama.
-         *
-         * Maksimal data dalam 1 minggu = 7 record,
-         * jadi limit 7 sudah cukup untuk minggu berjalan.
-         */
         const response = await fetch(
           "/api/daily-assessment?limit=7&page=1",
           {
@@ -234,18 +215,8 @@ export default function StressLevelChart({
           err,
         );
 
-        /*
-         * Kalau API gagal, jangan kosongkan chart.
-         * Pakai props lama sebagai fallback.
-         */
         if (!cancelled) {
           setError(true);
-
-          if (fallbackWeeklyData.length > 0) {
-            setWeeklyData(
-              fallbackWeeklyData,
-            );
-          }
         }
       } finally {
         if (!cancelled) {
@@ -259,16 +230,19 @@ export default function StressLevelChart({
     return () => {
       cancelled = true;
     };
-  }, [fallbackWeeklyData]);
-
-  const hasData = weeklyData.some(
-    (item) =>
-      item.stressLevel !== null &&
-      item.stressLevel !== undefined,
-  );
+  }, []);
 
   const today = getJakartaDateKey();
 
+  // Cek apakah ada data stress
+  const hasData = weeklyData.some(
+    (item) =>
+      item.stressLevel !== null &&
+      item.stressLevel !== undefined &&
+      Number.isFinite(item.stressLevel),
+  );
+
+  // Hitung rata-rata stress minggu ini
   const average = useMemo(() => {
     const values = weeklyData
       .map((item) => item.stressLevel)
@@ -380,12 +354,10 @@ export default function StressLevelChart({
                     rounded-t-xl
                     transition-all
                     duration-500
-
                     ${hasValue
                       ? stressTheme.bar
                       : "bg-cream border-t border-dashed border-brown-900/20"
                     }
-
                     ${isToday && hasValue
                       ? "shadow-md"
                       : ""
@@ -398,7 +370,6 @@ export default function StressLevelChart({
                   className={`
                     text-[10px]
                     font-semibold
-
                     ${isToday && hasValue
                       ? stressTheme.text
                       : "text-brown-700"
@@ -412,7 +383,9 @@ export default function StressLevelChart({
           })
         ) : (
           <div className="w-full h-full flex items-center justify-center text-xs text-brown-700">
-            Belum ada data assessment minggu ini.
+            {loading
+              ? "Memuat data assessment..."
+              : "Belum ada data assessment minggu ini."}
           </div>
         )}
       </div>
@@ -440,12 +413,14 @@ export default function StressLevelChart({
         )}
       </div>
 
+      {/* ERROR */}
       {error && (
-        <span className="text-[9px] text-brown-700/60 mt-2">
-          Data ditampilkan dari cache sebelumnya karena
-          histori Daily Assessment gagal dimuat.
+        <span className="text-[9px] text-red-500/70 mt-2">
+          Histori Daily Assessment gagal dimuat.
         </span>
       )}
     </div>
   );
 }
+
+

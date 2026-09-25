@@ -9,20 +9,43 @@ import ScoreSlider, { scoreText, scoreTint } from "@/components/ScoreSlider";
 export { MOODS };
 
 // ---------- Types ----------
-
 export interface DailyRecord {
   id: string;
   date: string;
   mood: string;
+
   stressLevel: number | null;
+  anxietyLevel?: number | null;
+  satisfactionLevel?: number | null;
+  productivityLevel?: number | null;
+  meTimeLevel?: number | null;
+
   sleepRating: number | null;
+  sleepHours?: number | string | null;
+
+  energyLevel?: number | null;
+  eatingHabit?: number | null;
+  physicalActivity?: number | null;
+
+  socialConnection?: number | null;
+  socialSupport?: number | null;
+  communityInteraction?: number | null;
+
   energyTags: string[];
+  gratitude?: string | null;
   reflection: string | null;
+
+  calculatedScore?: number | null;
+  zybaScore?: number | null;
+  score?: number | null;
+
+  condition?: string | null;
+
   flaggedForRisk: boolean;
+
   createdAt: string;
   updatedAt: string;
 }
-
 export interface Pagination {
   page: number;
   limit: number;
@@ -73,7 +96,7 @@ export const GOALS_LIST = [
 ];
 
 export interface DailyAssessmentSubmitData {
-  // Mental (6)
+  // Mental
   mood: string;
   stressLevel: number;
   anxietyLevel: number;
@@ -81,14 +104,14 @@ export interface DailyAssessmentSubmitData {
   productivityLevel: number;
   meTimeLevel: number;
 
-  // Fisik (5)
+  // Fisik
   sleepRating: number;
   sleepHours: number | string;
   energyLevel: number;
   eatingHabit: number;
   physicalActivity: number;
 
-  // Sosial (3)
+  // Sosial
   socialConnection: number;
   socialSupport: number;
   communityInteraction: number;
@@ -97,7 +120,7 @@ export interface DailyAssessmentSubmitData {
   gratitude: string;
   reflection: string;
 
-  // Konteks baseline & profil
+  // Context
   goal: string;
   gender: string;
   age: string;
@@ -107,6 +130,9 @@ export interface DailyAssessmentSubmitData {
   mentalSymptoms: string[];
   medications: string;
   energyTags: string[];
+
+  // ⭐ TAMBAHAN
+  calculatedScore: number;
 }
 
 interface FormProps {
@@ -249,16 +275,20 @@ export function DailyAssessmentForm({ onSubmit, isSubmitting, onMoodChange }: Fo
       satisfactionLevel,
       productivityLevel,
       meTimeLevel,
+
       sleepRating,
       sleepHours,
       energyLevel,
       eatingHabit,
       physicalActivity,
+
       socialConnection,
       socialSupport,
       communityInteraction,
+
       gratitude,
       reflection,
+
       goal,
       gender,
       age,
@@ -268,9 +298,11 @@ export function DailyAssessmentForm({ onSubmit, isSubmitting, onMoodChange }: Fo
       mentalSymptoms,
       medications,
       energyTags,
+
+      // ⭐ SCORE HASIL ASSESSMENT HARI INI
+      calculatedScore: estimatedScores.zyba,
     });
   };
-
   return (
     <div className="flex flex-col gap-6">
       {/* Stepper Tabs */}

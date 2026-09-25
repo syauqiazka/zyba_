@@ -9,6 +9,12 @@ import CompanionWidget from "./components/CompanionWidget";
 import TrackerChecklist from "./components/TrackerChecklist";
 import QuickAccessCards from "./components/QuickAccessCards";
 
+import {
+  getLatestZybaScore,
+  type AssessmentMetric,
+  type DailyAssessment,
+} from "@/lib/assessmentMetrics";
+
 interface UserData {
   name: string;
   avatarUrl?: string;
@@ -41,135 +47,397 @@ const EMPTY_USER: UserData = {
   conversationCount: 0,
 };
 
+function getJakartaDateKey(
+  date = new Date()
+) {
+  return new Intl.DateTimeFormat(
+    "en-CA",
+    {
+      timeZone: "Asia/Jakarta",
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+    }
+  ).format(date);
+}
+
+function getAssessmentTime(
+  item: DailyAssessment
+) {
+  if (item.createdAt) {
+    const time =
+      new Date(
+        item.createdAt
+      ).getTime();
+
+    if (Number.isFinite(time)) {
+      return time;
+    }
+  }
+
+  if (item.date) {
+    const time =
+      new Date(
+        `${item.date}T00:00:00+07:00`
+      ).getTime();
+
+    if (Number.isFinite(time)) {
+      return time;
+    }
+  }
+
+  return 0;
+}
+
 export default function DashboardPage() {
   const [userData, setUserData] =
-    useState<UserData>(EMPTY_USER);
+    useState<UserData>(
+      EMPTY_USER
+    );
 
-  const [trackerState, setTrackerState] = useState<{
-    [key: string]: boolean;
-  }>({
-    "Zyba Hours (Breathing)": false,
-    "Health Journal Entry": false,
-    "Daily Resource Reading": false,
-    "Mental Journal Reflection": false,
-    "Community Activity": false,
-  });
+  const [trackerState, setTrackerState] =
+    useState<
+      Record<string, boolean>
+    >({
+      "Zyba Hours (Breathing)": false,
+      "Health Journal Entry": false,
+      "Daily Resource Reading": false,
+      "Mental Journal Reflection": false,
+      "Community Activity": false,
+    });
 
   const [todayFormatted, setTodayFormatted] =
     useState("");
 
-  /* =====================================================
-     LOAD USER DATA
-  ===================================================== */
-
+  /*
+   * =====================================================
+   * LOAD DASHBOARD
+   * =====================================================
+   */
   useEffect(() => {
     let cancelled = false;
 
     async function fetchDashboardData() {
       try {
-        const res = await fetch("/api/user/me", {
-          cache: "no-store",
-        });
+        /*
+         * User + Daily Assessment
+         * diambil bersamaan.
+         */
+        const [
+          userResponse,
+          assessmentResponse,
+        ] = await Promise.all([
+          fetch(
+            "/api/user/me",
+            {
+              method: "GET",
+              cache: "no-store",
+            }
+          ),
 
-        if (!res.ok) {
+          fetch(
+            "/api/daily-assessment?limit=100&page=1",
+            {
+              method: "GET",
+              cache: "no-store",
+            }
+          ),
+        ]);
+
+        if (
+          !userResponse.ok
+        ) {
           throw new Error(
-            `Request gagal: ${res.status}`,
+            `User API gagal: ${userResponse.status}`
           );
         }
 
-        const data = await res.json();
-
-        if (!data.success) {
+        if (
+          !assessmentResponse.ok
+        ) {
           throw new Error(
-            data.error ||
-            "Gagal mengambil data user",
+            `Daily Assessment API gagal: ${assessmentResponse.status}`
           );
         }
 
-        if (cancelled) return;
+        const userData =
+          await userResponse.json();
 
-        const stats = data.stats ?? {};
+        const assessmentData =
+          await assessmentResponse.json();
+
+        if (
+          !userData.success
+        ) {
+          throw new Error(
+            userData.error ||
+            "Gagal mengambil data user"
+          );
+        }
+
+        if (cancelled) {
+          return;
+        }
+
+        const user =
+          userData.user ?? {};
+
+        const stats =
+          userData.stats ?? {};
 
         /*
-         * API /api/user/me sekarang menjadi sumber
-         * data profil + status assessment terbaru.
+         * =====================================================
+         * DAILY ASSESSMENT
+         * =====================================================
+         */
+        const history: DailyAssessment[] =
+          Array.isArray(
+            assessmentData.history
+          )
+            ? assessmentData.history
+            : [];
+
+        /*
+         * =====================================================
+         * ASSESSMENT SOURCE
+         * =====================================================
+         */
+        const isNewAccount =
+          Boolean(
+            userData.isNewAccount ??
+            stats.isNewAccount ??
+            false
+          );
+
+        const initialAssessment =
+          (userData.initialAssessment ??
+            userData.assessment ??
+            stats.initialAssessment ??
+            null) as
+          | AssessmentMetric
+          | null;
+
+        /*
+         * =====================================================
+         * DAILY ASSESSMENT TERBARU
+         * =====================================================
+         */
+        const sortedHistory =
+          [...history].sort(
+            (a, b) =>
+              getAssessmentTime(b) -
+              getAssessmentTime(a)
+          );
+
+        const latestDaily =
+          sortedHistory[0] ??
+          null;
+
+        /*
+         * =====================================================
+         * SCORE HARI INI / TERBARU
+         * =====================================================
+         */
+        const zyba =
+          getLatestZybaScore({
+            isNewAccount,
+
+            initialAssessment:
+              initialAssessment as any,
+
+            dailyAssessments:
+              sortedHistory,
+
+            /*
+             * FALLBACK
+             * kalau API Daily Assessment
+             * belum mengirim score per record.
+             */
+            userZybaScore:
+              user.zybaScore ??
+              stats.zybaScore ??
+              null,
+          });
+
+        /*
+         * =====================================================
+         * CONDITION
+         * =====================================================
+         */
+        let condition =
+          "Belum Dinilai";
+
+        if (
+          zyba.score !== null
+        ) {
+          if (
+            zyba.score >= 80
+          ) {
+            condition = "Baik";
+          } else if (
+            zyba.score >= 60
+          ) {
+            condition = "Cukup";
+          } else {
+            condition =
+              "Perlu Perhatian";
+          }
+        }
+
+        /*
+         * =====================================================
+         * STRESS TERBARU
+         * =====================================================
+         */
+        const latestStress =
+          latestDaily?.stressLevel !=
+            null
+            ? Number(
+              latestDaily.stressLevel
+            )
+            : null;
+
+        const stressLabels = [
+          "",
+          "Sangat Rendah",
+          "Rendah",
+          "Sedang",
+          "Tinggi",
+          "Sangat Tinggi",
+        ];
+
+        const stressLabel =
+          latestStress !== null
+            ? stressLabels[
+            Math.min(
+              5,
+              Math.max(
+                1,
+                Math.round(
+                  latestStress
+                )
+              )
+            )
+            ]
+            : "Belum Ada Data";
+
+        /*
+         * =====================================================
+         * HAS ASSESSMENT
+         * =====================================================
          */
         const hasAssessment =
-          Boolean(stats.hasAssessment);
+          Boolean(
+            history.length > 0 ||
+            initialAssessment ||
+            stats.hasAssessment
+          );
 
-        const nextUserData: UserData = {
+        /*
+         * =====================================================
+         * USER DATA
+         * =====================================================
+         */
+        const nextUserData:
+          UserData = {
           name:
-            data.user?.name ||
+            user.name ||
             "Pengguna ZYBA",
 
           avatarUrl:
-            data.user?.avatarUrl ||
+            user.avatarUrl ||
             "🦊",
 
           zybaScore:
-            stats.zybaScore ??
-            null,
+            zyba.score,
 
-          condition:
-            stats.condition ||
-            "Belum Dinilai",
+          condition,
 
           stressLevel:
-            stats.stressLevel ??
-            null,
+            latestStress,
 
-          stressLabel:
-            stats.stressLabel ||
-            "Belum Ada Data",
+          stressLabel,
+
+          hasAssessment,
 
           streak:
             hasAssessment
               ? Math.max(
                 1,
-                Number(stats.streak || 1),
+                Number(
+                  stats.streak ||
+                  1
+                )
               )
               : 0,
 
-          hasAssessment,
-
           conversationCount:
             Number(
-              stats.conversationCount || 0,
+              stats.conversationCount ||
+              0
             ),
         };
 
-        setUserData(nextUserData);
+        setUserData(
+          nextUserData
+        );
 
         /*
-         * Cache untuk render cepat saat user kembali
-         * membuka Dashboard.
+         * =====================================================
+         * CACHE
+         * =====================================================
          */
         try {
           localStorage.setItem(
             "zyba_user_cache",
             JSON.stringify({
               name:
-                data.user?.name ||
+                user.name ||
                 "Pengguna ZYBA",
 
               email:
-                data.user?.email,
+                user.email,
 
               avatarUrl:
-                data.user?.avatarUrl ||
+                user.avatarUrl ||
                 "🦊",
 
-              stats,
-            }),
+              stats: {
+                ...stats,
+
+                zybaScore:
+                  zyba.score,
+
+                condition,
+
+                stressLevel:
+                  latestStress,
+
+                stressLabel,
+
+                hasAssessment,
+              },
+
+              initialAssessment,
+
+              dailyAssessments:
+                sortedHistory,
+            })
           );
         } catch {
-          // Abaikan error localStorage
+          // Abaikan localStorage
         }
       } catch (error) {
         console.error(
           "Failed to load dashboard:",
-          error,
+          error
         );
+
+        if (!cancelled) {
+          setUserData(
+            EMPTY_USER
+          );
+        }
       }
     }
 
@@ -180,23 +448,24 @@ export default function DashboardPage() {
     };
   }, []);
 
-  /* =====================================================
-     LOAD TRACKER
-  ===================================================== */
-
+  /*
+   * =====================================================
+   * LOAD TRACKER
+   * =====================================================
+   */
   useEffect(() => {
     try {
       const todayKey =
-        `zyba_trackers_${getDateKey(
-          new Date(),
-        )}`;
+        `zyba_trackers_${getJakartaDateKey()}`;
 
       const saved =
         localStorage.getItem(
-          todayKey,
+          todayKey
         );
 
-      if (!saved) return;
+      if (!saved) {
+        return;
+      }
 
       const parsed =
         JSON.parse(saved);
@@ -205,17 +474,20 @@ export default function DashboardPage() {
         parsed &&
         typeof parsed === "object"
       ) {
-        setTrackerState(parsed);
+        setTrackerState(
+          parsed
+        );
       }
     } catch {
-      // Abaikan error localStorage
+      // Abaikan error
     }
   }, []);
 
-  /* =====================================================
-     DATE
-  ===================================================== */
-
+  /*
+   * =====================================================
+   * DATE
+   * =====================================================
+   */
   useEffect(() => {
     setTodayFormatted(
       new Intl.DateTimeFormat(
@@ -225,52 +497,57 @@ export default function DashboardPage() {
           day: "numeric",
           month: "short",
           year: "numeric",
-        },
-      ).format(new Date()),
+          timeZone:
+            "Asia/Jakarta",
+        }
+      ).format(
+        new Date()
+      )
     );
   }, []);
 
-  /* =====================================================
-     TRACKER
-  ===================================================== */
-
+  /*
+   * =====================================================
+   * TRACKER
+   * =====================================================
+   */
   const completedCount =
     Object.values(
-      trackerState,
+      trackerState
     ).filter(Boolean).length;
 
   const totalTrackers =
     Object.keys(
-      trackerState,
+      trackerState
     ).length;
 
   const toggleTracker = (
-    key: string,
+    key: string
   ) => {
-    setTrackerState((prev) => {
-      const nextState = {
-        ...prev,
-        [key]: !prev[key],
-      };
+    setTrackerState(
+      (prev) => {
+        const nextState = {
+          ...prev,
+          [key]: !prev[key],
+        };
 
-      try {
-        const todayKey =
-          `zyba_trackers_${getDateKey(
-            new Date(),
-          )}`;
+        try {
+          const todayKey =
+            `zyba_trackers_${getJakartaDateKey()}`;
 
-        localStorage.setItem(
-          todayKey,
-          JSON.stringify(
-            nextState,
-          ),
-        );
-      } catch {
-        // Abaikan error localStorage
+          localStorage.setItem(
+            todayKey,
+            JSON.stringify(
+              nextState
+            )
+          );
+        } catch {
+          // Abaikan
+        }
+
+        return nextState;
       }
-
-      return nextState;
-    });
+    );
   };
 
   return (
@@ -279,7 +556,6 @@ export default function DashboardPage() {
       {/* =================================================
           TOP BANNER
       ================================================= */}
-
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 glass-card p-6 rounded-3xl border border-brown-900/10 bg-gradient-to-r from-cream via-white to-green-100/40 shadow-sm">
 
         <div>
@@ -317,7 +593,10 @@ export default function DashboardPage() {
                 <span>
                   Mulai Asesmen Awal
                 </span>
-                <span>→</span>
+
+                <span>
+                  →
+                </span>
               </Link>
             </div>
           )}
@@ -359,7 +638,6 @@ export default function DashboardPage() {
       {/* =================================================
           METRICS
       ================================================= */}
-
       <section className="grid grid-cols-1 md:grid-cols-3 gap-6">
 
         <MetricScoreCard
@@ -374,16 +652,6 @@ export default function DashboardPage() {
           }
         />
 
-        {/*
-          StressLevelChart sekarang mengambil
-          histori langsung dari /api/daily-assessment.
-          
-          Tidak perlu lagi:
-          weeklyData
-          average
-          stressLabel
-          buildWeeklyStress()
-        */}
         <StressLevelChart />
 
         <CompanionWidget
@@ -391,12 +659,12 @@ export default function DashboardPage() {
             userData.conversationCount
           }
         />
+
       </section>
 
       {/* =================================================
           TRACKER
       ================================================= */}
-
       <TrackerChecklist
         trackerState={
           trackerState
@@ -415,26 +683,7 @@ export default function DashboardPage() {
       {/* =================================================
           QUICK ACCESS
       ================================================= */}
-
       <QuickAccessCards />
     </div>
   );
-}
-
-/* =====================================================
-   DATE HELPER
-   ===================================================== */
-
-function getDateKey(
-  date: Date,
-) {
-  return new Intl.DateTimeFormat(
-    "en-CA",
-    {
-      timeZone: "Asia/Jakarta",
-      year: "numeric",
-      month: "2-digit",
-      day: "2-digit",
-    },
-  ).format(date);
 }
