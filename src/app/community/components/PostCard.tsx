@@ -6,6 +6,7 @@ import { useCommunity } from "../context/CommunityContext";
 import { Check } from "lucide-react";
 import { useUserStatus, UserStatusConfig } from "@/hooks/useUserStatus";
 import { isAvatarUrl, resolveAvatar } from "@/lib/avatarUtils";
+import UserAvatar from "@/components/ui/UserAvatar";
 
 export interface CommentItem {
   id: string;
@@ -112,55 +113,14 @@ function AvatarBubble({
   size?: "sm" | "md";
   statusConfig?: UserStatusConfig;
 }) {
-  const sz = size === "sm" ? "w-7 h-7 text-[10px]" : "w-10 h-10 text-xs";
-  const colors = [
-    "bg-orange-100 text-orange-600 border-orange-200",
-    "bg-green-100 text-green-700 border-green-200",
-    "bg-mood-depressed/20 text-purple-700 border-purple-200",
-    "bg-mood-happy/30 text-yellow-700 border-yellow-200",
-    "bg-mood-sad/20 text-orange-700 border-orange-200",
-  ];
-  const charCode = (initials || "Z").charCodeAt(0) + ((initials || "Y").charCodeAt(1) || 0);
-  const color = colors[charCode % colors.length];
-  // Status dot offset depends on avatar size
-  const dotSize = size === "sm" ? "w-2.5 h-2.5 border-[2px]" : "w-3.5 h-3.5 border-[2.5px]";
-
-  const isImg = isAvatarUrl(initials);
-  const resolved = resolveAvatar(initials);
-
   return (
-    <div className="relative shrink-0">
-      <div className={`${sz} ${isImg ? "bg-cream border-brown-900/10" : color} rounded-full border font-display font-bold flex items-center justify-center shadow-2xs overflow-hidden`}>
-        {isImg ? (
-          <img
-            src={initials}
-            alt="Avatar"
-            className="w-full h-full object-cover rounded-full"
-            onError={(e) => {
-              e.currentTarget.style.display = "none";
-            }}
-          />
-        ) : null}
-        <span className={isImg ? "text-xs" : ""}>{resolved}</span>
-      </div>
-      {/* Status Dot — only shown for current user's own posts */}
-      {statusConfig && (
-        <div
-          className={`absolute -bottom-0.5 -right-0.5 ${dotSize} rounded-full border-white flex items-center justify-center`}
-          style={{ backgroundColor: statusConfig.hexColor }}
-          title={statusConfig.label}
-        >
-          {/* DND dash mark */}
-          {statusConfig.status === "dnd" && (
-            <div className="w-1.5 h-[2px] bg-white rounded-full" />
-          )}
-          {/* Invisible inner dot */}
-          {statusConfig.status === "invisible" && (
-            <div className="w-1 h-1 rounded-full bg-white/80" />
-          )}
-        </div>
-      )}
-    </div>
+    <UserAvatar
+      src={initials}
+      name={initials}
+      size={size}
+      showStatus={Boolean(statusConfig)}
+      statusConfig={statusConfig as any}
+    />
   );
 }
 

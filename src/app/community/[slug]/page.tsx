@@ -38,6 +38,8 @@ export default function CommunitySlugPage() {
     handleToggleRepost,
     handleAddComment,
     currentUserId,
+    currentUserName,
+    currentUserAvatar,
   } = useCommunity();
 
   const composeRef = useRef<HTMLDivElement>(null);
@@ -146,6 +148,8 @@ export default function CommunitySlugPage() {
               <ComposeBox
                 onAddPost={handleAddPost}
                 onRiskDetected={() => setShowCrisisNotice(true)}
+                currentUserAvatar={currentUserAvatar}
+                currentUserName={currentUserName}
               />
             </div>
           </div>

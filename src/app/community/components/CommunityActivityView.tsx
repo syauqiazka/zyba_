@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCommunity } from "../context/CommunityContext";
 import { Heart, MessageSquare, AtSign, MessageCircle, UserPlus, CheckCheck } from "lucide-react";
+import UserAvatar from "@/components/ui/UserAvatar";
 
 export default function CommunityActivityView() {
   const router = useRouter();
@@ -125,9 +126,12 @@ export default function CommunityActivityView() {
               className="p-4 flex items-start gap-3 hover:bg-cream/30 transition-colors cursor-pointer group"
             >
               <div className="relative shrink-0">
-                <div className="w-10 h-10 rounded-full bg-orange-100 border border-orange-200 flex items-center justify-center font-bold text-xs text-orange-600">
-                  {n.avatar || (n.user ? n.user.slice(0, 2).toUpperCase() : "ZY")}
-                </div>
+                <UserAvatar
+                  src={n.avatar && n.avatar.startsWith("/") ? n.avatar : null}
+                  name={n.user}
+                  size="md"
+                  showStatus={false}
+                />
                 <div
                   className={`absolute -bottom-1 -right-1 w-4 h-4 rounded-full flex items-center justify-center text-[9px] font-bold shadow-xs ${getActionColor(
                     n.action

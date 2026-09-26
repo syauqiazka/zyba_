@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Search, User, FileText, Sprout, Check } from "lucide-react";
+import UserAvatar from "@/components/ui/UserAvatar";
 
 interface SearchResult {
   id: string;
@@ -187,15 +188,18 @@ export default function CommunitySearchView() {
                   className="w-full bg-white rounded-2xl border border-brown-900/8 p-4 shadow-2xs hover:border-orange-500/40 transition-all text-left"
                 >
                   <div className="flex items-start gap-3">
-                    <div className="w-10 h-10 rounded-full bg-cream border border-brown-900/10 flex items-center justify-center font-bold text-sm">
-                      {result.avatarUrl ? (
-                        <img src={result.avatarUrl} alt="" className="w-full h-full rounded-full object-cover" />
-                      ) : result.type === "people" ? (
-                        result.name?.split(" ").map(n => n[0]).join("").toUpperCase().slice(0, 2)
-                      ) : (
+                    {result.type === "people" ? (
+                      <UserAvatar
+                        src={result.avatarUrl}
+                        name={result.name}
+                        size="md"
+                        showStatus={false}
+                      />
+                    ) : (
+                      <div className="w-10 h-10 rounded-full bg-cream border border-brown-900/10 flex items-center justify-center font-bold text-sm shrink-0">
                         <FileText size={16} className="text-brown-700" />
-                      )}
-                    </div>
+                      </div>
+                    )}
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 mb-1">
                         {result.type === "people" ? (

@@ -167,14 +167,28 @@ function getStressLabel(stressLevel: number | null) {
   return STRESS_LABELS[safeLevel];
 }
 
-export default function StressLevelChart() {
-  const [weeklyData, setWeeklyData] =
-    useState<WeeklyStressData[]>([]);
+interface StressLevelChartProps {
+  initialHistory?: DailyAssessmentRecord[];
+}
 
-  const [loading, setLoading] = useState(true);
+export default function StressLevelChart({ initialHistory }: StressLevelChartProps = {}) {
+  const [weeklyData, setWeeklyData] = useState<WeeklyStressData[]>(() => {
+    if (initialHistory && Array.isArray(initialHistory) && initialHistory.length > 0) {
+      return buildWeeklyStress(initialHistory);
+    }
+    return [];
+  });
+
+  const [loading, setLoading] = useState(!initialHistory || initialHistory.length === 0);
   const [error, setError] = useState(false);
 
   useEffect(() => {
+    if (initialHistory && Array.isArray(initialHistory) && initialHistory.length > 0) {
+      setWeeklyData(buildWeeklyStress(initialHistory));
+      setLoading(false);
+      return;
+    }
+
     let cancelled = false;
 
     async function loadWeeklyStress() {
@@ -186,7 +200,6 @@ export default function StressLevelChart() {
           "/api/daily-assessment?limit=7&page=1",
           {
             method: "GET",
-            cache: "no-store",
           },
         );
 

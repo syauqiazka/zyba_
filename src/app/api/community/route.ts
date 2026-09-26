@@ -5,10 +5,33 @@ import { communityRepository } from "@/backend/community/communityRepository";
 import { userRepository } from "@/backend/auth/userRepository";
 import { resolveAvatar } from "@/lib/avatarUtils";
 
+// Fast in-memory cache for community posts (TTL 6s)
+let cachedCommunityPosts: { data: any; timestamp: number } | null = null;
+const COMMUNITY_CACHE_TTL = 6000;
+
+function invalidateCommunityCache() {
+  cachedCommunityPosts = null;
+}
+
 export async function GET() {
   try {
+    if (cachedCommunityPosts && Date.now() - cachedCommunityPosts.timestamp < COMMUNITY_CACHE_TTL) {
+      return NextResponse.json(cachedCommunityPosts.data, {
+        headers: {
+          "Cache-Control": "public, max-age=5, stale-while-revalidate=15",
+        },
+      });
+    }
+
     const posts = await communityRepository.getAllPosts();
-    return NextResponse.json({ success: true, posts });
+    const responseData = { success: true, posts };
+    cachedCommunityPosts = { data: responseData, timestamp: Date.now() };
+
+    return NextResponse.json(responseData, {
+      headers: {
+        "Cache-Control": "public, max-age=5, stale-while-revalidate=15",
+      },
+    });
   } catch (error) {
     console.error("Community get error:", error);
     return NextResponse.json({ success: true, posts: [] });
@@ -42,6 +65,7 @@ export async function POST(req: NextRequest) {
     // Handle like
     if (action === "LIKE" && postId) {
       const liked = await communityRepository.toggleLike(postId, userId);
+      invalidateCommunityCache();
       return NextResponse.json({ success: true, liked });
     }
 
@@ -60,6 +84,7 @@ export async function POST(req: NextRequest) {
         avatar: avatarUrl,
         content: content.trim(),
       });
+      invalidateCommunityCache();
       return NextResponse.json({
         success: true,
         comment,
@@ -92,6 +117,7 @@ export async function POST(req: NextRequest) {
       tag: tag || "Sharing",
       imageUrl: hasImage ? String(imageUrl).trim() : null,
     });
+    invalidateCommunityCache();
 
     return NextResponse.json({
       success: true,

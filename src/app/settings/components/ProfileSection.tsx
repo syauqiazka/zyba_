@@ -3,6 +3,7 @@
 import React, { useRef, useState } from "react";
 import { isAvatarUrl, resolveAvatar } from "@/lib/avatarUtils";
 import { Camera, Loader2 } from "lucide-react";
+import UserAvatar from "@/components/ui/UserAvatar";
 
 interface ProfileSectionProps {
   name: string;
@@ -165,21 +166,13 @@ export default function ProfileSection({
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 rounded-2xl bg-cream/40 border border-brown-900/8">
         <div className="flex items-center gap-4">
           <div className="relative group shrink-0">
-            <div className="w-18 h-18 rounded-full bg-green-500 text-white font-display font-extrabold flex items-center justify-center text-2xl shadow-md shrink-0 overflow-hidden border-2 border-white">
-              {isLoading ? (
-                "…"
-              ) : isImg ? (
-                <img
-                  src={avatarUrl!}
-                  alt={name}
-                  className="w-full h-full object-cover"
-                />
-              ) : avatarUrl && avatarUrl.length <= 4 ? (
-                <span>{resolveAvatar(avatarUrl)}</span>
-              ) : (
-                <span>{initials}</span>
-              )}
-            </div>
+            <UserAvatar
+              src={avatarUrl}
+              name={name}
+              size="lg"
+              className="w-18 h-18 text-2xl shadow-md border-2 border-white"
+              showStatus={false}
+            />
 
             <button
               type="button"

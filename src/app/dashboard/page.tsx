@@ -109,6 +109,9 @@ export default function DashboardPage() {
   const [todayFormatted, setTodayFormatted] =
     useState("");
 
+  const [assessmentHistory, setAssessmentHistory] =
+    useState<any[]>([]);
+
   /*
    * =====================================================
    * LOAD DASHBOARD
@@ -136,10 +139,9 @@ export default function DashboardPage() {
           ),
 
           fetch(
-            "/api/daily-assessment?limit=100&page=1",
+            "/api/daily-assessment?limit=14&page=1",
             {
               method: "GET",
-              cache: "no-store",
             }
           ),
         ]);
@@ -196,6 +198,8 @@ export default function DashboardPage() {
           )
             ? assessmentData.history
             : [];
+
+        setAssessmentHistory(history);
 
         /*
          * =====================================================
@@ -638,7 +642,7 @@ export default function DashboardPage() {
       {/* =================================================
           METRICS
       ================================================= */}
-      <section className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <section className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
 
         <MetricScoreCard
           score={
@@ -652,7 +656,7 @@ export default function DashboardPage() {
           }
         />
 
-        <StressLevelChart />
+        <StressLevelChart initialHistory={assessmentHistory} />
 
         <CompanionWidget
           conversationCount={

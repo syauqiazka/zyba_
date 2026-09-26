@@ -7,18 +7,18 @@ import NavigationProgress from "@/components/ui/NavigationProgress";
 
 function SidebarSkeleton() {
   return (
-    <aside className="w-64 shrink-0 border-r border-brown-900/10 bg-white/70 backdrop-blur-md min-h-screen p-6 flex flex-col justify-between sticky top-0 h-screen z-30">
+    <aside className="w-64 md:w-20 lg:w-64 shrink-0 border-r border-brown-900/10 bg-white/70 backdrop-blur-md min-h-screen p-4 lg:p-6 flex flex-col justify-between sticky top-0 h-screen z-30 animate-pulse">
       <div className="flex flex-col gap-7">
         <div className="flex items-center gap-3 px-2">
-          <div className="w-9 h-9 rounded-2xl bg-cream border border-brown-900/10 animate-pulse" />
-          <div className="flex flex-col gap-1">
-            <div className="w-16 h-4 bg-cream rounded animate-pulse" />
-            <div className="w-20 h-2 bg-cream rounded animate-pulse" />
+          <div className="w-9 h-9 rounded-2xl bg-cream border border-brown-900/10" />
+          <div className="flex flex-col gap-1 md:hidden lg:flex">
+            <div className="w-16 h-4 bg-cream rounded" />
+            <div className="w-20 h-2 bg-cream rounded" />
           </div>
         </div>
         <div className="flex flex-col gap-2">
-          {Array.from({ length: 8 }).map((_, i) => (
-            <div key={i} className="h-10 bg-cream rounded-2xl animate-pulse" />
+          {Array.from({ length: 7 }).map((_, i) => (
+            <div key={i} className="h-10 bg-cream rounded-2xl" />
           ))}
         </div>
       </div>
@@ -115,7 +115,7 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
           </Suspense>
         </div>
 
-        <main className="flex-1 min-w-0 px-4 pt-16 pb-12 md:px-10 md:pt-8 overflow-x-hidden">
+        <main className="flex-1 min-w-0 px-4 pt-16 pb-12 md:px-6 md:pt-6 lg:px-10 lg:pt-8 overflow-x-hidden">
           <Suspense fallback={<PageLoadingFallback />}>
             {children}
           </Suspense>

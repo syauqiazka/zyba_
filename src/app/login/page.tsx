@@ -1,7 +1,9 @@
 "use client";
 
-import React, { useState, useEffect, Suspense } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+export const dynamic = "force-dynamic";
+
+import React, { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import DesktopShowcase from "./components/DesktopShowcase";
 import SignInCard from "./components/SignInCard";
 import ForgotPasswordCard from "./components/ForgotPasswordCard";
@@ -9,17 +11,9 @@ import ProfileSecurityFlow from "./components/ProfileSecurityFlow";
 
 function LoginContent({ defaultMode }: { defaultMode?: "SIGN_IN" | "FORGOT_PASSWORD" | "SIGN_UP" }) {
   const router = useRouter();
-  const searchParams = useSearchParams();
 
   // Mode: "SIGN_IN" (Frame 1) | "FORGOT_PASSWORD" (Frame 2) | "SIGN_UP" (Profile Security Setup)
-  const tabParam = searchParams.get("tab");
-  const initialTab =
-    tabParam === "signup"
-      ? "SIGN_UP"
-      : tabParam === "signin" || tabParam === "login"
-      ? "SIGN_IN"
-      : defaultMode || "SIGN_IN";
-  const [authMode, setAuthMode] = useState<"SIGN_IN" | "FORGOT_PASSWORD" | "SIGN_UP">(initialTab);
+  const [authMode, setAuthMode] = useState<"SIGN_IN" | "FORGOT_PASSWORD" | "SIGN_UP">(defaultMode || "SIGN_IN");
 
   // Form Fields for Sign In
   const [email, setEmail] = useState("");
@@ -28,7 +22,9 @@ function LoginContent({ defaultMode }: { defaultMode?: "SIGN_IN" | "FORGOT_PASSW
   const [loginError, setLoginError] = useState("");
 
   useEffect(() => {
-    const tab = searchParams.get("tab");
+    if (typeof window === "undefined") return;
+    const params = new URLSearchParams(window.location.search);
+    const tab = params.get("tab");
     if (tab === "signup") {
       setAuthMode("SIGN_UP");
     } else if (tab === "signin" || tab === "login") {
@@ -37,7 +33,7 @@ function LoginContent({ defaultMode }: { defaultMode?: "SIGN_IN" | "FORGOT_PASSW
       setAuthMode(defaultMode);
     }
 
-    const errorParam = searchParams.get("error");
+    const errorParam = params.get("error");
     if (errorParam) {
       if (errorParam === "oauth_cancelled") {
         setLoginError("Proses masuk dengan Google dibatalkan.");
@@ -49,7 +45,7 @@ function LoginContent({ defaultMode }: { defaultMode?: "SIGN_IN" | "FORGOT_PASSW
         setLoginError("Terjadi kendala saat login dengan Google.");
       }
     }
-  }, [searchParams, defaultMode]);
+  }, [defaultMode]);
 
   // Sign In Handler
   const handleSignIn = async () => {
@@ -196,15 +192,5 @@ export default function LoginPage({
 }: {
   defaultMode?: "SIGN_IN" | "FORGOT_PASSWORD" | "SIGN_UP";
 }) {
-  return (
-    <Suspense
-      fallback={
-        <div className="min-h-screen flex items-center justify-center text-xs text-brown-700">
-          Memuat Halaman Masuk...
-        </div>
-      }
-    >
-      <LoginContent defaultMode={defaultMode} />
-    </Suspense>
-  );
+  return <LoginContent defaultMode={defaultMode} />;
 }

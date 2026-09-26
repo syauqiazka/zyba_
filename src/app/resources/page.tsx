@@ -105,7 +105,7 @@ export default function ResourcesPage() {
         </div>
 
         {/* Filter Tabs */}
-        <div className="flex items-center gap-2 bg-cream p-1.5 rounded-2xl border border-brown-900/10">
+        <div className="flex items-center gap-2 bg-cream p-1.5 rounded-2xl border border-brown-900/10 overflow-x-auto max-w-full no-scrollbar shrink-0">
           {[
             { id: "ALL", label: "Semua" },
             { id: "ARTICLE", label: "Artikel 📖" },
@@ -114,7 +114,7 @@ export default function ResourcesPage() {
             <button
               key={tab.id}
               onClick={() => setActiveFilter(tab.id as any)}
-              className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${
+              className={`px-4 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap shrink-0 ${
                 activeFilter === tab.id
                   ? "bg-brown-900 text-white shadow-sm"
                   : "text-brown-700 hover:text-brown-900"

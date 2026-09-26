@@ -7,6 +7,7 @@ import { useDM } from "@/hooks/useDM";
 import { MessageCircle, Search, Edit3, Send, Plus, ArrowLeft, ExternalLink } from "lucide-react";
 import { formatChatDateSeparator, isSameCalendarDay, formatChatListTime } from "@/lib/dateUtils";
 import { useUserStatus } from "@/hooks/useUserStatus";
+import UserAvatar from "@/components/ui/UserAvatar";
 
 interface TargetUserMeta {
   id: string;
@@ -251,10 +252,13 @@ export default function CommunityMessagesView() {
               >
                 {/* Avatar with status dot for current user's conversations */}
                 <div className="relative shrink-0">
-                  <div className="w-10 h-10 rounded-full bg-orange-100 border border-orange-200 text-orange-600 flex items-center justify-center font-bold text-xs">
-                    {initials}
-                  </div>
-                  {/* Show MY status dot if this conversation's other user is not me (i.e., this is a conversation where I am one side) */}
+                  <UserAvatar
+                    src={(c as any).otherUserAvatar || null}
+                    name={c.otherUserName || c.otherUserId}
+                    size="md"
+                    showStatus={false}
+                  />
+                  {/* Show MY status dot */}
                   <div
                     className="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 rounded-full border-[2.5px] border-white flex items-center justify-center"
                     style={{ backgroundColor: myStatus.hexColor }}
@@ -332,9 +336,12 @@ export default function CommunityMessagesView() {
                   <ArrowLeft size={16} />
                 </button>
 
-                <div className="w-10 h-10 rounded-full bg-orange-100 border border-orange-200 text-orange-600 flex items-center justify-center font-bold text-sm shrink-0">
-                  {otherName.slice(0, 2).toUpperCase()}
-                </div>
+                <UserAvatar
+                  src={targetUserMeta?.avatarUrl || (activeConv as any)?.otherUserAvatar || null}
+                  name={otherName}
+                  size="md"
+                  showStatus={false}
+                />
                 <div>
                   <div className="flex items-center gap-1.5">
                     <p className="text-sm font-bold text-brown-900">{otherName}</p>

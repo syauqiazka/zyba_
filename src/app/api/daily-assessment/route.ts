@@ -56,6 +56,23 @@ function getTodayDateString(
 }
 
 // =====================================================
+// FAST IN-MEMORY CACHE (TTL 8s)
+// Mengeliminasi query Neon DB berulang saat render Dashboard / Mood
+// =====================================================
+const dailyAssessmentCache = new Map<string, { data: any; timestamp: number }>();
+const CACHE_TTL_MS = 8000;
+
+function invalidateDailyAssessmentCache(userId?: string) {
+  if (userId) {
+    for (const key of dailyAssessmentCache.keys()) {
+      if (key.startsWith(userId)) dailyAssessmentCache.delete(key);
+    }
+  } else {
+    dailyAssessmentCache.clear();
+  }
+}
+
+// =====================================================
 // GET
 // =====================================================
 
@@ -107,6 +124,17 @@ export async function GET(req: NextRequest) {
       )
     );
 
+    // Cek cache
+    const cacheKey = `${userId}:${page}:${limit}:${checkDate}`;
+    const cached = dailyAssessmentCache.get(cacheKey);
+    if (cached && Date.now() - cached.timestamp < CACHE_TTL_MS) {
+      return NextResponse.json(cached.data, {
+        headers: {
+          "Cache-Control": "private, max-age=5, stale-while-revalidate=15",
+        },
+      });
+    }
+
     const skip = (page - 1) * limit;
 
     const [todayRecord, history, total] =
@@ -143,23 +171,27 @@ export async function GET(req: NextRequest) {
         }),
       ]);
 
-    return NextResponse.json({
+    const responseData = {
       today: todayRecord || null,
       todayDate,
-
-      hasCompletedToday:
-        !!todayRecord,
-
+      hasCompletedToday: !!todayRecord,
       history: history || [],
-
       pagination: {
         page,
         limit,
         total,
-        totalPages:
-          total > 0
-            ? Math.ceil(total / limit)
-            : 0,
+        totalPages: total > 0 ? Math.ceil(total / limit) : 0,
+      },
+    };
+
+    dailyAssessmentCache.set(cacheKey, {
+      data: responseData,
+      timestamp: Date.now(),
+    });
+
+    return NextResponse.json(responseData, {
+      headers: {
+        "Cache-Control": "private, max-age=5, stale-while-revalidate=15",
       },
     });
   } catch (error: any) {
@@ -547,6 +579,9 @@ export async function POST(req: NextRequest) {
         error
       );
     }
+
+    // Invalidate caches immediately so dashboard & assessment update instantly
+    invalidateDailyAssessmentCache(userId);
 
     // =================================================
     // RESPONSE

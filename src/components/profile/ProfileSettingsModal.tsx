@@ -6,6 +6,7 @@ import { ProfileUser } from "./ProfilePopover";
 import PersonaPicker from "@/app/companion/components/PersonaPicker";
 import { PersonaId } from "@/backend/ai/personas";
 import { isAvatarUrl, resolveAvatar } from "@/lib/avatarUtils";
+import UserAvatar from "@/components/ui/UserAvatar";
 
 interface ProfileSettingsModalProps {
   user: ProfileUser;
@@ -364,14 +365,18 @@ export default function ProfileSettingsModal({ user, isOpen, onClose, onUserUpda
       onClick={e => { if (e.target === e.currentTarget) onClose(); }}>
       <div className="bg-white rounded-3xl shadow-2xl w-full max-w-4xl h-[88vh] flex overflow-hidden border border-brown-900/10">
 
-        {/* ── Sidebar ── */}
-        <aside className="w-60 shrink-0 bg-cream/60 border-r border-brown-900/10 flex flex-col overflow-y-auto">
+        {/* ── Sidebar (Desktop / Tablet) ── */}
+        <aside className="hidden md:flex w-60 shrink-0 bg-cream/60 border-r border-brown-900/10 flex-col overflow-y-auto">
           {/* User card */}
           <div className="p-4 border-b border-brown-900/10 shrink-0">
             <div className="flex items-center gap-3 p-2 rounded-2xl bg-white/70 border border-brown-900/10">
-              <div className="w-10 h-10 rounded-xl bg-brown-900 text-white font-display font-extrabold flex items-center justify-center text-base shrink-0">
-                {name.slice(0,1).toUpperCase()}
-              </div>
+              <UserAvatar
+                src={avatarUrl}
+                name={name}
+                size="sm"
+                className="w-10 h-10 shrink-0 text-base"
+                showStatus={false}
+              />
               <div className="min-w-0">
                 <p className="text-xs font-bold text-brown-900 truncate">{name}</p>
                 <p className="text-[10px] text-brown-700 truncate">{maskedEmailShort}</p>
@@ -440,12 +445,30 @@ export default function ProfileSettingsModal({ user, isOpen, onClose, onUserUpda
             ✕
           </button>
 
-          <div className="px-10 pt-10 pb-20 flex flex-col gap-1">
+          <div className="px-4 pt-4 md:px-10 md:pt-10 pb-20 flex flex-col gap-1">
             {saveMsg && (
               <div className="sticky top-4 z-20 bg-green-100 border border-green-300 text-green-800 text-xs font-bold px-4 py-2.5 rounded-xl flex items-center gap-2 shadow-sm mb-4">
                 ✓ {saveMsg}
               </div>
             )}
+
+            {/* Mobile Tab Navigation Bar */}
+            <div className="md:hidden flex items-center gap-1.5 overflow-x-auto pb-3 mb-2 border-b border-brown-900/10 no-scrollbar">
+              {SIDEBAR.flatMap(s => s.items).map(item => (
+                <button
+                  key={item.id}
+                  type="button"
+                  onClick={() => scrollTo(item.id)}
+                  className={`px-3 py-1.5 rounded-full text-xs font-bold shrink-0 transition-colors ${
+                    activeId === item.id
+                      ? "bg-brown-900 text-white shadow-xs"
+                      : "bg-cream text-brown-700 hover:bg-brown-900/10"
+                  }`}
+                >
+                  {item.label}
+                </button>
+              ))}
+            </div>
 
             {/* ── PENGATURAN AKUN ────────────────────────────────────── */}
             <Section id="profile-info" title="Info Profil">
@@ -454,15 +477,13 @@ export default function ProfileSettingsModal({ user, isOpen, onClose, onUserUpda
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-brown-900/10">
                   <div className="flex items-center gap-4">
                     <div className="relative group shrink-0">
-                      <div className="w-16 h-16 rounded-full bg-green-500 border-2 border-orange-200 flex items-center justify-center text-2xl font-bold text-white shadow-md overflow-hidden">
-                        {isAvatarUrl(avatarUrl) ? (
-                          <img src={avatarUrl!} alt={name} className="w-full h-full object-cover" />
-                        ) : avatarUrl && avatarUrl.length <= 4 ? (
-                          <span>{resolveAvatar(avatarUrl)}</span>
-                        ) : (
-                          <span>{name ? name.slice(0, 2).toUpperCase() : "ZY"}</span>
-                        )}
-                      </div>
+                      <UserAvatar
+                        src={avatarUrl}
+                        name={name}
+                        size="lg"
+                        className="w-16 h-16 shadow-md border-2 border-orange-200"
+                        showStatus={false}
+                      />
                       <button
                         type="button"
                         onClick={() => avatarInputRef.current?.click()}

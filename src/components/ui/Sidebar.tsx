@@ -5,7 +5,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import ProfilePopover, { ProfileUser } from "../profile/ProfilePopover";
 import ProfileSettingsModal from "../profile/ProfileSettingsModal";
-import { isAvatarUrl, resolveAvatar } from "@/lib/avatarUtils";
+import UserAvatar from "./UserAvatar";
 
 const NAV_ITEMS = [
   { href: "/dashboard", label: "Dashboard", icon: "home" },
@@ -97,17 +97,17 @@ export default function Sidebar({ onClose }: { onClose?: () => void }) {
   };
 
   return (
-    <aside className="w-64 shrink-0 border-r border-brown-900/10 bg-cream/95 min-h-screen p-5 flex flex-col justify-between sticky top-0 h-screen z-30 shadow-[12px_0_36px_-28px_rgba(59,42,32,0.5)]">
+    <aside className="w-64 md:w-20 lg:w-64 shrink-0 border-r border-brown-900/10 bg-cream/95 min-h-screen p-3 md:p-3 lg:p-5 flex flex-col justify-between sticky top-0 h-screen z-30 shadow-[12px_0_36px_-28px_rgba(59,42,32,0.5)] transition-all duration-300">
       {/* Mobile close button */}
       {onClose && (
         <button type="button" onClick={onClose} className="md:hidden absolute top-3 right-3 w-8 h-8 rounded-lg bg-brown-900/5 hover:bg-brown-900/10 flex items-center justify-center text-brown-700" aria-label="Tutup menu">
           ✕
         </button>
       )}
-      <div className="flex flex-col gap-7">
+      <div className="flex flex-col gap-6">
         {/* Brand Logo */}
-        <Link href="/dashboard" className="flex items-center gap-3 px-2 group">
-          <div className="relative w-9 h-9 flex items-center justify-center rounded-2xl bg-cream border border-orange-500/20 shadow-sm group-hover:scale-105 transition-transform">
+        <Link href="/dashboard" className="flex items-center gap-3 px-2 group justify-center lg:justify-start" title="ZYBA Wellness">
+          <div className="relative w-9 h-9 shrink-0 flex items-center justify-center rounded-2xl bg-cream border border-orange-500/20 shadow-sm group-hover:scale-105 transition-transform">
             {/* 4-petal floral logomark (Orange & Green) */}
             <div className="absolute w-3.5 h-3.5 rounded-full bg-orange-500 -top-0.5 left-1/2 -translate-x-1/2 opacity-90" />
             <div className="absolute w-3.5 h-3.5 rounded-full bg-green-500 -bottom-0.5 left-1/2 -translate-x-1/2 opacity-90" />
@@ -115,7 +115,7 @@ export default function Sidebar({ onClose }: { onClose?: () => void }) {
             <div className="absolute w-3.5 h-3.5 rounded-full bg-green-500 -right-0.5 top-1/2 -translate-y-1/2 opacity-90" />
             <div className="w-2.5 h-2.5 rounded-full bg-brown-900 z-10" />
           </div>
-          <div className="flex flex-col">
+          <div className="flex flex-col md:hidden lg:flex">
             <span className="font-display font-extrabold text-xl tracking-tight text-brown-900">
               ZYBA
             </span>
@@ -134,16 +134,17 @@ export default function Sidebar({ onClose }: { onClose?: () => void }) {
                 key={item.href}
                 href={item.href}
                 onClick={onClose}
-                className={`group/link relative px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all duration-300 flex items-center gap-3 ${
+                title={item.label}
+                className={`group/link relative px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-300 flex items-center justify-center lg:justify-start gap-3 ${
                   isActive
                     ? "bg-brown-900 text-cream shadow-md shadow-brown-900/10 font-semibold"
                     : "text-brown-700 hover:-translate-y-0.5 hover:bg-gradient-to-r hover:from-orange-100/80 hover:to-green-100/80 hover:text-brown-900 hover:shadow-sm"
                 }`}
               >
                 <RenderIcon name={item.icon} isActive={isActive} />
-                <span>{item.label}</span>
+                <span className="md:hidden lg:inline truncate">{item.label}</span>
                 {item.href === "/companion" && (
-                  <span className="ml-auto text-[10px] font-semibold tracking-wide px-2 py-0.5 rounded-full bg-orange-100 text-orange-500">
+                  <span className="ml-auto text-[10px] font-semibold tracking-wide px-2 py-0.5 rounded-full bg-orange-100 text-orange-500 md:hidden lg:inline">
                     BETA
                   </span>
                 )}
@@ -157,15 +158,16 @@ export default function Sidebar({ onClose }: { onClose?: () => void }) {
       <div className="flex flex-col gap-3 pt-4 border-t border-brown-900/10">
         <Link
           href="/settings/zyba-plus"
-          className="bg-white/70 rounded-xl p-3 flex items-center justify-between border border-brown-900/10 transition-colors hover:bg-white hover:border-orange-500/30"
+          title={currentUser.plan === "PLUS" ? "Zyba Plus" : "Upgrade Pro"}
+          className="bg-white/70 rounded-xl p-2 md:p-2 lg:p-3 flex items-center justify-center lg:justify-between border border-brown-900/10 transition-colors hover:bg-white hover:border-orange-500/30"
         >
           <div className="flex items-center gap-2">
-            <span className="flex size-8 items-center justify-center rounded-xl bg-orange-100 text-orange-500" aria-hidden="true">
+            <span className="flex size-8 shrink-0 items-center justify-center rounded-xl bg-orange-100 text-orange-500" aria-hidden="true">
               <svg className="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M12 3.75l1.42 4.83a2 2 0 001.36 1.36L19.6 11.4l-4.82 1.42a2 2 0 00-1.36 1.36L12 19.02l-1.42-4.84a2 2 0 00-1.36-1.36L4.4 11.4l4.82-1.46a2 2 0 001.36-1.36L12 3.75z" />
               </svg>
             </span>
-            <div className="flex flex-col">
+            <div className="flex flex-col md:hidden lg:flex">
               <span className="text-xs font-bold text-brown-900">
                 {currentUser.plan === "PLUS" ? "Zyba Plus" : "Upgrade"}
               </span>
@@ -175,11 +177,11 @@ export default function Sidebar({ onClose }: { onClose?: () => void }) {
             </div>
           </div>
           {currentUser.plan === "PLUS" ? (
-            <span className="text-[10px] bg-orange-500 text-white font-bold px-2 py-0.5 rounded-full">
+            <span className="text-[10px] bg-orange-500 text-white font-bold px-2 py-0.5 rounded-full md:hidden lg:inline">
               PRO
             </span>
           ) : (
-            <span className="text-[10px] text-orange-500 font-bold">
+            <span className="text-[10px] text-orange-500 font-bold md:hidden lg:inline">
               →
             </span>
           )}
@@ -199,35 +201,26 @@ export default function Sidebar({ onClose }: { onClose?: () => void }) {
             onLogout={handleLogout}
           />
 
-          <div className="bg-white/80 hover:bg-white border border-brown-900/10 rounded-2xl p-2 flex items-center justify-between transition-colors shadow-xs">
+          <div className="bg-white/80 hover:bg-white border border-brown-900/10 rounded-2xl p-1.5 lg:p-2 flex items-center justify-center lg:justify-between transition-colors shadow-xs">
             {/* Left: User Avatar + Name + Handle (Clicking toggles Profile Popover) */}
             <button
               type="button"
               onClick={() => setIsProfilePopoverOpen(!isProfilePopoverOpen)}
-              className="flex items-center gap-2.5 p-1 rounded-xl hover:bg-green-100/60 transition-colors text-left flex-1 min-w-0 mr-1 cursor-pointer group"
+              className="flex items-center justify-center lg:justify-start gap-2.5 p-1 rounded-xl hover:bg-green-100/60 transition-colors text-left flex-1 min-w-0 cursor-pointer group"
               title="Buka profil"
             >
-              <div className="relative shrink-0">
-                <div className="w-8 h-8 rounded-full bg-green-500 text-white font-display font-bold flex items-center justify-center text-xs shadow-sm overflow-hidden">
-                  {isAvatarUrl(currentUser.avatarUrl) ? (
-                    <img
-                      src={currentUser.avatarUrl!}
-                      alt={currentUser.name}
-                      className="w-full h-full object-cover"
-                      onError={(e) => {
-                        e.currentTarget.style.display = "none";
-                      }}
-                    />
-                  ) : null}
-                  <span className={isAvatarUrl(currentUser.avatarUrl) ? "text-xs" : "text-base"}>
-                    {resolveAvatar(currentUser.avatarUrl)}
-                  </span>
-                </div>
-                {/* Online indicator dot */}
-                <div className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-[#23a55a] border-2 border-white" />
-              </div>
+              <UserAvatar
+                src={currentUser.avatarUrl}
+                name={currentUser.name}
+                size="sm"
+                statusConfig={{
+                  status: "online",
+                  hexColor: "#23a55a",
+                  label: "Aktif",
+                }}
+              />
 
-              <div className="flex flex-col min-w-0 flex-1">
+              <div className="flex flex-col min-w-0 flex-1 md:hidden lg:flex">
                 <span className="text-xs font-bold text-brown-900 truncate leading-tight group-hover:text-orange-500 transition-colors">
                   {currentUser.name}
                 </span>
@@ -241,7 +234,7 @@ export default function Sidebar({ onClose }: { onClose?: () => void }) {
             <button
               type="button"
               onClick={() => setIsSettingsModalOpen(true)}
-              className="p-2 rounded-xl text-brown-700/70 hover:text-brown-900 hover:bg-brown-900/10 transition-colors cursor-pointer shrink-0"
+              className="p-2 rounded-xl text-brown-700/70 hover:text-brown-900 hover:bg-brown-900/10 transition-colors cursor-pointer shrink-0 md:hidden lg:block"
               title="Pengaturan Akun"
             >
               <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>

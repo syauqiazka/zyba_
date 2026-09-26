@@ -69,8 +69,12 @@ export default function CommunitySidebar({ onClose }: { onClose?: () => void }) 
     };
     window.addEventListener("zyba_badge_update", handleBadgeUpdate);
 
-    // Live polling every 4s for fresh badge updates
-    const interval = setInterval(loadBadges, 4000);
+    // Polling every 30s for badge updates only when page is active/visible
+    const interval = setInterval(() => {
+      if (typeof document !== "undefined" && document.visibilityState === "visible") {
+        loadBadges();
+      }
+    }, 30000);
 
     return () => {
       isMounted = false;

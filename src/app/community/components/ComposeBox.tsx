@@ -3,16 +3,19 @@
 import { useState, useRef } from "react";
 import { detectRisk } from "@/lib/crisisDetection";
 import { Image as ImageIcon, Loader2, X } from "lucide-react";
+import UserAvatar from "@/components/ui/UserAvatar";
 
 interface ComposeBoxProps {
   onAddPost: (content: string, tag: string, mediaUrl?: string) => void;
   onRiskDetected?: () => void;
   currentUserInitials?: string;
+  currentUserAvatar?: string | null;
+  currentUserName?: string | null;
 }
 
 const TAG_OPTIONS = ["Sharing", "Mindfulness", "SleepRoutine", "ZybaRocks", "MentalHealth", "SelfCare"];
 
-export default function ComposeBox({ onAddPost, onRiskDetected, currentUserInitials = "AL" }: ComposeBoxProps) {
+export default function ComposeBox({ onAddPost, onRiskDetected, currentUserInitials = "AL", currentUserAvatar, currentUserName }: ComposeBoxProps) {
   const [content, setContent] = useState("");
   const [selectedTag, setSelectedTag] = useState("Sharing");
   const [showTagPicker, setShowTagPicker] = useState(false);
@@ -137,9 +140,13 @@ export default function ComposeBox({ onAddPost, onRiskDetected, currentUserIniti
       {/* Main compose area */}
       <div className="flex items-start gap-3 px-4 py-3.5">
         {/* Current user avatar */}
-        <div className="w-10 h-10 rounded-full bg-brown-900 border border-brown-900/20 text-white font-display font-bold flex items-center justify-center text-xs shrink-0 mt-0.5 shadow-2xs">
-          {currentUserInitials}
-        </div>
+        <UserAvatar
+          src={currentUserAvatar}
+          name={currentUserName || currentUserInitials}
+          size="md"
+          className="mt-0.5 shrink-0"
+          showStatus={false}
+        />
 
         {/* Textarea + image preview */}
         <div className="flex-1 min-w-0">

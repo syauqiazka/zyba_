@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { X, ChevronDown, Image as ImageIcon, Loader2 } from "lucide-react";
 import { isAvatarUrl, resolveAvatar } from "@/lib/avatarUtils";
+import UserAvatar from "@/components/ui/UserAvatar";
 
 const TAG_OPTIONS = ["Sharing", "Mindfulness", "SleepRoutine", "ZybaRocks", "MentalHealth", "SelfCare"];
 
@@ -176,15 +177,12 @@ export default function CreatePostModal({
 
       {/* User info + topic */}
       <div className="flex items-start gap-3 pt-1">
-        <div className="w-10 h-10 rounded-full bg-orange-100 border border-orange-200 flex items-center justify-center font-bold text-xs text-orange-600 shrink-0 shadow-2xs overflow-hidden">
-          {isImgAvatar ? (
-            <img src={authorAvatar!} alt="Avatar" className="w-full h-full object-cover" />
-          ) : authorAvatar ? (
-            <span className="text-base">{resolveAvatar(authorAvatar)}</span>
-          ) : (
-            <span>{userProfile?.name ? userProfile.name.slice(0, 2).toUpperCase() : "ZY"}</span>
-          )}
-        </div>
+        <UserAvatar
+          src={authorAvatar}
+          name={userProfile?.name}
+          size="md"
+          showStatus={false}
+        />
 
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-1.5 flex-wrap">

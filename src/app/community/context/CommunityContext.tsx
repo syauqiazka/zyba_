@@ -105,6 +105,8 @@ interface CommunityContextType {
   handleToggleRepost: (id: string) => void;
   handleAddComment: (postId: string, commentText: string) => Promise<void>;
   currentUserId: string | null;
+  currentUserName: string | null;
+  currentUserAvatar: string | null;
   handleDeletePost: (postId: string) => Promise<void>;
   handleArchivePost: (postId: string) => Promise<void>;
 }
@@ -143,11 +145,32 @@ export function CommunityProvider({ children }: { children: React.ReactNode }) {
   const [isPostModalOpen, setIsPostModalOpen] = useState(false);
   const [newPostContent, setNewPostContent] = useState("");
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+  const [currentUserName, setCurrentUserName] = useState<string | null>(null);
+  const [currentUserAvatar, setCurrentUserAvatar] = useState<string | null>(null);
 
   useEffect(() => {
+    // First try from localStorage cache (instant hydration)
+    try {
+      const cached = localStorage.getItem("zyba_user_cache");
+      if (cached) {
+        const parsed = JSON.parse(cached);
+        if (parsed?.name) {
+          setCurrentUserName(parsed.name);
+          setCurrentUserAvatar(parsed.avatarUrl || null);
+        }
+      }
+    } catch {}
+
     fetch("/api/user/me")
       .then((r) => r.json())
-      .then((d) => { if (d?.id) setCurrentUserId(String(d.id)); })
+      .then((d) => {
+        // API returns { user: { id, name, avatarUrl, ... }, stats: {...} }
+        if (d?.user?.id) {
+          setCurrentUserId(String(d.user.id));
+          setCurrentUserName(d.user.name || null);
+          setCurrentUserAvatar(d.user.avatarUrl || null);
+        }
+      })
       .catch(() => {});
   }, []);
 
@@ -411,6 +434,8 @@ export function CommunityProvider({ children }: { children: React.ReactNode }) {
         handleToggleRepost,
         handleAddComment,
         currentUserId,
+        currentUserName,
+        currentUserAvatar,
         handleDeletePost,
         handleArchivePost,
       }}

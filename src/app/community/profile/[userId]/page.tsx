@@ -6,6 +6,7 @@ import { ArrowLeft, MessageCircle, Pencil, X, EyeOff, Eye, Camera, Loader2 } fro
 import { useCommunity } from "../../context/CommunityContext";
 import PostCard from "../../components/PostCard";
 import { isAvatarUrl, resolveAvatar } from "@/lib/avatarUtils";
+import UserAvatar from "@/components/ui/UserAvatar";
 
 interface ProfileData {
   userId: string;
@@ -145,15 +146,13 @@ function EditProfileModal({
             }}
           />
           <div className="relative group shrink-0">
-            <div className="w-18 h-18 rounded-full bg-orange-100 border-2 border-orange-300 flex items-center justify-center font-display font-bold text-2xl text-orange-600 shadow-md overflow-hidden">
-              {isAvatarUrl(avatarUrl) ? (
-                <img src={avatarUrl} alt={name} className="w-full h-full object-cover" />
-              ) : avatarUrl && avatarUrl.length <= 4 ? (
-                <span>{resolveAvatar(avatarUrl)}</span>
-              ) : (
-                <span>{name.split(" ").map((p) => p[0]).join("").toUpperCase().slice(0, 2)}</span>
-              )}
-            </div>
+            <UserAvatar
+              src={avatarUrl}
+              name={name}
+              size="lg"
+              className="w-18 h-18 text-2xl shadow-md border-2 border-orange-300"
+              showStatus={false}
+            />
             <button
               type="button"
               onClick={() => avatarInputRef.current?.click()}
@@ -419,15 +418,13 @@ export default function ProfilePage() {
                 <p className="text-xs text-brown-700/60 mt-0.5">@{profile.username}</p>
               </div>
 
-              <div className="w-16 h-16 rounded-full bg-orange-100 border border-orange-200 flex items-center justify-center font-bold text-2xl text-orange-600 shadow-md shrink-0 overflow-hidden">
-                {isAvatarUrl(profile.avatarUrl) ? (
-                  <img src={profile.avatarUrl!} alt={profile.name} className="w-full h-full object-cover" />
-                ) : profile.avatarUrl && profile.avatarUrl.length <= 4 ? (
-                  <span>{resolveAvatar(profile.avatarUrl)}</span>
-                ) : (
-                  <span>{initials}</span>
-                )}
-              </div>
+              <UserAvatar
+                src={profile.avatarUrl}
+                name={profile.name}
+                size="lg"
+                className="w-16 h-16 shadow-md border border-orange-200 shrink-0 text-2xl"
+                showStatus={false}
+              />
             </div>
 
             {profile.bio && (

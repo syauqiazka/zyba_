@@ -19,6 +19,7 @@ import {
   Smile,
 } from "lucide-react";
 import { isAvatarUrl } from "@/lib/avatarUtils";
+import UserAvatar from "@/components/ui/UserAvatar";
 
 export interface ProfileUser {
   name: string;
@@ -186,20 +187,17 @@ export default function ProfilePopover({
             }}
             title="Klik untuk edit profil"
           >
-            <div className="w-20 h-20 rounded-full bg-[#FAF7F2] p-1.5 shadow-lg border-4 border-[#FAF7F2]">
-              <div className="w-full h-full rounded-full bg-green-500 flex items-center justify-center text-3xl overflow-hidden font-display font-bold text-white shadow-inner relative">
-                {isAvatarUrl(user.avatarUrl) ? (
-                  <img src={user.avatarUrl!} alt={user.name} className="w-full h-full object-cover" />
-                ) : user.avatarUrl && user.avatarUrl.length <= 4 ? (
-                  <span>{user.avatarUrl}</span>
-                ) : (
-                  <span>{user.name ? user.name.slice(0, 2).toUpperCase() : "ZY"}</span>
-                )}
-
-                {/* Discord-style Hover Edit Overlay */}
-                <div className="absolute inset-0 bg-black/45 rounded-full opacity-0 group-hover:opacity-100 flex items-center justify-center transition-all duration-150">
-                  <Pencil size={18} className="text-white" />
-                </div>
+            <div className="w-20 h-20 rounded-full bg-[#FAF7F2] p-1.5 shadow-lg border-4 border-[#FAF7F2] relative">
+              <UserAvatar
+                src={user.avatarUrl}
+                name={user.name}
+                size="lg"
+                className="w-full h-full text-3xl"
+                showStatus={false}
+              />
+              {/* Discord-style Hover Edit Overlay */}
+              <div className="absolute inset-1.5 bg-black/45 rounded-full opacity-0 group-hover:opacity-100 flex items-center justify-center transition-all duration-150">
+                <Pencil size={18} className="text-white" />
               </div>
             </div>
 

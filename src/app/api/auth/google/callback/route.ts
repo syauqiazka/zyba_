@@ -11,17 +11,27 @@ export async function GET(request: NextRequest) {
   const error = searchParams.get("error");
   const state = searchParams.get("state");
 
-  // Tentukan base URL: utamakan NEXTAUTH_URL dari env, fallback ke header request
-  const envBaseUrl = process.env.NEXTAUTH_URL || process.env.NEXT_PUBLIC_BASE_URL;
-  const host =
-    request.headers.get("x-forwarded-host") ||
-    request.headers.get("host") ||
-    "localhost:3000";
-  const protocol =
-    request.headers.get("x-forwarded-proto") ||
-    (host.includes("localhost") || host.includes("127.0.0.1") ? "http" : "https");
+  // Tentukan base URL: utamakan host live dari request / NEXTAUTH_URL
+  const reqHost =
+    request.headers.get("x-forwarded-host")?.split(",")[0]?.trim() ||
+    request.headers.get("host")?.split(":")[0]?.trim() ||
+    request.nextUrl.hostname;
 
-  const baseUrl = envBaseUrl ? envBaseUrl.replace(/\/$/, "") : `${protocol}://${host}`;
+  const reqProto =
+    request.headers.get("x-forwarded-proto")?.split(",")[0]?.trim() ||
+    (reqHost.includes("localhost") || reqHost.includes("127.0.0.1") ? "http" : "https");
+
+  let baseUrl = `${reqProto}://${reqHost}`;
+  const envBase = process.env.NEXTAUTH_URL || process.env.NEXT_PUBLIC_BASE_URL;
+
+  if (reqHost.includes("localhost") || reqHost.includes("127.0.0.1")) {
+    if (envBase && !envBase.includes("localhost")) {
+      baseUrl = envBase.replace(/\/$/, "");
+    }
+  } else if (reqHost.includes("zyba.my.id") || envBase?.includes("jhic.zyba.my.id")) {
+    baseUrl = "https://jhic.zyba.my.id";
+  }
+
   const redirectUri = `${baseUrl}/api/auth/google/callback`;
 
   // Tangani jika otentikasi dibatalkan oleh pengguna di halaman Google

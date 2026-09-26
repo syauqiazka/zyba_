@@ -13,6 +13,7 @@ echo "==> [3/4] Generating Prisma clients (all 3 schemas)..."
 pnpm run db:generate:all
 
 echo "==> [4/4] Building Next.js production bundle..."
+rm -rf .next/cache
 pnpm run build
 
 echo ""
@@ -20,6 +21,6 @@ echo "✅ Build selesai!"
 echo ""
 echo "⚠️  LANGKAH MANUAL TERAKHIR:"
 echo "   Restart Node App lewat panel Webuzo:"
-echo "   Applications > List Applications > (cari zyba) > Restart"
+echo "   Applications > List Applications > (cari zyba / jhic) > Restart"
 echo ""
-echo "   Setelah restart, buka https://zyba.my.id dan pastikan tidak ada error."
+echo "   Setelah restart, buka https://jhic.zyba.my.id dan pastikan tidak ada error."

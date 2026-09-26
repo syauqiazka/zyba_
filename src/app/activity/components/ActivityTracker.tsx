@@ -28,7 +28,7 @@ export default function ActivityTracker({
         </div>
 
         {/* Activity Type Selector Tabs */}
-        <div className="flex items-center gap-2 bg-cream p-1.5 rounded-2xl border border-brown-900/10">
+        <div className="flex items-center gap-2 bg-cream p-1.5 rounded-2xl border border-brown-900/10 overflow-x-auto max-w-full no-scrollbar shrink-0">
           {[
             { id: "WALKING", label: "Walking 🚶‍♂️" },
             { id: "RUNNING", label: "Running 🏃‍♂️" },
@@ -37,7 +37,7 @@ export default function ActivityTracker({
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id as any)}
-              className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${
+              className={`px-4 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap shrink-0 ${
                 activeTab === tab.id
                   ? "bg-brown-900 text-white shadow-sm"
                   : "text-brown-700 hover:text-brown-900"
