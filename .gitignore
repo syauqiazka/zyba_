@@ -16,3 +16,9 @@ public/uploads/*
 !public/uploads/avatars/
 public/uploads/avatars/*
 !public/uploads/avatars/.gitkeep
+uploads/*
+!uploads/.gitkeep
+!uploads/avatars/
+uploads/avatars/*
+!uploads/avatars/.gitkeep
+

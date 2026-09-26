@@ -107,7 +107,7 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
         />
       )}
 
-      <div className="flex items-start">
+      <div className="flex items-start min-h-screen">
         {/* Sidebar: off-canvas mobile, sticky desktop */}
         <div className={`fixed md:sticky top-0 left-0 z-50 h-screen transition-transform duration-300 md:translate-x-0 ${mobileSidebarOpen ? "translate-x-0" : "-translate-x-full"}`}>
           <Suspense fallback={<SidebarSkeleton />}>
@@ -115,7 +115,7 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
           </Suspense>
         </div>
 
-        <main className="flex-1 max-w-[1400px] mx-auto px-6 pt-6 pb-12 md:px-10 md:pt-8 min-w-0 overflow-auto">
+        <main className="flex-1 min-w-0 px-4 pt-16 pb-12 md:px-10 md:pt-8 overflow-x-hidden">
           <Suspense fallback={<PageLoadingFallback />}>
             {children}
           </Suspense>

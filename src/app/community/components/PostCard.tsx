@@ -132,10 +132,16 @@ function AvatarBubble({
     <div className="relative shrink-0">
       <div className={`${sz} ${isImg ? "bg-cream border-brown-900/10" : color} rounded-full border font-display font-bold flex items-center justify-center shadow-2xs overflow-hidden`}>
         {isImg ? (
-          <img src={initials} alt="Avatar" className="w-full h-full object-cover rounded-full" />
-        ) : (
-          <span>{resolved}</span>
-        )}
+          <img
+            src={initials}
+            alt="Avatar"
+            className="w-full h-full object-cover rounded-full"
+            onError={(e) => {
+              e.currentTarget.style.display = "none";
+            }}
+          />
+        ) : null}
+        <span className={isImg ? "text-xs" : ""}>{resolved}</span>
       </div>
       {/* Status Dot — only shown for current user's own posts */}
       {statusConfig && (
@@ -379,6 +385,10 @@ export default function PostCard({ post, onToggleLike, onToggleRepost, onAddComm
               className="rounded-2xl max-h-[480px] w-full object-cover cursor-pointer hover:opacity-95 transition-opacity"
               onClick={() => window.open((post.imageUrl || post.mediaUrl)!, "_blank")}
               loading="lazy"
+              onError={(e) => {
+                const parent = e.currentTarget.parentElement;
+                if (parent) parent.style.display = "none";
+              }}
             />
           </div>
         )}

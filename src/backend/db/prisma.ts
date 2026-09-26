@@ -9,10 +9,10 @@ const globalForPrisma = globalThis as unknown as {
 export const accountDb =
   globalForPrisma.accountDb ??
   new PrismaClient({
-    log: process.env.NODE_ENV === "development" ? ["query", "error", "warn"] : ["error"],
+    log: ["error"],
   });
 
-if (process.env.NODE_ENV !== "production") globalForPrisma.accountDb = accountDb;
+globalForPrisma.accountDb = accountDb;
 
 export const prisma = accountDb;
 

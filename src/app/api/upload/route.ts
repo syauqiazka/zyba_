@@ -23,17 +23,21 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Ukuran gambar maksimal 10MB." }, { status: 400 });
     }
 
-    // ── Self-Hosted Filesystem Storage (public/uploads/) ──
+    // ── Self-Hosted Filesystem Storage (public/uploads/ & uploads/) ──
     try {
       const uploadDir = path.join(process.cwd(), "public", "uploads");
+      const rootUploadDir = path.join(process.cwd(), "uploads");
       await fs.mkdir(uploadDir, { recursive: true });
+      await fs.mkdir(rootUploadDir, { recursive: true }).catch(() => {});
 
       const ext = (file.name.split(".").pop() || "jpg").toLowerCase().replace(/[^a-z0-9]/g, "");
       const cleanName = `post_${Date.now()}_${Math.random().toString(36).slice(2, 8)}.${ext}`;
       const filePath = path.join(uploadDir, cleanName);
+      const rootFilePath = path.join(rootUploadDir, cleanName);
 
       const buffer = Buffer.from(await file.arrayBuffer());
       await fs.writeFile(filePath, buffer);
+      await fs.writeFile(rootFilePath, buffer).catch(() => {});
 
       const url = `/uploads/${cleanName}`;
       return NextResponse.json({ success: true, url, pathname: url });

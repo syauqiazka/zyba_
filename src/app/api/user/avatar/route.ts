@@ -50,14 +50,18 @@ export async function POST(req: NextRequest) {
     // ── Primary: Self-Hosted Filesystem Storage in public/uploads/avatars ──
     try {
       const avatarsDir = path.join(process.cwd(), "public", "uploads", "avatars");
+      const rootAvatarsDir = path.join(process.cwd(), "uploads", "avatars");
       await fs.mkdir(avatarsDir, { recursive: true });
+      await fs.mkdir(rootAvatarsDir, { recursive: true }).catch(() => {});
 
       const ext = (file.name.split(".").pop() || "jpg").toLowerCase().replace(/[^a-z0-9]/g, "");
       const filename = `avatar_${session.userId}_${Date.now()}.${ext}`;
       const filePath = path.join(avatarsDir, filename);
+      const rootFilePath = path.join(rootAvatarsDir, filename);
 
       const buffer = Buffer.from(await file.arrayBuffer());
       await fs.writeFile(filePath, buffer);
+      await fs.writeFile(rootFilePath, buffer).catch(() => {});
 
       avatarUrl = `/uploads/avatars/${filename}`;
     } catch (fsErr) {
