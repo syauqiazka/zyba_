@@ -416,7 +416,17 @@ export default function ProfileSettingsModal({ user, isOpen, onClose, onUserUpda
         if (e.target === e.currentTarget) onClose();
       }}
     >
-      <div className="bg-white rounded-t-[28px] md:rounded-3xl shadow-2xl w-full max-w-4xl h-[92vh] md:h-[88vh] flex flex-col md:flex-row overflow-hidden border border-brown-900/10 animate-in slide-in-from-bottom-4 duration-200">
+      <div className="relative bg-white rounded-t-[28px] md:rounded-3xl shadow-2xl w-full max-w-4xl h-[92vh] md:h-[88vh] flex flex-col md:flex-row overflow-hidden border border-brown-900/10 animate-in slide-in-from-bottom-4 duration-200">
+
+        {/* Desktop Close Button — direct child of dialog root, always on top */}
+        <button
+          type="button"
+          onClick={(e) => { e.stopPropagation(); onClose(); }}
+          className="hidden md:flex absolute top-3.5 right-4 z-[999] pointer-events-auto w-9 h-9 rounded-full border border-brown-900/20 text-brown-700 hover:bg-cream hover:text-brown-900 items-center justify-center text-sm font-bold transition-all bg-white shadow-sm shrink-0 hover:scale-105 active:scale-95"
+          aria-label="Tutup pengaturan"
+        >
+          ✕
+        </button>
 
         {/* ── Sidebar (Desktop / Tablet) ── */}
         <aside className="hidden md:flex w-60 shrink-0 bg-cream/60 border-r border-brown-900/10 flex-col overflow-y-auto">
@@ -525,17 +535,7 @@ export default function ProfileSettingsModal({ user, isOpen, onClose, onUserUpda
             </div>
           </div>
 
-          {/* Desktop Close Button — pinned to top-right corner of content panel */}
-          <button
-            type="button"
-            onClick={onClose}
-            className="hidden md:flex absolute top-4 right-5 z-30 w-9 h-9 rounded-full border border-brown-900/20 text-brown-700 hover:bg-cream hover:text-brown-900 items-center justify-center text-sm font-bold transition-all bg-white shadow-sm shrink-0 hover:scale-105 active:scale-95"
-            aria-label="Tutup pengaturan"
-          >
-            ✕
-          </button>
-
-          <div className="flex-1 overflow-y-auto px-4 pt-4 md:px-10 md:pt-8 pb-20 flex flex-col gap-1">
+          <div className="flex-1 overflow-y-auto px-4 pt-4 md:px-10 md:pt-8 pb-20 md:pr-16 flex flex-col gap-1">
 
             {saveMsg && (
               <div className="sticky top-12 z-20 bg-green-100 border border-green-300 text-green-800 text-xs font-bold px-4 py-2.5 rounded-xl flex items-center gap-2 shadow-sm mb-4">
