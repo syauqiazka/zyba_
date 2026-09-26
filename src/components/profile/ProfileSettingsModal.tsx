@@ -361,9 +361,13 @@ export default function ProfileSettingsModal({ user, isOpen, onClose, onUserUpda
   };
 
   const modal = (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
-      onClick={e => { if (e.target === e.currentTarget) onClose(); }}>
-      <div className="bg-white rounded-3xl shadow-2xl w-full max-w-4xl h-[88vh] flex overflow-hidden border border-brown-900/10">
+    <div
+      className="fixed inset-0 z-[100] flex items-end md:items-center justify-center p-0 md:p-4 bg-black/60 backdrop-blur-sm transition-all"
+      onClick={(e) => {
+        if (e.target === e.currentTarget) onClose();
+      }}
+    >
+      <div className="bg-white rounded-t-[28px] md:rounded-3xl shadow-2xl w-full max-w-4xl h-[92vh] md:h-[88vh] flex flex-col md:flex-row overflow-hidden border border-brown-900/10 animate-in slide-in-from-bottom-4 duration-200">
 
         {/* ── Sidebar (Desktop / Tablet) ── */}
         <aside className="hidden md:flex w-60 shrink-0 bg-cream/60 border-r border-brown-900/10 flex-col overflow-y-auto">
@@ -438,28 +442,29 @@ export default function ProfileSettingsModal({ user, isOpen, onClose, onUserUpda
         </aside>
 
         {/* ── Main: satu halaman panjang, scroll-spy ── */}
-        <main ref={contentRef} className="flex-1 overflow-y-auto relative">
-          {/* Close button fixed di pojok */}
-          <button type="button" onClick={onClose}
-            className="sticky top-6 float-right mr-6 mt-6 z-10 w-9 h-9 rounded-full border border-brown-900/20 text-brown-700 hover:bg-cream hover:text-brown-900 flex items-center justify-center text-sm transition-all bg-white shadow-sm">
-            ✕
-          </button>
-
-          <div className="px-4 pt-4 md:px-10 md:pt-10 pb-20 flex flex-col gap-1">
-            {saveMsg && (
-              <div className="sticky top-4 z-20 bg-green-100 border border-green-300 text-green-800 text-xs font-bold px-4 py-2.5 rounded-xl flex items-center gap-2 shadow-sm mb-4">
-                ✓ {saveMsg}
-              </div>
-            )}
-
-            {/* Mobile Tab Navigation Bar */}
-            <div className="md:hidden flex items-center gap-1.5 overflow-x-auto pb-3 mb-2 border-b border-brown-900/10 no-scrollbar">
-              {SIDEBAR.flatMap(s => s.items).map(item => (
+        <main ref={contentRef} className="flex-1 flex flex-col overflow-hidden relative">
+          {/* Mobile Top Header: Drag Handle + Title + Close Button */}
+          <div className="md:hidden flex flex-col shrink-0 bg-white border-b border-brown-900/10 z-10">
+            <div className="w-10 h-1 bg-brown-900/20 rounded-full mx-auto mt-2.5 mb-1 shrink-0" />
+            <div className="flex items-center justify-between px-5 py-2.5">
+              <span className="font-display font-extrabold text-base text-brown-900">Pengaturan</span>
+              <button
+                type="button"
+                onClick={onClose}
+                className="w-8 h-8 rounded-full bg-brown-900/5 hover:bg-brown-900/10 active:scale-95 flex items-center justify-center text-brown-700 transition-colors border border-brown-900/10"
+                aria-label="Tutup pengaturan"
+              >
+                ✕
+              </button>
+            </div>
+            {/* Mobile Horizontal Tabs */}
+            <div className="flex items-center gap-2 px-4 pb-3 overflow-x-auto no-scrollbar">
+              {SIDEBAR.flatMap((s) => s.items).map((item) => (
                 <button
                   key={item.id}
                   type="button"
                   onClick={() => scrollTo(item.id)}
-                  className={`px-3 py-1.5 rounded-full text-xs font-bold shrink-0 transition-colors ${
+                  className={`px-3.5 py-1.5 rounded-full text-xs font-bold shrink-0 transition-all ${
                     activeId === item.id
                       ? "bg-brown-900 text-white shadow-xs"
                       : "bg-cream text-brown-700 hover:bg-brown-900/10"
@@ -469,10 +474,27 @@ export default function ProfileSettingsModal({ user, isOpen, onClose, onUserUpda
                 </button>
               ))}
             </div>
+          </div>
+
+          {/* Desktop Close button fixed di pojok kanan atas */}
+          <button
+            type="button"
+            onClick={onClose}
+            className="hidden md:flex absolute top-5 right-5 z-20 w-9 h-9 rounded-full border border-brown-900/20 text-brown-700 hover:bg-cream hover:text-brown-900 items-center justify-center text-sm transition-all bg-white shadow-sm"
+          >
+            ✕
+          </button>
+
+          <div className="flex-1 overflow-y-auto px-4 pt-2 md:px-10 md:pt-8 pb-20 flex flex-col gap-1">
+            {saveMsg && (
+              <div className="sticky top-4 z-20 bg-green-100 border border-green-300 text-green-800 text-xs font-bold px-4 py-2.5 rounded-xl flex items-center gap-2 shadow-sm mb-4">
+                ✓ {saveMsg}
+              </div>
+            )}
 
             {/* ── PENGATURAN AKUN ────────────────────────────────────── */}
             <Section id="profile-info" title="Info Profil">
-              <div className="bg-cream/50 rounded-2xl p-5 flex flex-col gap-4 border border-brown-900/10">
+              <div className="bg-cream/40 rounded-2xl p-4 sm:p-5 flex flex-col gap-4 border border-brown-900/10 shadow-xs">
                 {/* Foto Profil / Avatar */}
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-brown-900/10">
                   <div className="flex items-center gap-4">
@@ -481,7 +503,7 @@ export default function ProfileSettingsModal({ user, isOpen, onClose, onUserUpda
                         src={avatarUrl}
                         name={name}
                         size="lg"
-                        className="w-16 h-16 shadow-md border-2 border-orange-200"
+                        className="w-16 h-16 shadow-xs rounded-full border-2 border-orange-300"
                         showStatus={false}
                       />
                       <button
@@ -521,7 +543,7 @@ export default function ProfileSettingsModal({ user, isOpen, onClose, onUserUpda
                       type="button"
                       onClick={() => avatarInputRef.current?.click()}
                       disabled={isUploadingAvatar}
-                      className="text-xs font-bold bg-orange-500 text-white px-4 py-2 rounded-full hover:bg-orange-600 transition-colors shadow-2xs flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
+                      className="text-xs font-bold bg-orange-500 text-white px-4 py-2.5 rounded-full hover:bg-orange-600 active:scale-95 transition-all shadow-xs flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
                     >
                       {isUploadingAvatar ? "Mengunggah..." : "📷 Upload Foto"}
                     </button>

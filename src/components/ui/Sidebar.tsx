@@ -97,33 +97,43 @@ export default function Sidebar({ onClose }: { onClose?: () => void }) {
   };
 
   return (
-    <aside className="w-64 md:w-20 lg:w-64 shrink-0 border-r border-brown-900/10 bg-cream/95 min-h-screen p-3 md:p-3 lg:p-5 flex flex-col justify-between sticky top-0 h-screen z-30 shadow-[12px_0_36px_-28px_rgba(59,42,32,0.5)] transition-all duration-300">
-      {/* Mobile close button */}
-      {onClose && (
-        <button type="button" onClick={onClose} className="md:hidden absolute top-3 right-3 w-8 h-8 rounded-lg bg-brown-900/5 hover:bg-brown-900/10 flex items-center justify-center text-brown-700" aria-label="Tutup menu">
-          ✕
-        </button>
-      )}
-      <div className="flex flex-col gap-6">
-        {/* Brand Logo */}
-        <Link href="/dashboard" className="flex items-center gap-3 px-2 group justify-center lg:justify-start" title="ZYBA Wellness">
-          <div className="relative w-9 h-9 shrink-0 flex items-center justify-center rounded-2xl bg-cream border border-orange-500/20 shadow-sm group-hover:scale-105 transition-transform">
-            {/* 4-petal floral logomark (Orange & Green) */}
-            <div className="absolute w-3.5 h-3.5 rounded-full bg-orange-500 -top-0.5 left-1/2 -translate-x-1/2 opacity-90" />
-            <div className="absolute w-3.5 h-3.5 rounded-full bg-green-500 -bottom-0.5 left-1/2 -translate-x-1/2 opacity-90" />
-            <div className="absolute w-3.5 h-3.5 rounded-full bg-orange-500 -left-0.5 top-1/2 -translate-y-1/2 opacity-90" />
-            <div className="absolute w-3.5 h-3.5 rounded-full bg-green-500 -right-0.5 top-1/2 -translate-y-1/2 opacity-90" />
-            <div className="w-2.5 h-2.5 rounded-full bg-brown-900 z-10" />
-          </div>
-          <div className="flex flex-col md:hidden lg:flex">
-            <span className="font-display font-extrabold text-xl tracking-tight text-brown-900">
-              ZYBA
-            </span>
-            <span className="text-[10px] uppercase font-bold tracking-widest text-green-500 -mt-1">
-              Gen Z Wellness
-            </span>
-          </div>
-        </Link>
+    <aside className="w-[82vw] max-w-[290px] md:w-20 lg:w-64 shrink-0 border-r border-brown-900/10 bg-cream min-h-screen p-3 md:p-3 lg:p-5 flex flex-col justify-between sticky top-0 h-screen z-30 shadow-[12px_0_36px_-28px_rgba(59,42,32,0.5)] transition-all duration-300">
+      <div className="flex flex-col gap-5">
+        {/* Brand Logo & Close button row */}
+        <div className="flex items-center justify-between px-1 pt-1 pb-1">
+          <Link href="/dashboard" className="flex items-center gap-3 group justify-center lg:justify-start" title="ZYBA Wellness">
+            <div className="relative w-9 h-9 shrink-0 flex items-center justify-center rounded-2xl bg-cream border border-orange-500/20 shadow-sm group-hover:scale-105 transition-transform">
+              {/* 4-petal floral logomark (Orange & Green) */}
+              <div className="absolute w-3.5 h-3.5 rounded-full bg-orange-500 -top-0.5 left-1/2 -translate-x-1/2 opacity-90" />
+              <div className="absolute w-3.5 h-3.5 rounded-full bg-green-500 -bottom-0.5 left-1/2 -translate-x-1/2 opacity-90" />
+              <div className="absolute w-3.5 h-3.5 rounded-full bg-orange-500 -left-0.5 top-1/2 -translate-y-1/2 opacity-90" />
+              <div className="absolute w-3.5 h-3.5 rounded-full bg-green-500 -right-0.5 top-1/2 -translate-y-1/2 opacity-90" />
+              <div className="w-2.5 h-2.5 rounded-full bg-brown-900 z-10" />
+            </div>
+            <div className="flex flex-col md:hidden lg:flex">
+              <span className="font-display font-extrabold text-xl tracking-tight text-brown-900 leading-tight">
+                ZYBA
+              </span>
+              <span className="text-[10px] uppercase font-bold tracking-widest text-green-600 -mt-0.5">
+                Gen Z Wellness
+              </span>
+            </div>
+          </Link>
+
+          {onClose && (
+            <button
+              type="button"
+              onClick={onClose}
+              className="md:hidden w-8 h-8 rounded-full bg-brown-900/5 hover:bg-brown-900/10 active:scale-95 flex items-center justify-center text-brown-700 transition-colors border border-brown-900/10"
+              aria-label="Tutup menu"
+            >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+                <line x1="18" y1="6" x2="6" y2="18" />
+                <line x1="6" y1="6" x2="18" y2="18" />
+              </svg>
+            </button>
+          )}
+        </div>
 
         {/* Navigation links */}
         <nav className="flex flex-col gap-1.5">
@@ -135,10 +145,10 @@ export default function Sidebar({ onClose }: { onClose?: () => void }) {
                 href={item.href}
                 onClick={onClose}
                 title={item.label}
-                className={`group/link relative px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-300 flex items-center justify-center lg:justify-start gap-3 ${
+                className={`group/link relative px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 flex items-center justify-center lg:justify-start gap-3 ${
                   isActive
-                    ? "bg-brown-900 text-cream shadow-md shadow-brown-900/10 font-semibold"
-                    : "text-brown-700 hover:-translate-y-0.5 hover:bg-gradient-to-r hover:from-orange-100/80 hover:to-green-100/80 hover:text-brown-900 hover:shadow-sm"
+                    ? "bg-brown-900 text-cream shadow-md shadow-brown-900/15 font-semibold"
+                    : "text-brown-700 hover:-translate-y-0.5 hover:bg-gradient-to-r hover:from-orange-100/80 hover:to-green-100/80 hover:text-brown-900 hover:shadow-xs"
                 }`}
               >
                 <RenderIcon name={item.icon} isActive={isActive} />

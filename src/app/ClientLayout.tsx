@@ -89,7 +89,9 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
       <button
         type="button"
         onClick={() => setMobileSidebarOpen(true)}
-        className="md:hidden fixed top-4 left-4 z-50 w-10 h-10 rounded-xl bg-white border border-brown-900/10 shadow-sm flex items-center justify-center text-brown-900"
+        className={`md:hidden fixed top-4 left-4 z-40 w-10 h-10 rounded-xl bg-white border border-brown-900/10 shadow-sm flex items-center justify-center text-brown-900 active:scale-95 transition-all duration-200 ${
+          mobileSidebarOpen ? "opacity-0 pointer-events-none" : "opacity-100"
+        }`}
         aria-label="Buka menu"
       >
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
@@ -99,17 +101,21 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
         </svg>
       </button>
 
-      {/* Mobile: backdrop overlay */}
+      {/* Mobile: backdrop overlay with blur */}
       {mobileSidebarOpen && (
         <div
-          className="md:hidden fixed inset-0 z-40 bg-black/40"
+          className="md:hidden fixed inset-0 z-40 bg-black/60 backdrop-blur-xs transition-opacity duration-300"
           onClick={() => setMobileSidebarOpen(false)}
         />
       )}
 
       <div className="flex items-start min-h-screen">
         {/* Sidebar: off-canvas mobile, sticky desktop */}
-        <div className={`fixed md:sticky top-0 left-0 z-50 h-screen transition-transform duration-300 md:translate-x-0 ${mobileSidebarOpen ? "translate-x-0" : "-translate-x-full"}`}>
+        <div
+          className={`fixed md:sticky top-0 left-0 z-50 h-screen transition-transform duration-300 md:translate-x-0 ${
+            mobileSidebarOpen ? "translate-x-0 shadow-2xl" : "-translate-x-full"
+          }`}
+        >
           <Suspense fallback={<SidebarSkeleton />}>
             <Sidebar onClose={() => setMobileSidebarOpen(false)} />
           </Suspense>

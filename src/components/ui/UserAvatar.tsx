@@ -61,7 +61,7 @@ export default function UserAvatar({
   const fallbackDisplay = presetEmoji || (name ? initials : getFallbackEmoji(src));
 
   return (
-    <div className={`relative shrink-0 select-none ${className}`}>
+    <div className={`relative shrink-0 select-none rounded-full ${className}`}>
       <div
         className={`${sizeClass} rounded-full overflow-hidden flex items-center justify-center font-display font-bold border border-brown-900/10 shadow-2xs transition-transform ${
           hasValidImage
