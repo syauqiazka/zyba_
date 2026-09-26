@@ -21,6 +21,7 @@ interface CompanionSidebarProps {
   /** Sidebar visibility — passed from layout */
   sidebarVisible: boolean;
   onToggleSidebar: () => void;
+  onClose?: () => void;
 }
 
 const MOOD_COLORS: Record<string, string> = {
@@ -44,6 +45,7 @@ export default function CompanionSidebar({
   onNewChat,
   sidebarVisible,
   onToggleSidebar,
+  onClose,
 }: CompanionSidebarProps) {
   const pathname = usePathname();
   const {
@@ -235,7 +237,7 @@ export default function CompanionSidebar({
   }
 
   return (
-    <aside className="flex flex-col w-72 md:w-64 lg:w-68 shrink-0 bg-[#FAF7F2] border-r border-brown-900/10 h-screen select-none transition-all duration-300 z-20">
+    <aside className="flex flex-col w-[82vw] max-w-[290px] md:w-64 lg:w-72 shrink-0 bg-[#FAF7F2] border-r border-brown-900/10 h-screen select-none transition-all duration-300 z-60">
       {/* ── 1. Top Header ──────────────────────────────────────────────── */}
       <div className="flex items-center justify-between px-4 py-3.5 border-b border-brown-900/8 shrink-0">
         <Link
@@ -253,16 +255,33 @@ export default function CompanionSidebar({
           </div>
         </Link>
 
-        {/* Hide sidebar button */}
-        <button
-          type="button"
-          onClick={onToggleSidebar}
-          className="text-brown-700/40 hover:text-brown-900 p-1 rounded-md hover:bg-brown-900/5 transition-colors"
-          title="Hide sidebar"
-          aria-label="Hide sidebar"
-        >
-          {icons.collapse}
-        </button>
+        <div className="flex items-center gap-1">
+          {/* Mobile close button */}
+          {onClose && (
+            <button
+              type="button"
+              onClick={onClose}
+              className="md:hidden w-8 h-8 rounded-full bg-brown-900/5 hover:bg-brown-900/10 active:scale-95 flex items-center justify-center text-brown-700 transition-colors"
+              title="Tutup menu"
+              aria-label="Tutup menu"
+            >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+                <line x1="18" y1="6" x2="6" y2="18" />
+                <line x1="6" y1="6" x2="18" y2="18" />
+              </svg>
+            </button>
+          )}
+          {/* Hide sidebar button (desktop) */}
+          <button
+            type="button"
+            onClick={onToggleSidebar}
+            className="hidden md:flex text-brown-700/40 hover:text-brown-900 p-1 rounded-md hover:bg-brown-900/5 transition-colors"
+            title="Hide sidebar"
+            aria-label="Hide sidebar"
+          >
+            {icons.collapse}
+          </button>
+        </div>
       </div>
 
       {/* ── 2. New Chat Button ──────────────────────────────────────────── */}

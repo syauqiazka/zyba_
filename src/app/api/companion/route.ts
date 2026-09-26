@@ -5,6 +5,7 @@ import { PersonaId } from "@/backend/ai/personas";
 import { verifySessionToken } from "@/lib/auth";
 import { checkMessageQuota } from "@/backend/billing/entitlements";
 import { companionDb } from "@/backend/db/companionClient";
+import { checkAndUnlock } from "@/lib/achievements/engine";
 
 export async function POST(req: NextRequest) {
   try {
@@ -91,6 +92,10 @@ export async function POST(req: NextRequest) {
           where: { id: conversationId },
           data: { updatedAt: new Date() },
         });
+
+        // Achievement check (fire-and-forget, no await to keep response fast)
+        const convCount = await companionDb.conversation.count({ where: { userId: session.userId } });
+        checkAndUnlock(session.userId, { type: "companion_message", conversationCount: convCount }).catch(() => {});
       } catch (dbErr) {
         console.error("[Companion] Message save failed:", dbErr);
         // Continue — AI reply tetap dikembalikan meski save gagal

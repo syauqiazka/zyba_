@@ -8,7 +8,6 @@ import {
   Sparkles,
   Flame,
   Award,
-  Music,
   Calendar,
   MessageCircle,
   Check,
@@ -53,8 +52,7 @@ export default function ProfilePopover({
 }: ProfilePopoverProps) {
   const popoverRef = useRef<HTMLDivElement>(null);
   const [onlineStatus, setOnlineStatus] = useState<"online" | "idle" | "dnd" | "invisible">("online");
-  const [showStatusMenu, setShowStatusMenu] = useState(false);
-  const [customStatus, setCustomStatus] = useState(user.customStatus || "when yah");
+  const [customStatus, setCustomStatus] = useState(user.customStatus || user.statusText || "");
   const [isEditingCustomStatus, setIsEditingCustomStatus] = useState(false);
   const [customStatusInput, setCustomStatusInput] = useState(customStatus);
 
@@ -341,32 +339,23 @@ export default function ProfilePopover({
           </div>
 
           {/* Section: Bio / Tentang Saya */}
-          <div className="pt-2 border-t border-brown-900/8">
+          <div className="pt-2.5 border-t border-brown-900/8">
             <span className="text-[10px] font-black uppercase text-brown-700/60 tracking-wider block mb-1">
               Bio
             </span>
-            <p className="text-xs text-brown-900 font-medium leading-relaxed">
-              {user.bio || "HIVI-jatuh cinta lagi"}
-            </p>
-          </div>
-
-          {/* Section: Activity / Mendengarkan */}
-          <div className="pt-2 border-t border-brown-900/8 flex items-start gap-2.5 bg-[#FAF7F2] p-2.5 rounded-xl border border-brown-900/5">
-            <div className="w-8 h-8 rounded-lg bg-green-100 text-green-700 flex items-center justify-center shrink-0">
-              <Music size={16} />
-            </div>
-            <div className="min-w-0 flex-1">
-              <span className="text-[9px] font-black uppercase text-green-700 tracking-wider block">
-                Mendengarkan Musik
-              </span>
-              <p className="text-xs font-bold text-brown-900 truncate">
-                {user.statusText || "HIVI-jatuh cinta lagi"}
+            {user.bio?.trim() ? (
+              <p className="text-xs text-brown-900 font-medium leading-relaxed">
+                {user.bio}
               </p>
-            </div>
+            ) : (
+              <p className="text-xs text-brown-700/50 italic">
+                Belum ada bio. Tambahkan lewat Edit Profile.
+              </p>
+            )}
           </div>
 
           {/* Section: Member Since (Anggota Sejak) */}
-          <div className="pt-2 border-t border-brown-900/8 flex items-center justify-between">
+          <div className="pt-2.5 border-t border-brown-900/8 flex items-center justify-between">
             <div className="flex items-center gap-1.5 text-brown-700/70">
               <Calendar size={13} />
               <span className="text-[11px] font-bold">Anggota Sejak</span>
@@ -378,7 +367,7 @@ export default function ProfilePopover({
                     day: "numeric",
                     year: "numeric",
                   })
-                : "Feb 16, 2022"}
+                : "Baru Bergabung"}
             </span>
           </div>
 

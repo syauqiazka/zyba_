@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { accountDb } from "@/backend/db/accountClient";
 import { detectRisk, CRISIS_RESOURCES } from "@/lib/crisisDetection";
 import { verifySessionToken } from "@/lib/auth";
+import { checkAndUnlock } from "@/lib/achievements/engine";
 
 // =====================================================
 // USER ID
@@ -582,6 +583,10 @@ export async function POST(req: NextRequest) {
 
     // Invalidate caches immediately so dashboard & assessment update instantly
     invalidateDailyAssessmentCache(userId);
+
+    // Achievement check (fire-and-forget)
+    checkAndUnlock(userId, { type: "mood_checkin" }).catch(() => {});
+    checkAndUnlock(userId, { type: "login" }).catch(() => {});
 
     // =================================================
     // RESPONSE

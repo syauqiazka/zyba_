@@ -1,6 +1,7 @@
-import { Volume2, VolumeX, Settings2, Trash2, Zap } from "lucide-react";
+import { Volume2, VolumeX, Settings2, Trash2, Zap, Menu } from "lucide-react";
 import { PersonaId, getPersonaById } from "@/backend/ai/personas";
 import { getMoodColor } from "./ConversationList";
+import { useCompanion } from "../context/CompanionContext";
 
 interface Conversation {
   id: string;
@@ -45,6 +46,7 @@ export default function ChatHeader({
   const currentEmotion = activeConv?.emotionTag || "Tenang";
   const moodColor = getMoodColor(currentEmotion);
   const persona = getPersonaById(selectedPersona);
+  const { setMobileSidebarOpen } = useCompanion();
 
   const openPersonaModal = () => {
     if (setShowPersonaModal) {
@@ -55,9 +57,19 @@ export default function ChatHeader({
   };
 
   return (
-    <header className="px-6 py-3.5 border-b border-brown-900/10 flex items-center justify-between bg-white/95 sticky top-0 z-10">
+    <header className="px-3 sm:px-6 py-3 border-b border-brown-900/10 flex items-center gap-2 justify-between bg-white/95 sticky top-0 z-10">
+      {/* Mobile Hamburger */}
+      <button
+        type="button"
+        className="md:hidden shrink-0 w-8 h-8 flex items-center justify-center rounded-lg text-brown-700 hover:bg-cream transition-colors"
+        onClick={() => setMobileSidebarOpen(true)}
+        aria-label="Buka menu percakapan"
+      >
+        <Menu size={18} />
+      </button>
+
       {/* Left: Mascot Avatar, Name, Online Status */}
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-2 sm:gap-3 flex-1 min-w-0">
         <button
           type="button"
           onClick={openPersonaModal}
@@ -102,14 +114,14 @@ export default function ChatHeader({
       </div>
 
       {/* Right: Mood Chip + Plan Badge + Action Icons */}
-      <div className="flex items-center gap-2">
-        {/* Dynamic Emotion Chip from Latest Analysis (10.1) — muted style per 10.8 */}
+      <div className="flex items-center gap-1 sm:gap-2 shrink-0">
+        {/* Dynamic Emotion Chip — hidden on xs, visible sm+ */}
         <span
-          className={`rounded-pill ${moodColor}/10 text-xs font-semibold px-3 py-1 flex items-center gap-1`}
+          className={`hidden sm:flex rounded-pill ${moodColor}/10 text-xs font-semibold px-2.5 py-1 items-center gap-1`}
           title="Emosi terdeteksi dari pesan terbaru"
         >
           <span>✨</span>
-          <span>{currentEmotion}</span>
+          <span className="hidden md:inline">{currentEmotion}</span>
         </span>
 
         {/* Free Plan / Upgrade Button per AGENTS.md 10.8 (setara posisi Free plan · Upgrade di Claude.ai) */}

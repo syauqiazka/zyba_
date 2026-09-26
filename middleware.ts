@@ -13,6 +13,7 @@ const PROTECTED_PATHS = [
   "/assessment",
   "/settings",
   "/welcome",
+  "/achievements",
 ];
 
 /**

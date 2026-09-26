@@ -91,6 +91,8 @@ interface CompanionContextType {
   setIsTTSEnabled: (val: boolean) => void;
   ttsProvider: "elevenlabs" | "edge";
   setTTSProvider: (provider: "elevenlabs" | "edge") => void;
+  mobileSidebarOpen: boolean;
+  setMobileSidebarOpen: (val: boolean) => void;
 }
 
 const CompanionContext = createContext<CompanionContextType | null>(null);
@@ -125,6 +127,7 @@ export function CompanionProvider({ children }: { children: React.ReactNode }) {
   const [selectedModel, setSelectedModelRaw] = useState<AIModelType>("gemini-3.8-flash");
   const [selectedPersona, setSelectedPersonaRaw] = useState<PersonaId>("KINA");
   const [isSending, setIsSending] = useState(false);
+  const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
   const [_hydrated, setHydrated] = useState(false);
 
   // Load persisted preferences on mount (client-only)
@@ -510,6 +513,8 @@ export function CompanionProvider({ children }: { children: React.ReactNode }) {
         setIsTTSEnabled,
         ttsProvider,
         setTTSProvider,
+        mobileSidebarOpen,
+        setMobileSidebarOpen,
       }}
     >
       {children}
