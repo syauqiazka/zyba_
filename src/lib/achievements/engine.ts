@@ -5,6 +5,8 @@
  */
 
 import { prisma } from "@/lib/prisma";
+import { companionDb } from "@/backend/db/companionClient";
+import { communityDb } from "@/backend/db/communityClient";
 import { ACHIEVEMENT_DEFS } from "./definitions";
 
 export type AchievementEvent =
@@ -78,7 +80,7 @@ export async function checkAndUnlock(
     switch (def.category) {
       case "STREAK": {
         if (event.type === "login" && user) {
-          const streak = user.streakDays;
+          const streak = user.streakDays ?? 0;
           shouldUnlock = !!def.threshold && streak >= def.threshold;
         }
         break;
@@ -95,14 +97,14 @@ export async function checkAndUnlock(
       }
       case "COMPANION": {
         if (event.type === "companion_message") {
-          const count = await prisma.conversation.count({ where: { userId } });
+          const count = await companionDb.conversation.count({ where: { userId } });
           shouldUnlock = !!def.threshold && count >= def.threshold;
         }
         break;
       }
       case "SOCIAL": {
         if (def.key === "community_first_post" && event.type === "community_post") {
-          const count = await prisma.communityPost.count({ where: { userId } });
+          const count = await communityDb.communityPost.count({ where: { userId } });
           shouldUnlock = count >= 1;
         } else if (def.key === "community_supporter" && event.type === "community_like") {
           shouldUnlock = !!def.threshold && event.likeCount >= def.threshold;

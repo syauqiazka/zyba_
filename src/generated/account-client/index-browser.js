@@ -139,7 +139,9 @@ exports.Prisma.UserScalarFieldEnum = {
   stressLevel: 'stressLevel',
   streak: 'streak',
   createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
+  updatedAt: 'updatedAt',
+  streakDays: 'streakDays',
+  lastStreakDate: 'lastStreakDate'
 };
 
 exports.Prisma.NotificationPrefScalarFieldEnum = {
@@ -250,6 +252,35 @@ exports.Prisma.PaymentScalarFieldEnum = {
   updatedAt: 'updatedAt'
 };
 
+exports.Prisma.AchievementScalarFieldEnum = {
+  id: 'id',
+  key: 'key',
+  title: 'title',
+  description: 'description',
+  icon: 'icon',
+  category: 'category',
+  threshold: 'threshold',
+  isSecret: 'isSecret',
+  xpReward: 'xpReward'
+};
+
+exports.Prisma.UserAchievementScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  achievementId: 'achievementId',
+  unlockedAt: 'unlockedAt',
+  seen: 'seen'
+};
+
+exports.Prisma.UserBadgeScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  slot: 'slot',
+  badgeKey: 'badgeKey',
+  customLabel: 'customLabel',
+  updatedAt: 'updatedAt'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -323,6 +354,15 @@ exports.PaymentStatus = exports.$Enums.PaymentStatus = {
   CANCELLED: 'CANCELLED'
 };
 
+exports.AchievementCategory = exports.$Enums.AchievementCategory = {
+  STREAK: 'STREAK',
+  WELLNESS: 'WELLNESS',
+  SOCIAL: 'SOCIAL',
+  COMPANION: 'COMPANION',
+  ACTIVITY: 'ACTIVITY',
+  SPECIAL: 'SPECIAL'
+};
+
 exports.Prisma.ModelName = {
   User: 'User',
   NotificationPref: 'NotificationPref',
@@ -333,7 +373,10 @@ exports.Prisma.ModelName = {
   ActivityLog: 'ActivityLog',
   Resource: 'Resource',
   Subscription: 'Subscription',
-  Payment: 'Payment'
+  Payment: 'Payment',
+  Achievement: 'Achievement',
+  UserAchievement: 'UserAchievement',
+  UserBadge: 'UserBadge'
 };
 
 /**

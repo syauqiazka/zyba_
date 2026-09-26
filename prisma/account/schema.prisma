@@ -39,6 +39,10 @@ model User {
   activities       ActivityLog[]
   notificationPref NotificationPref?
   subscriptions    Subscription[]
+  userAchievements UserAchievement[]
+  userBadges       UserBadge[]
+  streakDays       Int?             @default(0)
+  lastStreakDate   DateTime?
 
   @@map("users")
 }
@@ -238,4 +242,58 @@ enum PaymentStatus {
   FAILED
   EXPIRED
   CANCELLED
+}
+
+// ---------- ACHIEVEMENTS & BADGES ----------
+
+enum AchievementCategory {
+  STREAK      // daily login/mood check-in streaks
+  WELLNESS    // mood & journal milestones
+  SOCIAL      // community engagement
+  COMPANION   // chat interactions
+  ACTIVITY    // physical activity
+  SPECIAL     // rare/event-based
+}
+
+model Achievement {
+  id          String              @id @default(cuid())
+  key         String              @unique  // e.g. "streak_7", "mood_30"
+  title       String
+  description String
+  icon        String              // emoji or icon name
+  category    AchievementCategory
+  threshold   Int?                // numeric threshold to unlock
+  isSecret    Boolean             @default(false)
+  xpReward    Int                 @default(10)
+
+  userAchievements UserAchievement[]
+
+  @@map("achievements")
+}
+
+model UserAchievement {
+  id            String      @id @default(cuid())
+  userId        String
+  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  achievementId String
+  achievement   Achievement @relation(fields: [achievementId], references: [id], onDelete: Cascade)
+  unlockedAt    DateTime    @default(now())
+  seen          Boolean     @default(false)
+
+  @@unique([userId, achievementId])
+  @@map("user_achievements")
+}
+
+// User-customizable badges shown on their profile
+model UserBadge {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  slot        Int      // display slot index 0-2 (up to 3 pinned badges)
+  badgeKey    String   // references Achievement.key
+  customLabel String?  // optional user rename
+  updatedAt   DateTime @updatedAt
+
+  @@unique([userId, slot])
+  @@map("user_badges")
 }

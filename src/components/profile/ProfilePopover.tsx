@@ -55,6 +55,7 @@ export default function ProfilePopover({
   const [customStatus, setCustomStatus] = useState(user.customStatus || user.statusText || "");
   const [isEditingCustomStatus, setIsEditingCustomStatus] = useState(false);
   const [customStatusInput, setCustomStatusInput] = useState(customStatus);
+  const [showStatusMenu, setShowStatusMenu] = useState(false);
 
   // Discord-style personal note (persisted locally)
   const [note, setNote] = useState("");
