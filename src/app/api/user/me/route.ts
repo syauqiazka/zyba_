@@ -46,6 +46,13 @@ export async function GET(req: NextRequest) {
       return NextResponse.json(cached.data);
     }
 
+    // Pastikan user ada di DB atau auto-restore dari session jika DB baru di-switch/reset
+    await userRepository.ensureUserExistsInNeon(
+      session.userId,
+      session.email,
+      session.name || undefined
+    );
+
     const user =
       (await userRepository.findById(session.userId)) ||
       (session.email ? await userRepository.findByEmail(session.email) : null);
@@ -226,8 +233,12 @@ export async function PATCH(req: NextRequest) {
       return NextResponse.json({ error: "Nama tidak boleh kosong" }, { status: 400 });
     }
 
-    // Auto-migrate local-fallback users to Neon before any DB write
-    const migrated = await userRepository.ensureUserExistsInNeon(session.userId);
+    // Auto-migrate local-fallback users to DB before any DB write
+    const migrated = await userRepository.ensureUserExistsInNeon(
+      session.userId,
+      session.email,
+      session.name || undefined
+    );
     const neonUserId = migrated?.neonId ?? session.userId;
 
     const updateData: any = {};

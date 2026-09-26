@@ -14,10 +14,9 @@ pnpm run db:generate:all
 
 echo "==> [4/5] Applying schema migrations to database (db push)..."
 # Tambah/update kolom baru tanpa hapus data yang sudah ada
-npx prisma db push --schema=prisma/account/schema.prisma --skip-generate --accept-data-loss 2>/dev/null || \
-  npx prisma db push --schema=prisma/schema.prisma --skip-generate --accept-data-loss 2>/dev/null || true
-npx prisma db push --schema=prisma/companion/schema.prisma --skip-generate --accept-data-loss 2>/dev/null || true
-npx prisma db push --schema=prisma/community/schema.prisma --skip-generate --accept-data-loss 2>/dev/null || true
+npx prisma db push --schema=prisma/account/schema.prisma --skip-generate --accept-data-loss || true
+npx prisma db push --schema=prisma/companion/schema.prisma --skip-generate --accept-data-loss || true
+npx prisma db push --schema=prisma/community/schema.prisma --skip-generate --accept-data-loss || true
 
 echo "==> [5/5] Building Next.js production bundle..."
 rm -rf .next/cache

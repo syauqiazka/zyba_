@@ -266,70 +266,83 @@ export const userRepository = {
   },
 
   /**
-   * Ensures a user exists in Neon DB. If the user is a local-fallback user
-   * (ID starts with "user_" and not a cuid), it will be migrated to Neon
-   * using the same email, creating a new cuid-based ID.
-   *
-   * Returns { neonId } — the ID to use for Neon DB operations.
-   * Returns null if the user cannot be migrated (local data missing).
-   *
-   * IMPORTANT: After migration, the local record is updated with the new Neon ID
-   * so subsequent lookups find the migrated user. However the session cookie still
-   * has the old local ID, so reads always check local file first (which now maps to Neon).
+   * Ensures a user exists in the PostgreSQL database.
+   * Handles local-fallback users, migrated users, or when switching to a fresh database.
+   * If the user doesn't exist in DB, it auto-creates the user row so Foreign Key
+   * constraints (daily_assessments, mood, etc.) NEVER fail.
    */
-  async ensureUserExistsInNeon(userId: string): Promise<{ neonId: string } | null> {
-    // If not a local-fallback user, assume already in Neon
-    const isLocalFallback = !userId.match(/^c[a-z0-9]{24,}$/) && userId.startsWith("user_");
-    if (!isLocalFallback) {
-      return { neonId: userId };
+  async ensureUserExistsInNeon(
+    userId: string,
+    emailHint?: string,
+    nameHint?: string
+  ): Promise<{ neonId: string } | null> {
+    // 1. Check if user already exists in DB by ID
+    try {
+      const existing = await accountDb.user.findUnique({
+        where: { id: userId },
+        select: { id: true, email: true },
+      });
+      if (existing) {
+        return { neonId: existing.id };
+      }
+    } catch (e: any) {
+      console.warn("[userRepo] DB check by id failed:", e.message);
     }
 
-    // Check if the user already got migrated to Neon (local record has a new cuid)
-    try {
-      const existing = await accountDb.user.findUnique({ where: { id: userId } });
-      if (existing) return { neonId: userId };
-    } catch {}
-
-    // Load local user data
+    // 2. Not found in DB by ID. Check if we have an email from hint or local fallback
     const localUser = await this.findById(userId);
-    if (!localUser) return null;
+    const candidateEmail = (emailHint || localUser?.email || "").toLowerCase().trim();
 
-    // Check if this email already exists in Neon (from a previous migration attempt)
-    try {
-      const byEmail = await accountDb.user.findUnique({ where: { email: localUser.email } });
-      if (byEmail) {
-        // Already in Neon under a different ID — update local record to point to Neon ID
-        try {
-          const users = readLocalUsers();
-          const idx = users.findIndex((u) => u.id === userId);
-          if (idx !== -1) {
-            users[idx].id = byEmail.id;
-            writeLocalUsers(users);
-          }
-        } catch {}
-        return { neonId: byEmail.id };
+    if (candidateEmail) {
+      try {
+        const existingByEmail = await accountDb.user.findUnique({
+          where: { email: candidateEmail },
+          select: { id: true, email: true },
+        });
+
+        if (existingByEmail) {
+          // Found by email in DB! Sync local record to this DB id if present
+          try {
+            const users = readLocalUsers();
+            const idx = users.findIndex(
+              (u) => u.id === userId || u.email.toLowerCase() === candidateEmail
+            );
+            if (idx !== -1) {
+              users[idx].id = existingByEmail.id;
+              writeLocalUsers(users);
+            }
+          } catch {}
+          return { neonId: existingByEmail.id };
+        }
+      } catch (e: any) {
+        console.warn("[userRepo] DB check by email failed:", e.message);
       }
-    } catch {}
+    }
 
-    // Migrate: create user in Neon
+    // 3. User does NOT exist in DB at all (fresh DB, reset, or local fallback).
+    // Auto-create user in DB now so foreign key constraints never fail!
+    const effectiveEmail = candidateEmail || `${userId}@zyba.app`;
+    const effectiveName = nameHint || localUser?.name || "Pengguna ZYBA";
+    const effectivePass = localUser?.passwordHash || bcrypt.hashSync("zyba_session_fallback", 10);
+
     try {
       const created = await accountDb.user.create({
         data: {
-          email: localUser.email,
-          name: localUser.name || "Pengguna ZYBA",
-          passwordHash: localUser.passwordHash,
-          avatarUrl: localUser.avatarUrl || "fox",
-          bio: localUser.bio || undefined,
-          phone: localUser.phone || undefined,
-          username: localUser.username || undefined,
-          onboardingCompleted: localUser.onboardingCompleted ?? true,
-          zybaScore: localUser.zybaScore || undefined,
-          stressLevel: localUser.stressLevel || undefined,
+          id: userId,
+          email: effectiveEmail,
+          name: effectiveName,
+          passwordHash: effectivePass,
+          avatarUrl: localUser?.avatarUrl || "fox",
+          bio: localUser?.bio || undefined,
+          phone: localUser?.phone || undefined,
+          username: localUser?.username || undefined,
+          onboardingCompleted: localUser?.onboardingCompleted ?? true,
+          zybaScore: localUser?.zybaScore || 80,
+          stressLevel: localUser?.stressLevel || 2,
         },
       });
-      console.log(`[userRepo] Migrated local user ${userId} → Neon ${created.id}`);
+      console.log(`[userRepo] Auto-created user in DB: ${created.id} (${created.email})`);
 
-      // Update local record so future lookups route to Neon
       try {
         const users = readLocalUsers();
         const idx = users.findIndex((u) => u.id === userId);
@@ -340,8 +353,25 @@ export const userRepository = {
       } catch {}
 
       return { neonId: created.id };
-    } catch (e: any) {
-      console.error("[userRepo] Failed to migrate local user to Neon:", e.message);
+    } catch (createErr: any) {
+      console.error("[userRepo] DB user auto-creation failed:", createErr.message);
+
+      // If race condition or duplicate email/id conflict, retry lookup
+      try {
+        if (effectiveEmail) {
+          const userByEmail = await accountDb.user.findUnique({
+            where: { email: effectiveEmail },
+            select: { id: true },
+          });
+          if (userByEmail) return { neonId: userByEmail.id };
+        }
+        const userById = await accountDb.user.findUnique({
+          where: { id: userId },
+          select: { id: true },
+        });
+        if (userById) return { neonId: userById.id };
+      } catch {}
+
       return null;
     }
   },

@@ -8,22 +8,27 @@ import { checkAndUnlock } from "@/lib/achievements/engine";
 // USER ID
 // =====================================================
 
-async function getCurrentUserId(req: NextRequest): Promise<string> {
+async function getCurrentUserSession(req: NextRequest): Promise<{ userId: string; email?: string; name?: string }> {
   const token = req.cookies.get("auth-token")?.value;
 
   if (token) {
     const session = await verifySessionToken(token);
 
     if (session?.userId) {
-      return session.userId;
+      return {
+        userId: session.userId,
+        email: session.email,
+        name: session.name || undefined,
+      };
     }
   }
 
   // Fallback development.
-  // Jangan digunakan untuk production.
   const user = await accountDb.user.findFirst({
     select: {
       id: true,
+      email: true,
+      name: true,
     },
   });
 
@@ -31,7 +36,11 @@ async function getCurrentUserId(req: NextRequest): Promise<string> {
     throw new Error("No authenticated user found.");
   }
 
-  return user.id;
+  return {
+    userId: user.id,
+    email: user.email,
+    name: user.name,
+  };
 }
 
 // =====================================================
@@ -87,10 +96,10 @@ export async function GET(req: NextRequest) {
   const todayDate = checkDate;
 
   try {
-    let userId: string;
+    let userSession: { userId: string; email?: string; name?: string };
 
     try {
-      userId = await getCurrentUserId(req);
+      userSession = await getCurrentUserSession(req);
     } catch {
       return NextResponse.json({
         today: null,
@@ -105,6 +114,14 @@ export async function GET(req: NextRequest) {
         },
       });
     }
+
+    const { userRepository: uRepo } = await import("@/backend/auth/userRepository");
+    const migrated = await uRepo.ensureUserExistsInNeon(
+      userSession.userId,
+      userSession.email,
+      userSession.name
+    );
+    const userId = migrated?.neonId ?? userSession.userId;
 
     const page = Math.max(
       1,
@@ -231,16 +248,20 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   try {
-    const userId =
-      await getCurrentUserId(req);
+    const userSession =
+      await getCurrentUserSession(req);
 
     const body =
       await req.json();
 
-    // Auto-migrate local-fallback users to Neon so FK constraints don't fail
+    // Auto-migrate local-fallback users to DB so FK constraints don't fail
     const { userRepository: uRepo } = await import("@/backend/auth/userRepository");
-    const migrated = await uRepo.ensureUserExistsInNeon(userId);
-    const neonUserId = migrated?.neonId ?? userId;
+    const migrated = await uRepo.ensureUserExistsInNeon(
+      userSession.userId,
+      userSession.email,
+      userSession.name
+    );
+    const neonUserId = migrated?.neonId ?? userSession.userId;
 
     const {
       mood,
@@ -522,7 +543,7 @@ export async function POST(req: NextRequest) {
       );
 
       await userRepository.saveAssessment(
-        userId,
+        neonUserId,
 
         {
           goal:
@@ -589,11 +610,11 @@ export async function POST(req: NextRequest) {
     }
 
     // Invalidate caches immediately so dashboard & assessment update instantly
-    invalidateDailyAssessmentCache(userId);
+    invalidateDailyAssessmentCache(neonUserId);
 
     // Achievement check (fire-and-forget)
-    checkAndUnlock(userId, { type: "mood_checkin" }).catch(() => {});
-    checkAndUnlock(userId, { type: "login" }).catch(() => {});
+    checkAndUnlock(neonUserId, { type: "mood_checkin" }).catch(() => {});
+    checkAndUnlock(neonUserId, { type: "login" }).catch(() => {});
 
     // =================================================
     // RESPONSE
