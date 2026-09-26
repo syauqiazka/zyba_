@@ -7,7 +7,8 @@ import { createSessionToken } from "@/lib/auth";
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { action, email, otp, name, password } = body;
+    const { email, otp, name, password } = body;
+    const action = (body.action || "").toUpperCase();
 
     // Google Auth Action
     if (action === "GOOGLE_AUTH") {
@@ -276,9 +277,12 @@ export async function POST(request: NextRequest) {
     }
 
     return NextResponse.json({ error: "Action tidak valid" }, { status: 400 });
-  } catch (error) {
+  } catch (error: any) {
     console.error("Auth error:", error);
-    return NextResponse.json({ error: "Server error" }, { status: 500 });
+    return NextResponse.json(
+      { error: error?.message || "Server error", detail: String(error?.stack || error) },
+      { status: 500 }
+    );
   }
 }
 

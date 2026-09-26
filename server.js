@@ -1,14 +1,23 @@
 const path = require("path");
+const dir = path.resolve(__dirname);
+
+// Pastikan proses selalu berjalan dalam direktori project
+process.chdir(dir);
+
+// Muat environment variables (.env / .env.production) sebelum apapun dijalankan
+try {
+  const { loadEnvConfig } = require("@next/env");
+  loadEnvConfig(dir);
+} catch (e) {
+  console.warn("[server.js] loadEnvConfig failed:", e.message);
+}
+
 const next = require("next");
 const http = require("http");
 const { parse } = require("url");
 
 const port = parseInt(process.env.PORT, 10) || 3000;
 const hostname = process.env.HOSTNAME || "0.0.0.0";
-const dir = path.resolve(__dirname);
-
-// Pastikan proses selalu berjalan dalam direktori project
-process.chdir(dir);
 
 const app = next({
   dev: false,
