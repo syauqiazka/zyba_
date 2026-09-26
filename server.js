@@ -1,25 +1,25 @@
 const next = require("next");
+const http = require("http");
+
+const port = parseInt(process.env.PORT, 10) || 3000;
+const hostname = process.env.HOSTNAME || "0.0.0.0";
 
 const app = next({
   dev: false,
-  hostname: "127.0.0.1",
-  port: 3000,
+  hostname,
+  port,
 });
 
 const handle = app.getRequestHandler();
 
 app.prepare()
   .then(() => {
-    const http = require("http");
-
     const server = http.createServer((req, res) => {
       handle(req, res);
     });
 
-    server.listen(3000, "127.0.0.1", () => {
-      console.log(
-        "ZYBA Next.js running on http://127.0.0.1:3000"
-      );
+    server.listen(port, () => {
+      console.log(`ZYBA Next.js running on port ${port}`);
     });
   })
   .catch((err) => {
