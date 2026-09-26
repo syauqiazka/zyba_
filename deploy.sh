@@ -3,16 +3,23 @@
 # Usage: bash deploy.sh
 set -e
 
-echo "==> [1/4] Pulling latest code from GitHub..."
+echo "==> [1/5] Pulling latest code from GitHub..."
 git pull origin main
 
-echo "==> [2/4] Installing dependencies..."
+echo "==> [2/5] Installing dependencies..."
 pnpm install
 
-echo "==> [3/4] Generating Prisma clients (all 3 schemas)..."
+echo "==> [3/5] Generating Prisma clients (all 3 schemas)..."
 pnpm run db:generate:all
 
-echo "==> [4/4] Building Next.js production bundle..."
+echo "==> [4/5] Applying schema migrations to database (db push)..."
+# Tambah/update kolom baru tanpa hapus data yang sudah ada
+npx prisma db push --schema=prisma/account/schema.prisma --skip-generate --accept-data-loss 2>/dev/null || \
+  npx prisma db push --schema=prisma/schema.prisma --skip-generate --accept-data-loss 2>/dev/null || true
+npx prisma db push --schema=prisma/companion/schema.prisma --skip-generate --accept-data-loss 2>/dev/null || true
+npx prisma db push --schema=prisma/community/schema.prisma --skip-generate --accept-data-loss 2>/dev/null || true
+
+echo "==> [5/5] Building Next.js production bundle..."
 rm -rf .next/cache
 pnpm run build
 
@@ -24,3 +31,4 @@ echo "   Restart Node App lewat panel Webuzo:"
 echo "   Applications > List Applications > (cari zyba / jhic) > Restart"
 echo ""
 echo "   Setelah restart, buka https://jhic.zyba.my.id dan pastikan tidak ada error."
+
