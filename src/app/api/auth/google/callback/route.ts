@@ -9,39 +9,58 @@ export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
   const code = searchParams.get("code");
   const error = searchParams.get("error");
-  const state = searchParams.get("state");
 
-  // Tentukan base URL: utamakan host live dari request / NEXTAUTH_URL
-  const reqHost =
-    request.headers.get("x-forwarded-host")?.split(",")[0]?.trim() ||
-    request.headers.get("host")?.split(":")[0]?.trim() ||
-    request.nextUrl.hostname;
+  // ── Tentukan base URL yang benar ──────────────────────────────────────────
+  // Di balik reverse proxy Apache, request.url = http://localhost:30000/...
+  // Kita harus pakai x-forwarded-host agar redirect ke domain publik yang benar.
+  const fwdHost =
+    request.headers.get("x-forwarded-host")?.split(",")[0]?.trim() || "";
+  const fwdProto =
+    request.headers.get("x-forwarded-proto")?.split(",")[0]?.trim() || "";
 
-  const reqProto =
-    request.headers.get("x-forwarded-proto")?.split(",")[0]?.trim() ||
-    (reqHost.includes("localhost") || reqHost.includes("127.0.0.1") ? "http" : "https");
+  const envBase = (
+    process.env.NEXTAUTH_URL ||
+    process.env.NEXT_PUBLIC_BASE_URL ||
+    ""
+  ).replace(/\/$/, "");
 
-  let baseUrl = `${reqProto}://${reqHost}`;
-  const envBase = process.env.NEXTAUTH_URL || process.env.NEXT_PUBLIC_BASE_URL;
+  let baseUrl: string;
 
-  if (reqHost.includes("localhost") || reqHost.includes("127.0.0.1")) {
-    if (envBase && !envBase.includes("localhost")) {
-      baseUrl = envBase.replace(/\/$/, "");
-    }
-  } else if (reqHost.includes("zyba.my.id") || envBase?.includes("jhic.zyba.my.id")) {
+  if (fwdHost && fwdHost !== "localhost" && !fwdHost.startsWith("127.")) {
+    // Request masuk via reverse proxy domain publik
+    const proto = fwdProto || "https";
+    baseUrl = `${proto}://${fwdHost}`;
+  } else if (envBase && !envBase.includes("localhost")) {
+    // Fallback ke NEXTAUTH_URL
+    baseUrl = envBase;
+  } else {
+    // Dev lokal
+    const h = request.nextUrl.hostname;
+    const p = h === "localhost" || h === "127.0.0.1" ? "http" : "https";
+    baseUrl = `${p}://${request.nextUrl.host}`;
+  }
+
+  // Override paksa ke domain production kalau env menunjuk ke sana
+  if (envBase && envBase.includes("jhic.zyba.my.id")) {
     baseUrl = "https://jhic.zyba.my.id";
   }
 
+  console.log("[Google OAuth Callback] baseUrl:", baseUrl, "| fwdHost:", fwdHost, "| envBase:", envBase);
+
+  /** Helper: buat redirect dengan baseUrl yang sudah benar */
+  const redirect = (path: string) =>
+    NextResponse.redirect(`${baseUrl}${path}`);
+
   const redirectUri = `${baseUrl}/api/auth/google/callback`;
 
-  // Tangani jika otentikasi dibatalkan oleh pengguna di halaman Google
+  // Tangani jika otentikasi dibatalkan di halaman Google
   if (error) {
     console.warn("Google OAuth error:", error);
-    return NextResponse.redirect(new URL("/login?error=oauth_cancelled", request.url));
+    return redirect("/login?error=oauth_cancelled");
   }
 
   if (!code) {
-    return NextResponse.redirect(new URL("/login?error=missing_code", request.url));
+    return redirect("/login?error=missing_code");
   }
 
   const clientId = process.env.GOOGLE_CLIENT_ID;
@@ -49,7 +68,7 @@ export async function GET(request: NextRequest) {
 
   if (!clientId || !clientSecret) {
     console.error("Kredensial GOOGLE_CLIENT_ID atau GOOGLE_CLIENT_SECRET belum diset.");
-    return NextResponse.redirect(new URL("/login?error=server_config_error", request.url));
+    return redirect("/login?error=server_config_error");
   }
 
   try {
@@ -69,7 +88,7 @@ export async function GET(request: NextRequest) {
     if (!tokenResponse.ok) {
       const errText = await tokenResponse.text();
       console.error("Gagal menukar token Google:", errText);
-      return NextResponse.redirect(new URL("/login?error=token_exchange_failed", request.url));
+      return redirect("/login?error=token_exchange_failed");
     }
 
     const tokenData = await tokenResponse.json();
@@ -84,15 +103,19 @@ export async function GET(request: NextRequest) {
 
     if (!userInfoResponse.ok) {
       console.error("Gagal mengambil info profil Google");
-      return NextResponse.redirect(new URL("/login?error=profile_fetch_failed", request.url));
+      return redirect("/login?error=profile_fetch_failed");
     }
 
     const googleUser = await userInfoResponse.json();
     const email = (googleUser.email || "").toLowerCase().trim();
-    const name = googleUser.name || googleUser.given_name || email.split("@")[0] || "Zyba Member";
+    const name =
+      googleUser.name ||
+      googleUser.given_name ||
+      email.split("@")[0] ||
+      "Zyba Member";
 
     if (!email) {
-      return NextResponse.redirect(new URL("/login?error=no_email_provided", request.url));
+      return redirect("/login?error=no_email_provided");
     }
 
     // 3. Cari atau buat user di sistem ZYBA
@@ -103,12 +126,15 @@ export async function GET(request: NextRequest) {
       user = await userRepository.findByEmail(email);
     } catch (dbError: any) {
       console.error("[Google OAuth] DB connection failed:", dbError.message);
-      return NextResponse.redirect(new URL("/login?error=database_unavailable", request.url));
+      return redirect("/login?error=database_unavailable");
     }
 
     if (!user) {
       isNewUser = true;
-      const dummyPasswordHash = await bcrypt.hash(`google_${Date.now()}_${Math.random()}`, 12);
+      const dummyPasswordHash = await bcrypt.hash(
+        `google_${Date.now()}_${Math.random()}`,
+        12
+      );
       try {
         user = await userRepository.create({
           email,
@@ -120,10 +146,16 @@ export async function GET(request: NextRequest) {
         console.log("[Google OAuth] Created new user:", user.id, email);
       } catch (createError: any) {
         console.error("[Google OAuth] Failed to create user:", createError.message);
-        return NextResponse.redirect(new URL("/login?error=user_creation_failed", request.url));
+        return redirect("/login?error=user_creation_failed");
       }
     } else {
-      console.log("[Google OAuth] Existing user found:", user.id, email, "onboardingCompleted:", user.onboardingCompleted);
+      console.log(
+        "[Google OAuth] Existing user found:",
+        user.id,
+        email,
+        "onboardingCompleted:",
+        user.onboardingCompleted
+      );
     }
 
     // 4. Terbitkan signed JWT session token (AGENTS.md Bagian 8.2)
@@ -135,8 +167,9 @@ export async function GET(request: NextRequest) {
     });
 
     // 5. Redirect pengguna baru ke Asesmen Awal, pengguna lama ke Dashboard
-    const destination = isNewUser || !user.onboardingCompleted ? "/assessment" : "/dashboard";
-    const response = NextResponse.redirect(new URL(destination, request.url));
+    const destination =
+      isNewUser || !user.onboardingCompleted ? "/assessment" : "/dashboard";
+    const response = redirect(destination);
 
     response.cookies.set("auth-token", sessionToken, {
       httpOnly: true,
@@ -152,6 +185,6 @@ export async function GET(request: NextRequest) {
     return response;
   } catch (err) {
     console.error("Error pada callback Google OAuth:", err);
-    return NextResponse.redirect(new URL("/login?error=auth_internal_error", request.url));
+    return redirect("/login?error=auth_internal_error");
   }
 }

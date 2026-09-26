@@ -1,35 +1,45 @@
 import { NextRequest, NextResponse } from "next/server";
 import crypto from "crypto";
 
+export const dynamic = "force-dynamic";
+
 export async function GET(request: NextRequest) {
   const clientId = process.env.GOOGLE_CLIENT_ID;
 
-  if (!clientId) {
-    const loginUrl = new URL("/login", request.url);
-    loginUrl.searchParams.set("error", "server_config_error");
-    return NextResponse.redirect(loginUrl);
+  // ── Tentukan base URL yang benar (sama dengan logic di callback) ──────────
+  const fwdHost =
+    request.headers.get("x-forwarded-host")?.split(",")[0]?.trim() || "";
+  const fwdProto =
+    request.headers.get("x-forwarded-proto")?.split(",")[0]?.trim() || "";
+
+  const envBase = (
+    process.env.NEXTAUTH_URL ||
+    process.env.NEXT_PUBLIC_BASE_URL ||
+    ""
+  ).replace(/\/$/, "");
+
+  let baseUrl: string;
+
+  if (fwdHost && fwdHost !== "localhost" && !fwdHost.startsWith("127.")) {
+    const proto = fwdProto || "https";
+    baseUrl = `${proto}://${fwdHost}`;
+  } else if (envBase && !envBase.includes("localhost")) {
+    baseUrl = envBase;
+  } else {
+    const h = request.nextUrl.hostname;
+    const p = h === "localhost" || h === "127.0.0.1" ? "http" : "https";
+    baseUrl = `${p}://${request.nextUrl.host}`;
   }
 
-  // Tentukan base URL: utamakan host live dari request / NEXTAUTH_URL
-  const reqHost =
-    request.headers.get("x-forwarded-host")?.split(",")[0]?.trim() ||
-    request.headers.get("host")?.split(":")[0]?.trim() ||
-    request.nextUrl.hostname;
-
-  const reqProto =
-    request.headers.get("x-forwarded-proto")?.split(",")[0]?.trim() ||
-    (reqHost.includes("localhost") || reqHost.includes("127.0.0.1") ? "http" : "https");
-
-  let baseUrl = `${reqProto}://${reqHost}`;
-  const envBase = process.env.NEXTAUTH_URL || process.env.NEXT_PUBLIC_BASE_URL;
-
-  if (reqHost.includes("localhost") || reqHost.includes("127.0.0.1")) {
-    if (envBase && !envBase.includes("localhost")) {
-      baseUrl = envBase.replace(/\/$/, "");
-    }
-  } else if (reqHost.includes("zyba.my.id") || envBase?.includes("jhic.zyba.my.id")) {
-    // Sesuai registrasi Google Cloud Console, selalu gunakan https://jhic.zyba.my.id
+  // Override paksa ke domain production kalau env menunjuk ke sana
+  if (envBase && envBase.includes("jhic.zyba.my.id")) {
     baseUrl = "https://jhic.zyba.my.id";
+  }
+
+  console.log("[Google OAuth Init] baseUrl:", baseUrl, "| fwdHost:", fwdHost, "| envBase:", envBase);
+
+  if (!clientId) {
+    return NextResponse.redirect(`${baseUrl}/login?error=server_config_error`);
   }
 
   const redirectUri = `${baseUrl}/api/auth/google/callback`;
@@ -43,7 +53,7 @@ export async function GET(request: NextRequest) {
     response_type: "code",
     scope: "openid email profile",
     access_type: "offline",
-    prompt: "select_account", // Memunculkan "Choose an account" seperti di akun Google resmi
+    prompt: "select_account",
     state,
   });
 
