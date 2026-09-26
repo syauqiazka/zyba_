@@ -10,7 +10,8 @@ export async function GET(request: NextRequest) {
     return NextResponse.redirect(loginUrl);
   }
 
-  // Tentukan base URL secara otomatis dari host yang sedang aktif (port 3000 / 3001 / domain)
+  // Tentukan base URL: utamakan NEXTAUTH_URL dari env, fallback ke header request
+  const envBaseUrl = process.env.NEXTAUTH_URL || process.env.NEXT_PUBLIC_BASE_URL;
   const host =
     request.headers.get("x-forwarded-host") ||
     request.headers.get("host") ||
@@ -19,7 +20,7 @@ export async function GET(request: NextRequest) {
     request.headers.get("x-forwarded-proto") ||
     (host.includes("localhost") || host.includes("127.0.0.1") ? "http" : "https");
 
-  const baseUrl = `${protocol}://${host}`;
+  const baseUrl = envBaseUrl ? envBaseUrl.replace(/\/$/, "") : `${protocol}://${host}`;
   const redirectUri = `${baseUrl}/api/auth/google/callback`;
 
   // State untuk mitigasi CSRF

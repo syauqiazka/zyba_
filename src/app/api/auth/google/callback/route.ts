@@ -11,6 +11,8 @@ export async function GET(request: NextRequest) {
   const error = searchParams.get("error");
   const state = searchParams.get("state");
 
+  // Tentukan base URL: utamakan NEXTAUTH_URL dari env, fallback ke header request
+  const envBaseUrl = process.env.NEXTAUTH_URL || process.env.NEXT_PUBLIC_BASE_URL;
   const host =
     request.headers.get("x-forwarded-host") ||
     request.headers.get("host") ||
@@ -19,7 +21,7 @@ export async function GET(request: NextRequest) {
     request.headers.get("x-forwarded-proto") ||
     (host.includes("localhost") || host.includes("127.0.0.1") ? "http" : "https");
 
-  const baseUrl = `${protocol}://${host}`;
+  const baseUrl = envBaseUrl ? envBaseUrl.replace(/\/$/, "") : `${protocol}://${host}`;
   const redirectUri = `${baseUrl}/api/auth/google/callback`;
 
   // Tangani jika otentikasi dibatalkan oleh pengguna di halaman Google
