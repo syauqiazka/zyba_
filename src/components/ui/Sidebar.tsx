@@ -102,7 +102,7 @@ export default function Sidebar({ onClose }: { onClose?: () => void }) {
       <div className="flex flex-col gap-5">
         {/* Brand Logo & Close button row */}
         <div className="flex items-center justify-between px-1 pt-1 pb-1">
-          <Link href="/dashboard" className="flex items-center gap-3 group justify-center lg:justify-start" title="ZYBA Wellness">
+          <Link href="/dashboard" className="flex items-center gap-3 group justify-start md:justify-center lg:justify-start" title="ZYBA Wellness">
             <div className="relative w-9 h-9 shrink-0 flex items-center justify-center rounded-2xl bg-cream border border-orange-500/20 shadow-sm group-hover:scale-105 transition-transform">
               {/* 4-petal floral logomark (Orange & Green) */}
               <div className="absolute w-3.5 h-3.5 rounded-full bg-orange-500 -top-0.5 left-1/2 -translate-x-1/2 opacity-90" />
@@ -146,7 +146,7 @@ export default function Sidebar({ onClose }: { onClose?: () => void }) {
                 href={item.href}
                 onClick={onClose}
                 title={item.label}
-                className={`group/link relative px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 flex items-center justify-center lg:justify-start gap-3 ${
+                className={`group/link relative px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 flex items-center justify-start md:justify-center lg:justify-start gap-3 ${
                   isActive
                     ? "bg-brown-900 text-cream shadow-md shadow-brown-900/15 font-semibold"
                     : "text-brown-700 hover:-translate-y-0.5 hover:bg-gradient-to-r hover:from-orange-100/80 hover:to-green-100/80 hover:text-brown-900 hover:shadow-xs"
@@ -170,7 +170,7 @@ export default function Sidebar({ onClose }: { onClose?: () => void }) {
         <Link
           href="/settings/zyba-plus"
           title={currentUser.plan === "PLUS" ? "Zyba Plus" : "Upgrade Pro"}
-          className="bg-white/70 rounded-xl p-2 md:p-2 lg:p-3 flex items-center justify-center lg:justify-between border border-brown-900/10 transition-colors hover:bg-white hover:border-orange-500/30"
+          className="bg-white/70 rounded-xl p-2.5 md:p-2 lg:p-3 flex items-center justify-between md:justify-center lg:justify-between border border-brown-900/10 transition-colors hover:bg-white hover:border-orange-500/30"
         >
           <div className="flex items-center gap-2">
             <span className="flex size-8 shrink-0 items-center justify-center rounded-xl bg-orange-100 text-orange-500" aria-hidden="true">
@@ -212,12 +212,12 @@ export default function Sidebar({ onClose }: { onClose?: () => void }) {
             onLogout={handleLogout}
           />
 
-          <div className="bg-white/80 hover:bg-white border border-brown-900/10 rounded-2xl p-1.5 lg:p-2 flex items-center justify-center lg:justify-between transition-colors shadow-xs">
+          <div className="bg-white/80 hover:bg-white border border-brown-900/10 rounded-2xl p-1.5 lg:p-2 flex items-center justify-between md:justify-center lg:justify-between transition-colors shadow-xs">
             {/* Left: User Avatar + Name + Handle (Clicking toggles Profile Popover) */}
             <button
               type="button"
               onClick={() => setIsProfilePopoverOpen(!isProfilePopoverOpen)}
-              className="flex items-center justify-center lg:justify-start gap-2.5 p-1 rounded-xl hover:bg-green-100/60 transition-colors text-left flex-1 min-w-0 cursor-pointer group"
+              className="flex items-center justify-start md:justify-center lg:justify-start gap-2.5 p-1 rounded-xl hover:bg-green-100/60 transition-colors text-left flex-1 min-w-0 cursor-pointer group"
               title="Buka profil"
             >
               <UserAvatar

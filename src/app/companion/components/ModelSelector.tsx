@@ -120,7 +120,7 @@ export default function ModelSelector({
         aria-expanded={isOpen}
       >
         <span className="text-xs">{currentOption.icon}</span>
-        <span className="truncate max-w-[130px] font-bold text-brown-900">
+        <span className="truncate max-w-[85px] sm:max-w-[130px] font-bold text-brown-900">
           {currentOption.name}
         </span>
         <span className="text-[9px] text-brown-700/60 shrink-0">

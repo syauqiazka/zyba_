@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { detectRisk, CRISIS_RESOURCES } from "@/lib/crisisDetection";
 import { verifySessionToken, createSessionToken } from "@/lib/auth";
 import { userRepository } from "@/backend/auth/userRepository";
+import { accountDb } from "@/backend/db/accountClient";
 
 // Kalkulator Skor ZYBA berbasis data riil kuisioner (0 - 100)
 function calculateZybaScore(data: {
@@ -116,13 +117,48 @@ export async function POST(req: NextRequest) {
       stressLevel
     );
 
-    // ✅ Tandai onboardingCompleted = true di user record
-    const updated = await userRepository.update(userId, { onboardingCompleted: true });
+    // ✅ Simpan zybaScore & stressLevel serta tandai onboardingCompleted = true di user record
+    const updated = await userRepository.update(userId, {
+      zybaScore: score,
+      stressLevel,
+      onboardingCompleted: true,
+    });
     if (!updated) {
       console.error("[/api/assessment] Failed to update onboardingCompleted for user:", userId);
       return NextResponse.json({ error: "Gagal menyimpan status assessment ke database" }, { status: 500 });
     }
-    console.log("[/api/assessment] onboardingCompleted set to true for user:", userId);
+    console.log("[/api/assessment] onboardingCompleted & zybaScore set for user:", userId, score);
+
+    // Sinkronkan juga ke daily assessment hari ini agar dashboard langsung konsisten
+    const todayDate = new Intl.DateTimeFormat("en-CA", {
+      timeZone: "Asia/Jakarta",
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+    }).format(new Date());
+
+    try {
+      await accountDb.dailyAssessment.upsert({
+        where: { userId_date: { userId, date: todayDate } },
+        create: {
+          userId,
+          date: todayDate,
+          mood: (mood || "HAPPY").toUpperCase() as any,
+          stressLevel,
+          sleepRating: sleepRating ? Number(sleepRating) : 3,
+          energyTags: ["Asesmen Awal"],
+          reflection: expressionText || "Asesmen Awal ZYBA",
+          calculatedScore: score,
+        },
+        update: {
+          calculatedScore: score,
+          stressLevel,
+          mood: (mood || "HAPPY").toUpperCase() as any,
+        },
+      });
+    } catch (e: any) {
+      console.warn("[/api/assessment] Daily sync warning:", e.message);
+    }
 
     const response = NextResponse.json({
       success: true,

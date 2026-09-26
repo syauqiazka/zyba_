@@ -86,15 +86,23 @@ export async function GET(req: NextRequest) {
     // SCORE & CONDITION
     // =================================================
     const dailyScore = latestDaily?.calculatedScore;
-    const zybaScore =
-      dailyScore !== null && dailyScore !== undefined
-        ? dailyScore
-        : user.zybaScore ?? null;
+    const dailyTime = latestDaily?.createdAt ? new Date(latestDaily.createdAt).getTime() : 0;
+    const initialTime = initialAssessment?.createdAt ? new Date(initialAssessment.createdAt).getTime() : 0;
+
+    let zybaScore = user.zybaScore ?? null;
+
+    if (latestDaily && dailyTime > initialTime && dailyScore !== null && dailyScore !== undefined) {
+      zybaScore = dailyScore;
+    } else if (user.zybaScore !== null && user.zybaScore !== undefined) {
+      zybaScore = user.zybaScore;
+    } else if (dailyScore !== null && dailyScore !== undefined) {
+      zybaScore = dailyScore;
+    }
 
     const condition =
       zybaScore !== null ? scoreToCondition(zybaScore) : "Belum Dinilai";
 
-    const hasAssessment = Boolean(latestDaily || zybaScore !== null);
+    const hasAssessment = Boolean(latestDaily || initialAssessment || zybaScore !== null);
 
     // =================================================
     // STRESS
@@ -107,7 +115,10 @@ export async function GET(req: NextRequest) {
       5: "Level 5 - Sangat Tinggi",
     };
 
-    const rawStress = latestDaily?.stressLevel ?? user.stressLevel ?? null;
+    const rawStress =
+      latestDaily && dailyTime > initialTime && latestDaily.stressLevel !== null
+        ? latestDaily.stressLevel
+        : user.stressLevel ?? latestDaily?.stressLevel ?? null;
     const stressLevel = rawStress !== null ? Number(rawStress) : null;
     const stressLabel =
       stressLevel !== null

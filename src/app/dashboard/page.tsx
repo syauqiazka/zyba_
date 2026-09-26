@@ -264,6 +264,17 @@ export default function DashboardPage() {
           });
 
         /*
+         * Authoritative Zyba Score:
+         * Prioritaskan stats.zybaScore yang sudah disinkronkan berdasarkan timestamp
+         * terbaru di /api/user/me, lalu zyba.score, lalu user.zybaScore.
+         */
+        const finalScore =
+          stats.zybaScore ??
+          zyba.score ??
+          user.zybaScore ??
+          null;
+
+        /*
          * =====================================================
          * CONDITION
          * =====================================================
@@ -272,14 +283,14 @@ export default function DashboardPage() {
           "Belum Dinilai";
 
         if (
-          zyba.score !== null
+          finalScore !== null
         ) {
           if (
-            zyba.score >= 80
+            finalScore >= 80
           ) {
             condition = "Baik";
           } else if (
-            zyba.score >= 60
+            finalScore >= 60
           ) {
             condition = "Cukup";
           } else {
@@ -293,12 +304,11 @@ export default function DashboardPage() {
          * STRESS TERBARU
          * =====================================================
          */
-        const latestStress =
-          latestDaily?.stressLevel !=
-            null
-            ? Number(
-              latestDaily.stressLevel
-            )
+        const resolvedStress =
+          stats.stressLevel != null
+            ? Number(stats.stressLevel)
+            : latestDaily?.stressLevel != null
+            ? Number(latestDaily.stressLevel)
             : null;
 
         const stressLabels = [
@@ -311,14 +321,14 @@ export default function DashboardPage() {
         ];
 
         const stressLabel =
-          latestStress !== null
+          resolvedStress !== null
             ? stressLabels[
             Math.min(
               5,
               Math.max(
                 1,
                 Math.round(
-                  latestStress
+                  resolvedStress
                 )
               )
             )
@@ -353,12 +363,12 @@ export default function DashboardPage() {
             "🦊",
 
           zybaScore:
-            zyba.score,
+            finalScore,
 
           condition,
 
           stressLevel:
-            latestStress,
+            resolvedStress,
 
           stressLabel,
 
@@ -410,12 +420,12 @@ export default function DashboardPage() {
                 ...stats,
 
                 zybaScore:
-                  zyba.score,
+                  finalScore,
 
                 condition,
 
                 stressLevel:
-                  latestStress,
+                  resolvedStress,
 
                 stressLabel,
 

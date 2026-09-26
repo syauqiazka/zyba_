@@ -155,15 +155,15 @@ export default function AssessmentPage() {
 
         {/* Progress global */}
         <div className="flex items-center gap-3">
-          <div className="hidden sm:flex items-center gap-2">
-            <div className="w-32 md:w-40 h-2 rounded-full bg-cream border border-brown-900/10 overflow-hidden">
+          <div className="flex items-center gap-2">
+            <div className="w-24 sm:w-32 md:w-40 h-2 rounded-full bg-cream border border-brown-900/10 overflow-hidden">
               <div
-                className="h-full bg-gradient-to-r from-orange-500 to-green-500 transition-all duration-500"
-                style={{ width: `${((currentStep + (isCompleted ? 1 : 0)) / 10) * 100}%` }}
+                className="h-full bg-gradient-to-r from-orange-500 to-green-500 transition-all duration-500 rounded-full"
+                style={{ width: `${isCompleted ? 100 : Math.min(100, Math.round(((currentStep + 1) / 10) * 100))}%` }}
               />
             </div>
             <span className="text-xs font-bold text-brown-700">
-              {isCompleted ? "100" : Math.round(((currentStep + 1) / 10) * 100)}%
+              {isCompleted ? 100 : Math.min(100, Math.round(((currentStep + 1) / 10) * 100))}%
             </span>
           </div>
 
