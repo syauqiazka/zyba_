@@ -21,6 +21,9 @@ export default function CommunityMessagesView() {
   const searchParams = useSearchParams();
   const targetUserId = searchParams.get("userId");
 
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+  const [currentUserMeta, setCurrentUserMeta] = useState<TargetUserMeta | null>(null);
+
   const {
     conversations,
     messages,
@@ -30,10 +33,9 @@ export default function CommunityMessagesView() {
     subscribeToConversation,
     sendMessage,
     getOrCreateConversation,
-  } = useDM();
+  } = useDM(currentUserId);
 
   const [activeConvId, setActiveConvId] = useState<string | null>(null);
-  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   const myStatus = useUserStatus();
   const [targetUserMeta, setTargetUserMeta] = useState<TargetUserMeta | null>(null);
   const [isInitializingTarget, setIsInitializingTarget] = useState(false);
@@ -50,6 +52,12 @@ export default function CommunityMessagesView() {
       .then((data) => {
         if (data?.user?.id) {
           setCurrentUserId(data.user.id);
+          setCurrentUserMeta({
+            id: data.user.id,
+            name: data.user.name,
+            username: data.user.username,
+            avatarUrl: data.user.avatarUrl,
+          });
         }
       })
       .catch(() => {});
@@ -147,6 +155,7 @@ export default function CommunityMessagesView() {
     if (!input.trim() || !activeConvId) return;
     const textToSend = input.trim();
     setInput("");
+    inputRef.current?.focus();
     try {
       await sendMessage(activeConvId, textToSend);
       // Reload daftar obrolan agar lastMessage terupdate
@@ -389,11 +398,43 @@ export default function CommunityMessagesView() {
                 );
 
                 return activeChatLog.map((msg, idx) => {
-                  const isMe = currentUserId ? msg.senderId === currentUserId : false;
+                  // Safe isMe: true if msg.senderId is "me", matches currentUserId, or is not the partner's id
+                  const isMe =
+                    msg.senderId === "me" ||
+                    Boolean(currentUserId && msg.senderId === currentUserId) ||
+                    Boolean(otherUserId && msg.senderId !== otherUserId);
+
                   const prevMsg = activeChatLog[idx - 1];
+                  const nextMsg = activeChatLog[idx + 1];
+
                   const showDateSeparator =
                     !prevMsg || !isSameCalendarDay(prevMsg.createdAt, msg.createdAt);
                   const showUnreadSeparator = idx === firstUnreadIndex;
+
+                  const prevIsMe = prevMsg
+                    ? prevMsg.senderId === "me" ||
+                      Boolean(currentUserId && prevMsg.senderId === currentUserId) ||
+                      Boolean(otherUserId && prevMsg.senderId !== otherUserId)
+                    : null;
+
+                  const isFirstInGroup =
+                    !prevMsg ||
+                    showDateSeparator ||
+                    showUnreadSeparator ||
+                    prevIsMe !== isMe;
+
+                  const nextIsMe = nextMsg
+                    ? nextMsg.senderId === "me" ||
+                      Boolean(currentUserId && nextMsg.senderId === currentUserId) ||
+                      Boolean(otherUserId && nextMsg.senderId !== otherUserId)
+                    : null;
+
+                  const isLastInGroup =
+                    !nextMsg ||
+                    !isSameCalendarDay(msg.createdAt, nextMsg.createdAt) ||
+                    nextIsMe !== isMe;
+
+                  const isOptimistic = msg.id.startsWith("temp_");
 
                   return (
                     <React.Fragment key={msg.id}>
@@ -417,62 +458,73 @@ export default function CommunityMessagesView() {
                         </div>
                       )}
 
-                      {/* Chat Bubble — with status dot for my messages */}
+                      {/* Chat Message Row */}
                       <div
-                        className={`flex gap-2 max-w-[75%] ${
-                          isMe ? "self-end flex-row-reverse items-end" : "self-start items-end"
-                        }`}
+                        className={`flex items-end gap-2 max-w-[85%] sm:max-w-[75%] ${
+                          isMe ? "self-end justify-end ml-auto" : "self-start justify-start mr-auto"
+                        } ${isFirstInGroup ? "mt-3" : "mt-1"}`}
                       >
-                        {/* My avatar with status dot */}
-                        {isMe && (
-                          <div className="relative shrink-0">
-                            <div className="w-6 h-6 rounded-full bg-brown-900 text-white flex items-center justify-center font-bold text-[10px]">
-                              {(currentUserId || "M").slice(0, 1).toUpperCase()}
-                            </div>
-                            <div
-                              className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full border-[2px] border-white flex items-center justify-center"
-                              style={{ backgroundColor: myStatus.hexColor }}
-                              title={myStatus.label}
-                            >
-                              {myStatus.status === "dnd" && (
-                                <div className="w-1 h-[1.5px] bg-white rounded-full" />
-                              )}
-                            </div>
+                        {/* Other user avatar on the left */}
+                        {!isMe && (
+                          <div className="w-7 shrink-0 flex items-end">
+                            {isLastInGroup ? (
+                              <UserAvatar
+                                src={otherAvatar}
+                                name={otherName}
+                                size="xs"
+                                showStatus={false}
+                                className="mb-0.5"
+                              />
+                            ) : (
+                              <div className="w-6" />
+                            )}
                           </div>
                         )}
-                        <div className={`flex flex-col gap-1 ${isMe ? "items-end" : "items-start"}`}>
-                        {!isMe && (
-                          <span className="text-[10px] font-bold text-brown-700/70 ml-1">
-                            {otherName}
-                          </span>
-                        )}
-                        <div
-                          className={`px-4 py-2.5 rounded-2xl text-xs leading-relaxed break-words shadow-2xs ${
-                            isMe
-                              ? "bg-brown-900 text-white rounded-br-xs"
-                              : "bg-white border border-brown-900/10 text-brown-900 rounded-bl-xs"
-                          }`}
-                        >
-                          {msg.content}
-                        </div>
-                        <div className="flex items-center gap-1 text-[9px] text-brown-700/40 px-1">
-                          <span>
-                            {new Date(msg.createdAt).toLocaleTimeString([], {
-                              hour: "2-digit",
-                              minute: "2-digit",
-                            })}
-                          </span>
-                          {isMe && (
-                            <span
-                              className={`font-bold ${
-                                msg.readAt ? "text-orange-500" : "text-brown-700/40"
-                              }`}
-                              title={msg.readAt ? "Dibaca" : "Terkirim"}
-                            >
-                              {msg.readAt ? "✓✓" : "✓"}
+
+                        <div className={`flex flex-col gap-0.5 ${isMe ? "items-end" : "items-start"}`}>
+                          {/* Sender name for other user (only on first of group) */}
+                          {!isMe && isFirstInGroup && (
+                            <span className="text-[11px] font-bold text-brown-900/80 mb-0.5 ml-1">
+                              {otherName}
                             </span>
                           )}
-                        </div>
+
+                          <div
+                            className={`px-4 py-2.5 text-xs leading-relaxed break-words shadow-2xs transition-all ${
+                              isMe
+                                ? `bg-brown-900 text-white rounded-2xl ${
+                                    isLastInGroup ? "rounded-br-xs" : ""
+                                  }`
+                                : `bg-white border border-brown-900/10 text-brown-900 rounded-2xl ${
+                                    isLastInGroup ? "rounded-bl-xs" : ""
+                                  }`
+                            }`}
+                          >
+                            {msg.content}
+                          </div>
+
+                          <div className={`flex items-center gap-1 text-[9px] px-1 ${isMe ? "text-brown-700/50" : "text-brown-700/40"}`}>
+                            <span>
+                              {new Date(msg.createdAt).toLocaleTimeString([], {
+                                hour: "2-digit",
+                                minute: "2-digit",
+                              })}
+                            </span>
+                            {isMe && (
+                              <span
+                                className={`font-bold ${
+                                  isOptimistic
+                                    ? "text-brown-700/40 opacity-70"
+                                    : msg.readAt
+                                    ? "text-orange-500"
+                                    : "text-brown-700/50"
+                                }`}
+                                title={isOptimistic ? "Mengirim..." : msg.readAt ? "Dibaca" : "Terkirim"}
+                              >
+                                {isOptimistic ? "⏱" : msg.readAt ? "✓✓" : "✓"}
+                              </span>
+                            )}
+                          </div>
                         </div>
                       </div>
                     </React.Fragment>

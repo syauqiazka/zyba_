@@ -26,7 +26,7 @@ export interface DMConversation {
  * - Polling daftar obrolan & unread badge setiap 5 detik
  * - Auto mark-as-read & update badge count instan
  */
-export function useDM() {
+export function useDM(currentUserId?: string | null) {
   const [conversations, setConversations] = useState<DMConversation[]>([]);
   const [messages, setMessages] = useState<Record<string, DMMessage[]>>({});
   const [activeConvId, setActiveConvId] = useState<string | null>(null);
@@ -34,6 +34,9 @@ export function useDM() {
 
   const activeConvIdRef = useRef<string | null>(null);
   activeConvIdRef.current = activeConvId;
+
+  const currentUserIdRef = useRef<string | null | undefined>(currentUserId);
+  currentUserIdRef.current = currentUserId;
 
   // ── 1. Load Conversations ──────────────────────────────────────────
   const loadConversations = useCallback(async () => {
@@ -87,29 +90,48 @@ export function useDM() {
     }
   }, []);
 
-  // ── 3. Polling Obrolan Aktif (setiap 2.5s) ───────────────────────────
+  // ── 3. Fast Adaptive Polling & Focus-Refresh (Snappy Chat Experience) ─
   useEffect(() => {
     if (!activeConvId) return;
 
-    // Load langsung pertama kali
+    // Load langsung seketika saat percakapan dibuka
     loadMessages(activeConvId);
 
-    const interval = setInterval(() => {
+    // Refresh seketika saat user kembali fokus ke tab
+    const handleFocus = () => {
       if (activeConvIdRef.current) {
         loadMessages(activeConvIdRef.current);
+        loadConversations();
       }
-    }, 2500);
+    };
+    window.addEventListener("focus", handleFocus);
+    document.addEventListener("visibilitychange", handleFocus);
 
-    return () => clearInterval(interval);
-  }, [activeConvId, loadMessages]);
+    // Polling cepat: 1200ms saat tab aktif, 4000ms saat di background
+    const interval = setInterval(() => {
+      if (activeConvIdRef.current) {
+        if (!document.hidden) {
+          loadMessages(activeConvIdRef.current);
+        }
+      }
+    }, 1200);
 
-  // ── 4. Polling Daftar Conversations (setiap 5s) ──────────────────────
+    return () => {
+      clearInterval(interval);
+      window.removeEventListener("focus", handleFocus);
+      document.removeEventListener("visibilitychange", handleFocus);
+    };
+  }, [activeConvId, loadMessages, loadConversations]);
+
+  // ── 4. Polling Daftar Conversations (setiap 4s saat aktif) ────────────
   useEffect(() => {
     loadConversations();
 
     const interval = setInterval(() => {
-      loadConversations();
-    }, 5000);
+      if (!document.hidden) {
+        loadConversations();
+      }
+    }, 4000);
 
     return () => clearInterval(interval);
   }, [loadConversations]);
@@ -126,11 +148,11 @@ export function useDM() {
 
       const trimmed = content.trim();
 
-      // Optimistic message
+      // Optimistic message — gunakan currentUserId agar isMe langsung true tanpa flash
       const tempId = "temp_" + Date.now();
       const optimisticMsg: DMMessage = {
         id: tempId,
-        senderId: "me", // akan di-replace dengan pesan asli dari server
+        senderId: currentUserIdRef.current || "me",
         content: trimmed,
         createdAt: new Date().toISOString(),
         readAt: null,

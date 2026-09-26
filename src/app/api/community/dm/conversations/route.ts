@@ -7,6 +7,10 @@ import { accountDb } from "@/backend/db/accountClient";
  * GET /api/community/dm/conversations
  * List user's DM conversations sorted by lastMessageAt
  */
+// Fast in-memory cache for user profiles (TTL 30s)
+const userProfileCache = new Map<string, { data: { name: string; username: string | null; avatarUrl: string | null }; timestamp: number }>();
+const PROFILE_CACHE_TTL = 30000;
+
 export async function GET(req: NextRequest) {
   try {
     const token = req.cookies.get("auth-token")?.value;
@@ -53,13 +57,29 @@ export async function GET(req: NextRequest) {
     );
 
     let usersMap = new Map<string, { name: string; username: string | null; avatarUrl: string | null }>();
-    if (otherUserIds.length > 0) {
+    const missingIds: string[] = [];
+
+    const now = Date.now();
+    for (const uid of otherUserIds) {
+      const cached = userProfileCache.get(uid);
+      if (cached && now - cached.timestamp < PROFILE_CACHE_TTL) {
+        usersMap.set(uid, cached.data);
+      } else {
+        missingIds.push(uid);
+      }
+    }
+
+    if (missingIds.length > 0) {
       try {
         const users = await accountDb.user.findMany({
-          where: { id: { in: otherUserIds } },
+          where: { id: { in: missingIds } },
           select: { id: true, name: true, username: true, avatarUrl: true },
         });
-        usersMap = new Map(users.map((u) => [u.id, u]));
+        for (const u of users) {
+          const profile = { name: u.name, username: u.username, avatarUrl: u.avatarUrl };
+          usersMap.set(u.id, profile);
+          userProfileCache.set(u.id, { data: profile, timestamp: now });
+        }
       } catch (err) {
         console.warn("[DM] Could not fetch user details for conversations", err);
       }

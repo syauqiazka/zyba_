@@ -120,37 +120,38 @@ export async function POST(req: NextRequest) {
       data: { lastMessageAt: new Date() },
     });
 
-    // Create notifications for other participants
-    try {
-      const otherParticipants = await communityDb.directParticipant.findMany({
-        where: {
-          conversationId,
-          userId: { not: session.userId },
-        },
-        select: { userId: true },
-      });
-
-      for (const p of otherParticipants) {
-        await communityDb.communityNotification.create({
-          data: {
-            recipientId: p.userId,
-            actorId: session.userId,
-            type: "dm",
+    // Execute notifications and realtime publish in background (non-blocking for ultra-fast response)
+    (async () => {
+      try {
+        const otherParticipants = await communityDb.directParticipant.findMany({
+          where: {
             conversationId,
+            userId: { not: session.userId },
           },
+          select: { userId: true },
         });
-      }
-    } catch (notifErr) {
-      console.warn("[DM Notification error]:", notifErr);
-    }
 
-    // Publish via Ably for realtime delivery (non-blocking, never fails message send)
-    try {
-      const { publishDMMessage } = await import("@/backend/realtime/ably");
-      await publishDMMessage(conversationId, message);
-    } catch (realtimeErr) {
-      console.warn("[DM Realtime Publish warning]:", realtimeErr);
-    }
+        if (otherParticipants.length > 0) {
+          await communityDb.communityNotification.createMany({
+            data: otherParticipants.map((p) => ({
+              recipientId: p.userId,
+              actorId: session.userId,
+              type: "dm",
+              conversationId,
+            })),
+          });
+        }
+      } catch (notifErr) {
+        console.warn("[DM Notification error]:", notifErr);
+      }
+
+      try {
+        const { publishDMMessage } = await import("@/backend/realtime/ably");
+        await publishDMMessage(conversationId, message);
+      } catch (realtimeErr) {
+        console.warn("[DM Realtime Publish warning]:", realtimeErr);
+      }
+    })();
 
     return NextResponse.json({ message });
   } catch (err: any) {
