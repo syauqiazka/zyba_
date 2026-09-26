@@ -125,6 +125,8 @@ export default function SmartActivityPlannerPage() {
   const targetProgress = 1200;
 
   const [isCompleted, setIsCompleted] = useState(false);
+  const [conditionData, setConditionData] = useState<any>(null);
+  const [activityToast, setActivityToast] = useState<string | null>(null);
 
   // =========================
   // Daily Planner State & Persistence
@@ -132,7 +134,28 @@ export default function SmartActivityPlannerPage() {
   const [plan, setPlan] = useState<PlannedActivity[]>(INITIAL_PLAN);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
 
-  // Load from localStorage on mount
+  // Fetch real condition & activity logs from DB on mount
+  useEffect(() => {
+    async function loadData() {
+      try {
+        const res = await fetch("/api/activity");
+        if (res.ok) {
+          const data = await res.json();
+          if (data.condition) {
+            setConditionData(data.condition);
+          }
+          if (typeof data.totalPointsEarned === "number" && data.totalPointsEarned > 0) {
+            setActivityProgress((prev) => Math.max(prev, data.totalPointsEarned));
+          }
+        }
+      } catch (err) {
+        console.warn("[ActivityPage] Failed to fetch activity data:", err);
+      }
+    }
+    loadData();
+  }, []);
+
+  // Load plan from localStorage on mount
   useEffect(() => {
     try {
       const saved = localStorage.getItem(PLAN_STORAGE_KEY);
@@ -157,6 +180,69 @@ export default function SmartActivityPlannerPage() {
   };
 
   // =========================
+  // Breathing Timer Interval & Persistence
+  // =========================
+  useEffect(() => {
+    let interval: NodeJS.Timeout | null = null;
+    if (breathingActive) {
+      interval = setInterval(() => {
+        setBreathTimer((prev) => {
+          if (prev <= 1) {
+            setBreathingActive(false);
+            handleCompleteBreathing();
+            return 180;
+          }
+          const elapsed = 180 - prev;
+          const cycle = elapsed % 12;
+          if (cycle < 4) setBreathingPhase("Tarik Napas");
+          else if (cycle < 8) setBreathingPhase("Tahan Napas");
+          else setBreathingPhase("Hembuskan");
+          return prev - 1;
+        });
+      }, 1000);
+    }
+    return () => {
+      if (interval) clearInterval(interval);
+    };
+  }, [breathingActive]);
+
+  const handleCompleteBreathing = async () => {
+    try {
+      await fetch("/api/activity", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          type: "BREATHING",
+          durationMin: 3,
+          points: 30,
+          completed: true,
+          title: "Zyba Hours (Breathing)",
+        }),
+      });
+
+      // Update dashboard tracker cache
+      const dateKey = new Intl.DateTimeFormat("en-CA", {
+        timeZone: "Asia/Jakarta",
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+      }).format(new Date());
+      const trackerKey = `zyba_trackers_${dateKey}`;
+      try {
+        const current = JSON.parse(localStorage.getItem(trackerKey) || "{}");
+        current["Zyba Hours (Breathing)"] = true;
+        localStorage.setItem(trackerKey, JSON.stringify(current));
+      } catch {}
+
+      setActivityProgress((prev) => Math.min(prev + 30, targetProgress));
+      setActivityToast("🎉 Sesi Zyba Hours selesai! +30 Zyba Points tersimpan!");
+      setTimeout(() => setActivityToast(null), 4000);
+    } catch (err) {
+      console.warn("Save breathing error:", err);
+    }
+  };
+
+  // =========================
   // Helpers
   // =========================
   const formatTime = (secs: number) => {
@@ -167,15 +253,35 @@ export default function SmartActivityPlannerPage() {
   };
 
   // =========================
-  // Activity Progress
+  // Activity Progress & DB Persistence
   // =========================
-  const handleAddProgress = () => {
+  const handleAddProgress = async () => {
     const nextProgress = Math.min(
       activityProgress + 150,
       targetProgress,
     );
 
     setActivityProgress(nextProgress);
+
+    // Save to real database
+    try {
+      await fetch("/api/activity", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          type: activeTab,
+          durationMin: activeTab === "RUNNING" ? 20 : 15,
+          distanceMeter: activeTab === "RUNNING" ? 2500 : 1000,
+          points: 150,
+          completed: true,
+          title: `Sesi ${activeTab.toLowerCase()}`,
+        }),
+      });
+      setActivityToast(`✓ Sesi ${activeTab.toLowerCase()} tersimpan ke database & terhubung ke Wellness Journey!`);
+      setTimeout(() => setActivityToast(null), 3500);
+    } catch (e) {
+      console.warn("Save progress error:", e);
+    }
 
     if (
       activityProgress < targetProgress &&
@@ -186,9 +292,9 @@ export default function SmartActivityPlannerPage() {
   };
 
   // =========================
-  // Toggle Daily Plan
+  // Toggle Daily Plan & DB Persistence
   // =========================
-  const togglePlanActivity = (id: string) => {
+  const togglePlanActivity = async (id: string) => {
     const selectedActivity = plan.find(
       (activity) => activity.id === id,
     );
@@ -220,6 +326,33 @@ export default function SmartActivityPlannerPage() {
         targetProgress,
       ),
     );
+
+    // Save to database when checked
+    if (nextCompleted) {
+      try {
+        let actType = "WALKING";
+        const lower = selectedActivity.title.toLowerCase();
+        if (lower.includes("lari") || lower.includes("run")) actType = "RUNNING";
+        if (lower.includes("napas") || lower.includes("hours") || lower.includes("breath")) actType = "BREATHING";
+        if (lower.includes("stretch") || lower.includes("workout")) actType = "WORKOUT";
+
+        await fetch("/api/activity", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            type: actType,
+            durationMin: 15,
+            points: selectedActivity.points,
+            completed: true,
+            title: selectedActivity.title,
+          }),
+        });
+        setActivityToast(`✓ Aktivitas "${selectedActivity.title}" selesai & tersimpan!`);
+        setTimeout(() => setActivityToast(null), 3000);
+      } catch (e) {
+        console.warn("Save toggle activity error:", e);
+      }
+    }
 
     if (
       nextCompleted &&
@@ -309,6 +442,12 @@ export default function SmartActivityPlannerPage() {
 
   return (
     <div className="flex flex-col gap-8 pb-12">
+      {activityToast && (
+        <div className="bg-green-100 border border-green-300 text-green-800 text-xs font-bold px-4 py-3 rounded-2xl flex items-center gap-2 shadow-sm animate-in fade-in duration-200">
+          {activityToast}
+        </div>
+      )}
+
       {/* =========================
           HEADER
       ========================== */}
@@ -321,7 +460,7 @@ export default function SmartActivityPlannerPage() {
           CONDITION + RECOMMENDATION
       ========================== */}
       <div className="grid grid-cols-1 xl:grid-cols-12 gap-6">
-        <DailyConditionCard />
+        <DailyConditionCard initialCondition={conditionData} />
 
         <ZybaRecommendations
           recommendations={RECOMMENDATIONS}

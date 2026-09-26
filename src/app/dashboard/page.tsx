@@ -1,6 +1,5 @@
 "use client";
-
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import Link from "next/link";
 
 import MetricScoreCard from "./components/MetricScoreCard";
@@ -8,6 +7,8 @@ import StressLevelChart from "./components/StressLevelChart";
 import CompanionWidget from "./components/CompanionWidget";
 import TrackerChecklist from "./components/TrackerChecklist";
 import QuickAccessCards from "./components/QuickAccessCards";
+import UserAvatar from "@/components/ui/UserAvatar";
+import AvatarCropModal from "@/components/ui/AvatarCropModal";
 
 import {
   getLatestZybaScore,
@@ -111,6 +112,109 @@ export default function DashboardPage() {
 
   const [assessmentHistory, setAssessmentHistory] =
     useState<any[]>([]);
+
+  // Avatar upload & crop modal state
+  const avatarInputRef = useRef<HTMLInputElement>(null);
+  const [cropImageSrc, setCropImageSrc] = useState<string | null>(null);
+  const [isCropModalOpen, setIsCropModalOpen] = useState(false);
+  const [isUploadingAvatar, setIsUploadingAvatar] = useState(false);
+  const [avatarToast, setAvatarToast] = useState<string | null>(null);
+  const [cooldownInfo, setCooldownInfo] = useState<{
+    canChange: boolean;
+    remainingText: string | null;
+    cooldownDays: number;
+  } | null>(null);
+
+  // Check cooldown status
+  const checkCooldown = useCallback(async () => {
+    try {
+      const res = await fetch("/api/user/avatar");
+      if (res.ok) {
+        const data = await res.json();
+        setCooldownInfo(data);
+      }
+    } catch {}
+  }, []);
+
+  useEffect(() => {
+    checkCooldown();
+
+    // Listen for avatar updates from other components
+    const handleAvatarUpdate = (e: any) => {
+      if (e?.detail?.avatarUrl) {
+        setUserData((prev) => ({ ...prev, avatarUrl: e.detail.avatarUrl }));
+        checkCooldown();
+      }
+    };
+    window.addEventListener("zyba_user_updated", handleAvatarUpdate);
+    return () => window.removeEventListener("zyba_user_updated", handleAvatarUpdate);
+  }, [checkCooldown]);
+
+  const handleAvatarClick = () => {
+    if (cooldownInfo && !cooldownInfo.canChange) {
+      alert(`Foto profil sedang dalam masa cooldown. Kamu baru bisa mengganti foto profil lagi dalam ${cooldownInfo.remainingText}.`);
+      return;
+    }
+    avatarInputRef.current?.click();
+  };
+
+  const handleFileSelected = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith("image/")) {
+      alert("Hanya file gambar (JPG, PNG, WEBP, GIF) yang diizinkan.");
+      return;
+    }
+    if (file.size > 8 * 1024 * 1024) {
+      alert("Ukuran foto maksimal 8MB.");
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      setCropImageSrc(reader.result as string);
+      setIsCropModalOpen(true);
+    };
+    reader.readAsDataURL(file);
+    e.target.value = "";
+  };
+
+  const handleConfirmCrop = async (croppedFile: File) => {
+    setIsUploadingAvatar(true);
+    try {
+      const formData = new FormData();
+      formData.append("file", croppedFile);
+      const res = await fetch("/api/user/avatar", {
+        method: "POST",
+        body: formData,
+      });
+      const data = await res.json();
+      if (!res.ok || !data.avatarUrl) {
+        throw new Error(data.error || "Gagal mengunggah foto profil.");
+      }
+
+      setUserData((prev) => ({ ...prev, avatarUrl: data.avatarUrl }));
+      setIsCropModalOpen(false);
+      setCropImageSrc(null);
+      await checkCooldown();
+
+      // Sync localStorage and notify sidebar
+      try {
+        const cached = localStorage.getItem("zyba_user_cache");
+        const prev = cached ? JSON.parse(cached) : {};
+        localStorage.setItem("zyba_user_cache", JSON.stringify({ ...prev, avatarUrl: data.avatarUrl }));
+        window.dispatchEvent(new CustomEvent("zyba_user_updated", { detail: { avatarUrl: data.avatarUrl } }));
+      } catch {}
+
+      setAvatarToast("✓ Foto profil berhasil diperbarui!");
+      setTimeout(() => setAvatarToast(null), 3500);
+    } catch (err: any) {
+      alert(err.message || "Gagal mengunggah foto profil.");
+    } finally {
+      setIsUploadingAvatar(false);
+    }
+  };
 
   /*
    * =====================================================
@@ -570,84 +674,128 @@ export default function DashboardPage() {
       {/* =================================================
           TOP BANNER
       ================================================= */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 glass-card p-6 rounded-3xl border border-brown-900/10 bg-gradient-to-r from-cream via-white to-green-100/40 shadow-sm">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-5 glass-card p-6 rounded-3xl border border-brown-900/10 bg-gradient-to-r from-cream via-white to-green-100/40 shadow-sm relative overflow-hidden">
+        
+        {/* Hidden file input for avatar upload */}
+        <input
+          ref={avatarInputRef}
+          type="file"
+          accept="image/png,image/jpeg,image/webp,image/gif"
+          className="hidden"
+          onChange={handleFileSelected}
+        />
 
-        <div>
-          <div className="flex items-center gap-2 mb-1">
-
-            <span
-              className={`px-2.5 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider ${userData.hasAssessment
-                  ? "bg-orange-100 text-orange-500"
-                  : "bg-green-100 text-green-500"
-                }`}
+        <div className="flex items-center gap-4">
+          {/* Avatar with Crop & Cooldown Trigger */}
+          <div className="relative group shrink-0">
+            <UserAvatar
+              src={userData.avatarUrl}
+              name={userData.name}
+              size="lg"
+              className="w-16 h-16 rounded-full border-2 border-orange-300 shadow-md cursor-pointer transition-transform group-hover:scale-105"
+              showStatus={false}
+            />
+            <button
+              type="button"
+              onClick={handleAvatarClick}
+              disabled={isUploadingAvatar}
+              className="absolute inset-0 bg-black/50 rounded-full flex flex-col items-center justify-center text-white opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer shadow-inner"
+              title={
+                cooldownInfo && !cooldownInfo.canChange
+                  ? `Cooldown: ${cooldownInfo.remainingText}`
+                  : "Ubah foto profil (Crop & Cooldown)"
+              }
             >
-              {userData.hasAssessment
-                ? "Welcome back"
-                : "Selamat Datang"}
-            </span>
-
-            <span
-              className="text-xs text-brown-700"
-              suppressHydrationWarning
+              <span className="text-[10px] font-bold">📷 Ubah</span>
+            </button>
+            {/* Mobile camera badge */}
+            <button
+              type="button"
+              onClick={handleAvatarClick}
+              className="md:hidden absolute -bottom-1 -right-1 w-6 h-6 rounded-full bg-orange-500 text-white flex items-center justify-center text-xs shadow-md border-2 border-white cursor-pointer"
+              title="Ubah foto profil"
             >
-              | {todayFormatted}
-            </span>
+              📷
+            </button>
           </div>
 
-          <h1 className="font-display text-3xl font-extrabold text-brown-900">
-            Hi, {userData.name}! 👋
-          </h1>
-
-          {!userData.hasAssessment && (
-            <div className="mt-3">
-              <Link
-                href="/assessment"
-                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-orange-500 hover:bg-brown-900 text-white font-bold text-xs shadow-sm transition-all active:scale-95"
+          <div>
+            <div className="flex items-center gap-2 mb-1 flex-wrap">
+              <span
+                className={`px-2.5 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider ${
+                  userData.hasAssessment
+                    ? "bg-orange-100 text-orange-500"
+                    : "bg-green-100 text-green-500"
+                }`}
               >
-                <span>
-                  Mulai Asesmen Awal
-                </span>
+                {userData.hasAssessment ? "Welcome back" : "Selamat Datang"}
+              </span>
 
-                <span>
-                  →
+              <span className="text-xs text-brown-700" suppressHydrationWarning>
+                | {todayFormatted}
+              </span>
+
+              {/* Cooldown badge if active */}
+              {cooldownInfo && !cooldownInfo.canChange && (
+                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-100 text-amber-800 border border-amber-300/50">
+                  ⏳ Cooldown: {cooldownInfo.remainingText}
                 </span>
-              </Link>
+              )}
             </div>
-          )}
+
+            <h1 className="font-display text-2xl md:text-3xl font-extrabold text-brown-900">
+              Hi, {userData.name}! 👋
+            </h1>
+
+            {!userData.hasAssessment && (
+              <div className="mt-3">
+                <Link
+                  href="/assessment"
+                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-orange-500 hover:bg-brown-900 text-white font-bold text-xs shadow-sm transition-all active:scale-95"
+                >
+                  <span>Mulai Asesmen Awal</span>
+                  <span>→</span>
+                </Link>
+              </div>
+            )}
+          </div>
         </div>
 
-        <Link
-          href="/settings"
-          className="flex items-center gap-3 hover:opacity-80 transition-opacity"
-          title="Pengaturan akun"
-        >
-          <div className="flex flex-col items-end">
-
-            <span className="text-xs font-bold text-brown-900">
-              {userData.hasAssessment
-                ? "Daily Streak"
-                : "Status Pengguna"}
-            </span>
-
-            <span className="text-xs text-brown-700">
-              {userData.hasAssessment
-                ? `${userData.streak}/365 Hari Aktif`
-                : "Baru Bergabung"}
-            </span>
-          </div>
-
-          <div
-            className={`w-12 h-12 rounded-2xl text-white font-display font-extrabold flex items-center justify-center text-xl shadow-lg ${userData.hasAssessment
-                ? "bg-orange-500 shadow-orange-500/20"
-                : "bg-green-500 shadow-green-500/20"
-              }`}
+        <div className="flex items-center gap-3">
+          <Link
+            href="/settings"
+            className="flex items-center gap-3 hover:opacity-80 transition-opacity"
+            title="Pengaturan akun"
           >
-            {userData.hasAssessment
-              ? `🔥 ${userData.streak}`
-              : "🌱"}
-          </div>
-        </Link>
+            <div className="flex flex-col items-end">
+              <span className="text-xs font-bold text-brown-900">
+                {userData.hasAssessment ? "Daily Streak" : "Status Pengguna"}
+              </span>
+              <span className="text-xs text-brown-700">
+                {userData.hasAssessment
+                  ? `${userData.streak}/365 Hari Aktif`
+                  : "Baru Bergabung"}
+              </span>
+            </div>
+
+            <div
+              className={`w-12 h-12 rounded-2xl text-white font-display font-extrabold flex items-center justify-center text-xl shadow-lg ${
+                userData.hasAssessment
+                  ? "bg-orange-500 shadow-orange-500/20"
+                  : "bg-green-500 shadow-green-500/20"
+              }`}
+            >
+              {userData.hasAssessment ? `🔥 ${userData.streak}` : "🌱"}
+            </div>
+          </Link>
+        </div>
       </div>
+
+      {avatarToast && (
+        <div className="bg-green-100 border border-green-300 text-green-800 text-xs font-bold px-4 py-2.5 rounded-2xl flex items-center gap-2 shadow-sm animate-in fade-in duration-200">
+          {avatarToast}
+        </div>
+      )}
 
       {/* =================================================
           METRICS
@@ -698,6 +846,18 @@ export default function DashboardPage() {
           QUICK ACCESS
       ================================================= */}
       <QuickAccessCards />
+
+      {/* Avatar Crop Modal */}
+      <AvatarCropModal
+        isOpen={isCropModalOpen}
+        imageSrc={cropImageSrc}
+        onClose={() => {
+          setIsCropModalOpen(false);
+          setCropImageSrc(null);
+        }}
+        onConfirm={handleConfirmCrop}
+        isUploading={isUploadingAvatar}
+      />
     </div>
   );
 }

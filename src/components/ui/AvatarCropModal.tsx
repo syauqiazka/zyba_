@@ -22,6 +22,9 @@ interface AvatarCropModalProps {
   isUploading?: boolean;
 }
 
+const CROP_DIAMETER = 240; // Diameter of the screen crop circle in px
+const OUTPUT_SIZE = 512;   // High-res output size for exported avatar in px
+
 export default function AvatarCropModal({
   isOpen,
   imageSrc,
@@ -38,6 +41,12 @@ export default function AvatarCropModal({
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
   const [initialPinchDist, setInitialPinchDist] = useState<number | null>(null);
   const [initialPinchScale, setInitialPinchScale] = useState(1);
+
+  // Scaled base size so the image covers the 240px circle at scale=1
+  const [baseSize, setBaseSize] = useState<{ w: number; h: number }>({
+    w: CROP_DIAMETER,
+    h: CROP_DIAMETER,
+  });
 
   // Confirmation step state
   const [showConfirmStep, setShowConfirmStep] = useState(false);
@@ -70,6 +79,24 @@ export default function AvatarCropModal({
       };
     }
   }, [isOpen]);
+
+  // When image loads, compute baseSize to guarantee full coverage of the crop circle
+  const handleImageLoad = () => {
+    if (!imgRef.current) return;
+    const nw = imgRef.current.naturalWidth || 500;
+    const nh = imgRef.current.naturalHeight || 500;
+    // Scale factor so the SHORTEST side equals CROP_DIAMETER
+    const baseFitScale = CROP_DIAMETER / Math.min(nw, nh);
+    setBaseSize({
+      w: Math.round(nw * baseFitScale),
+      h: Math.round(nh * baseFitScale),
+    });
+    setScale(1);
+    setOffset({ x: 0, y: 0 });
+    setRotation(0);
+    setFlipH(false);
+    setFlipV(false);
+  };
 
   // Rotate 90 deg clockwise
   const handleRotate = () => {
@@ -141,7 +168,7 @@ export default function AvatarCropModal({
     } else if (e.touches.length === 2 && initialPinchDist !== null) {
       const dist = getTouchDist(e.touches[0], e.touches[1]);
       const factor = dist / initialPinchDist;
-      const newScale = Math.min(3.5, Math.max(0.6, initialPinchScale * factor));
+      const newScale = Math.min(3.5, Math.max(1.0, initialPinchScale * factor));
       setScale(newScale);
     }
   };
@@ -154,64 +181,42 @@ export default function AvatarCropModal({
   // Wheel zoom
   const handleWheel = (e: React.WheelEvent) => {
     e.preventDefault();
-    const delta = e.deltaY < 0 ? 0.1 : -0.1;
-    setScale((prev) => Math.min(3.5, Math.max(0.6, prev + delta)));
+    const delta = e.deltaY < 0 ? 0.08 : -0.08;
+    setScale((prev) => Math.min(3.5, Math.max(1.0, prev + delta)));
   };
 
-  // Generate cropped circular file using HTML5 Canvas
+  // Generate cropped circular file using HTML5 Canvas with 100% exact 1-to-1 coordinate mapping
   const generateCroppedImage = useCallback(async (): Promise<File | null> => {
     if (!imageSrc || !imgRef.current) return null;
 
     const img = imgRef.current;
     const canvas = document.createElement("canvas");
-    const outputSize = 512; // 512x512 high res
-    canvas.width = outputSize;
-    canvas.height = outputSize;
+    canvas.width = OUTPUT_SIZE;
+    canvas.height = OUTPUT_SIZE;
     const ctx = canvas.getContext("2d");
     if (!ctx) return null;
 
-    // Radius of circular preview in screen pixels
-    const cropCircleRadius = 120; // 240px diameter
+    const M = OUTPUT_SIZE / CROP_DIAMETER; // Scale ratio from screen to canvas
 
-    // Fill clean background
-    ctx.fillStyle = "#F7F2E7";
-    ctx.fillRect(0, 0, outputSize, outputSize);
+    // Enable high-res smoothing
+    ctx.imageSmoothingEnabled = true;
+    ctx.imageSmoothingQuality = "high";
 
     ctx.save();
 
-    // Map screen crop window to 512x512 canvas coordinates
-    ctx.translate(outputSize / 2, outputSize / 2);
+    // 1. Move to canvas center + user drag offset (scaled by M)
+    ctx.translate(OUTPUT_SIZE / 2 + offset.x * M, OUTPUT_SIZE / 2 + offset.y * M);
 
-    // Apply rotation
+    // 2. Rotate around the image center
     ctx.rotate((rotation * Math.PI) / 180);
 
-    // Apply flips
+    // 3. Flip
     ctx.scale(flipH ? -1 : 1, flipV ? -1 : 1);
 
-    // Scaling ratio from screen to canvas
-    const ratio = outputSize / (cropCircleRadius * 2);
-
-    // Apply zoom & pan offset
-    const renderScale = scale * ratio;
-    const renderOffsetX = offset.x * ratio;
-    const renderOffsetY = offset.y * ratio;
-
-    // Draw image centered
-    const nw = img.naturalWidth || 512;
-    const nh = img.naturalHeight || 512;
-
-    // Maintain aspect ratio fit
-    const baseFitScale = (cropCircleRadius * 2) / Math.min(nw, nh);
-    const drawW = nw * baseFitScale * scale * ratio;
-    const drawH = nh * baseFitScale * scale * ratio;
-
-    ctx.drawImage(
-      img,
-      -drawW / 2 + (rotation % 180 !== 0 ? renderOffsetY : renderOffsetX),
-      -drawH / 2 + (rotation % 180 !== 0 ? renderOffsetX : renderOffsetY),
-      drawW,
-      drawH
-    );
+    // 4. Draw image centered
+    const drawW = baseSize.w * scale * M;
+    const drawH = baseSize.h * scale * M;
+    ctx.drawImage(img, -drawW / 2, -drawH / 2, drawW, drawH);
 
     ctx.restore();
 
@@ -229,10 +234,10 @@ export default function AvatarCropModal({
           resolve(file);
         },
         "image/jpeg",
-        0.92
+        0.95
       );
     });
-  }, [imageSrc, scale, rotation, flipH, flipV, offset]);
+  }, [imageSrc, baseSize, scale, rotation, flipH, flipV, offset]);
 
   // Proceed to confirmation modal
   const handleProceedToConfirm = async () => {
@@ -248,47 +253,36 @@ export default function AvatarCropModal({
   const handleFinalSave = async () => {
     if (!croppedFile) return;
     await onConfirm(croppedFile);
-    onClose();
   };
 
   if (!isOpen || !imageSrc) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 animate-in fade-in duration-200">
-      {/* Dark backdrop */}
-      <div
-        className="absolute inset-0 bg-black/80 backdrop-blur-sm"
-        onClick={onClose}
-      />
-
-      {/* Main Cropper Container */}
-      <div
-        className="relative w-full max-w-lg bg-brown-900 text-cream rounded-3xl shadow-2xl border border-brown-700/40 overflow-hidden flex flex-col max-h-[92vh]"
-        onClick={(e) => e.stopPropagation()}
-      >
-        {/* Top Header bar with tools */}
+    <div className="fixed inset-0 z-[200] flex items-center justify-center p-3 sm:p-4 bg-black/85 backdrop-blur-md animate-in fade-in duration-200">
+      <div className="bg-[#1f1610] text-white w-full max-w-lg rounded-3xl overflow-hidden shadow-2xl border border-white/10 flex flex-col max-h-[92vh]">
+        {/* Header Toolbar */}
         <div className="flex items-center justify-between px-4 py-3.5 border-b border-white/10 bg-brown-900/90 z-20">
           <div className="flex items-center gap-2">
             <button
               type="button"
               onClick={onClose}
-              className="w-8 h-8 rounded-full flex items-center justify-center hover:bg-white/10 text-cream/80 hover:text-white transition-colors"
+              className="w-8 h-8 rounded-full flex items-center justify-center hover:bg-white/10 text-cream/80 hover:text-white transition-colors cursor-pointer"
               title="Batal"
             >
               <X size={18} />
             </button>
             <span className="font-display font-bold text-sm text-white">
-              {showConfirmStep ? "Konfirmasi Foto" : "Sesuaikan & Crop Foto"}
+              {showConfirmStep ? "Konfirmasi Foto Profil" : "Sesuaikan Posisi Foto"}
             </span>
           </div>
 
           {!showConfirmStep ? (
             <div className="flex items-center gap-1 sm:gap-2">
-              {/* Rotate 90 deg button (fixes belok/tilted photo) */}
+              {/* Rotate 90 deg */}
               <button
                 type="button"
                 onClick={handleRotate}
-                className="flex items-center gap-1 px-2.5 py-1.5 rounded-full bg-white/10 hover:bg-white/20 text-cream text-xs font-semibold transition-all active:scale-95"
+                className="flex items-center gap-1 px-2.5 py-1.5 rounded-full bg-white/10 hover:bg-white/20 text-cream text-xs font-semibold transition-all active:scale-95 cursor-pointer"
                 title="Putar 90 Derajat"
               >
                 <RotateCw size={14} className="text-orange-400" />
@@ -299,7 +293,7 @@ export default function AvatarCropModal({
               <button
                 type="button"
                 onClick={handleFlipH}
-                className="w-8 h-8 rounded-full flex items-center justify-center bg-white/10 hover:bg-white/20 text-cream transition-all active:scale-95"
+                className="w-8 h-8 rounded-full flex items-center justify-center bg-white/10 hover:bg-white/20 text-cream transition-all active:scale-95 cursor-pointer"
                 title="Balik Horizontal"
               >
                 <FlipHorizontal size={14} />
@@ -309,7 +303,7 @@ export default function AvatarCropModal({
               <button
                 type="button"
                 onClick={handleReset}
-                className="w-8 h-8 rounded-full flex items-center justify-center bg-white/10 hover:bg-white/20 text-cream transition-all active:scale-95"
+                className="w-8 h-8 rounded-full flex items-center justify-center bg-white/10 hover:bg-white/20 text-cream transition-all active:scale-95 cursor-pointer"
                 title="Reset Posisi"
               >
                 <RotateCcw size={14} />
@@ -329,7 +323,7 @@ export default function AvatarCropModal({
             <button
               type="button"
               onClick={() => setShowConfirmStep(false)}
-              className="text-xs text-orange-400 hover:underline font-semibold"
+              className="text-xs text-orange-400 hover:underline font-semibold cursor-pointer"
             >
               ← Edit Ulang
             </button>
@@ -350,24 +344,23 @@ export default function AvatarCropModal({
               onTouchMove={handleTouchMove}
               onTouchEnd={handleTouchEnd}
               onWheel={handleWheel}
-              className="relative w-full h-[320px] sm:h-[360px] bg-black/90 flex items-center justify-center overflow-hidden cursor-grab active:cursor-grabbing touch-none"
+              className="relative w-full h-[320px] sm:h-[380px] bg-[#120d09] flex items-center justify-center overflow-hidden cursor-grab active:cursor-grabbing touch-none select-none"
             >
-              {/* Invisible reference image for natural dimensions */}
+              {/* Invisible reference image to compute natural dimensions */}
               <img
                 ref={imgRef}
                 src={imageSrc}
                 alt="Source"
                 className="hidden"
-                onLoad={() => {
-                  setScale(1);
-                  setOffset({ x: 0, y: 0 });
-                }}
+                onLoad={handleImageLoad}
               />
 
-              {/* Transformed image layer */}
+              {/* Transformed image layer — exact 1-to-1 match with Canvas */}
               <div
-                className="absolute pointer-events-none transition-transform duration-75"
+                className="absolute pointer-events-none transition-transform duration-75 flex items-center justify-center"
                 style={{
+                  width: `${baseSize.w}px`,
+                  height: `${baseSize.h}px`,
                   transform: `translate(${offset.x}px, ${offset.y}px) rotate(${rotation}deg) scale(${
                     flipH ? -scale : scale
                   }, ${flipV ? -scale : scale})`,
@@ -377,51 +370,29 @@ export default function AvatarCropModal({
                 <img
                   src={imageSrc}
                   alt="Avatar preview"
-                  className="max-w-none select-none max-h-[380px] object-contain"
+                  className="w-full h-full object-cover select-none block pointer-events-none"
                   draggable={false}
                 />
               </div>
 
-              {/* Circular Cutout Overlay Mask */}
+              {/* Circular Cutout Window — guaranteed perfect circle without any SVG distortion */}
               <div className="absolute inset-0 pointer-events-none flex items-center justify-center">
-                <svg
-                  className="w-full h-full"
-                  viewBox="0 0 400 400"
-                  preserveAspectRatio="none"
+                <div
+                  style={{ width: `${CROP_DIAMETER}px`, height: `${CROP_DIAMETER}px` }}
+                  className="rounded-full border-2 border-dashed border-orange-500 shadow-[0_0_0_9999px_rgba(0,0,0,0.68)] relative"
                 >
-                  <defs>
-                    <mask id="crop-mask">
-                      {/* White rectangle covers everything */}
-                      <rect width="400" height="400" fill="white" />
-                      {/* Black circle cuts out the center */}
-                      <circle cx="200" cy="200" r="120" fill="black" />
-                    </mask>
-                  </defs>
-                  {/* Dark overlay with mask cutout */}
-                  <rect
-                    width="400"
-                    height="400"
-                    fill="rgba(0, 0, 0, 0.65)"
-                    mask="url(#crop-mask)"
-                  />
-                  {/* Subtle guide ring */}
-                  <circle
-                    cx="200"
-                    cy="200"
-                    r="120"
-                    fill="none"
-                    stroke="#F2884B"
-                    strokeWidth="2.5"
-                    strokeDasharray="4 4"
-                    opacity="0.85"
-                  />
-                </svg>
+                  {/* Crosshair guide markers */}
+                  <div className="absolute top-0 left-1/2 -translate-x-1/2 w-4 h-0.5 bg-orange-400/70" />
+                  <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-4 h-0.5 bg-orange-400/70" />
+                  <div className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-4 bg-orange-400/70" />
+                  <div className="absolute right-0 top-1/2 -translate-y-1/2 w-0.5 h-4 bg-orange-400/70" />
+                </div>
               </div>
 
               {/* Helper badge */}
-              <div className="absolute top-3 left-3 bg-black/60 backdrop-blur-md px-2.5 py-1 rounded-full border border-white/10 text-[10px] text-cream/80 flex items-center gap-1.5 pointer-events-none">
-                <Move size={11} className="text-orange-400" />
-                <span>Geser &amp; cubit untuk atur posisi</span>
+              <div className="absolute top-3 left-3 bg-black/70 backdrop-blur-md px-3 py-1.5 rounded-full border border-white/10 text-[11px] font-medium text-cream/90 flex items-center gap-1.5 pointer-events-none shadow-md">
+                <Move size={12} className="text-orange-400" />
+                <span>Geser foto agar pas di tengah lingkaran</span>
               </div>
             </div>
 
@@ -431,14 +402,14 @@ export default function AvatarCropModal({
                 <span className="flex items-center gap-1">
                   <ZoomOut size={14} /> Zoom
                 </span>
-                <span className="font-mono text-orange-400">{Math.round(scale * 100)}%</span>
+                <span className="font-mono text-orange-400 font-bold">{Math.round(scale * 100)}%</span>
                 <ZoomIn size={14} />
               </div>
               <input
                 type="range"
-                min="0.6"
+                min="1.0"
                 max="3.5"
-                step="0.05"
+                step="0.02"
                 value={scale}
                 onChange={(e) => setScale(parseFloat(e.target.value))}
                 className="w-full h-1.5 bg-white/20 rounded-lg appearance-none cursor-pointer accent-orange-500"
@@ -448,18 +419,18 @@ export default function AvatarCropModal({
         ) : (
           /* STEP 2: Cooldown Warning & Confirmation Modal */
           <div className="p-6 flex flex-col items-center text-center gap-5 animate-in fade-in duration-200">
-            {/* Cropped Preview */}
+            {/* Cropped Preview — perfectly centered circular avatar */}
             <div className="relative">
-              <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-orange-500 shadow-xl bg-cream">
+              <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-orange-500 shadow-xl bg-[#120d09] flex items-center justify-center">
                 {previewBlobUrl && (
                   <img
                     src={previewBlobUrl}
                     alt="Cropped Preview"
-                    className="w-full h-full object-cover"
+                    className="w-full h-full object-cover object-center block"
                   />
                 )}
               </div>
-              <span className="absolute -bottom-1 -right-1 bg-green-500 text-white rounded-full p-1 border-2 border-brown-900">
+              <span className="absolute -bottom-1 -right-1 bg-green-500 text-white rounded-full p-1.5 border-2 border-brown-900 shadow-md">
                 <Check size={14} />
               </span>
             </div>
@@ -481,7 +452,7 @@ export default function AvatarCropModal({
             </div>
 
             <p className="text-xs text-cream/70 max-w-sm">
-              Pastikan posisi wajah dan foto sudah sesuai dengan keinginanmu sebelum melanjutkan.
+              Pastikan posisi wajah dan foto sudah sesuai di tengah lingkaran sebelum menyimpan.
             </p>
 
             {/* Action buttons */}

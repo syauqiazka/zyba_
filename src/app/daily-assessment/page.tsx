@@ -7,6 +7,7 @@ import DailyAssessmentHistory from "./components/DailyAssessmentHistory";
 import MoodBanner from "./components/MoodBanner";
 import CalendarWidget from "./components/CalendarWidget";
 import JournalHistory from "./components/JournalHistory";
+import HistoryTabs from "./components/HistoryTabs";
 import { useMoodOverview } from "./useMoodOverview";
 import { MOODS } from "@/lib/moods";
 
@@ -203,22 +204,20 @@ export default function DailyAssessmentPage() {
         <div className="lg:col-span-5 flex flex-col gap-6">
           <CalendarWidget moodEntries={calendarData} />
 
-          {/* Dua riwayat berdampingan dalam satu kartu, tepat di bawah kalender */}
-          <div className="glass-card rounded-3xl p-6 border border-brown-900/10 bg-white">
-            <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
-              <div className="min-w-0">
-                <DailyAssessmentHistory
-                  history={history}
-                  pagination={pagination}
-                  onPageChange={handlePageChange}
-                  isLoading={isHistoryLoading}
-                />
-              </div>
-              <div className="min-w-0 border-t pt-6 xl:border-t-0 xl:border-l xl:pt-0 xl:pl-6 border-brown-900/10">
-                <JournalHistory embedded journalList={journalList} />
-              </div>
-            </div>
-          </div>
+          {/* Riwayat Tabs (Assessment Harian & Health Journal) */}
+          <HistoryTabs
+            assessment={
+              <DailyAssessmentHistory
+                history={history}
+                pagination={pagination}
+                onPageChange={handlePageChange}
+                isLoading={isHistoryLoading}
+              />
+            }
+            journal={
+              <JournalHistory embedded journalList={journalList} />
+            }
+          />
         </div>
       </div>
     </div>

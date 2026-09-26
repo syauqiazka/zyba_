@@ -60,10 +60,17 @@ export default function UserAvatar({
   const initials = getInitials(name);
   const fallbackDisplay = presetEmoji || (name ? initials : getFallbackEmoji(src));
 
+  // If outer className already defines custom width/height, the inner element should fill 100%
+  const hasCustomSize = /\bw-\d+|\bh-\d+|\bw-full|\bh-full|\bw-\[|\bh-\[/.test(className);
+
   return (
-    <div className={`relative shrink-0 select-none rounded-full ${className}`}>
+    <div
+      className={`relative shrink-0 select-none rounded-full flex items-center justify-center ${
+        hasCustomSize ? className : `${sizeClass} ${className}`
+      }`}
+    >
       <div
-        className={`${sizeClass} rounded-full overflow-hidden flex items-center justify-center font-display font-bold border border-brown-900/10 shadow-2xs transition-transform ${
+        className={`w-full h-full rounded-full overflow-hidden flex items-center justify-center font-display font-bold border border-brown-900/10 shadow-2xs transition-transform ${
           hasValidImage
             ? "bg-cream"
             : isPresetEmoji
@@ -75,7 +82,7 @@ export default function UserAvatar({
           <img
             src={src!}
             alt={alt || name || "User Avatar"}
-            className="w-full h-full object-cover"
+            className="w-full h-full object-cover object-center block"
             loading="lazy"
             onError={() => setImgError(true)}
           />

@@ -187,82 +187,76 @@ export default function DailyAssessmentHistory({
                 }
               `}
             >
-              {/* TOP */}
-              <div className="flex items-start justify-between gap-3">
-                {/* MOOD */}
-                <div className="flex items-center gap-2 min-w-0">
-                  <span className="text-2xl shrink-0">
+              {/* Card Header: Mood + Date + Hari Ini Badge */}
+              <div className="flex items-center justify-between gap-2">
+                <div className="flex items-center gap-2.5 min-w-0">
+                  <span className="text-2xl shrink-0 leading-none">
                     {mood.emoji}
                   </span>
 
                   <div className="min-w-0">
-                    <div className="flex items-center gap-2">
-                      <p className="text-xs font-bold text-brown-900">
-                        {formatDateIndonesia(
-                          record.date
-                        )}
-                      </p>
-
-                      {isToday && (
-                        <span className="px-2 py-0.5 rounded-full bg-orange-100 text-orange-500 text-[9px] font-bold">
-                          Hari Ini
-                        </span>
-                      )}
-                    </div>
-
-                    <p
-                      className={`text-xs font-semibold ${mood.color}`}
-                    >
+                    <p className="text-xs font-bold text-brown-900 truncate">
+                      {formatDateIndonesia(record.date)}
+                    </p>
+                    <p className={`text-[11px] font-semibold leading-tight ${mood.color}`}>
                       {mood.label}
                     </p>
                   </div>
                 </div>
 
-                {/* SCORE + DATA */}
-                <div className="flex items-center gap-3 text-right shrink-0">
-                  {/* ZYBA SCORE */}
-                  {score !== null && (
-                    <div className="text-center">
-                      <p className="text-[10px] text-brown-700 font-semibold">
-                        Zyba Score
-                      </p>
+                {isToday && (
+                  <span className="px-2.5 py-0.5 rounded-full bg-orange-100 text-orange-600 text-[10px] font-extrabold shrink-0 border border-orange-200">
+                    Hari Ini
+                  </span>
+                )}
+              </div>
 
-                      <p className="text-sm font-extrabold text-brown-900">
-                        {score}
-                        <span className="text-[9px] font-semibold text-brown-700">
-                          /100
-                        </span>
-                      </p>
-                    </div>
-                  )}
+              {/* Stats Grid: Zyba Score, Stres, Tidur (Clean, responsive, never overlaps) */}
+              <div className="grid grid-cols-3 gap-2 mt-3 pt-3 border-t border-brown-900/10 text-center">
+                {score !== null ? (
+                  <div className="bg-cream/60 rounded-xl p-2 border border-brown-900/5">
+                    <p className="text-[9px] uppercase font-bold text-brown-700/70">
+                      Zyba Score
+                    </p>
+                    <p className="text-xs font-extrabold text-brown-900 mt-0.5">
+                      {score}
+                      <span className="text-[9px] font-normal text-brown-700/60">
+                        /100
+                      </span>
+                    </p>
+                  </div>
+                ) : (
+                  <div className="bg-cream/60 rounded-xl p-2 border border-brown-900/5">
+                    <p className="text-[9px] uppercase font-bold text-brown-700/70">
+                      Zyba Score
+                    </p>
+                    <p className="text-xs font-extrabold text-brown-900 mt-0.5">-</p>
+                  </div>
+                )}
 
-                  {/* STRESS */}
-                  {record.stressLevel !==
-                    null && (
-                      <div className="text-center">
-                        <p className="text-[10px] text-brown-700 font-semibold">
-                          Stres
-                        </p>
+                <div className="bg-cream/60 rounded-xl p-2 border border-brown-900/5">
+                  <p className="text-[9px] uppercase font-bold text-brown-700/70">
+                    Stres
+                  </p>
+                  <p className="text-xs font-extrabold text-brown-900 mt-0.5">
+                    {record.stressLevel !== null ? `${record.stressLevel}/5` : "-"}
+                  </p>
+                </div>
 
-                        <p className="text-xs font-bold text-brown-900">
-                          {record.stressLevel}/5
-                        </p>
-                      </div>
+                <div className="bg-cream/60 rounded-xl p-2 border border-brown-900/5">
+                  <p className="text-[9px] uppercase font-bold text-brown-700/70">
+                    Tidur
+                  </p>
+                  <p className="text-xs font-extrabold text-brown-900 mt-0.5 truncate flex items-center justify-center gap-0.5">
+                    {sleep ? (
+                      <>
+                        <span>{sleep.icon}</span>
+                        <span className="truncate">{sleep.label}</span>
+                      </>
+                    ) : (
+                      "-"
                     )}
-
-                  {/* SLEEP */}
-                  {sleep && (
-                    <div className="text-center max-w-[90px]">
-                      <p className="text-[10px] text-brown-700 font-semibold">
-                        Tidur
-                      </p>
-
-                      <p className="text-xs font-bold text-brown-900">
-                        {sleep.icon}{" "}
-                        {sleep.label}
-                      </p>
-                    </div>
-                  )}
+                  </p>
                 </div>
               </div>
 
