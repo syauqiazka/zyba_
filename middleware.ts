@@ -24,8 +24,13 @@ const ASSESSMENT_ALLOWED_PATHS = ["/assessment", "/api/", "/login", "/onboarding
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  // Izinkan public paths tanpa autentikasi
-  if (pathname === "/" || pathname === "/onboarding" || pathname === "/login") {
+  // Izinkan public paths & uploaded media tanpa autentikasi
+  if (
+    pathname === "/" ||
+    pathname === "/onboarding" ||
+    pathname === "/login" ||
+    pathname.startsWith("/uploads/")
+  ) {
     return NextResponse.next();
   }
 
