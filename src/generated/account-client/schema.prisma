@@ -32,17 +32,18 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  assessment       Assessment?
-  moodEntries      MoodEntry[]
-  dailyAssessments DailyAssessment[]
-  journalEntries   JournalEntry[]
-  activities       ActivityLog[]
-  notificationPref NotificationPref?
-  subscriptions    Subscription[]
-  userAchievements UserAchievement[]
-  userBadges       UserBadge[]
-  streakDays       Int?              @default(0)
-  lastStreakDate   DateTime?
+  assessment         Assessment?
+  moodEntries        MoodEntry[]
+  dailyAssessments   DailyAssessment[]
+  journalEntries     JournalEntry[]
+  activities         ActivityLog[]
+  notificationPref   NotificationPref?
+  subscriptions      Subscription[]
+  userAchievements   UserAchievement[]
+  userBadges         UserBadge[]
+  streakDays         Int?              @default(0)
+  lastStreakDate     DateTime?
+  lastAvatarChangeAt DateTime?
 
   @@map("users")
 }

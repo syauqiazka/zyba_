@@ -2185,6 +2185,7 @@ export namespace Prisma {
     updatedAt: Date | null
     streakDays: number | null
     lastStreakDate: Date | null
+    lastAvatarChangeAt: Date | null
   }
 
   export type UserMaxAggregateOutputType = {
@@ -2207,6 +2208,7 @@ export namespace Prisma {
     updatedAt: Date | null
     streakDays: number | null
     lastStreakDate: Date | null
+    lastAvatarChangeAt: Date | null
   }
 
   export type UserCountAggregateOutputType = {
@@ -2229,6 +2231,7 @@ export namespace Prisma {
     updatedAt: number
     streakDays: number
     lastStreakDate: number
+    lastAvatarChangeAt: number
     _all: number
   }
 
@@ -2267,6 +2270,7 @@ export namespace Prisma {
     updatedAt?: true
     streakDays?: true
     lastStreakDate?: true
+    lastAvatarChangeAt?: true
   }
 
   export type UserMaxAggregateInputType = {
@@ -2289,6 +2293,7 @@ export namespace Prisma {
     updatedAt?: true
     streakDays?: true
     lastStreakDate?: true
+    lastAvatarChangeAt?: true
   }
 
   export type UserCountAggregateInputType = {
@@ -2311,6 +2316,7 @@ export namespace Prisma {
     updatedAt?: true
     streakDays?: true
     lastStreakDate?: true
+    lastAvatarChangeAt?: true
     _all?: true
   }
 
@@ -2420,6 +2426,7 @@ export namespace Prisma {
     updatedAt: Date
     streakDays: number | null
     lastStreakDate: Date | null
+    lastAvatarChangeAt: Date | null
     _count: UserCountAggregateOutputType | null
     _avg: UserAvgAggregateOutputType | null
     _sum: UserSumAggregateOutputType | null
@@ -2461,6 +2468,7 @@ export namespace Prisma {
     updatedAt?: boolean
     streakDays?: boolean
     lastStreakDate?: boolean
+    lastAvatarChangeAt?: boolean
     assessment?: boolean | User$assessmentArgs<ExtArgs>
     moodEntries?: boolean | User$moodEntriesArgs<ExtArgs>
     dailyAssessments?: boolean | User$dailyAssessmentsArgs<ExtArgs>
@@ -2493,6 +2501,7 @@ export namespace Prisma {
     updatedAt?: boolean
     streakDays?: boolean
     lastStreakDate?: boolean
+    lastAvatarChangeAt?: boolean
   }, ExtArgs["result"]["user"]>
 
   export type UserSelectScalar = {
@@ -2515,6 +2524,7 @@ export namespace Prisma {
     updatedAt?: boolean
     streakDays?: boolean
     lastStreakDate?: boolean
+    lastAvatarChangeAt?: boolean
   }
 
   export type UserInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -2564,6 +2574,7 @@ export namespace Prisma {
       updatedAt: Date
       streakDays: number | null
       lastStreakDate: Date | null
+      lastAvatarChangeAt: Date | null
     }, ExtArgs["result"]["user"]>
     composites: {}
   }
@@ -2985,6 +2996,7 @@ export namespace Prisma {
     readonly updatedAt: FieldRef<"User", 'DateTime'>
     readonly streakDays: FieldRef<"User", 'Int'>
     readonly lastStreakDate: FieldRef<"User", 'DateTime'>
+    readonly lastAvatarChangeAt: FieldRef<"User", 'DateTime'>
   }
     
 
@@ -15484,7 +15496,8 @@ export namespace Prisma {
     createdAt: 'createdAt',
     updatedAt: 'updatedAt',
     streakDays: 'streakDays',
-    lastStreakDate: 'lastStreakDate'
+    lastStreakDate: 'lastStreakDate',
+    lastAvatarChangeAt: 'lastAvatarChangeAt'
   };
 
   export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
@@ -15917,6 +15930,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter<"User"> | Date | string
     streakDays?: IntNullableFilter<"User"> | number | null
     lastStreakDate?: DateTimeNullableFilter<"User"> | Date | string | null
+    lastAvatarChangeAt?: DateTimeNullableFilter<"User"> | Date | string | null
     assessment?: XOR<AssessmentNullableRelationFilter, AssessmentWhereInput> | null
     moodEntries?: MoodEntryListRelationFilter
     dailyAssessments?: DailyAssessmentListRelationFilter
@@ -15948,6 +15962,7 @@ export namespace Prisma {
     updatedAt?: SortOrder
     streakDays?: SortOrderInput | SortOrder
     lastStreakDate?: SortOrderInput | SortOrder
+    lastAvatarChangeAt?: SortOrderInput | SortOrder
     assessment?: AssessmentOrderByWithRelationInput
     moodEntries?: MoodEntryOrderByRelationAggregateInput
     dailyAssessments?: DailyAssessmentOrderByRelationAggregateInput
@@ -15982,6 +15997,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter<"User"> | Date | string
     streakDays?: IntNullableFilter<"User"> | number | null
     lastStreakDate?: DateTimeNullableFilter<"User"> | Date | string | null
+    lastAvatarChangeAt?: DateTimeNullableFilter<"User"> | Date | string | null
     assessment?: XOR<AssessmentNullableRelationFilter, AssessmentWhereInput> | null
     moodEntries?: MoodEntryListRelationFilter
     dailyAssessments?: DailyAssessmentListRelationFilter
@@ -16013,6 +16029,7 @@ export namespace Prisma {
     updatedAt?: SortOrder
     streakDays?: SortOrderInput | SortOrder
     lastStreakDate?: SortOrderInput | SortOrder
+    lastAvatarChangeAt?: SortOrderInput | SortOrder
     _count?: UserCountOrderByAggregateInput
     _avg?: UserAvgOrderByAggregateInput
     _max?: UserMaxOrderByAggregateInput
@@ -16043,6 +16060,7 @@ export namespace Prisma {
     updatedAt?: DateTimeWithAggregatesFilter<"User"> | Date | string
     streakDays?: IntNullableWithAggregatesFilter<"User"> | number | null
     lastStreakDate?: DateTimeNullableWithAggregatesFilter<"User"> | Date | string | null
+    lastAvatarChangeAt?: DateTimeNullableWithAggregatesFilter<"User"> | Date | string | null
   }
 
   export type NotificationPrefWhereInput = {
@@ -16952,6 +16970,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     streakDays?: number | null
     lastStreakDate?: Date | string | null
+    lastAvatarChangeAt?: Date | string | null
     assessment?: AssessmentCreateNestedOneWithoutUserInput
     moodEntries?: MoodEntryCreateNestedManyWithoutUserInput
     dailyAssessments?: DailyAssessmentCreateNestedManyWithoutUserInput
@@ -16983,6 +17002,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     streakDays?: number | null
     lastStreakDate?: Date | string | null
+    lastAvatarChangeAt?: Date | string | null
     assessment?: AssessmentUncheckedCreateNestedOneWithoutUserInput
     moodEntries?: MoodEntryUncheckedCreateNestedManyWithoutUserInput
     dailyAssessments?: DailyAssessmentUncheckedCreateNestedManyWithoutUserInput
@@ -17014,6 +17034,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     streakDays?: NullableIntFieldUpdateOperationsInput | number | null
     lastStreakDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    lastAvatarChangeAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     assessment?: AssessmentUpdateOneWithoutUserNestedInput
     moodEntries?: MoodEntryUpdateManyWithoutUserNestedInput
     dailyAssessments?: DailyAssessmentUpdateManyWithoutUserNestedInput
@@ -17045,6 +17066,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     streakDays?: NullableIntFieldUpdateOperationsInput | number | null
     lastStreakDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    lastAvatarChangeAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     assessment?: AssessmentUncheckedUpdateOneWithoutUserNestedInput
     moodEntries?: MoodEntryUncheckedUpdateManyWithoutUserNestedInput
     dailyAssessments?: DailyAssessmentUncheckedUpdateManyWithoutUserNestedInput
@@ -17076,6 +17098,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     streakDays?: number | null
     lastStreakDate?: Date | string | null
+    lastAvatarChangeAt?: Date | string | null
   }
 
   export type UserUpdateManyMutationInput = {
@@ -17098,6 +17121,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     streakDays?: NullableIntFieldUpdateOperationsInput | number | null
     lastStreakDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    lastAvatarChangeAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type UserUncheckedUpdateManyInput = {
@@ -17120,6 +17144,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     streakDays?: NullableIntFieldUpdateOperationsInput | number | null
     lastStreakDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    lastAvatarChangeAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type NotificationPrefCreateInput = {
@@ -18265,6 +18290,7 @@ export namespace Prisma {
     updatedAt?: SortOrder
     streakDays?: SortOrder
     lastStreakDate?: SortOrder
+    lastAvatarChangeAt?: SortOrder
   }
 
   export type UserAvgOrderByAggregateInput = {
@@ -18294,6 +18320,7 @@ export namespace Prisma {
     updatedAt?: SortOrder
     streakDays?: SortOrder
     lastStreakDate?: SortOrder
+    lastAvatarChangeAt?: SortOrder
   }
 
   export type UserMinOrderByAggregateInput = {
@@ -18316,6 +18343,7 @@ export namespace Prisma {
     updatedAt?: SortOrder
     streakDays?: SortOrder
     lastStreakDate?: SortOrder
+    lastAvatarChangeAt?: SortOrder
   }
 
   export type UserSumOrderByAggregateInput = {
@@ -20865,6 +20893,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     streakDays?: number | null
     lastStreakDate?: Date | string | null
+    lastAvatarChangeAt?: Date | string | null
     assessment?: AssessmentCreateNestedOneWithoutUserInput
     moodEntries?: MoodEntryCreateNestedManyWithoutUserInput
     dailyAssessments?: DailyAssessmentCreateNestedManyWithoutUserInput
@@ -20895,6 +20924,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     streakDays?: number | null
     lastStreakDate?: Date | string | null
+    lastAvatarChangeAt?: Date | string | null
     assessment?: AssessmentUncheckedCreateNestedOneWithoutUserInput
     moodEntries?: MoodEntryUncheckedCreateNestedManyWithoutUserInput
     dailyAssessments?: DailyAssessmentUncheckedCreateNestedManyWithoutUserInput
@@ -20941,6 +20971,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     streakDays?: NullableIntFieldUpdateOperationsInput | number | null
     lastStreakDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    lastAvatarChangeAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     assessment?: AssessmentUpdateOneWithoutUserNestedInput
     moodEntries?: MoodEntryUpdateManyWithoutUserNestedInput
     dailyAssessments?: DailyAssessmentUpdateManyWithoutUserNestedInput
@@ -20971,6 +21002,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     streakDays?: NullableIntFieldUpdateOperationsInput | number | null
     lastStreakDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    lastAvatarChangeAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     assessment?: AssessmentUncheckedUpdateOneWithoutUserNestedInput
     moodEntries?: MoodEntryUncheckedUpdateManyWithoutUserNestedInput
     dailyAssessments?: DailyAssessmentUncheckedUpdateManyWithoutUserNestedInput
@@ -21001,6 +21033,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     streakDays?: number | null
     lastStreakDate?: Date | string | null
+    lastAvatarChangeAt?: Date | string | null
     moodEntries?: MoodEntryCreateNestedManyWithoutUserInput
     dailyAssessments?: DailyAssessmentCreateNestedManyWithoutUserInput
     journalEntries?: JournalEntryCreateNestedManyWithoutUserInput
@@ -21031,6 +21064,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     streakDays?: number | null
     lastStreakDate?: Date | string | null
+    lastAvatarChangeAt?: Date | string | null
     moodEntries?: MoodEntryUncheckedCreateNestedManyWithoutUserInput
     dailyAssessments?: DailyAssessmentUncheckedCreateNestedManyWithoutUserInput
     journalEntries?: JournalEntryUncheckedCreateNestedManyWithoutUserInput
@@ -21077,6 +21111,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     streakDays?: NullableIntFieldUpdateOperationsInput | number | null
     lastStreakDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    lastAvatarChangeAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     moodEntries?: MoodEntryUpdateManyWithoutUserNestedInput
     dailyAssessments?: DailyAssessmentUpdateManyWithoutUserNestedInput
     journalEntries?: JournalEntryUpdateManyWithoutUserNestedInput
@@ -21107,6 +21142,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     streakDays?: NullableIntFieldUpdateOperationsInput | number | null
     lastStreakDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    lastAvatarChangeAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     moodEntries?: MoodEntryUncheckedUpdateManyWithoutUserNestedInput
     dailyAssessments?: DailyAssessmentUncheckedUpdateManyWithoutUserNestedInput
     journalEntries?: JournalEntryUncheckedUpdateManyWithoutUserNestedInput
@@ -21137,6 +21173,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     streakDays?: number | null
     lastStreakDate?: Date | string | null
+    lastAvatarChangeAt?: Date | string | null
     assessment?: AssessmentCreateNestedOneWithoutUserInput
     dailyAssessments?: DailyAssessmentCreateNestedManyWithoutUserInput
     journalEntries?: JournalEntryCreateNestedManyWithoutUserInput
@@ -21167,6 +21204,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     streakDays?: number | null
     lastStreakDate?: Date | string | null
+    lastAvatarChangeAt?: Date | string | null
     assessment?: AssessmentUncheckedCreateNestedOneWithoutUserInput
     dailyAssessments?: DailyAssessmentUncheckedCreateNestedManyWithoutUserInput
     journalEntries?: JournalEntryUncheckedCreateNestedManyWithoutUserInput
@@ -21213,6 +21251,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     streakDays?: NullableIntFieldUpdateOperationsInput | number | null
     lastStreakDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    lastAvatarChangeAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     assessment?: AssessmentUpdateOneWithoutUserNestedInput
     dailyAssessments?: DailyAssessmentUpdateManyWithoutUserNestedInput
     journalEntries?: JournalEntryUpdateManyWithoutUserNestedInput
@@ -21243,6 +21282,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     streakDays?: NullableIntFieldUpdateOperationsInput | number | null
     lastStreakDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    lastAvatarChangeAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     assessment?: AssessmentUncheckedUpdateOneWithoutUserNestedInput
     dailyAssessments?: DailyAssessmentUncheckedUpdateManyWithoutUserNestedInput
     journalEntries?: JournalEntryUncheckedUpdateManyWithoutUserNestedInput
@@ -21273,6 +21313,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     streakDays?: number | null
     lastStreakDate?: Date | string | null
+    lastAvatarChangeAt?: Date | string | null
     assessment?: AssessmentCreateNestedOneWithoutUserInput
     moodEntries?: MoodEntryCreateNestedManyWithoutUserInput
     journalEntries?: JournalEntryCreateNestedManyWithoutUserInput
@@ -21303,6 +21344,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     streakDays?: number | null
     lastStreakDate?: Date | string | null
+    lastAvatarChangeAt?: Date | string | null
     assessment?: AssessmentUncheckedCreateNestedOneWithoutUserInput
     moodEntries?: MoodEntryUncheckedCreateNestedManyWithoutUserInput
     journalEntries?: JournalEntryUncheckedCreateNestedManyWithoutUserInput
@@ -21349,6 +21391,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     streakDays?: NullableIntFieldUpdateOperationsInput | number | null
     lastStreakDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    lastAvatarChangeAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     assessment?: AssessmentUpdateOneWithoutUserNestedInput
     moodEntries?: MoodEntryUpdateManyWithoutUserNestedInput
     journalEntries?: JournalEntryUpdateManyWithoutUserNestedInput
@@ -21379,6 +21422,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     streakDays?: NullableIntFieldUpdateOperationsInput | number | null
     lastStreakDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    lastAvatarChangeAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     assessment?: AssessmentUncheckedUpdateOneWithoutUserNestedInput
     moodEntries?: MoodEntryUncheckedUpdateManyWithoutUserNestedInput
     journalEntries?: JournalEntryUncheckedUpdateManyWithoutUserNestedInput
@@ -21409,6 +21453,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     streakDays?: number | null
     lastStreakDate?: Date | string | null
+    lastAvatarChangeAt?: Date | string | null
     assessment?: AssessmentCreateNestedOneWithoutUserInput
     moodEntries?: MoodEntryCreateNestedManyWithoutUserInput
     dailyAssessments?: DailyAssessmentCreateNestedManyWithoutUserInput
@@ -21439,6 +21484,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     streakDays?: number | null
     lastStreakDate?: Date | string | null
+    lastAvatarChangeAt?: Date | string | null
     assessment?: AssessmentUncheckedCreateNestedOneWithoutUserInput
     moodEntries?: MoodEntryUncheckedCreateNestedManyWithoutUserInput
     dailyAssessments?: DailyAssessmentUncheckedCreateNestedManyWithoutUserInput
@@ -21485,6 +21531,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     streakDays?: NullableIntFieldUpdateOperationsInput | number | null
     lastStreakDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    lastAvatarChangeAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     assessment?: AssessmentUpdateOneWithoutUserNestedInput
     moodEntries?: MoodEntryUpdateManyWithoutUserNestedInput
     dailyAssessments?: DailyAssessmentUpdateManyWithoutUserNestedInput
@@ -21515,6 +21562,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     streakDays?: NullableIntFieldUpdateOperationsInput | number | null
     lastStreakDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    lastAvatarChangeAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     assessment?: AssessmentUncheckedUpdateOneWithoutUserNestedInput
     moodEntries?: MoodEntryUncheckedUpdateManyWithoutUserNestedInput
     dailyAssessments?: DailyAssessmentUncheckedUpdateManyWithoutUserNestedInput
@@ -21545,6 +21593,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     streakDays?: number | null
     lastStreakDate?: Date | string | null
+    lastAvatarChangeAt?: Date | string | null
     assessment?: AssessmentCreateNestedOneWithoutUserInput
     moodEntries?: MoodEntryCreateNestedManyWithoutUserInput
     dailyAssessments?: DailyAssessmentCreateNestedManyWithoutUserInput
@@ -21575,6 +21624,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     streakDays?: number | null
     lastStreakDate?: Date | string | null
+    lastAvatarChangeAt?: Date | string | null
     assessment?: AssessmentUncheckedCreateNestedOneWithoutUserInput
     moodEntries?: MoodEntryUncheckedCreateNestedManyWithoutUserInput
     dailyAssessments?: DailyAssessmentUncheckedCreateNestedManyWithoutUserInput
@@ -21621,6 +21671,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     streakDays?: NullableIntFieldUpdateOperationsInput | number | null
     lastStreakDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    lastAvatarChangeAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     assessment?: AssessmentUpdateOneWithoutUserNestedInput
     moodEntries?: MoodEntryUpdateManyWithoutUserNestedInput
     dailyAssessments?: DailyAssessmentUpdateManyWithoutUserNestedInput
@@ -21651,6 +21702,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     streakDays?: NullableIntFieldUpdateOperationsInput | number | null
     lastStreakDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    lastAvatarChangeAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     assessment?: AssessmentUncheckedUpdateOneWithoutUserNestedInput
     moodEntries?: MoodEntryUncheckedUpdateManyWithoutUserNestedInput
     dailyAssessments?: DailyAssessmentUncheckedUpdateManyWithoutUserNestedInput
@@ -21681,6 +21733,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     streakDays?: number | null
     lastStreakDate?: Date | string | null
+    lastAvatarChangeAt?: Date | string | null
     assessment?: AssessmentCreateNestedOneWithoutUserInput
     moodEntries?: MoodEntryCreateNestedManyWithoutUserInput
     dailyAssessments?: DailyAssessmentCreateNestedManyWithoutUserInput
@@ -21711,6 +21764,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     streakDays?: number | null
     lastStreakDate?: Date | string | null
+    lastAvatarChangeAt?: Date | string | null
     assessment?: AssessmentUncheckedCreateNestedOneWithoutUserInput
     moodEntries?: MoodEntryUncheckedCreateNestedManyWithoutUserInput
     dailyAssessments?: DailyAssessmentUncheckedCreateNestedManyWithoutUserInput
@@ -21795,6 +21849,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     streakDays?: NullableIntFieldUpdateOperationsInput | number | null
     lastStreakDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    lastAvatarChangeAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     assessment?: AssessmentUpdateOneWithoutUserNestedInput
     moodEntries?: MoodEntryUpdateManyWithoutUserNestedInput
     dailyAssessments?: DailyAssessmentUpdateManyWithoutUserNestedInput
@@ -21825,6 +21880,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     streakDays?: NullableIntFieldUpdateOperationsInput | number | null
     lastStreakDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    lastAvatarChangeAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     assessment?: AssessmentUncheckedUpdateOneWithoutUserNestedInput
     moodEntries?: MoodEntryUncheckedUpdateManyWithoutUserNestedInput
     dailyAssessments?: DailyAssessmentUncheckedUpdateManyWithoutUserNestedInput
@@ -21985,6 +22041,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     streakDays?: number | null
     lastStreakDate?: Date | string | null
+    lastAvatarChangeAt?: Date | string | null
     assessment?: AssessmentCreateNestedOneWithoutUserInput
     moodEntries?: MoodEntryCreateNestedManyWithoutUserInput
     dailyAssessments?: DailyAssessmentCreateNestedManyWithoutUserInput
@@ -22015,6 +22072,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     streakDays?: number | null
     lastStreakDate?: Date | string | null
+    lastAvatarChangeAt?: Date | string | null
     assessment?: AssessmentUncheckedCreateNestedOneWithoutUserInput
     moodEntries?: MoodEntryUncheckedCreateNestedManyWithoutUserInput
     dailyAssessments?: DailyAssessmentUncheckedCreateNestedManyWithoutUserInput
@@ -22090,6 +22148,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     streakDays?: NullableIntFieldUpdateOperationsInput | number | null
     lastStreakDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    lastAvatarChangeAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     assessment?: AssessmentUpdateOneWithoutUserNestedInput
     moodEntries?: MoodEntryUpdateManyWithoutUserNestedInput
     dailyAssessments?: DailyAssessmentUpdateManyWithoutUserNestedInput
@@ -22120,6 +22179,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     streakDays?: NullableIntFieldUpdateOperationsInput | number | null
     lastStreakDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    lastAvatarChangeAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     assessment?: AssessmentUncheckedUpdateOneWithoutUserNestedInput
     moodEntries?: MoodEntryUncheckedUpdateManyWithoutUserNestedInput
     dailyAssessments?: DailyAssessmentUncheckedUpdateManyWithoutUserNestedInput
@@ -22185,6 +22245,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     streakDays?: number | null
     lastStreakDate?: Date | string | null
+    lastAvatarChangeAt?: Date | string | null
     assessment?: AssessmentCreateNestedOneWithoutUserInput
     moodEntries?: MoodEntryCreateNestedManyWithoutUserInput
     dailyAssessments?: DailyAssessmentCreateNestedManyWithoutUserInput
@@ -22215,6 +22276,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     streakDays?: number | null
     lastStreakDate?: Date | string | null
+    lastAvatarChangeAt?: Date | string | null
     assessment?: AssessmentUncheckedCreateNestedOneWithoutUserInput
     moodEntries?: MoodEntryUncheckedCreateNestedManyWithoutUserInput
     dailyAssessments?: DailyAssessmentUncheckedCreateNestedManyWithoutUserInput
@@ -22261,6 +22323,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     streakDays?: NullableIntFieldUpdateOperationsInput | number | null
     lastStreakDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    lastAvatarChangeAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     assessment?: AssessmentUpdateOneWithoutUserNestedInput
     moodEntries?: MoodEntryUpdateManyWithoutUserNestedInput
     dailyAssessments?: DailyAssessmentUpdateManyWithoutUserNestedInput
@@ -22291,6 +22354,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     streakDays?: NullableIntFieldUpdateOperationsInput | number | null
     lastStreakDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    lastAvatarChangeAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     assessment?: AssessmentUncheckedUpdateOneWithoutUserNestedInput
     moodEntries?: MoodEntryUncheckedUpdateManyWithoutUserNestedInput
     dailyAssessments?: DailyAssessmentUncheckedUpdateManyWithoutUserNestedInput

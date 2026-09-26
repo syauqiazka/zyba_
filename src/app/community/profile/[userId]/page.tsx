@@ -7,6 +7,7 @@ import { useCommunity } from "../../context/CommunityContext";
 import PostCard from "../../components/PostCard";
 import { isAvatarUrl, resolveAvatar } from "@/lib/avatarUtils";
 import UserAvatar from "@/components/ui/UserAvatar";
+import AvatarCropModal from "@/components/ui/AvatarCropModal";
 
 interface ProfileData {
   userId: string;
@@ -59,6 +60,93 @@ function EditProfileModal({
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const avatarInputRef = useRef<HTMLInputElement>(null);
+
+  // Avatar Crop & Cooldown state
+  const [isCropModalOpen, setIsCropModalOpen] = useState(false);
+  const [cropImageSrc, setCropImageSrc] = useState<string | null>(null);
+  const [cooldownInfo, setCooldownInfo] = useState<{
+    canChange: boolean;
+    remainingText: string | null;
+    cooldownDays: number;
+  } | null>(null);
+
+  const checkCooldown = useCallback(async () => {
+    try {
+      const res = await fetch("/api/user/avatar");
+      if (res.ok) {
+        const data = await res.json();
+        setCooldownInfo(data);
+      }
+    } catch {}
+  }, []);
+
+  useEffect(() => {
+    checkCooldown();
+  }, [checkCooldown]);
+
+  const handleAvatarClick = () => {
+    if (cooldownInfo && !cooldownInfo.canChange) {
+      setError(
+        `Foto profil sedang cooldown. Kamu baru bisa mengganti foto profil lagi dalam ${cooldownInfo.remainingText}.`
+      );
+      return;
+    }
+    avatarInputRef.current?.click();
+  };
+
+  const handleFileSelected = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith("image/")) {
+      setError("Hanya file gambar (JPG, PNG, WEBP, GIF) yang diizinkan.");
+      return;
+    }
+    if (file.size > 8 * 1024 * 1024) {
+      setError("Ukuran foto maksimal 8MB.");
+      return;
+    }
+
+    setError(null);
+    const reader = new FileReader();
+    reader.onload = () => {
+      setCropImageSrc(reader.result as string);
+      setIsCropModalOpen(true);
+    };
+    reader.readAsDataURL(file);
+
+    e.target.value = "";
+  };
+
+  const handleUploadCropped = async (file: File) => {
+    setUploadingAvatar(true);
+    setError(null);
+    try {
+      const fd = new FormData();
+      fd.append("file", file);
+      const res = await fetch("/api/user/avatar", { method: "POST", body: fd });
+      const d = await res.json();
+      if (!res.ok || !d.avatarUrl) {
+        throw new Error(d.error || "Gagal mengunggah foto profil.");
+      }
+
+      setAvatarUrl(d.avatarUrl);
+      await checkCooldown();
+
+      try {
+        const cached = localStorage.getItem("zyba_user_cache");
+        const prev = cached ? JSON.parse(cached) : {};
+        localStorage.setItem(
+          "zyba_user_cache",
+          JSON.stringify({ ...prev, avatarUrl: d.avatarUrl })
+        );
+      } catch {}
+    } catch (err: any) {
+      setError(err.message || "Gagal mengunggah foto profil.");
+    } finally {
+      setUploadingAvatar(false);
+    }
+  };
 
   const handleSave = async () => {
     setSaving(true);
@@ -123,27 +211,7 @@ function EditProfileModal({
             type="file"
             accept="image/png,image/jpeg,image/webp,image/gif"
             className="hidden"
-            onChange={async (e) => {
-              const file = e.target.files?.[0];
-              if (!file) return;
-              setUploadingAvatar(true);
-              try {
-                const fd = new FormData();
-                fd.append("file", file);
-                const res = await fetch("/api/user/avatar", { method: "POST", body: fd });
-                const d = await res.json();
-                if (d.avatarUrl) {
-                  setAvatarUrl(d.avatarUrl);
-                  try {
-                    const cached = localStorage.getItem("zyba_user_cache");
-                    const prev = cached ? JSON.parse(cached) : {};
-                    localStorage.setItem("zyba_user_cache", JSON.stringify({ ...prev, avatarUrl: d.avatarUrl }));
-                  } catch {}
-                }
-              } catch {} finally {
-                setUploadingAvatar(false);
-              }
-            }}
+            onChange={handleFileSelected}
           />
           <div className="relative group shrink-0">
             <UserAvatar
@@ -155,8 +223,13 @@ function EditProfileModal({
             />
             <button
               type="button"
-              onClick={() => avatarInputRef.current?.click()}
+              onClick={handleAvatarClick}
               disabled={uploadingAvatar}
+              title={
+                cooldownInfo && !cooldownInfo.canChange
+                  ? `Cooldown: ${cooldownInfo.remainingText}`
+                  : "Ubah foto profil"
+              }
               className="absolute inset-0 bg-black/40 rounded-full flex items-center justify-center text-white opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
             >
               <Pencil size={18} />
@@ -164,13 +237,24 @@ function EditProfileModal({
           </div>
           <button
             type="button"
-            onClick={() => avatarInputRef.current?.click()}
+            onClick={handleAvatarClick}
             disabled={uploadingAvatar}
-            className="text-xs font-semibold text-orange-600 hover:underline cursor-pointer"
+            className="text-xs font-semibold text-orange-600 hover:underline cursor-pointer disabled:opacity-50"
           >
             {uploadingAvatar ? "Mengunggah foto..." : "Ubah Foto Profil"}
           </button>
         </div>
+
+        {/* Cooldown active info banner */}
+        {cooldownInfo && !cooldownInfo.canChange && (
+          <div className="mb-4 bg-amber-50 border border-amber-200/90 text-amber-900 text-xs px-3.5 py-2.5 rounded-2xl flex items-start gap-2">
+            <span className="text-sm leading-none mt-0.5">⏳</span>
+            <div className="leading-relaxed">
+              <span className="font-bold">Cooldown Aktif:</span> Ganti foto profil lagi dalam{" "}
+              <span className="font-bold underline">{cooldownInfo.remainingText}</span> (aturan {cooldownInfo.cooldownDays} hari sekali).
+            </div>
+          </div>
+        )}
 
         {/* Fields */}
         <div className="space-y-4">
@@ -247,6 +331,15 @@ function EditProfileModal({
           </button>
         </div>
       </div>
+
+      {/* Interactive Avatar Crop, Rotate & Cooldown Confirmation Modal */}
+      <AvatarCropModal
+        isOpen={isCropModalOpen}
+        imageSrc={cropImageSrc}
+        onClose={() => setIsCropModalOpen(false)}
+        onConfirm={handleUploadCropped}
+        isUploading={uploadingAvatar}
+      />
     </div>
   );
 }

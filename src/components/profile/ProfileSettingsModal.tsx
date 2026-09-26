@@ -7,6 +7,7 @@ import PersonaPicker from "@/app/companion/components/PersonaPicker";
 import { PersonaId } from "@/backend/ai/personas";
 import { isAvatarUrl, resolveAvatar } from "@/lib/avatarUtils";
 import UserAvatar from "@/components/ui/UserAvatar";
+import AvatarCropModal from "@/components/ui/AvatarCropModal";
 
 interface ProfileSettingsModalProps {
   user: ProfileUser;
@@ -103,6 +104,15 @@ export default function ProfileSettingsModal({ user, isOpen, onClose, onUserUpda
   const [avatarError, setAvatarError] = useState<string | null>(null);
   const avatarInputRef = useRef<HTMLInputElement>(null);
 
+  // Avatar crop & cooldown state
+  const [isCropModalOpen, setIsCropModalOpen] = useState(false);
+  const [cropImageSrc, setCropImageSrc] = useState<string | null>(null);
+  const [cooldownInfo, setCooldownInfo] = useState<{
+    canChange: boolean;
+    remainingText: string | null;
+    cooldownDays: number;
+  } | null>(null);
+
   // Companion
   const [persona, setPersona] = useState<PersonaId>("KINA");
   const [commStyle, setCommStyle] = useState<"CASUAL" | "FORMAL" | "FUN">("CASUAL");
@@ -128,8 +138,20 @@ export default function ProfileSettingsModal({ user, isOpen, onClose, onUserUpda
     setBio(user.bio || "");
     setAvatarUrl(user.avatarUrl || null);
   }, [user]);
+
+  const checkCooldown = useCallback(async () => {
+    try {
+      const res = await fetch("/api/user/avatar");
+      if (res.ok) {
+        const data = await res.json();
+        setCooldownInfo(data);
+      }
+    } catch {}
+  }, []);
+
   useEffect(() => {
     if (!isOpen) return;
+    checkCooldown();
     // Load notification prefs
     fetch("/api/settings/notifications").then(r => r.ok ? r.json() : null).then(d => {
       if (d?.pref) { setNotifChatbot(d.pref.companionNotif ?? true); setNotifWellness(d.pref.wellnessNotif ?? true); setNotifCommunity(d.pref.communityNotif ?? false); }
@@ -208,7 +230,20 @@ export default function ProfileSettingsModal({ user, isOpen, onClose, onUserUpda
   const maskedEmail = email.replace(/^(.)(.*)(@.*)$/, (_, a, b, c) => a + "*".repeat(Math.min(b.length, 6)) + c);
   const maskedEmailShort = email.replace(/^(.)(.*)(@.*)$/, (_, a, _b, c) => a + "***" + c);
 
-  const handleUploadAvatar = async (file: File) => {
+  const handleAvatarClick = () => {
+    if (cooldownInfo && !cooldownInfo.canChange) {
+      setAvatarError(
+        `Foto profil sedang cooldown. Kamu baru bisa mengganti foto profil lagi dalam ${cooldownInfo.remainingText}.`
+      );
+      return;
+    }
+    avatarInputRef.current?.click();
+  };
+
+  const handleFileSelected = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
     if (!file.type.startsWith("image/")) {
       setAvatarError("Hanya file gambar (JPG, PNG, WEBP, GIF) yang diizinkan.");
       return;
@@ -217,6 +252,19 @@ export default function ProfileSettingsModal({ user, isOpen, onClose, onUserUpda
       setAvatarError("Ukuran foto maksimal 8MB.");
       return;
     }
+
+    setAvatarError(null);
+    const reader = new FileReader();
+    reader.onload = () => {
+      setCropImageSrc(reader.result as string);
+      setIsCropModalOpen(true);
+    };
+    reader.readAsDataURL(file);
+
+    e.target.value = "";
+  };
+
+  const handleUploadAvatar = async (file: File) => {
     setIsUploadingAvatar(true);
     setAvatarError(null);
     try {
@@ -232,6 +280,7 @@ export default function ProfileSettingsModal({ user, isOpen, onClose, onUserUpda
       }
       setAvatarUrl(data.avatarUrl);
       onUserUpdate({ avatarUrl: data.avatarUrl });
+      await checkCooldown();
       try {
         const cached = localStorage.getItem("zyba_user_cache");
         const prev = cached ? JSON.parse(cached) : {};
@@ -508,9 +557,13 @@ export default function ProfileSettingsModal({ user, isOpen, onClose, onUserUpda
                       />
                       <button
                         type="button"
-                        onClick={() => avatarInputRef.current?.click()}
+                        onClick={handleAvatarClick}
                         disabled={isUploadingAvatar}
-                        title="Upload foto kustom"
+                        title={
+                          cooldownInfo && !cooldownInfo.canChange
+                            ? `Cooldown: ${cooldownInfo.remainingText}`
+                            : "Upload foto kustom"
+                        }
                         className="absolute inset-0 bg-black/40 rounded-full flex items-center justify-center text-white opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
                       >
                         <span className="text-xs font-bold">Ubah</span>
@@ -534,14 +587,11 @@ export default function ProfileSettingsModal({ user, isOpen, onClose, onUserUpda
                       type="file"
                       accept="image/png,image/jpeg,image/webp,image/gif"
                       className="hidden"
-                      onChange={(e) => {
-                        const f = e.target.files?.[0];
-                        if (f) handleUploadAvatar(f);
-                      }}
+                      onChange={handleFileSelected}
                     />
                     <button
                       type="button"
-                      onClick={() => avatarInputRef.current?.click()}
+                      onClick={handleAvatarClick}
                       disabled={isUploadingAvatar}
                       className="text-xs font-bold bg-orange-500 text-white px-4 py-2.5 rounded-full hover:bg-orange-600 active:scale-95 transition-all shadow-xs flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
                     >
@@ -549,6 +599,17 @@ export default function ProfileSettingsModal({ user, isOpen, onClose, onUserUpda
                     </button>
                   </div>
                 </div>
+
+                {/* Cooldown active info banner */}
+                {cooldownInfo && !cooldownInfo.canChange && (
+                  <div className="bg-amber-50 border border-amber-200/90 text-amber-900 text-xs px-3.5 py-2.5 rounded-2xl flex items-start gap-2">
+                    <span className="text-sm leading-none mt-0.5">⏳</span>
+                    <div className="leading-relaxed">
+                      <span className="font-bold">Cooldown Aktif:</span> Ganti foto profil lagi dalam{" "}
+                      <span className="font-bold underline">{cooldownInfo.remainingText}</span> (aturan {cooldownInfo.cooldownDays} hari sekali).
+                    </div>
+                  </div>
+                )}
 
                 {/* Preset Avatars Row */}
                 <div className="flex items-center gap-2 flex-wrap pb-4 border-b border-brown-900/10">
@@ -859,6 +920,15 @@ export default function ProfileSettingsModal({ user, isOpen, onClose, onUserUpda
           </div>
         </main>
       </div>
+
+      {/* Interactive Avatar Crop, Rotate & Cooldown Warning Modal */}
+      <AvatarCropModal
+        isOpen={isCropModalOpen}
+        imageSrc={cropImageSrc}
+        onClose={() => setIsCropModalOpen(false)}
+        onConfirm={handleUploadAvatar}
+        isUploading={isUploadingAvatar}
+      />
     </div>
   );
 

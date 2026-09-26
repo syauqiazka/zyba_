@@ -141,7 +141,8 @@ exports.Prisma.UserScalarFieldEnum = {
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
   streakDays: 'streakDays',
-  lastStreakDate: 'lastStreakDate'
+  lastStreakDate: 'lastStreakDate',
+  lastAvatarChangeAt: 'lastAvatarChangeAt'
 };
 
 exports.Prisma.NotificationPrefScalarFieldEnum = {

@@ -19,6 +19,7 @@ export interface StoredUser {
   zybaScore?: number | null;
   stressLevel?: number | null;
   streak?: number;
+  lastAvatarChangeAt?: string | null;
   createdAt: string;
   updatedAt: string;
 }
@@ -138,6 +139,11 @@ function dbToStored(user: any): StoredUser {
     onboardingCompleted: user.onboardingCompleted,
     zybaScore: user.zybaScore,
     stressLevel: user.stressLevel,
+    lastAvatarChangeAt: user.lastAvatarChangeAt
+      ? typeof user.lastAvatarChangeAt === "string"
+        ? user.lastAvatarChangeAt
+        : user.lastAvatarChangeAt.toISOString()
+      : null,
     createdAt: user.createdAt.toISOString(),
     updatedAt: user.updatedAt.toISOString(),
   };
@@ -394,6 +400,9 @@ export const userRepository = {
           phone: data.phone ?? undefined,
           location: data.location ?? undefined,
           bio: data.bio ?? undefined,
+          ...(data.lastAvatarChangeAt !== undefined
+            ? { lastAvatarChangeAt: data.lastAvatarChangeAt ? new Date(data.lastAvatarChangeAt) : null }
+            : {}),
         },
       });
       return dbToStored(updated);
