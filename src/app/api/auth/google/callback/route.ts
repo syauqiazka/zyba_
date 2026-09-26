@@ -30,9 +30,16 @@ export async function GET(request: NextRequest) {
     // Request masuk via reverse proxy domain publik
     const proto = fwdProto || "https";
     baseUrl = `${proto}://${fwdHost}`;
-  } else if (envBase && !envBase.includes("localhost")) {
+  } else if (envBase && !envBase.includes("localhost") && !envBase.startsWith("http://127.")) {
     // Fallback ke NEXTAUTH_URL
     baseUrl = envBase;
+  } else if (
+    process.env.NODE_ENV === "production" ||
+    request.nextUrl.port === "30000" ||
+    request.nextUrl.host.includes("30000")
+  ) {
+    // Di server Webuzo, aplikasi berjalan di port 30000 di balik Apache proxy
+    baseUrl = "https://jhic.zyba.my.id";
   } else {
     // Dev lokal
     const h = request.nextUrl.hostname;
@@ -40,7 +47,7 @@ export async function GET(request: NextRequest) {
     baseUrl = `${p}://${request.nextUrl.host}`;
   }
 
-  // Override paksa ke domain production kalau env menunjuk ke sana
+  // Override paksa jika ada indikasi jhic.zyba.my.id
   if (envBase && envBase.includes("jhic.zyba.my.id")) {
     baseUrl = "https://jhic.zyba.my.id";
   }

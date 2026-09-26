@@ -23,15 +23,22 @@ export async function GET(request: NextRequest) {
   if (fwdHost && fwdHost !== "localhost" && !fwdHost.startsWith("127.")) {
     const proto = fwdProto || "https";
     baseUrl = `${proto}://${fwdHost}`;
-  } else if (envBase && !envBase.includes("localhost")) {
+  } else if (envBase && !envBase.includes("localhost") && !envBase.startsWith("http://127.")) {
     baseUrl = envBase;
+  } else if (
+    process.env.NODE_ENV === "production" ||
+    request.nextUrl.port === "30000" ||
+    request.nextUrl.host.includes("30000")
+  ) {
+    // Di server Webuzo, aplikasi berjalan di port 30000 di balik Apache proxy
+    baseUrl = "https://jhic.zyba.my.id";
   } else {
     const h = request.nextUrl.hostname;
     const p = h === "localhost" || h === "127.0.0.1" ? "http" : "https";
     baseUrl = `${p}://${request.nextUrl.host}`;
   }
 
-  // Override paksa ke domain production kalau env menunjuk ke sana
+  // Override paksa jika ada indikasi jhic.zyba.my.id
   if (envBase && envBase.includes("jhic.zyba.my.id")) {
     baseUrl = "https://jhic.zyba.my.id";
   }

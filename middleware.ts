@@ -21,6 +21,40 @@ const PROTECTED_PATHS = [
  */
 const ASSESSMENT_ALLOWED_PATHS = ["/assessment", "/api/", "/login", "/onboarding", "/"];
 
+function getRedirectUrl(path: string, request: NextRequest): URL {
+  const fwdHost = request.headers.get("x-forwarded-host")?.split(",")[0]?.trim();
+  const fwdProto = request.headers.get("x-forwarded-proto")?.split(",")[0]?.trim() || "https";
+
+  if (fwdHost && !fwdHost.includes("localhost") && !fwdHost.startsWith("127.")) {
+    return new URL(path, `${fwdProto}://${fwdHost}`);
+  }
+
+  const host = request.headers.get("host")?.split(",")[0]?.trim();
+  if (host && host.includes("zyba.my.id")) {
+    return new URL(path, `https://${host}`);
+  }
+
+  const envBase = (
+    process.env.NEXTAUTH_URL ||
+    process.env.NEXT_PUBLIC_BASE_URL ||
+    ""
+  ).replace(/\/$/, "");
+
+  if (envBase && !envBase.includes("localhost") && !envBase.startsWith("http://127.")) {
+    return new URL(path, envBase);
+  }
+
+  if (
+    process.env.NODE_ENV === "production" ||
+    request.nextUrl.port === "30000" ||
+    request.nextUrl.host.includes("30000")
+  ) {
+    return new URL(path, "https://jhic.zyba.my.id");
+  }
+
+  return new URL(path, request.url);
+}
+
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
@@ -41,7 +75,7 @@ export async function middleware(request: NextRequest) {
     const token = request.cookies.get("auth-token");
 
     if (!token || !token.value) {
-      const url = new URL("/login", request.url);
+      const url = getRedirectUrl("/login", request);
       url.searchParams.set("redirected", "true");
       return NextResponse.redirect(url);
     }
@@ -49,7 +83,7 @@ export async function middleware(request: NextRequest) {
     // Verifikasi JWT
     const session = await verifySessionToken(token.value);
     if (!session) {
-      const url = new URL("/login", request.url);
+      const url = getRedirectUrl("/login", request);
       url.searchParams.set("redirected", "true");
       const response = NextResponse.redirect(url);
       response.cookies.delete("auth-token");
@@ -63,11 +97,11 @@ export async function middleware(request: NextRequest) {
     const isOnAssessment = pathname.startsWith("/assessment");
 
     if (!isOnboardingDone && !isOnAssessment) {
-      return NextResponse.redirect(new URL("/assessment", request.url));
+      return NextResponse.redirect(getRedirectUrl("/assessment", request));
     }
 
     if (isOnboardingDone && isOnAssessment) {
-      return NextResponse.redirect(new URL("/dashboard", request.url));
+      return NextResponse.redirect(getRedirectUrl("/dashboard", request));
     }
 
     return NextResponse.next();
