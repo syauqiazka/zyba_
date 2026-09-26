@@ -188,9 +188,14 @@ function LoginContent({ defaultMode }: { defaultMode?: "SIGN_IN" | "FORGOT_PASSW
 }
 
 export default function LoginPage({
-  defaultMode,
+  searchParams,
 }: {
-  defaultMode?: "SIGN_IN" | "FORGOT_PASSWORD" | "SIGN_UP";
+  searchParams?: Record<string, string | string[] | undefined>;
 }) {
-  return <LoginContent defaultMode={defaultMode} />;
+  const tabParam = typeof searchParams?.tab === "string" ? searchParams.tab : undefined;
+  const modeFromParam: "SIGN_IN" | "FORGOT_PASSWORD" | "SIGN_UP" | undefined =
+    tabParam === "signup" ? "SIGN_UP"
+    : tabParam === "forgot" ? "FORGOT_PASSWORD"
+    : undefined;
+  return <LoginContent defaultMode={modeFromParam} />;
 }
