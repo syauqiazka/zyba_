@@ -46,48 +46,50 @@ export async function POST(req: NextRequest) {
     }
 
     let avatarUrl: string | null = null;
-    const blobToken = process.env.BLOB_READ_WRITE_TOKEN;
 
-    if (blobToken) {
-      try {
-        const ext = file.name.split(".").pop() || "jpg";
-        const filename = `avatars/${session.userId}-${Date.now()}.${ext}`;
-        const blobRes = await fetch(`https://blob.vercel-storage.com/${filename}`, {
-          method: "PUT",
-          headers: {
-            Authorization: "Bearer " + blobToken,
-            "Content-Type": file.type,
-            "x-content-type": file.type,
-          },
-          body: await file.arrayBuffer(),
-        });
+    // ── Primary: Self-Hosted Filesystem Storage in public/uploads/avatars ──
+    try {
+      const avatarsDir = path.join(process.cwd(), "public", "uploads", "avatars");
+      await fs.mkdir(avatarsDir, { recursive: true });
 
-        if (blobRes.ok) {
-          const blobData = await blobRes.json();
-          avatarUrl = blobData.url;
+      const ext = (file.name.split(".").pop() || "jpg").toLowerCase().replace(/[^a-z0-9]/g, "");
+      const filename = `avatar_${session.userId}_${Date.now()}.${ext}`;
+      const filePath = path.join(avatarsDir, filename);
+
+      const buffer = Buffer.from(await file.arrayBuffer());
+      await fs.writeFile(filePath, buffer);
+
+      avatarUrl = `/uploads/avatars/${filename}`;
+    } catch (fsErr) {
+      console.warn("[Avatar FS storage failed, attempting fallback]:", fsErr);
+
+      // Optional fallback: Vercel Blob if token exists
+      const blobToken = process.env.BLOB_READ_WRITE_TOKEN;
+      if (blobToken) {
+        try {
+          const ext = file.name.split(".").pop() || "jpg";
+          const filename = `avatars/${session.userId}-${Date.now()}.${ext}`;
+          const blobRes = await fetch(`https://blob.vercel-storage.com/${filename}`, {
+            method: "PUT",
+            headers: {
+              Authorization: "Bearer " + blobToken,
+              "Content-Type": file.type,
+              "x-content-type": file.type,
+            },
+            body: await file.arrayBuffer(),
+          });
+
+          if (blobRes.ok) {
+            const blobData = await blobRes.json();
+            avatarUrl = blobData.url;
+          }
+        } catch (blobErr) {
+          console.warn("[Avatar Blob fallback failed]:", blobErr);
         }
-      } catch (blobErr) {
-        console.warn("[Avatar Blob Upload Error]:", blobErr);
       }
-    }
 
-    // Local filesystem storage fallback in public/uploads/avatars
-    if (!avatarUrl) {
-      try {
-        const avatarsDir = path.join(process.cwd(), "public", "uploads", "avatars");
-        await fs.mkdir(avatarsDir, { recursive: true });
-
-        const ext = (file.name.split(".").pop() || "jpg").toLowerCase().replace(/[^a-z0-9]/g, "");
-        const filename = `avatar_${session.userId}_${Date.now()}.${ext}`;
-        const filePath = path.join(avatarsDir, filename);
-
-        const buffer = Buffer.from(await file.arrayBuffer());
-        await fs.writeFile(filePath, buffer);
-
-        avatarUrl = `/uploads/avatars/${filename}`;
-      } catch (fsErr) {
-        console.warn("[Avatar FS fallback]:", fsErr);
-        // Base64 fallback
+      // Ultimate fallback: Base64 data URL
+      if (!avatarUrl) {
         const buffer = await file.arrayBuffer();
         const base64 = Buffer.from(buffer).toString("base64");
         avatarUrl = `data:${file.type};base64,${base64}`;

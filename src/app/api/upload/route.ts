@@ -23,27 +23,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Ukuran gambar maksimal 10MB." }, { status: 400 });
     }
 
-    const token = process.env.BLOB_READ_WRITE_TOKEN;
-    if (token) {
-      const filename = `zyba/${Date.now()}-${file.name.replace(/[^a-zA-Z0-9._-]/g, "_")}`;
-      const res = await fetch(`https://blob.vercel-storage.com/${filename}`, {
-        method: "PUT",
-        headers: {
-          Authorization: "Bearer " + token,
-          "Content-Type": file.type || "application/octet-stream",
-          "x-content-type": file.type || "application/octet-stream",
-        },
-        body: await file.arrayBuffer(),
-      });
-
-      if (res.ok) {
-        const data = await res.json();
-        return NextResponse.json({ success: true, url: data.url, pathname: data.pathname });
-      }
-      console.warn("[Upload Blob failed, falling back to local filesystem]");
-    }
-
-    // Local filesystem storage in public/uploads
+    // ── Self-Hosted Filesystem Storage (public/uploads/) ──
     try {
       const uploadDir = path.join(process.cwd(), "public", "uploads");
       await fs.mkdir(uploadDir, { recursive: true });
@@ -58,12 +38,37 @@ export async function POST(req: NextRequest) {
       const url = `/uploads/${cleanName}`;
       return NextResponse.json({ success: true, url, pathname: url });
     } catch (fsErr) {
-      console.warn("[Upload FS fallback]:", fsErr);
-      // Fallback to Base64 data URL
+      console.warn("[Upload FS failed, attempting Vercel Blob fallback]:", fsErr);
+
+      // Optional fallback: Vercel Blob if token exists
+      const token = process.env.BLOB_READ_WRITE_TOKEN;
+      if (token) {
+        try {
+          const filename = `zyba/${Date.now()}-${file.name.replace(/[^a-zA-Z0-9._-]/g, "_")}`;
+          const res = await fetch(`https://blob.vercel-storage.com/${filename}`, {
+            method: "PUT",
+            headers: {
+              Authorization: "Bearer " + token,
+              "Content-Type": file.type || "application/octet-stream",
+              "x-content-type": file.type || "application/octet-stream",
+            },
+            body: await file.arrayBuffer(),
+          });
+
+          if (res.ok) {
+            const data = await res.json();
+            return NextResponse.json({ success: true, url: data.url, pathname: data.pathname });
+          }
+        } catch (blobErr) {
+          console.warn("[Upload Blob fallback failed]:", blobErr);
+        }
+      }
+
+      // Ultimate fallback: Base64 data URL
       const buffer = Buffer.from(await file.arrayBuffer());
       const base64 = buffer.toString("base64");
       const dataUrl = `data:${file.type};base64,${base64}`;
-      return NextResponse.json({ success: true, url: dataUrl });
+      return NextResponse.json({ success: true, url: dataUrl, pathname: dataUrl });
     }
   } catch (err: any) {
     console.error("[Upload Error]:", err);

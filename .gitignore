@@ -9,3 +9,10 @@ data/*.json
 data/
 # Core dumps
 core.*
+
+# Uploaded files on self-hosted server
+public/uploads/*
+!public/uploads/.gitkeep
+!public/uploads/avatars/
+public/uploads/avatars/*
+!public/uploads/avatars/.gitkeep
