@@ -237,6 +237,11 @@ export async function POST(req: NextRequest) {
     const body =
       await req.json();
 
+    // Auto-migrate local-fallback users to Neon so FK constraints don't fail
+    const { userRepository: uRepo } = await import("@/backend/auth/userRepository");
+    const migrated = await uRepo.ensureUserExistsInNeon(userId);
+    const neonUserId = migrated?.neonId ?? userId;
+
     const {
       mood,
 
@@ -307,7 +312,7 @@ export async function POST(req: NextRequest) {
       await accountDb.dailyAssessment.findUnique({
         where: {
           userId_date: {
-            userId,
+            userId: neonUserId,
             date: todayDate,
           },
         },
@@ -446,7 +451,7 @@ export async function POST(req: NextRequest) {
     const record =
       await accountDb.dailyAssessment.create({
         data: {
-          userId,
+          userId: neonUserId,
 
           date:
             todayDate,
@@ -488,7 +493,7 @@ export async function POST(req: NextRequest) {
 
     await accountDb.user.update({
       where: {
-        id: userId,
+        id: neonUserId,
       },
 
       data: {
@@ -501,6 +506,8 @@ export async function POST(req: NextRequest) {
         onboardingCompleted:
           true,
       },
+    }).catch((e: any) => {
+      console.warn("[dailyAssessment] user.update skipped:", e.message);
     });
 
     // =================================================

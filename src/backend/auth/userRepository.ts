@@ -265,6 +265,87 @@ export const userRepository = {
     }
   },
 
+  /**
+   * Ensures a user exists in Neon DB. If the user is a local-fallback user
+   * (ID starts with "user_" and not a cuid), it will be migrated to Neon
+   * using the same email, creating a new cuid-based ID.
+   *
+   * Returns { neonId } — the ID to use for Neon DB operations.
+   * Returns null if the user cannot be migrated (local data missing).
+   *
+   * IMPORTANT: After migration, the local record is updated with the new Neon ID
+   * so subsequent lookups find the migrated user. However the session cookie still
+   * has the old local ID, so reads always check local file first (which now maps to Neon).
+   */
+  async ensureUserExistsInNeon(userId: string): Promise<{ neonId: string } | null> {
+    // If not a local-fallback user, assume already in Neon
+    const isLocalFallback = !userId.match(/^c[a-z0-9]{24,}$/) && userId.startsWith("user_");
+    if (!isLocalFallback) {
+      return { neonId: userId };
+    }
+
+    // Check if the user already got migrated to Neon (local record has a new cuid)
+    try {
+      const existing = await accountDb.user.findUnique({ where: { id: userId } });
+      if (existing) return { neonId: userId };
+    } catch {}
+
+    // Load local user data
+    const localUser = await this.findById(userId);
+    if (!localUser) return null;
+
+    // Check if this email already exists in Neon (from a previous migration attempt)
+    try {
+      const byEmail = await accountDb.user.findUnique({ where: { email: localUser.email } });
+      if (byEmail) {
+        // Already in Neon under a different ID — update local record to point to Neon ID
+        try {
+          const users = readLocalUsers();
+          const idx = users.findIndex((u) => u.id === userId);
+          if (idx !== -1) {
+            users[idx].id = byEmail.id;
+            writeLocalUsers(users);
+          }
+        } catch {}
+        return { neonId: byEmail.id };
+      }
+    } catch {}
+
+    // Migrate: create user in Neon
+    try {
+      const created = await accountDb.user.create({
+        data: {
+          email: localUser.email,
+          name: localUser.name || "Pengguna ZYBA",
+          passwordHash: localUser.passwordHash,
+          avatarUrl: localUser.avatarUrl || "fox",
+          bio: localUser.bio || undefined,
+          phone: localUser.phone || undefined,
+          username: localUser.username || undefined,
+          onboardingCompleted: localUser.onboardingCompleted ?? true,
+          zybaScore: localUser.zybaScore || undefined,
+          stressLevel: localUser.stressLevel || undefined,
+        },
+      });
+      console.log(`[userRepo] Migrated local user ${userId} → Neon ${created.id}`);
+
+      // Update local record so future lookups route to Neon
+      try {
+        const users = readLocalUsers();
+        const idx = users.findIndex((u) => u.id === userId);
+        if (idx !== -1) {
+          users[idx].id = created.id;
+          writeLocalUsers(users);
+        }
+      } catch {}
+
+      return { neonId: created.id };
+    } catch (e: any) {
+      console.error("[userRepo] Failed to migrate local user to Neon:", e.message);
+      return null;
+    }
+  },
+
   async update(
     idOrEmail: string,
     data: Partial<Omit<StoredUser, "id" | "email" | "createdAt">>

@@ -226,6 +226,10 @@ export async function PATCH(req: NextRequest) {
       return NextResponse.json({ error: "Nama tidak boleh kosong" }, { status: 400 });
     }
 
+    // Auto-migrate local-fallback users to Neon before any DB write
+    const migrated = await userRepository.ensureUserExistsInNeon(session.userId);
+    const neonUserId = migrated?.neonId ?? session.userId;
+
     const updateData: any = {};
 
     if (avatarUrl !== undefined) {
@@ -275,12 +279,14 @@ export async function PATCH(req: NextRequest) {
     }
 
     const updatedUser = await accountDb.user.update({
-      where: { id: session.userId },
+      where: { id: neonUserId },
       data: updateData,
     });
 
-    // Invalidate cache immediately on update
+    // Invalidate cache for both old and new IDs
     invalidateUserCache(session.userId);
+    if (neonUserId !== session.userId) invalidateUserCache(neonUserId);
+
 
     return NextResponse.json({
       success: true,

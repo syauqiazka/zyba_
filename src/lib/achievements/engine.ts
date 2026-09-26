@@ -65,11 +65,18 @@ export async function checkAndUnlock(
   });
   const unlockedKeys = new Set(existing.map((u) => u.achievement.key));
 
-  // Get current user for streak/counts
-  const user = await prisma.user.findUnique({
-    where: { id: userId },
-    select: { streakDays: true },
-  });
+  // Get current user for streak/counts (streakDays may not exist in DB yet — wrap with try-catch)
+  let userStreakDays = 0;
+  try {
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: { streakDays: true },
+    });
+    userStreakDays = user?.streakDays ?? 0;
+  } catch {
+    // streakDays column not yet migrated — use 0 as fallback
+    userStreakDays = 0;
+  }
 
   // Evaluate each achievement definition
   for (const def of ACHIEVEMENT_DEFS) {
@@ -79,8 +86,8 @@ export async function checkAndUnlock(
 
     switch (def.category) {
       case "STREAK": {
-        if (event.type === "login" && user) {
-          const streak = user.streakDays ?? 0;
+        if (event.type === "login") {
+          const streak = userStreakDays;
           shouldUnlock = !!def.threshold && streak >= def.threshold;
         }
         break;
@@ -152,39 +159,45 @@ export async function checkAndUnlock(
 
 /** Update login streak (call on every authenticated request or login). */
 async function updateStreak(userId: string) {
-  const user = await prisma.user.findUnique({
-    where: { id: userId },
-    select: { streakDays: true, lastStreakDate: true },
-  });
-  if (!user) return;
-
-  const now = new Date();
-  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-
-  if (!user.lastStreakDate) {
-    await prisma.user.update({
+  // streakDays/lastStreakDate may not exist in DB yet — wrap entire function
+  try {
+    const user = await prisma.user.findUnique({
       where: { id: userId },
-      data: { streakDays: 1, lastStreakDate: today },
+      select: { streakDays: true, lastStreakDate: true },
     });
-    return;
-  }
+    if (!user) return;
 
-  const last = new Date(user.lastStreakDate);
-  const lastDay = new Date(last.getFullYear(), last.getMonth(), last.getDate());
-  const diffDays = Math.floor((today.getTime() - lastDay.getTime()) / 86400000);
+    const now = new Date();
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
 
-  if (diffDays === 0) return; // same day, no update needed
-  if (diffDays === 1) {
-    // Consecutive day
-    await prisma.user.update({
-      where: { id: userId },
-      data: { streakDays: { increment: 1 }, lastStreakDate: today },
-    });
-  } else {
-    // Streak broken
-    await prisma.user.update({
-      where: { id: userId },
-      data: { streakDays: 1, lastStreakDate: today },
-    });
+    if (!user.lastStreakDate) {
+      await prisma.user.update({
+        where: { id: userId },
+        data: { streakDays: 1, lastStreakDate: today },
+      });
+      return;
+    }
+
+    const last = new Date(user.lastStreakDate);
+    const lastDay = new Date(last.getFullYear(), last.getMonth(), last.getDate());
+    const diffDays = Math.floor((today.getTime() - lastDay.getTime()) / 86400000);
+
+    if (diffDays === 0) return; // same day, no update needed
+    if (diffDays === 1) {
+      // Consecutive day
+      await prisma.user.update({
+        where: { id: userId },
+        data: { streakDays: { increment: 1 }, lastStreakDate: today },
+      });
+    } else {
+      // Streak broken
+      await prisma.user.update({
+        where: { id: userId },
+        data: { streakDays: 1, lastStreakDate: today },
+      });
+    }
+  } catch (e: any) {
+    // Column doesn't exist yet — silently skip streak update
+    console.warn("[achievement] updateStreak skipped (streakDays not in DB):", e.message?.slice(0, 80));
   }
 }
