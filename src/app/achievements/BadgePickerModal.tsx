@@ -3,6 +3,8 @@
 import React, { useState } from "react";
 import { AchievementDef } from "@/lib/achievements/definitions";
 
+import { X } from "lucide-react";
+
 interface Props {
   slot: number;
   unlockedAchievements: AchievementDef[];
@@ -46,7 +48,7 @@ export default function BadgePickerModal({ slot, unlockedAchievements, currentBa
             onClick={onClose}
             className="w-8 h-8 rounded-full bg-brown-900/8 hover:bg-brown-900/15 flex items-center justify-center text-brown-700 transition-colors"
           >
-            ✕
+            <X size={15} />
           </button>
         </div>
 

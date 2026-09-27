@@ -131,7 +131,7 @@ Sleep Quality, breathing exercise, exercise completed, activity target, choose a
 
 ## 5. Panduan Konversi Mobile → Desktop
 
-1. **Navigasi**: bottom nav mobile → **sidebar kiri fixed** (~240–280px): Dashboard, Mood Check-In, Zyba Companion, Smart Activity Planner, Wellness Journey, Zyba Community, Resources, Settings.
+1. **Navigasi**: bottom nav mobile → **sidebar kiri fixed** (~240–280px): Dashboard, Assessment Harian, Zyba Companion, Smart Activity Planner, Wellness Journey, Zyba Community, Resources, Pencapaian (`/achievements`), Settings.
 2. **Layout grid**: container max-width 1200–1280px, grid 12 kolom. Halaman list (Resources, Community, Activity) pakai **grid multi-kolom** (2–3 kolom).
 3. **Assessment**: gabung jadi **form multi-step** — panel kiri progress stepper, panel kanan pertanyaan aktif.
 4. **Chat (Zyba Companion)**: **dua panel** — kiri daftar percakapan, kanan jendela chat aktif (pola WhatsApp Web/Slack).

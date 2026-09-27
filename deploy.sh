@@ -18,6 +18,9 @@ npx prisma db push --schema=prisma/account/schema.prisma --skip-generate --accep
 npx prisma db push --schema=prisma/companion/schema.prisma --skip-generate --accept-data-loss || true
 npx prisma db push --schema=prisma/community/schema.prisma --skip-generate --accept-data-loss || true
 
+echo "==> Membersihkan post test dan menyiapkan konten awal komunitas..."
+node scripts/clean-and-seed-community.js || true
+
 echo "==> [5/5] Building Next.js production bundle..."
 rm -rf .next/cache
 pnpm run build

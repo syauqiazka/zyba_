@@ -1,6 +1,20 @@
 "use client";
 
 import React, { useEffect, useState, useCallback } from "react";
+import {
+  Flame,
+  Trophy,
+  Zap,
+  Heart,
+  MessageSquare,
+  Users,
+  Activity,
+  Sparkles,
+  X,
+  Edit3,
+  Plus,
+  type LucideIcon,
+} from "lucide-react";
 import { ACHIEVEMENT_DEFS, AchievementDef } from "@/lib/achievements/definitions";
 import BadgePickerModal from "./BadgePickerModal";
 
@@ -17,15 +31,15 @@ interface PinnedBadge {
   customLabel?: string;
 }
 
-const CATEGORY_LABELS: Record<AchievementCategory, string> = {
-  ALL: "Semua",
-  STREAK: "🔥 Streak",
-  WELLNESS: "🧘 Wellness",
-  COMPANION: "💬 Companion",
-  SOCIAL: "🤝 Sosial",
-  ACTIVITY: "⚡ Aktivitas",
-  SPECIAL: "✨ Spesial",
-};
+const CATEGORY_ITEMS: { id: AchievementCategory; label: string; icon: LucideIcon }[] = [
+  { id: "ALL", label: "Semua", icon: Trophy },
+  { id: "STREAK", label: "Streak", icon: Flame },
+  { id: "WELLNESS", label: "Wellness", icon: Heart },
+  { id: "COMPANION", label: "Companion", icon: MessageSquare },
+  { id: "SOCIAL", label: "Sosial", icon: Users },
+  { id: "ACTIVITY", label: "Aktivitas", icon: Activity },
+  { id: "SPECIAL", label: "Spesial", icon: Sparkles },
+];
 
 const SLOT_LABELS = ["Badge 1", "Badge 2", "Badge 3"];
 
@@ -116,9 +130,9 @@ export default function AchievementsPage() {
 
       {/* ── Stats Row ── */}
       <div className="grid grid-cols-3 gap-3">
-        <StatCard value={`${streakDays}d`} label="Streak" icon="🔥" color="bg-orange-100 text-orange-600" />
-        <StatCard value={`${totalUnlocked}`} label="Diraih" icon="🏆" color="bg-green-100 text-green-700" />
-        <StatCard value={`${totalXp} XP`} label="Total XP" icon="⚡" color="bg-cream text-brown-700" />
+        <StatCard value={`${streakDays}d`} label="Streak" icon={Flame} color="bg-orange-100 text-orange-600" />
+        <StatCard value={`${totalUnlocked}`} label="Diraih" icon={Trophy} color="bg-green-100 text-green-700" />
+        <StatCard value={`${totalXp} XP`} label="Total XP" icon={Zap} color="bg-cream text-brown-700" />
       </div>
 
       {/* ── Pinned Badges (Custom Badge Slots) ── */}
@@ -144,26 +158,26 @@ export default function AchievementsPage() {
                     {/* Remove button */}
                     <button
                       onClick={() => handleRemoveBadge(slot)}
-                      className="absolute top-2 right-2 w-5 h-5 rounded-full bg-brown-900/10 hover:bg-danger hover:text-white text-brown-700 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity text-xs"
+                      className="absolute top-2 right-2 w-6 h-6 rounded-full bg-brown-900/10 hover:bg-danger hover:text-white text-brown-700 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
                       title="Hapus badge"
                     >
-                      ×
+                      <X size={12} />
                     </button>
                     <button
                       onClick={() => setPickerSlot(slot)}
-                      className="absolute bottom-2 right-2 w-5 h-5 rounded-full bg-brown-900/10 hover:bg-orange-500 hover:text-white text-brown-700 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity text-xs"
+                      className="absolute bottom-2 right-2 w-6 h-6 rounded-full bg-brown-900/10 hover:bg-orange-500 hover:text-white text-brown-700 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
                       title="Ganti badge"
                     >
-                      ✎
+                      <Edit3 size={12} />
                     </button>
                   </div>
                 ) : (
                   <button
                     onClick={() => setPickerSlot(slot)}
-                    className="w-full rounded-2xl p-4 flex flex-col items-center gap-2 border-2 border-dashed border-brown-900/15 hover:border-orange-500/50 hover:bg-orange-50 transition-all"
+                    className="w-full rounded-2xl p-4 flex flex-col items-center gap-2 border-2 border-dashed border-brown-900/15 hover:border-orange-500/50 hover:bg-orange-50 transition-all text-brown-700/60 hover:text-orange-600"
                   >
-                    <span className="text-2xl opacity-30">＋</span>
-                    <span className="text-xs text-brown-700/60 font-medium">{SLOT_LABELS[slot]}</span>
+                    <Plus size={22} className="opacity-40" />
+                    <span className="text-xs font-medium">{SLOT_LABELS[slot]}</span>
                   </button>
                 )}
               </div>
@@ -188,19 +202,24 @@ export default function AchievementsPage() {
 
       {/* ── Category Filter ── */}
       <div className="flex gap-2 overflow-x-auto pb-1 no-scrollbar">
-        {(Object.keys(CATEGORY_LABELS) as AchievementCategory[]).map((cat) => (
-          <button
-            key={cat}
-            onClick={() => setActiveCategory(cat)}
-            className={`shrink-0 px-3.5 py-2 rounded-full text-xs font-semibold transition-all ${
-              activeCategory === cat
-                ? "bg-brown-900 text-white shadow-sm"
-                : "bg-white border border-brown-900/10 text-brown-700 hover:bg-cream"
-            }`}
-          >
-            {CATEGORY_LABELS[cat]}
-          </button>
-        ))}
+        {CATEGORY_ITEMS.map((cat) => {
+          const Icon = cat.icon;
+          const isSelected = activeCategory === cat.id;
+          return (
+            <button
+              key={cat.id}
+              onClick={() => setActiveCategory(cat.id)}
+              className={`shrink-0 px-3.5 py-2 rounded-full text-xs font-semibold transition-all flex items-center gap-1.5 ${
+                isSelected
+                  ? "bg-brown-900 text-white shadow-sm"
+                  : "bg-white border border-brown-900/10 text-brown-700 hover:bg-cream"
+              }`}
+            >
+              <Icon size={13} />
+              <span>{cat.label}</span>
+            </button>
+          );
+        })}
       </div>
 
       {/* ── Achievement Grid ── */}
@@ -234,10 +253,20 @@ export default function AchievementsPage() {
   );
 }
 
-function StatCard({ value, label, icon, color }: { value: string; label: string; icon: string; color: string }) {
+function StatCard({
+  value,
+  label,
+  icon: Icon,
+  color,
+}: {
+  value: string;
+  label: string;
+  icon: LucideIcon;
+  color: string;
+}) {
   return (
-    <div className={`rounded-2xl p-4 flex flex-col items-center gap-1 border border-brown-900/8 ${color.split(" ")[0]} shadow-xs`}>
-      <span className="text-xl">{icon}</span>
+    <div className={`rounded-2xl p-4 flex flex-col items-center gap-1.5 border border-brown-900/8 ${color.split(" ")[0]} shadow-xs`}>
+      <Icon size={22} className={color.split(" ")[1]} />
       <span className={`font-display font-bold text-lg ${color.split(" ")[1]}`}>{value}</span>
       <span className="text-xs text-brown-700/70">{label}</span>
     </div>

@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import { Mic, Plus, ArrowRight } from "lucide-react";
 import { AIModelType } from "@/backend/ai/aiModelManager";
 import { PersonaId, getPersonaById } from "@/backend/ai/personas";
 import ModelSelector from "./ModelSelector";
@@ -33,13 +34,13 @@ interface Props {
 
 /**
  * 5 Prompt starter chips matching Claude.ai (Image 1):
- * [ Write | Learn | Code | Life stuff | Claude's choice ]
+ * [ Curhat Bebas | Pahami Emosi | Rencana Aksi | Obrolan Santai | Rekomendasi Zyba ]
  */
 const CLAUDE_PROMPTS = [
   { icon: "✍️", label: "Curhat Bebas", prompt: "Aku ingin curhat tentang hal yang mengganjal di pikiranku hari ini." },
   { icon: "💡", label: "Pahami Emosi", prompt: "Bantu aku memahami kenapa belakangan ini aku mudah merasa lelah dan cemas." },
   { icon: "🎯", label: "Rencana Aksi", prompt: "Berikan aku 3 langkah praktis untuk menghentikan kebiasaan menunda pekerjaan (prokrastinasi)." },
-  { icon: "☕", label: "Life stuff", prompt: "Butuh obrolan santai penenang pikiran setelah seharian beraktivitas padat." },
+  { icon: "☕", label: "Obrolan Santai", prompt: "Butuh obrolan santai penenang pikiran setelah seharian beraktivitas padat." },
   { icon: "✨", label: "Rekomendasi Zyba", prompt: "Pandu aku melakukan latihan mindfulness relaksasi pernapasan 5 menit sekarang." },
 ];
 
@@ -99,21 +100,21 @@ export default function ChatMessages({
                 handleCenterSubmit();
               }
             }}
-            placeholder="How can I help you today?"
+            placeholder="Ketik pesan ke Zyba..."
             rows={2}
             className="w-full bg-transparent text-sm text-brown-900 placeholder:text-brown-700/50 resize-none focus:outline-none leading-relaxed"
           />
 
           {/* Bottom attached controls row */}
           <div className="flex items-center justify-between pt-2.5 mt-2 border-t border-brown-900/6 text-xs text-brown-700">
-            {/* Left: "+" button & Mode Toggle [Chat | Cowork] */}
+            {/* Left: "+" button & Mode Toggle [Curhat | Solusi] */}
             <div className="flex items-center gap-2">
               <button
                 type="button"
                 className="w-7 h-7 rounded-lg border border-brown-900/10 flex items-center justify-center text-brown-700/70 hover:text-brown-900 hover:bg-brown-900/5 transition-colors"
                 title="Tambahkan dokumen atau lampiran"
               >
-                +
+                <Plus size={14} />
               </button>
 
               {setChatMode && (
@@ -127,7 +128,7 @@ export default function ChatMessages({
                         : "text-brown-700/70 hover:text-brown-900"
                     }`}
                   >
-                    Chat
+                    Curhat
                   </button>
                   <button
                     type="button"
@@ -138,7 +139,7 @@ export default function ChatMessages({
                         : "text-brown-700/70 hover:text-brown-900"
                     }`}
                   >
-                    Cowork
+                    Solusi
                   </button>
                 </div>
               )}
@@ -165,7 +166,7 @@ export default function ChatMessages({
                 }`}
                 title="Voice input"
               >
-                🎙️
+                <Mic size={15} />
               </button>
 
               <button
@@ -175,7 +176,7 @@ export default function ChatMessages({
                 className="w-7 h-7 rounded-lg bg-orange-500 text-white flex items-center justify-center font-bold text-xs hover:bg-orange-600 disabled:opacity-30 transition-all shadow-2xs"
                 title="Kirim pesan"
               >
-                →
+                <ArrowRight size={13} />
               </button>
             </div>
           </div>

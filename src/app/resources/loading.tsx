@@ -12,10 +12,10 @@ export default function Loading() {
       </div>
       <div className="flex flex-col items-center gap-1">
         <span className="font-display font-extrabold text-sm text-brown-900">
-          Memuat Resources
+          Memuat Sumber Daya Edukasi
         </span>
         <span className="text-[11px] text-brown-700">
-          Mengambil koleksi artikel & audio...
+          Mengambil koleksi artikel psikologi & panduan audio...
         </span>
       </div>
       <div className="w-40 h-1.5 bg-cream rounded-full overflow-hidden border border-brown-900/10">

@@ -235,7 +235,7 @@ export default function SmartActivityPlannerPage() {
       } catch {}
 
       setActivityProgress((prev) => Math.min(prev + 30, targetProgress));
-      setActivityToast("🎉 Sesi Zyba Hours selesai! +30 Zyba Points tersimpan!");
+      setActivityToast("Sesi Zyba Hours selesai! +30 Zyba Points tersimpan!");
       setTimeout(() => setActivityToast(null), 4000);
     } catch (err) {
       console.warn("Save breathing error:", err);

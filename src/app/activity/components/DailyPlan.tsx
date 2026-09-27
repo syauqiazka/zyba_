@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { CalendarDays, ClipboardList, Trash2, Plus } from "lucide-react";
 
 export interface PlannedActivity {
   id: string;
@@ -45,8 +46,9 @@ export default function DailyPlan({
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-2">
-            <span className="text-xs font-bold uppercase tracking-wider text-brown-700">
-              📅 Rencana Hari Ini
+            <span className="text-xs font-bold uppercase tracking-wider text-brown-700 flex items-center gap-1.5">
+              <CalendarDays size={14} className="text-orange-500" />
+              Rencana Hari Ini
             </span>
             <span className="px-2 py-0.5 rounded-full bg-cream text-brown-900 text-[10px] font-bold">
               {activities.length} Aktivitas
@@ -171,8 +173,8 @@ export default function DailyPlan({
         {/* Empty State */}
         {activities.length === 0 && (
           <div className="py-12 text-center flex flex-col items-center justify-center gap-3">
-            <div className="w-14 h-14 rounded-full bg-cream flex items-center justify-center text-2xl">
-              📝
+            <div className="w-14 h-14 rounded-full bg-cream text-brown-700 flex items-center justify-center border border-brown-900/10">
+              <ClipboardList size={26} />
             </div>
             <div>
               <p className="text-sm font-bold text-brown-900">
@@ -213,8 +215,8 @@ export default function DailyPlan({
           }}
         >
           <div className="w-full max-w-md bg-white rounded-3xl p-6 shadow-2xl border border-brown-900/10">
-            <div className="w-12 h-12 rounded-2xl bg-danger/10 text-danger flex items-center justify-center text-2xl mx-auto mb-4">
-              🗑️
+            <div className="w-12 h-12 rounded-2xl bg-danger/10 text-danger flex items-center justify-center mx-auto mb-4 border border-danger/20">
+              <Trash2 size={24} />
             </div>
             <h3 className="font-display text-xl font-bold text-brown-900 text-center">
               Hapus Aktivitas?

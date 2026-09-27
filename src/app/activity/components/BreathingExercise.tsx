@@ -9,6 +9,8 @@ interface BreathingExerciseProps {
   formatTime: (secs: number) => string;
 }
 
+import { Wind } from "lucide-react";
+
 export default function BreathingExercise({
   breathingActive,
   setBreathingActive,
@@ -20,11 +22,12 @@ export default function BreathingExercise({
   return (
     <div className="lg:col-span-7 glass-card rounded-3xl p-7 border border-brown-900/10 flex flex-col items-center justify-between text-center relative overflow-hidden bg-gradient-to-br from-white via-green-100/20 to-cream">
       <div className="flex items-center justify-between w-full mb-2">
-        <span className="text-xs font-bold text-green-500 uppercase tracking-wider flex items-center gap-1.5">
-          🫁 Zyba Hours — Breathing Exercise
+        <span className="text-xs font-bold text-green-600 uppercase tracking-wider flex items-center gap-1.5">
+          <Wind size={15} className="text-green-600" />
+          Zyba Hours — Latihan Pernapasan Relaksasi
         </span>
-        <span className="text-xs font-bold px-2.5 py-0.5 rounded-full bg-green-100 text-green-500">
-          Stress Relief Mode
+        <span className="text-xs font-bold px-2.5 py-0.5 rounded-full bg-green-100 text-green-700">
+          Mode Meredakan Stres
         </span>
       </div>
 
