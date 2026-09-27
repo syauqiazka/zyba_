@@ -82,10 +82,10 @@ export default function ChatMessages({
             {persona.emoji}
           </div>
           <h1 className="font-display font-extrabold text-2xl sm:text-3xl text-brown-900 tracking-tight">
-            Halo! Aku {persona.name}
+            Halo! Aku {persona.name} (｡•̀ᴗ-)✧
           </h1>
           <p className="text-xs text-brown-700 max-w-md">
-            {persona.description}. Ceritakan apa saja yang ada di pikiranmu hari ini.
+            {persona.description}. Ceritakan apa saja yang ada di pikiranmu hari ini~
           </p>
         </div>
 

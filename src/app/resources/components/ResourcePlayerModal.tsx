@@ -155,7 +155,7 @@ export default function ResourcePlayerModal({
             <div className="w-10 h-10 rounded-full bg-green-500 text-white flex items-center justify-center shadow-sm">
               <Award size={20} />
             </div>
-            <span className="text-xs font-bold text-brown-900">Sesi Selesai!</span>
+            <span className="text-sm font-bold text-brown-900">Sesi Selesai! ✧(≧∀≦)✧</span>
             <span className="text-[11px] text-brown-700">
               Zyba Score kamu meningkat +10 poin untuk konsistensi self-care hari ini.
             </span>

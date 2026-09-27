@@ -29,7 +29,7 @@ export default function CompletedState({ score = 80, condition = "Kondisi Baik" 
         <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-green-100 border border-green-500/30">
           <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
           <span className="text-xs font-bold uppercase tracking-wider text-green-600">
-            Asesmen Selesai!
+            Asesmen Selesai! ✧(≧∀≦)✧
           </span>
         </div>
       </div>

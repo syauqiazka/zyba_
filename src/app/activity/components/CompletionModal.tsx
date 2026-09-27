@@ -18,7 +18,7 @@ export default function CompletionModal({ isOpen, onClose }: CompletionModalProp
           <Award size={32} />
         </div>
         <h3 className="font-display font-extrabold text-xl text-brown-900">
-          Kerja Bagus, Kamu Berhasil!
+          Kerja Bagus! (ﾉ◕ヮ◕)ﾉ*:･ﾟ✧
         </h3>
         <p className="text-xs text-brown-700 leading-relaxed">
           Kamu berhasil mencapai target aktivitas harian 1.200 poin! Zyba Score kamu meningkat +5 poin hari ini untuk konsistensi gerak aktif.

@@ -728,7 +728,7 @@ export default function DashboardPage() {
                     : "bg-green-100 text-green-500"
                 }`}
               >
-                {userData.hasAssessment ? "Welcome back" : "Selamat Datang"}
+                {userData.hasAssessment ? "Welcome back (｡•̀ᴗ-)✧" : "Selamat Datang! ✨"}
               </span>
 
               <span className="text-xs text-brown-700" suppressHydrationWarning>
@@ -744,7 +744,7 @@ export default function DashboardPage() {
             </div>
 
             <h1 className="font-display text-2xl md:text-3xl font-extrabold text-brown-900">
-              Hi, {userData.name}! 👋
+              Hai, {userData.name}! 👋
             </h1>
 
             {!userData.hasAssessment && (
