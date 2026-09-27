@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <rect width="64" height="64" rx="16" fill="#F7F2E7"/>
+  <rect width="62" height="62" x="1" y="1" rx="15" fill="none" stroke="#F2884B" stroke-width="1.5" stroke-opacity="0.25"/>
+  <!-- Top Petal (Orange) -->
+  <circle cx="32" cy="19" r="11" fill="#F2884B"/>
+  <!-- Bottom Petal (Green) -->
+  <circle cx="32" cy="45" r="11" fill="#8FAE5D"/>
+  <!-- Left Petal (Orange) -->
+  <circle cx="19" cy="32" r="11" fill="#F2884B"/>
+  <!-- Right Petal (Green) -->
+  <circle cx="45" cy="32" r="11" fill="#8FAE5D"/>
+  <!-- Center Core (Brown) -->
+  <circle cx="32" cy="32" r="7.5" fill="#3B2A20"/>
+</svg>

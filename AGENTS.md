@@ -1997,4 +1997,36 @@ Jalankan dengan `bash deploy.sh` tiap update. **Satu langkah manual yang tetap p
 
 ---
 
+## Lampiran F — Review UI Deployment Terkini (jhic.zyba.my.id)
+
+> Dilakukan lewat screenshot langsung dari app yang sudah jalan. Banyak spek di dokumen ini **sudah dieksekusi dengan baik** — Zyba Score breakdown (D.2), 15 pertanyaan Assessment Harian (D.4), persona hewan (Bagian 21), selected-state (D.1), dan struktur Settings (Bagian 24) semuanya sudah terimplementasi presisi. 4 masalah berikut yang masih perlu diperbaiki:
+
+### F.1 Bahasa Inggris Nyelip di App Berbahasa Indonesia
+
+**Ditemukan di**: placeholder input Zyba Companion ("How can I help you today?" — harusnya "Ketik pesan ke Zyba..." sesuai Bagian 10.4), dan **seluruh halaman Resources** (judul, deskripsi course/artikel semua dalam bahasa Inggris, padahal semua halaman lain full Bahasa Indonesia).
+
+**Perbaikan**: audit semua string di `ChatInput.tsx` dan seluruh komponen `resources/` — terjemahkan ke Bahasa Indonesia, konsisten dengan copy di halaman lain.
+
+### F.2 Migrasi Ikon Lucide Baru Sebagian Jalan
+
+**Ditemukan**: sidebar Dashboard & Community sudah pakai Lucide (bagus), tapi halaman **Resources** masih pakai emoji (🧘📖🍌🎓) sebagai ikon kategori/kartu.
+
+**Perbaikan**: ganti semua emoji ikon di `resources/` jadi Lucide (`BookOpen`, `Headphones`, `Moon`, `GraduationCap`, atau yang paling sesuai konteks) — audit juga halaman lain yang belum sempat direview (Smart Activity Planner, Pencapaian) untuk emoji yang masih nyelip.
+
+### F.3 Post Test/Sampah di Community Feed
+
+**Ditemukan**: post seperti "cek", "ngetes coba" muncul di tab "Untuk Kamu" — jelas sisa testing developer, bukan konten yang pantas dilihat juri/user baru.
+
+**Perbaikan**: hapus post-post ini dari database production sebelum demo/submit final. Kalau perlu contoh konten di feed untuk kesan awal yang baik, isi manual dengan 3-5 post yang representatif (mirip yang sudah dibuat di skema Community awal — cerita breathing streak, sleep hygiene, self-care, dll.), bukan dibiarkan kosong atau isinya testing junk.
+
+### F.4 Fitur Baru Belum Terdokumentasi: Pencapaian & Badge
+
+Ditemukan halaman `/pencapaian` (gamifikasi streak, XP, badge kategori Streak/Wellness/Companion/Sosial/Aktivitas/Spesial) yang **tidak ada di spek manapun di dokumen ini** — dibangun sebagai inisiatif tambahan. Fitur ini bagus dan reasonable untuk app wellness, tapi perlu didokumentasikan biar konsisten:
+
+- Tambahkan model `Badge`/`UserBadge` di Account DB (Bagian 17) kalau belum ada, untuk tracking progress (`0/19` yang terlihat di screenshot harus berasal dari data real, bukan hardcoded).
+- Pastikan ikon di halaman ini juga konsisten Lucide (F.2).
+- Update Bagian 5.1 (sidebar utama) untuk memasukkan "Pencapaian" sebagai item nav resmi.
+
+---
+
 *Dokumen ini konsolidasi dari: review visual Figma UI kit awal, review langsung ke kode `github.com/syauqiazka/zyba` / `zyba_`, dan referensi gaya (landing page ala OpenRouter, Companion ala Claude.ai, Community ala Threads) — semua warna referensi eksternal disesuaikan ke palet ZYBA, bukan ditiru mentah-mentah.*
