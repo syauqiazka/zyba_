@@ -1,55 +1,297 @@
 import Link from "next/link";
+import {
+  ArrowRight,
+  Brain,
+  Check,
+  HeartPulse,
+  MessageCircle,
+  Sparkles,
+  UsersRound,
+} from "lucide-react";
+import LandingScene from "./LandingScene";
 
-const STATS = [
-  { value: "74,9jt", label: "Total Gen Z di Indonesia" },
-  { value: "81,1%", label: "Pernah curhat ke AI" },
-  { value: "100rb+", label: "Target pengguna terdaftar" },
-  { value: "3", label: "Aspek: Mental, Fisik, Sosial" },
-];
+type MiniCardProps = {
+  icon: React.ReactNode;
+  title: string;
+  text: string;
+  className: string;
+};
+
+function MiniCard({
+  icon,
+  title,
+  text,
+  className,
+}: MiniCardProps) {
+  return (
+    <div className={`hero-float-card ${className}`}>
+      <span className="hero-float-icon">{icon}</span>
+
+      <div>
+        <strong>{title}</strong>
+        <small>{text}</small>
+      </div>
+    </div>
+  );
+}
 
 export default function LandingHero() {
   return (
-    <section className="max-w-[1280px] mx-auto px-6 md:px-10 pt-14 pb-20 text-center flex flex-col items-center">
-      <span className="inline-block rounded-pill bg-orange-100 text-orange-500 text-xs font-semibold px-4 py-1.5 mb-6 tracking-wide">
-        GEN Z WELLNESS SUPPORT
-      </span>
+    <section className="landing-hero">
+      <div
+        className="hero-noise"
+        aria-hidden="true"
+      />
 
-      <h1 className="font-display font-extrabold text-4xl sm:text-5xl md:text-6xl leading-tight max-w-3xl text-brown-900">
-        Pendamping Kesehatan Mental, <span className="text-green-500">Fisik</span>, dan{" "}
-        <span className="text-orange-500">Sosial</span> untuk Gen Z
-      </h1>
+      <div className="landing-container hero-grid">
+        {/* =========================================
+            LEFT / CONTENT
+        ========================================= */}
+        <div className="hero-copy">
+          <div className="eyebrow hero-eyebrow">
+            <span className="eyebrow-dot" />
+            Wellness companion untuk Gen Z
+          </div>
 
-      <p className="mt-6 text-brown-700 text-base md:text-lg max-w-xl leading-relaxed">
-        Curhat, dapat solusi, ubah jadi program nyata — semua dalam satu ruang aman, privat, dan bebas dihakimi.
-      </p>
+          <h1>
+            Pelan-pelan,
+            <br />
+            tapi <span>tetap jalan.</span>
+          </h1>
 
-      <div className="mt-8 flex flex-col sm:flex-row gap-4 items-center">
-        <Link
-          href="/login"
-          className="rounded-pill bg-orange-500 text-white px-8 py-3.5 font-semibold hover:opacity-90 transition-opacity shadow-md inline-block"
+          <p className="hero-lead">
+            ZYBA membantu kamu memahami keseharian,
+            merawat diri, dan tetap terhubung dari
+            satu ruang yang terasa personal.
+          </p>
+
+          <div className="hero-actions">
+            <Link
+              href="/login"
+              className="button-primary"
+            >
+              Mulai perjalanan
+              <ArrowRight
+                size={18}
+                strokeWidth={2.1}
+              />
+            </Link>
+
+            <a
+              href="#fitur"
+              className="button-quiet"
+            >
+              Lihat cara kerja
+            </a>
+          </div>
+
+          <div className="hero-proof">
+            <div
+              className="proof-avatars"
+              aria-hidden="true"
+            >
+              <span>R</span>
+              <span>A</span>
+              <span>N</span>
+              <span>+</span>
+            </div>
+
+            <div>
+              <strong>
+                Ruang untuk cerita sehari-hari
+              </strong>
+
+              <small>
+                Privat · tidak menghakimi · bukan alat diagnosis
+              </small>
+            </div>
+          </div>
+        </div>
+
+        {/* =========================================
+            RIGHT / WORLD
+        ========================================= */}
+        <div
+          className="hero-stage"
+          aria-label="Pratinjau pengalaman ZYBA"
         >
-          Mulai Sekarang →
-        </Link>
-        <a
-          href="#fitur"
-          className="rounded-pill border-2 border-brown-900/15 px-8 py-3.5 font-semibold hover:bg-white transition-colors inline-block"
-        >
-          Lihat Fitur
-        </a>
+          {/* WORLD / PARK */}
+          <LandingScene />
+
+          {/* ORBITS */}
+          <div
+            className="hero-orbit orbit-one"
+            aria-hidden="true"
+          />
+
+          <div
+            className="hero-orbit orbit-two"
+            aria-hidden="true"
+          />
+
+          {/* FLOATING CARD - LEFT */}
+          <MiniCard
+            className="float-left"
+            icon={
+              <MessageCircle
+                size={17}
+                strokeWidth={2}
+              />
+            }
+            title="Companion"
+            text="Aku dengerin."
+          />
+
+          {/* FLOATING CARD - RIGHT */}
+          <MiniCard
+            className="float-right"
+            icon={
+              <HeartPulse
+                size={17}
+                strokeWidth={2}
+              />
+            }
+            title="Aktivitas"
+            text="12 menit jalan"
+          />
+
+          {/* =====================================
+              ZYBA APP PREVIEW
+          ===================================== */}
+          <div className="hero-app-window">
+            {/* HEADER */}
+            <div className="hero-app-top">
+              <div>
+                <small>Daily check-in</small>
+
+                <strong>
+                  Hai, hari ini gimana?
+                </strong>
+              </div>
+
+              <div
+                className="hero-avatar"
+                aria-hidden="true"
+              >
+                S
+              </div>
+            </div>
+
+            {/* CHECK-IN */}
+            <div className="hero-checkin">
+              <div className="checkin-ring">
+                <div>
+                  <small>Hari ini</small>
+                  <strong>72</strong>
+                </div>
+              </div>
+
+              <div className="checkin-copy">
+                <span className="status-chip">
+                  Good pace
+                </span>
+
+                <h3>
+                  Jaga ritme,
+                  <br />
+                  bukan kesempurnaan.
+                </h3>
+
+                <p>
+                  Satu langkah kecil
+                  tetap dihitung.
+                </p>
+              </div>
+            </div>
+
+            {/* MODULES */}
+            <div className="hero-app-grid">
+              <div className="hero-app-card">
+                <span>
+                  <Brain
+                    size={16}
+                    strokeWidth={2}
+                  />
+                </span>
+
+                <small>Mind</small>
+                <strong>Check-in</strong>
+              </div>
+
+              <div className="hero-app-card">
+                <span>
+                  <HeartPulse
+                    size={16}
+                    strokeWidth={2}
+                  />
+                </span>
+
+                <small>Body</small>
+                <strong>12 min</strong>
+              </div>
+
+              <div className="hero-app-card">
+                <span>
+                  <UsersRound
+                    size={16}
+                    strokeWidth={2}
+                  />
+                </span>
+
+                <small>People</small>
+                <strong>Community</strong>
+              </div>
+            </div>
+
+            {/* TODAY */}
+            <div className="hero-today">
+              <div>
+                <small>Rencana hari ini</small>
+
+                <strong>
+                  Jalan santai 15 menit
+                </strong>
+              </div>
+
+              <span className="hero-check">
+                <Check
+                  size={15}
+                  strokeWidth={2.4}
+                />
+              </span>
+            </div>
+          </div>
+
+          {/* DECORATIVE */}
+          <div
+            className="hero-spark spark-a"
+            aria-hidden="true"
+          >
+            <Sparkles
+              size={15}
+              strokeWidth={1.8}
+            />
+          </div>
+
+          <div
+            className="hero-spark spark-b"
+            aria-hidden="true"
+          >
+            <Sparkles
+              size={11}
+              strokeWidth={1.8}
+            />
+          </div>
+        </div>
       </div>
 
-      {/* Stat Row */}
-      <div className="mt-20 grid grid-cols-2 md:grid-cols-4 gap-8 w-full max-w-3xl">
-        {STATS.map((s) => (
-          <div key={s.label} className="flex flex-col items-center">
-            <span className="font-display font-bold text-3xl md:text-4xl text-brown-900">
-              {s.value}
-            </span>
-            <span className="text-xs md:text-sm text-brown-700 mt-1 text-center font-medium">
-              {s.label}
-            </span>
-          </div>
-        ))}
+      {/* SCROLL INDICATOR */}
+      <div
+        className="hero-scroll"
+        aria-hidden="true"
+      >
+        <span />
+        Scroll untuk mengenal ZYBA
       </div>
     </section>
   );

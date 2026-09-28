@@ -1,60 +1,71 @@
-const FEATURES = [
-  {
-    title: "Zyba Companion",
-    desc: "Curhat kapan saja ke AI companion yang mendengarkan tanpa menghakimi.",
-    icon: "💬",
-    href: "/companion",
-  },
-  {
-    title: "Mood Check-In",
-    desc: "Catat mood harianmu, ZYBA bantu kenali pola dan beri insight.",
-    icon: "🙂",
-    href: "/daily-assessment",
-  },
-  {
-    title: "Smart Activity Planner",
-    desc: "Program aktivitas fisik sederhana yang disesuaikan kondisimu.",
-    icon: "⚡",
-    href: "/activity",
-  },
-  {
-    title: "Zyba Community",
-    desc: "Ruang aman berbagi cerita dengan sesama Gen Z, privasi terjaga.",
-    icon: "🤝",
-    href: "/community",
-  },
+"use client";
+
+import Link from "next/link";
+import { ArrowUpRight } from "lucide-react";
+import { useEffect, useState } from "react";
+
+const NAV_ITEMS = [
+  { label: "Fitur", href: "#fitur" },
+  { label: "Cara kerja", href: "#cara-kerja" },
+  { label: "Komunitas", href: "#komunitas" },
 ];
 
-export default function LandingFeatures() {
-  return (
-    <section id="fitur" className="max-w-[1280px] mx-auto px-6 md:px-10 pb-24">
-      <div className="text-center mb-10">
-        <span className="text-xs font-bold text-green-500 uppercase tracking-wider">
-          Fitur Unggulan
-        </span>
-        <h2 className="font-display font-bold text-2xl md:text-3xl text-brown-900 mt-1">
-          Didesain Khusus Menjawab Kebutuhan Gen Z
-        </h2>
-      </div>
+export default function LandingHeader() {
+  const [scrolled, setScrolled] = useState(false);
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {FEATURES.map((f) => (
-          <div
-            key={f.title}
-            className="bg-white rounded-2xl p-6 border border-brown-900/10 flex flex-col gap-3 hover:border-orange-500/40 hover:shadow-md transition-all"
-          >
-            <span className="text-3xl" aria-hidden="true">
-              {f.icon}
-            </span>
-            <h3 className="font-display font-semibold text-lg text-brown-900">
-              {f.title}
-            </h3>
-            <p className="text-sm text-brown-700 leading-relaxed">
-              {f.desc}
-            </p>
-          </div>
-        ))}
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 24);
+    };
+
+    handleScroll();
+
+    window.addEventListener("scroll", handleScroll, {
+      passive: true,
+    });
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
+
+  return (
+    <header
+      className={`landing-header ${scrolled ? "landing-header-scrolled" : ""
+        }`}
+    >
+      <div className="landing-container landing-nav">
+        {/* Logo */}
+        <Link href="/" className="landing-brand" aria-label="ZYBA">
+          <span className="landing-mark" aria-hidden="true">
+            <span />
+            <span />
+            <span />
+            <span />
+            <b />
+          </span>
+
+          <span>ZYBA</span>
+        </Link>
+
+        {/* Navigation */}
+        <nav
+          className="landing-nav-links"
+          aria-label="Navigasi utama"
+        >
+          {NAV_ITEMS.map((item) => (
+            <a key={item.href} href={item.href}>
+              {item.label}
+            </a>
+          ))}
+        </nav>
+
+        {/* CTA */}
+        <Link href="/login" className="landing-nav-cta">
+          Mulai
+          <ArrowUpRight size={16} strokeWidth={2.2} />
+        </Link>
       </div>
-    </section>
+    </header>
   );
 }

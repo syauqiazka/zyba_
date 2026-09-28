@@ -1,32 +1,135 @@
+import {
+  ArrowDownRight,
+  LockKeyhole,
+  Route,
+  ShieldCheck,
+} from "lucide-react";
+
 export default function LandingAbout() {
   return (
-    <section id="tentang" className="max-w-[1280px] mx-auto px-6 md:px-10 pb-20">
-      <div className="bg-white rounded-3xl p-8 md:p-12 border border-brown-900/10 flex flex-col md:flex-row items-center justify-between gap-8 shadow-sm">
-        <div className="max-w-xl">
-          <span className="text-xs font-bold text-green-500 uppercase tracking-wider">
-            Tentang ZYBA
-          </span>
-          <h2 className="font-display font-bold text-2xl md:text-3xl mt-2 text-brown-900">
-            Alur Inti: Curhat → Solusi → Program → Aksi
-          </h2>
-          <p className="mt-4 text-sm text-brown-700 leading-relaxed">
-            ZYBA memadukan AI empatik dan rencana aksi terstruktur. Mulai dari obrolan curhat harian yang aman tanpa stigma, pelacakan suasana hati harian, penyusunan kebiasaan positif dan aktivitas fisik terukur, hingga ruang komunitas yang saling menguatkan.
-          </p>
-        </div>
+    <section
+      id="cara-kerja"
+      className="landing-section journey-section"
+    >
+      <div className="landing-container">
+        <div className="journey-card">
+          {/* LEFT */}
+          <div className="journey-copy">
+            <div className="eyebrow">
+              <span className="eyebrow-dot" />
+              Cara kerja ZYBA
+            </div>
 
-        <div className="flex flex-col gap-3 shrink-0 w-full md:w-auto">
-          <div className="flex items-center gap-4 bg-cream p-4 rounded-2xl border border-brown-900/10">
-            <span className="text-2xl">🌱</span>
-            <div>
-              <p className="font-bold text-sm text-brown-900">100% Privat & Aman</p>
-              <p className="text-xs text-brown-700">Data kesehatan mentalmu tersimpan aman</p>
+            <h2>
+              Dari yang kamu rasakan,
+              <br />
+              <span>ke langkah berikutnya.</span>
+            </h2>
+
+            <p>
+              Tidak perlu mengubah hidup dalam semalam.
+              ZYBA dirancang untuk membantu kamu melihat
+              keadaan hari ini, lalu memilih satu langkah
+              yang masuk akal.
+            </p>
+
+            <div className="journey-points">
+              <div>
+                <span>01</span>
+
+                <strong>
+                  Check-in
+                </strong>
+
+                <small>
+                  Ceritakan keadaanmu hari ini.
+                </small>
+              </div>
+
+              <div>
+                <span>02</span>
+
+                <strong>
+                  Pahami
+                </strong>
+
+                <small>
+                  Lihat pola dan konteks yang relevan.
+                </small>
+              </div>
+
+              <div>
+                <span>03</span>
+
+                <strong>
+                  Bergerak
+                </strong>
+
+                <small>
+                  Pilih aksi kecil yang bisa dilakukan.
+                </small>
+              </div>
             </div>
           </div>
-          <div className="flex items-center gap-4 bg-cream p-4 rounded-2xl border border-brown-900/10">
-            <span className="text-2xl">💡</span>
-            <div>
-              <p className="font-bold text-sm text-brown-900">Bebas Dihakimi</p>
-              <p className="text-xs text-brown-700">Ruang bercerita terbuka dan suportif</p>
+
+          {/* RIGHT */}
+          <div className="journey-visual">
+            <div
+              className="journey-path"
+              aria-hidden="true"
+            >
+              <span />
+              <i />
+              <b />
+            </div>
+
+            <div className="journey-node node-one">
+              <span>
+                <Route size={17} />
+              </span>
+
+              <strong>
+                Check-in
+              </strong>
+
+              <small>
+                Bagaimana harimu?
+              </small>
+            </div>
+
+            <div className="journey-node node-two">
+              <span>
+                <ArrowDownRight size={17} />
+              </span>
+
+              <strong>
+                Insight
+              </strong>
+
+              <small>
+                Kenali polanya.
+              </small>
+            </div>
+
+            <div className="journey-node node-three">
+              <span>
+                <ShieldCheck size={17} />
+              </span>
+
+              <strong>
+                Next step
+              </strong>
+
+              <small>
+                Satu langkah kecil.
+              </small>
+            </div>
+
+            <div className="journey-lock">
+              <LockKeyhole size={15} />
+              <span>
+                Privat by design
+              </span>
             </div>
           </div>
         </div>
