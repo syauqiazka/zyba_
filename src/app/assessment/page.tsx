@@ -9,6 +9,7 @@ import CompilingState from "./components/CompilingState";
 import CompletedState from "./components/CompletedState";
 import CrisisModal from "./components/CrisisModal";
 
+
 const STEPS = [
   { title: "Goal Kesehatan", desc: "Tujuan utama pengunaan ZYBA" },
   { title: "Profil Fisik", desc: "Gender, usia, & berat badan" },

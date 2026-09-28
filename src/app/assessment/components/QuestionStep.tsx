@@ -1,6 +1,10 @@
 "use client";
 
 import React from "react";
+import ScoreSlider, {
+  scoreText,
+  scoreTint,
+} from "@/components/ScoreSlider";
 
 interface QuestionStepProps {
   currentStep: number;
@@ -67,10 +71,9 @@ export default function QuestionStep({
   // 3 states: default → hover → selected
   const choiceClass = (isSelected: boolean) =>
     `relative flex items-center justify-between gap-2 p-3.5 rounded-2xl text-xs font-bold text-left border-2 transition-all duration-200 cursor-pointer
-    ${
-      isSelected
-        ? "border-orange-500 bg-orange-100 text-brown-900"
-        : "border-brown-900/10 bg-white text-brown-700 hover:border-orange-500/40 hover:bg-orange-500/5"
+    ${isSelected
+      ? "border-orange-500 bg-orange-100 text-brown-900"
+      : "border-brown-900/10 bg-white text-brown-700 hover:border-orange-500/40 hover:bg-orange-500/5"
     }`;
 
   return (
@@ -246,19 +249,25 @@ export default function QuestionStep({
             <h2 className="font-display text-lg sm:text-xl font-bold text-brown-900 leading-snug">
               Rating Kualitas Tidur (1 - 5)
             </h2>
+
             <input
               type="range"
               min="1"
               max="5"
               value={sleepRating}
-              onChange={(e) => setSleepRating(Number(e.target.value))}
+              onChange={(e) =>
+                setSleepRating(Number(e.target.value))
+              }
               className="w-full accent-green-500 cursor-pointer h-2 bg-cream rounded-lg my-4"
             />
+
             <div className="flex justify-between text-xs font-bold text-brown-900">
               <span>1 - Sangat Buruk</span>
+
               <span className="text-green-600 bg-green-100 px-3 py-1 rounded-full font-extrabold">
                 Rating: {sleepRating} / 5
               </span>
+
               <span>5 - Nyenyak Sekali</span>
             </div>
           </div>
@@ -269,19 +278,25 @@ export default function QuestionStep({
             <h2 className="font-display text-lg sm:text-xl font-bold text-brown-900 leading-snug">
               Rating Level Stres Harian (1 - 5)
             </h2>
+
             <input
               type="range"
               min="1"
               max="5"
               value={stressRating}
-              onChange={(e) => setStressRating(Number(e.target.value))}
+              onChange={(e) =>
+                setStressRating(Number(e.target.value))
+              }
               className="w-full accent-orange-500 cursor-pointer h-2 bg-cream rounded-lg my-4"
             />
+
             <div className="flex justify-between text-xs font-bold text-brown-900">
               <span>1 - Sangat Santai</span>
+
               <span className="text-orange-600 bg-orange-100 px-3 py-1 rounded-full font-extrabold">
                 Rating: {stressRating} / 5
               </span>
+
               <span>5 - Sangat Tertekan</span>
             </div>
           </div>
