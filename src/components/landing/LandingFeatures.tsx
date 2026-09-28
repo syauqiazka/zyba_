@@ -5,56 +5,92 @@ import Link from "next/link";
 import {
   ArrowRight,
   ArrowUpRight,
+  BookOpen,
   Brain,
+  Heart,
   HeartPulse,
   MessageCircle,
+  Trophy,
   UsersRound,
 } from "lucide-react";
 
 const FEATURES = [
   {
     number: "01",
-    title: "Companion",
+    title: "Assessment Harian",
+    desc: "Kenali keadaanmu hari ini dan lihat polanya dari waktu ke waktu.",
+    detail:
+      "Catat kondisi mental, fisik, dan sosialmu secara rutin. Dari check-in sederhana ini, kamu bisa mulai memahami perubahan dan pola keseharianmu dari waktu ke waktu.",
+    icon: Brain,
+    tone: "feature-lilac",
+    loginPath: "/daily-assessment",
+    cta: "Mulai Assessment Harian",
+  },
+  {
+    number: "02",
+    title: "Zyba Companion",
     desc: "Tempat untuk menuangkan pikiran tanpa harus mencari kata yang sempurna.",
     detail:
-      "Ceritakan apa yang sedang ada di kepalamu tanpa harus menyusunnya dengan sempurna. Companion membantu kamu memahami apa yang sedang kamu rasakan dan menemukan langkah kecil yang bisa dilakukan.",
+      "Ceritakan apa yang sedang ada di kepalamu tanpa harus menyusunnya dengan sempurna. Companion membantu kamu menuangkan pikiran, memahami apa yang sedang dirasakan, lalu melihat langkah kecil yang bisa dilakukan.",
     icon: MessageCircle,
     tone: "feature-orange",
     loginPath: "/companion",
     cta: "Mulai dengan Companion",
   },
   {
-    number: "02",
-    title: "Daily Check-in",
-    desc: "Kenali keadaanmu hari ini dan lihat polanya dari waktu ke waktu.",
-    detail:
-      "Catat keadaan mental, fisik, dan sosialmu secara rutin. Dari check-in ini, kamu bisa mulai melihat perubahan dan pola keseharianmu dari waktu ke waktu.",
-    icon: Brain,
-    tone: "feature-lilac",
-    loginPath: "/daily-assessment",
-    cta: "Mulai Daily Check-in",
-  },
-  {
     number: "03",
-    title: "Activity",
-    desc: "Ubah niat menjadi langkah kecil yang realistis untuk tubuhmu.",
+    title: "Smart Activity Planner",
+    desc: "Ubah niat menjadi langkah kecil yang realistis untuk keseharianmu.",
     detail:
-      "Nggak perlu langsung mengubah semuanya. Activity membantu kamu menemukan aktivitas kecil yang realistis dan sesuai dengan kondisi serta energimu hari itu.",
+      "Activity Planner membantu mengubah niat menjadi tindakan yang lebih realistis. Kamu bisa menemukan aktivitas sederhana yang sesuai dengan kondisi, energi, dan kebutuhanmu hari itu.",
     icon: HeartPulse,
     tone: "feature-green",
     loginPath: "/activity",
-    cta: "Mulai Activity",
+    cta: "Mulai Activity Planner",
   },
   {
     number: "04",
-    title: "Community",
+    title: "Wellness Journey",
+    desc: "Lihat perjalananmu, dari langkah kecil sampai perubahan yang mulai terbentuk.",
+    detail:
+      "Wellness Journey membantu kamu melihat perjalanan secara lebih utuh melalui Goals, Progress, dan Achievements. Bukan tentang menjadi sempurna, tapi tentang melihat bahwa kamu terus bergerak.",
+    icon: Heart,
+    tone: "feature-green",
+    loginPath: "/wellness-journey",
+    cta: "Lihat Wellness Journey",
+  },
+  {
+    number: "05",
+    title: "Zyba Community",
     desc: "Terhubung dengan orang lain tanpa harus kehilangan ruang privatmu.",
     detail:
-      "Temukan ruang untuk berbagi pengalaman dan terhubung dengan orang lain tanpa harus membuka semuanya tentang dirimu. Kamu tetap punya kendali atas apa yang ingin dibagikan.",
+      "Community menjadi ruang untuk berbagi pengalaman, menemukan percakapan yang relevan, dan merasa terhubung dengan orang lain tanpa harus membuka semuanya tentang dirimu.",
     icon: UsersRound,
     tone: "feature-blue",
     loginPath: "/community",
     cta: "Masuk ke Community",
+  },
+  {
+    number: "06",
+    title: "Resources",
+    desc: "Temukan bacaan dan materi yang bisa membantu memahami dirimu lebih jauh.",
+    detail:
+      "Resources menyediakan berbagai materi yang bisa kamu gunakan untuk belajar, memahami kondisi diri, dan menemukan informasi yang relevan dengan perjalanan wellness-mu.",
+    icon: BookOpen,
+    tone: "feature-lilac",
+    loginPath: "/resources",
+    cta: "Buka Resources",
+  },
+  {
+    number: "07",
+    title: "Pencapaian",
+    desc: "Lihat langkah-langkah kecil yang sudah berhasil kamu lewati.",
+    detail:
+      "Pencapaian membantu kamu melihat progres yang sudah terbentuk dari kebiasaan dan aktivitasmu. Setiap langkah kecil tetap layak untuk diperhatikan.",
+    icon: Trophy,
+    tone: "feature-orange",
+    loginPath: "/achievements",
+    cta: "Lihat Pencapaian",
   },
 ];
 
@@ -78,7 +114,7 @@ export default function LandingFeatures() {
           <div>
             <div className="eyebrow">
               <span className="eyebrow-dot" />
-              Satu tempat, empat arah
+              Satu tempat, tujuh arah
             </div>
 
             <h2>
@@ -95,7 +131,7 @@ export default function LandingFeatures() {
           </p>
         </div>
 
-        {/* FEATURES */}
+        {/* FEATURE LIST */}
         <div className="feature-list">
           {FEATURES.map((feature) => {
             const Icon = feature.icon;
@@ -108,7 +144,7 @@ export default function LandingFeatures() {
                 className={`feature-item ${isOpen ? "is-open" : ""
                   }`}
               >
-                {/* MAIN ROW */}
+                {/* ROW */}
                 <button
                   type="button"
                   onClick={() =>

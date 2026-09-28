@@ -29,15 +29,48 @@ export default function LandingHeader() {
     };
   }, []);
 
+  const handleNavClick = (
+    e: React.MouseEvent<HTMLAnchorElement>,
+    href: string
+  ) => {
+    e.preventDefault();
+
+    const target = document.querySelector(href);
+
+    if (!target) return;
+
+    const headerOffset = 88;
+
+    const targetTop =
+      target.getBoundingClientRect().top +
+      window.scrollY -
+      headerOffset;
+
+    window.scrollTo({
+      top: targetTop,
+      behavior: "smooth",
+    });
+
+    window.history.replaceState(null, "", href);
+  };
+
   return (
     <header
-      className={`landing-header ${scrolled ? "landing-header-scrolled" : ""
+      className={`landing-header ${scrolled
+          ? "landing-header-scrolled"
+          : ""
         }`}
     >
       <div className="landing-container landing-nav">
-        {/* Logo */}
-        <Link href="/" className="landing-brand" aria-label="ZYBA">
-          <span className="landing-mark" aria-hidden="true">
+        <Link
+          href="/"
+          className="landing-brand"
+          aria-label="ZYBA"
+        >
+          <span
+            className="landing-mark"
+            aria-hidden="true"
+          >
             <span />
             <span />
             <span />
@@ -48,22 +81,35 @@ export default function LandingHeader() {
           <span>ZYBA</span>
         </Link>
 
-        {/* Navigation */}
         <nav
           className="landing-nav-links"
           aria-label="Navigasi utama"
         >
           {NAV_ITEMS.map((item) => (
-            <a key={item.href} href={item.href}>
+            <a
+              key={item.href}
+              href={item.href}
+              onClick={(e) =>
+                handleNavClick(
+                  e,
+                  item.href
+                )
+              }
+            >
               {item.label}
             </a>
           ))}
         </nav>
 
-        {/* CTA */}
-        <Link href="/login" className="landing-nav-cta">
+        <Link
+          href="/login"
+          className="landing-nav-cta"
+        >
           Mulai
-          <ArrowUpRight size={16} strokeWidth={2.2} />
+          <ArrowUpRight
+            size={16}
+            strokeWidth={2.2}
+          />
         </Link>
       </div>
     </header>
