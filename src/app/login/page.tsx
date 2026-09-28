@@ -2,200 +2,377 @@
 
 export const dynamic = "force-dynamic";
 
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { ArrowLeft, ArrowUpRight, ShieldCheck } from "lucide-react";
 import DesktopShowcase from "./components/DesktopShowcase";
 import SignInCard from "./components/SignInCard";
 import ForgotPasswordCard from "./components/ForgotPasswordCard";
 import ProfileSecurityFlow from "./components/ProfileSecurityFlow";
 
-function LoginContent({ defaultMode }: { defaultMode?: "SIGN_IN" | "FORGOT_PASSWORD" | "SIGN_UP" }) {
+type AuthMode =
+  | "SIGN_IN"
+  | "FORGOT_PASSWORD"
+  | "SIGN_UP";
+
+function getSafeRedirect() {
+  if (typeof window === "undefined") {
+    return "/dashboard";
+  }
+
+  const redirect = new URLSearchParams(
+    window.location.search
+  ).get("redirect");
+
+  if (
+    redirect &&
+    redirect.startsWith("/") &&
+    !redirect.startsWith("//")
+  ) {
+    return redirect;
+  }
+
+  return "/dashboard";
+}
+
+function LoginContent({
+  defaultMode,
+}: {
+  defaultMode?: AuthMode;
+}) {
   const router = useRouter();
 
-  // Mode: "SIGN_IN" (Frame 1) | "FORGOT_PASSWORD" (Frame 2) | "SIGN_UP" (Profile Security Setup)
-  const [authMode, setAuthMode] = useState<"SIGN_IN" | "FORGOT_PASSWORD" | "SIGN_UP">(defaultMode || "SIGN_IN");
+  const [authMode, setAuthMode] =
+    useState<AuthMode>(
+      defaultMode || "SIGN_IN"
+    );
 
-  // Form Fields for Sign In
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [loginError, setLoginError] = useState("");
 
   useEffect(() => {
-    if (typeof window === "undefined") return;
-    const params = new URLSearchParams(window.location.search);
+    if (typeof window === "undefined") {
+      return;
+    }
+
+    const params = new URLSearchParams(
+      window.location.search
+    );
+
     const tab = params.get("tab");
+
     if (tab === "signup") {
       setAuthMode("SIGN_UP");
-    } else if (tab === "signin" || tab === "login") {
+    } else if (
+      tab === "signin" ||
+      tab === "login"
+    ) {
       setAuthMode("SIGN_IN");
+    } else if (tab === "forgot") {
+      setAuthMode("FORGOT_PASSWORD");
     } else if (defaultMode) {
       setAuthMode(defaultMode);
     }
 
     const errorParam = params.get("error");
-    if (errorParam) {
-      if (errorParam === "oauth_cancelled") {
-        setLoginError("Proses masuk dengan Google dibatalkan.");
-      } else if (errorParam === "token_exchange_failed" || errorParam === "profile_fetch_failed") {
-        setLoginError("Gagal otentikasi dengan Google. Silakan coba lagi.");
-      } else if (errorParam === "server_config_error") {
-        setLoginError("Konfigurasi Google Client ID/Secret belum lengkap.");
-      } else {
-        setLoginError("Terjadi kendala saat login dengan Google.");
-      }
+
+    if (!errorParam) {
+      return;
+    }
+
+    if (errorParam === "oauth_cancelled") {
+      setLoginError(
+        "Proses masuk dengan Google dibatalkan."
+      );
+    } else if (
+      errorParam === "token_exchange_failed" ||
+      errorParam === "profile_fetch_failed"
+    ) {
+      setLoginError(
+        "Gagal otentikasi dengan Google. Silakan coba lagi."
+      );
+    } else if (
+      errorParam === "server_config_error"
+    ) {
+      setLoginError(
+        "Konfigurasi Google Client ID/Secret belum lengkap."
+      );
+    } else {
+      setLoginError(
+        "Terjadi kendala saat login dengan Google."
+      );
     }
   }, [defaultMode]);
 
-  // Sign In Handler
   const handleSignIn = async () => {
     if (!email.trim()) {
       setLoginError("Email wajib diisi.");
       return;
     }
+
     if (!password) {
-      setLoginError("Kata sandi wajib diisi.");
+      setLoginError(
+        "Kata sandi wajib diisi."
+      );
       return;
     }
 
     setIsLoading(true);
     setLoginError("");
+
     try {
       const res = await fetch("/api/auth", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+        },
         body: JSON.stringify({
           action: "LOGIN",
           email: email.trim(),
-          password: password,
+          password,
         }),
       });
 
       const data = await res.json();
+
       if (res.ok) {
-        window.location.href = "/dashboard";
+        window.location.href =
+          getSafeRedirect();
       } else {
-        setLoginError(data.error || "Email atau password salah.");
+        setLoginError(
+          data.error ||
+          "Email atau password salah."
+        );
       }
     } catch (err) {
-      console.error("Sign in error:", err);
-      setLoginError("Terjadi kesalahan jaringan.");
+      console.error(
+        "Sign in error:",
+        err
+      );
+
+      setLoginError(
+        "Terjadi kesalahan jaringan."
+      );
     } finally {
       setIsLoading(false);
     }
   };
 
+  const switchMode = (
+    mode: AuthMode
+  ) => {
+    setAuthMode(mode);
+    setLoginError("");
+  };
+
   return (
-    <div className="relative min-h-screen">
-      {/* Tombol Kembali ke Landing Page */}
-      <button
-        type="button"
-        onClick={() => router.push("/")}
-        className="absolute top-5 left-6 z-50 flex items-center gap-1.5 px-4 py-2 rounded-full bg-cream border border-brown-900/15 text-brown-700 text-xs font-bold hover:bg-white hover:text-brown-900 transition-colors shadow-sm"
-      >
-        <svg
-          className="w-3.5 h-3.5"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-          strokeWidth={2.5}
-        >
-          <path strokeLinecap="round" strokeLinejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-        </svg>
-        Kembali
-      </button>
+    <main className="min-h-screen bg-cream text-brown-900">
+      <div className="mx-auto flex min-h-screen w-full max-w-[1380px] flex-col px-5 py-5 sm:px-7 lg:px-10">
 
-      <div className="min-h-[85vh] flex items-center justify-center py-6 px-4 pt-16">
-        {/* Split-Screen Desktop Container (max-w 1200px sesuai AGENTS.md Bagian 5) */}
-        <div className="w-full max-w-[1200px] grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
-          {/* Kolom Kiri: Desktop Showcase Experience */}
-          <div className="lg:col-span-6 xl:col-span-7 flex">
-            <DesktopShowcase />
+        {/* TOP BAR */}
+        <header className="flex items-center justify-between">
+          <button
+            type="button"
+            onClick={() => router.push("/")}
+            className="group inline-flex items-center gap-2 rounded-full px-3 py-2 text-sm font-semibold text-brown-700 transition-colors hover:bg-white hover:text-brown-900"
+          >
+            <ArrowLeft
+              size={16}
+              strokeWidth={2}
+              className="transition-transform duration-200 group-hover:-translate-x-0.5"
+            />
+
+            Kembali
+          </button>
+
+          <div className="hidden items-center gap-2 text-xs font-semibold text-brown-700/60 sm:flex">
+            <ShieldCheck size={14} />
+
+            Privat · aman · bukan diagnosis
           </div>
+        </header>
 
-          {/* Kolom Kanan: Card Interaktif */}
-          <div className="lg:col-span-6 xl:col-span-5 flex flex-col justify-center items-center">
-            {/* Top Quick Tab Selector */}
-            <div className="w-full max-w-md flex items-center justify-between bg-cream/70 p-1 rounded-full border border-brown-900/10 mb-4 shadow-xs">
-              <button
-                type="button"
-                onClick={() => setAuthMode("SIGN_IN")}
-                className={`flex-1 py-2 rounded-full text-xs font-bold transition-all ${
-                  authMode === "SIGN_IN"
-                    ? "bg-brown-900 text-white shadow-sm"
-                    : "text-brown-700 hover:text-brown-900"
-                }`}
-              >
-                Sign In (Masuk)
-              </button>
-              <button
-                type="button"
-                onClick={() => setAuthMode("SIGN_UP")}
-                className={`flex-1 py-2 rounded-full text-xs font-bold transition-all ${
-                  authMode === "SIGN_UP"
-                    ? "bg-brown-900 text-white shadow-sm"
-                    : "text-brown-700 hover:text-brown-900"
-                }`}
-              >
-                Sign Up (Setup Profil)
-              </button>
-            </div>
+        {/* CONTENT */}
+        <div className="flex flex-1 items-center justify-center py-8 md:py-12">
+          <div className="grid w-full items-stretch gap-8 lg:grid-cols-[1.02fr_0.78fr] xl:gap-12">
 
-            {/* Mode 1: Sign In To Zyba */}
-            {authMode === "SIGN_IN" && (
-              <SignInCard
-                email={email}
-                setEmail={setEmail}
-                password={password}
-                setPassword={setPassword}
-                onSubmit={handleSignIn}
-                onGoogleClick={() => {
-                  window.location.href = "/api/auth/google";
-                }}
-                onForgotPasswordClick={() => setAuthMode("FORGOT_PASSWORD")}
-                onSignUpClick={() => setAuthMode("SIGN_UP")}
-                isLoading={isLoading}
-              />
-            )}
+            {/* LEFT */}
+            <section className="hidden min-h-[650px] overflow-hidden rounded-[32px] border border-brown-900/10 bg-[#f6f1e7] lg:flex">
+              <DesktopShowcase />
+            </section>
 
-            {/* Mode 2: Forgot Password */}
-            {authMode === "FORGOT_PASSWORD" && (
-              <ForgotPasswordCard
-                onBack={() => setAuthMode("SIGN_IN")}
-                defaultEmail={email}
-              />
-            )}
+            {/* RIGHT */}
+            <section className="flex items-center">
+              <div className="mx-auto w-full max-w-[500px]">
 
-            {/* Mode 3: Profile Security Setup Flow */}
-            {authMode === "SIGN_UP" && (
-              <ProfileSecurityFlow
-                initialEmail={email !== "alex@zyba.app" ? email : ""}
-                onSwitchToSignIn={() => setAuthMode("SIGN_IN")}
-              />
-            )}
+                {/* BRAND + MODE SWITCH */}
+                <div className="mb-5 flex items-center justify-between gap-4">
 
-            {/* Error notice if any */}
-            {loginError && authMode === "SIGN_IN" && (
-              <div className="mt-3 p-3 rounded-2xl bg-orange-100 text-danger text-xs font-bold border border-orange-500/20 max-w-md w-full text-center animate-shake">
-                ⚠️ {loginError}
+                  <div className="flex items-center gap-2">
+                    <span
+                      className="relative block h-8 w-8 shrink-0"
+                      aria-hidden="true"
+                    >
+                      <span className="absolute left-1/2 top-0 h-2 w-2 -translate-x-1/2 rounded-full bg-orange-500" />
+
+                      <span className="absolute bottom-0 left-1/2 h-2 w-2 -translate-x-1/2 rounded-full bg-green-500" />
+
+                      <span className="absolute left-0 top-1/2 h-2 w-2 -translate-y-1/2 rounded-full bg-green-500" />
+
+                      <span className="absolute right-0 top-1/2 h-2 w-2 -translate-y-1/2 rounded-full bg-orange-500" />
+
+                      <span className="absolute left-1/2 top-1/2 h-2 w-2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-brown-900" />
+                    </span>
+
+                    <span className="font-display text-xl font-extrabold tracking-tight">
+                      ZYBA
+                    </span>
+                  </div>
+
+                  <div className="flex items-center gap-1 rounded-full border border-brown-900/10 bg-white/70 p-1">
+
+                    <button
+                      type="button"
+                      onClick={() =>
+                        switchMode("SIGN_IN")
+                      }
+                      className={`rounded-full px-4 py-2 text-xs font-bold transition-all ${authMode === "SIGN_IN"
+                          ? "bg-brown-900 text-white shadow-sm"
+                          : "text-brown-700 hover:text-brown-900"
+                        }`}
+                    >
+                      Masuk
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() =>
+                        switchMode("SIGN_UP")
+                      }
+                      className={`rounded-full px-4 py-2 text-xs font-bold transition-all ${authMode === "SIGN_UP"
+                          ? "bg-brown-900 text-white shadow-sm"
+                          : "text-brown-700 hover:text-brown-900"
+                        }`}
+                    >
+                      Daftar
+                    </button>
+                  </div>
+                </div>
+
+                {/* SIGN IN */}
+                {authMode === "SIGN_IN" && (
+                  <SignInCard
+                    email={email}
+                    setEmail={setEmail}
+                    password={password}
+                    setPassword={setPassword}
+                    onSubmit={handleSignIn}
+                    onGoogleClick={() => {
+                      window.location.href =
+                        "/api/auth/google";
+                    }}
+                    onForgotPasswordClick={() =>
+                      switchMode(
+                        "FORGOT_PASSWORD"
+                      )
+                    }
+                    onSignUpClick={() =>
+                      switchMode("SIGN_UP")
+                    }
+                    isLoading={isLoading}
+                  />
+                )}
+
+                {/* FORGOT PASSWORD */}
+                {authMode ===
+                  "FORGOT_PASSWORD" && (
+                    <ForgotPasswordCard
+                      onBack={() =>
+                        switchMode("SIGN_IN")
+                      }
+                      defaultEmail={email}
+                    />
+                  )}
+
+                {/* SIGN UP */}
+                {authMode === "SIGN_UP" && (
+                  <ProfileSecurityFlow
+                    initialEmail={
+                      email !== "alex@zyba.app"
+                        ? email
+                        : ""
+                    }
+                    onSwitchToSignIn={() =>
+                      switchMode("SIGN_IN")
+                    }
+                  />
+                )}
+
+                {/* ERROR */}
+                {loginError &&
+                  authMode === "SIGN_IN" && (
+                    <div className="mt-3 flex items-start gap-3 rounded-2xl border border-orange-500/20 bg-orange-100 px-4 py-3 text-sm font-semibold text-danger shadow-sm">
+                      <span
+                        aria-hidden="true"
+                        className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-orange-500 text-white"
+                      >
+                        !
+                      </span>
+
+                      <span>
+                        {loginError}
+                      </span>
+                    </div>
+                  )}
+
+                {/* BOTTOM BRAND LINE */}
+                <div className="mt-5 flex items-center justify-center gap-1.5 text-xs text-brown-700/45">
+                  <span>ZYBA</span>
+
+                  <ArrowUpRight
+                    size={12}
+                  />
+
+                  <span>
+                    Pelan-pelan, tapi tetap jalan.
+                  </span>
+                </div>
               </div>
-            )}
+            </section>
           </div>
         </div>
       </div>
-    </div>
+    </main>
   );
 }
 
 export default function LoginPage({
   searchParams,
 }: {
-  searchParams?: Record<string, string | string[] | undefined>;
+  searchParams?: Record<
+    string,
+    string | string[] | undefined
+  >;
 }) {
-  const tabParam = typeof searchParams?.tab === "string" ? searchParams.tab : undefined;
-  const modeFromParam: "SIGN_IN" | "FORGOT_PASSWORD" | "SIGN_UP" | undefined =
-    tabParam === "signup" ? "SIGN_UP"
-    : tabParam === "forgot" ? "FORGOT_PASSWORD"
-    : undefined;
-  return <LoginContent defaultMode={modeFromParam} />;
+  const tabParam =
+    typeof searchParams?.tab === "string"
+      ? searchParams.tab
+      : undefined;
+
+  const modeFromParam:
+    | AuthMode
+    | undefined =
+    tabParam === "signup"
+      ? "SIGN_UP"
+      : tabParam === "forgot"
+        ? "FORGOT_PASSWORD"
+        : undefined;
+
+  return (
+    <LoginContent
+      defaultMode={modeFromParam}
+    />
+  );
 }

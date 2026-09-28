@@ -1767,7 +1767,7 @@ main select:focus {
 .landing-scene {
   position: absolute;
   inset: -50px -30px -25px;
-  z-index: 1;
+  z-index: auto;
   overflow: hidden;
   border-radius: 42px;
   pointer-events: none;
