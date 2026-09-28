@@ -1,71 +1,119 @@
-"use client";
-
 import Link from "next/link";
-import { ArrowUpRight } from "lucide-react";
-import { useEffect, useState } from "react";
+import {
+  ArrowUpRight,
+  Brain,
+  HeartPulse,
+  MessageCircle,
+  UsersRound,
+} from "lucide-react";
 
-const NAV_ITEMS = [
-  { label: "Fitur", href: "#fitur" },
-  { label: "Cara kerja", href: "#cara-kerja" },
-  { label: "Komunitas", href: "#komunitas" },
+const FEATURES = [
+  {
+    number: "01",
+    title: "Companion",
+    desc: "Tempat untuk menuangkan pikiran tanpa harus mencari kata yang sempurna.",
+    icon: MessageCircle,
+    href: "/companion",
+    tone: "feature-orange",
+  },
+  {
+    number: "02",
+    title: "Daily Check-in",
+    desc: "Kenali keadaanmu hari ini dan lihat polanya dari waktu ke waktu.",
+    icon: Brain,
+    href: "/daily-assessment",
+    tone: "feature-lilac",
+  },
+  {
+    number: "03",
+    title: "Activity",
+    desc: "Ubah niat menjadi langkah kecil yang realistis untuk tubuhmu.",
+    icon: HeartPulse,
+    href: "/activity",
+    tone: "feature-green",
+  },
+  {
+    number: "04",
+    title: "Community",
+    desc: "Terhubung dengan orang lain tanpa harus kehilangan ruang privatmu.",
+    icon: UsersRound,
+    href: "/community",
+    tone: "feature-blue",
+  },
 ];
 
-export default function LandingHeader() {
-  const [scrolled, setScrolled] = useState(false);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      setScrolled(window.scrollY > 24);
-    };
-
-    handleScroll();
-
-    window.addEventListener("scroll", handleScroll, {
-      passive: true,
-    });
-
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-    };
-  }, []);
-
+export default function LandingFeatures() {
   return (
-    <header
-      className={`landing-header ${scrolled ? "landing-header-scrolled" : ""
-        }`}
+    <section
+      id="fitur"
+      className="landing-section feature-section"
     >
-      <div className="landing-container landing-nav">
-        {/* Logo */}
-        <Link href="/" className="landing-brand" aria-label="ZYBA">
-          <span className="landing-mark" aria-hidden="true">
-            <span />
-            <span />
-            <span />
-            <span />
-            <b />
-          </span>
+      <div className="landing-container">
+        {/* Heading */}
+        <div className="section-heading split-heading">
+          <div>
+            <div className="eyebrow">
+              <span className="eyebrow-dot" />
+              Satu tempat, empat arah
+            </div>
 
-          <span>ZYBA</span>
-        </Link>
+            <h2>
+              Bukan sekadar
+              <br />
+              <span>tempat curhat.</span>
+            </h2>
+          </div>
 
-        {/* Navigation */}
-        <nav
-          className="landing-nav-links"
-          aria-label="Navigasi utama"
-        >
-          {NAV_ITEMS.map((item) => (
-            <a key={item.href} href={item.href}>
-              {item.label}
-            </a>
-          ))}
-        </nav>
+          <p>
+            ZYBA menghubungkan apa yang kamu
+            rasakan dengan hal kecil yang bisa
+            kamu lakukan setelahnya.
+          </p>
+        </div>
 
-        {/* CTA */}
-        <Link href="/login" className="landing-nav-cta">
-          Mulai
-          <ArrowUpRight size={16} strokeWidth={2.2} />
-        </Link>
+        {/* Feature rows */}
+        <div className="feature-list">
+          {FEATURES.map((feature) => {
+            const Icon = feature.icon;
+
+            return (
+              <Link
+                key={feature.number}
+                href={feature.href}
+                className={`feature-row ${feature.tone}`}
+              >
+                <span className="feature-number">
+                  {feature.number}
+                </span>
+
+                <span className="feature-icon">
+                  <Icon
+                    size={21}
+                    strokeWidth={1.8}
+                  />
+                </span>
+
+                <span className="feature-content">
+                  <strong>
+                    {feature.title}
+                  </strong>
+
+                  <span>
+                    {feature.desc}
+                  </span>
+                </span>
+
+                <span className="feature-arrow">
+                  <ArrowUpRight
+                    size={19}
+                    strokeWidth={2}
+                  />
+                </span>
+              </Link>
+            );
+          })}
+        </div>
       </div>
-    </header>
+    </section>
   );
 }

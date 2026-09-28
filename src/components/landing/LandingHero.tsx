@@ -4,36 +4,9 @@ import {
   Brain,
   Check,
   HeartPulse,
-  MessageCircle,
-  Sparkles,
   UsersRound,
 } from "lucide-react";
 import LandingScene from "./LandingScene";
-
-type MiniCardProps = {
-  icon: React.ReactNode;
-  title: string;
-  text: string;
-  className: string;
-};
-
-function MiniCard({
-  icon,
-  title,
-  text,
-  className,
-}: MiniCardProps) {
-  return (
-    <div className={`hero-float-card ${className}`}>
-      <span className="hero-float-icon">{icon}</span>
-
-      <div>
-        <strong>{title}</strong>
-        <small>{text}</small>
-      </div>
-    </div>
-  );
-}
 
 export default function LandingHero() {
   return (
@@ -109,54 +82,16 @@ export default function LandingHero() {
         </div>
 
         {/* =========================================
-            RIGHT / WORLD
+            RIGHT / ZYBA WORLD
         ========================================= */}
         <div
           className="hero-stage"
           aria-label="Pratinjau pengalaman ZYBA"
         >
-          {/* WORLD / PARK */}
           <LandingScene />
 
-          {/* ORBITS */}
-          <div
-            className="hero-orbit orbit-one"
-            aria-hidden="true"
-          />
-
-          <div
-            className="hero-orbit orbit-two"
-            aria-hidden="true"
-          />
-
-          {/* FLOATING CARD - LEFT */}
-          <MiniCard
-            className="float-left"
-            icon={
-              <MessageCircle
-                size={17}
-                strokeWidth={2}
-              />
-            }
-            title="Companion"
-            text="Aku dengerin."
-          />
-
-          {/* FLOATING CARD - RIGHT */}
-          <MiniCard
-            className="float-right"
-            icon={
-              <HeartPulse
-                size={17}
-                strokeWidth={2}
-              />
-            }
-            title="Aktivitas"
-            text="12 menit jalan"
-          />
-
           {/* =====================================
-              ZYBA APP PREVIEW
+              ZYBA PRODUCT PREVIEW
           ===================================== */}
           <div className="hero-app-window">
             {/* HEADER */}
@@ -260,27 +195,6 @@ export default function LandingHero() {
                 />
               </span>
             </div>
-          </div>
-
-          {/* DECORATIVE */}
-          <div
-            className="hero-spark spark-a"
-            aria-hidden="true"
-          >
-            <Sparkles
-              size={15}
-              strokeWidth={1.8}
-            />
-          </div>
-
-          <div
-            className="hero-spark spark-b"
-            aria-hidden="true"
-          >
-            <Sparkles
-              size={11}
-              strokeWidth={1.8}
-            />
           </div>
         </div>
       </div>
