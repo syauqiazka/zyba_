@@ -13,7 +13,7 @@ const FEATURES = [
     title: "Companion",
     desc: "Tempat untuk menuangkan pikiran tanpa harus mencari kata yang sempurna.",
     icon: MessageCircle,
-    href: "/companion",
+    href: "/fitur/companion",
     tone: "feature-orange",
   },
   {
@@ -21,7 +21,7 @@ const FEATURES = [
     title: "Daily Check-in",
     desc: "Kenali keadaanmu hari ini dan lihat polanya dari waktu ke waktu.",
     icon: Brain,
-    href: "/daily-assessment",
+    href: "/fitur/daily-check-in",
     tone: "feature-lilac",
   },
   {
@@ -29,7 +29,7 @@ const FEATURES = [
     title: "Activity",
     desc: "Ubah niat menjadi langkah kecil yang realistis untuk tubuhmu.",
     icon: HeartPulse,
-    href: "/activity",
+    href: "/fitur/activity",
     tone: "feature-green",
   },
   {
@@ -37,7 +37,7 @@ const FEATURES = [
     title: "Community",
     desc: "Terhubung dengan orang lain tanpa harus kehilangan ruang privatmu.",
     icon: UsersRound,
-    href: "/community",
+    href: "/fitur/community",
     tone: "feature-blue",
   },
 ];
@@ -49,7 +49,6 @@ export default function LandingFeatures() {
       className="landing-section feature-section"
     >
       <div className="landing-container">
-        {/* Heading */}
         <div className="section-heading split-heading">
           <div>
             <div className="eyebrow">
@@ -71,7 +70,6 @@ export default function LandingFeatures() {
           </p>
         </div>
 
-        {/* Feature rows */}
         <div className="feature-list">
           {FEATURES.map((feature) => {
             const Icon = feature.icon;

@@ -1,139 +1,72 @@
+import Link from "next/link";
 import {
-  ArrowDownRight,
-  LockKeyhole,
-  Route,
+  ArrowRight,
   ShieldCheck,
 } from "lucide-react";
 
-export default function LandingAbout() {
+export default function LandingCta() {
   return (
-    <section
-      id="cara-kerja"
-      className="landing-section journey-section"
+    <footer
+      id="komunitas"
+      className="landing-footer"
     >
       <div className="landing-container">
-        <div className="journey-card">
-          {/* LEFT */}
-          <div className="journey-copy">
-            <div className="eyebrow">
+        <div className="footer-cta">
+          <div>
+            <div className="eyebrow footer-eyebrow">
               <span className="eyebrow-dot" />
-              Cara kerja ZYBA
+              Ruang untuk mulai
             </div>
 
             <h2>
-              Dari yang kamu rasakan,
+              Kamu tidak harus
               <br />
-              <span>ke langkah berikutnya.</span>
+              <span>punya semuanya.</span>
             </h2>
 
             <p>
-              Tidak perlu mengubah hidup dalam semalam.
-              ZYBA dirancang untuk membantu kamu melihat
-              keadaan hari ini, lalu memilih satu langkah
-              yang masuk akal.
+              Mulai dari satu check-in.
+              Sisanya bisa menyusul.
             </p>
-
-            <div className="journey-points">
-              <div>
-                <span>01</span>
-
-                <strong>
-                  Check-in
-                </strong>
-
-                <small>
-                  Ceritakan keadaanmu hari ini.
-                </small>
-              </div>
-
-              <div>
-                <span>02</span>
-
-                <strong>
-                  Pahami
-                </strong>
-
-                <small>
-                  Lihat pola dan konteks yang relevan.
-                </small>
-              </div>
-
-              <div>
-                <span>03</span>
-
-                <strong>
-                  Bergerak
-                </strong>
-
-                <small>
-                  Pilih aksi kecil yang bisa dilakukan.
-                </small>
-              </div>
-            </div>
           </div>
 
-          {/* RIGHT */}
-          <div className="journey-visual">
-            <div
-              className="journey-path"
+          <Link
+            href="/login"
+            className="button-light"
+          >
+            Mulai gratis
+            <ArrowRight size={18} />
+          </Link>
+        </div>
+
+        <div className="footer-bottom">
+          <div className="landing-brand footer-brand">
+            <span
+              className="landing-mark"
               aria-hidden="true"
             >
               <span />
-              <i />
+              <span />
+              <span />
+              <span />
               <b />
-            </div>
+            </span>
 
-            <div className="journey-node node-one">
-              <span>
-                <Route size={17} />
-              </span>
-
-              <strong>
-                Check-in
-              </strong>
-
-              <small>
-                Bagaimana harimu?
-              </small>
-            </div>
-
-            <div className="journey-node node-two">
-              <span>
-                <ArrowDownRight size={17} />
-              </span>
-
-              <strong>
-                Insight
-              </strong>
-
-              <small>
-                Kenali polanya.
-              </small>
-            </div>
-
-            <div className="journey-node node-three">
-              <span>
-                <ShieldCheck size={17} />
-              </span>
-
-              <strong>
-                Next step
-              </strong>
-
-              <small>
-                Satu langkah kecil.
-              </small>
-            </div>
-
-            <div className="journey-lock">
-              <LockKeyhole size={15} />
-              <span>
-                Privat by design
-              </span>
-            </div>
+            <span>
+              ZYBA
+            </span>
           </div>
+
+          <span className="footer-note">
+            <ShieldCheck size={14} />
+            Wellness support, bukan diagnosis medis.
+          </span>
+
+          <span className="footer-copy">
+            © 2026 ZYBA
+          </span>
         </div>
       </div>
-    </section>
+    </footer>
   );
 }
