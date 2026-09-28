@@ -27,21 +27,21 @@ export default function AssessmentPage() {
   const router = useRouter();
   const [currentStep, setCurrentStep] = useState(0);
 
-  // Form State — age & weight as strings initialized to default without leading zeroes (Lampiran C.4)
+  // Form State — input awal bersih dengan placeholder (tanpa teks bawaan yang harus dihapus)
   const [goal, setGoal] = useState("Stress Relief & Relaxation");
   const [gender, setGender] = useState("Pria");
-  const [age, setAge] = useState("21");
-  const [weight, setWeight] = useState("65");
-  const [mood, setMood] = useState("NEUTRAL");
+  const [age, setAge] = useState("");
+  const [weight, setWeight] = useState("");
+  const [mood, setMood] = useState("HAPPY");
   const [soughtHelp, setSoughtHelp] = useState<boolean | null>(false);
-  const [physicalSymptoms, setPhysicalSymptoms] = useState<string[]>(["Pusing ringan", "Sulit tidur"]);
+  const [physicalSymptoms, setPhysicalSymptoms] = useState<string[]>([]);
+  const [customPhysicalSymptom, setCustomPhysicalSymptom] = useState("");
   const [sleepRating, setSleepRating] = useState(3);
   const [stressRating, setStressRating] = useState(2);
-  const [medications, setMedications] = useState("Tidak ada");
-  const [mentalSymptoms, setMentalSymptoms] = useState<string[]>(["Mudah lelah", "Kadang overthinking"]);
-  const [expressionText, setExpressionText] = useState(
-    "Akhir-akhir ini saya merasa sedikit lelah karena beban tugas kuliah menumpuk dan jam tidur berkurang. Saya ingin melatih pikiran agar lebih tenang dan bisa mengelola waktu belajar dengan baik."
-  );
+  const [medications, setMedications] = useState("");
+  const [mentalSymptoms, setMentalSymptoms] = useState<string[]>([]);
+  const [customMentalSymptom, setCustomMentalSymptom] = useState("");
+  const [expressionText, setExpressionText] = useState("");
 
   const [isCompiling, setIsCompiling] = useState(false);
   const [isCompleted, setIsCompleted] = useState(false);
@@ -74,13 +74,28 @@ export default function AssessmentPage() {
 
   const handleNext = async () => {
     if (currentStep === 9) {
-      const isRisk = detectRisk(expressionText);
-      if (isRisk) {
-        setCrisisAlert(true);
-        return;
+      if (expressionText.trim()) {
+        const isRisk = detectRisk(expressionText);
+        if (isRisk) {
+          setCrisisAlert(true);
+          return;
+        }
       }
 
       setIsCompiling(true);
+
+      const finalPhysical = [...physicalSymptoms];
+      if (customPhysicalSymptom.trim() && !finalPhysical.includes(customPhysicalSymptom.trim())) {
+        finalPhysical.push(customPhysicalSymptom.trim());
+      }
+
+      const finalMental = [...mentalSymptoms];
+      if (customMentalSymptom.trim() && !finalMental.includes(customMentalSymptom.trim())) {
+        finalMental.push(customMentalSymptom.trim());
+      }
+
+      const finalMedications = medications.trim() || "Tidak ada";
+      const finalExpression = expressionText.trim() || "Tidak ada catatan tambahan.";
 
       try {
         const res = await fetch("/api/assessment", {
@@ -93,12 +108,12 @@ export default function AssessmentPage() {
             weight: parseInt(weight, 10) || 65,
             mood,
             soughtHelp,
-            physicalSymptoms,
+            physicalSymptoms: finalPhysical,
             sleepRating,
             stressRating,
-            medications,
-            mentalSymptoms,
-            expressionText,
+            medications: finalMedications,
+            mentalSymptoms: finalMental,
+            expressionText: finalExpression,
           }),
         });
 
@@ -233,6 +248,8 @@ export default function AssessmentPage() {
                 setSoughtHelp={setSoughtHelp}
                 physicalSymptoms={physicalSymptoms}
                 setPhysicalSymptoms={setPhysicalSymptoms}
+                customPhysicalSymptom={customPhysicalSymptom}
+                setCustomPhysicalSymptom={setCustomPhysicalSymptom}
                 sleepRating={sleepRating}
                 setSleepRating={setSleepRating}
                 stressRating={stressRating}
@@ -241,6 +258,8 @@ export default function AssessmentPage() {
                 setMedications={setMedications}
                 mentalSymptoms={mentalSymptoms}
                 setMentalSymptoms={setMentalSymptoms}
+                customMentalSymptom={customMentalSymptom}
+                setCustomMentalSymptom={setCustomMentalSymptom}
                 expressionText={expressionText}
                 setExpressionText={setExpressionText}
                 toggleSymptom={toggleSymptom}
