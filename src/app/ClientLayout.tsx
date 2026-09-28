@@ -69,9 +69,7 @@ export default function ClientLayout({
     pathname === "/" ||
     pathname === "/onboarding" ||
     pathname === "/login" ||
-    pathname.startsWith("/assessment") ||
-    pathname === "/fitur" ||
-    pathname.startsWith("/fitur/")
+    pathname.startsWith("/assessment")
   ) {
     return (
       <>
@@ -110,11 +108,10 @@ export default function ClientLayout({
       <button
         type="button"
         onClick={() => setMobileSidebarOpen(true)}
-        className={`md:hidden fixed top-4 left-4 z-40 w-10 h-10 rounded-xl bg-white border border-brown-900/10 shadow-sm flex items-center justify-center text-brown-900 active:scale-95 transition-all duration-200 ${
-          mobileSidebarOpen
+        className={`md:hidden fixed top-4 left-4 z-40 w-10 h-10 rounded-xl bg-white border border-brown-900/10 shadow-sm flex items-center justify-center text-brown-900 active:scale-95 transition-all duration-200 ${mobileSidebarOpen
             ? "opacity-0 pointer-events-none"
             : "opacity-100"
-        }`}
+          }`}
         aria-label="Buka menu"
       >
         <svg
@@ -143,11 +140,10 @@ export default function ClientLayout({
       <div className="flex items-start min-h-screen">
         {/* Sidebar */}
         <div
-          className={`fixed md:sticky top-0 left-0 z-50 h-screen transition-transform duration-300 md:translate-x-0 ${
-            mobileSidebarOpen
+          className={`fixed md:sticky top-0 left-0 z-50 h-screen transition-transform duration-300 md:translate-x-0 ${mobileSidebarOpen
               ? "translate-x-0 shadow-2xl"
               : "-translate-x-full"
-          }`}
+            }`}
         >
           <Suspense fallback={<SidebarSkeleton />}>
             <Sidebar
