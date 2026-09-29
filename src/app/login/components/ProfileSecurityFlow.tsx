@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 interface ProfileSecurityFlowProps {
   initialEmail?: string;
   onSwitchToSignIn: () => void;
+  onSignupSuccess: (email: string) => void;
 }
 
 const AVATAR_OPTIONS = [
@@ -67,6 +68,7 @@ export const POPULAR_CITIES = [
 export default function ProfileSecurityFlow({
   initialEmail = "",
   onSwitchToSignIn,
+  onSignupSuccess,
 }: ProfileSecurityFlowProps) {
   const router = useRouter();
 
@@ -308,11 +310,10 @@ export default function ProfileSecurityFlow({
                   key={item.key}
                   type="button"
                   onClick={() => setAvatar(item.key)}
-                  className={`p-3 rounded-2xl flex flex-col items-center gap-1 border-2 transition-all ${
-                    avatar === item.key
-                      ? "border-orange-500 bg-orange-100/50 shadow-sm scale-105"
-                      : "border-brown-900/10 bg-cream/40 hover:bg-cream"
-                  }`}
+                  className={`p-3 rounded-2xl flex flex-col items-center gap-1 border-2 transition-all ${avatar === item.key
+                    ? "border-orange-500 bg-orange-100/50 shadow-sm scale-105"
+                    : "border-brown-900/10 bg-cream/40 hover:bg-cream"
+                    }`}
                 >
                   <span className="text-2xl">{item.emoji}</span>
                   <span className="text-[10px] font-bold text-brown-900 truncate w-full text-center">
@@ -394,9 +395,8 @@ export default function ProfileSecurityFlow({
                     if (emailError) setEmailError("");
                   }}
                   placeholder="nama@email.com"
-                  className={`w-full bg-cream/40 border ${
-                    emailError ? "border-danger ring-1 ring-danger" : "border-brown-900/15"
-                  } rounded-full px-4 py-2.5 text-xs text-brown-900 focus:outline-none focus:ring-2 focus:ring-orange-500 font-medium`}
+                  className={`w-full bg-cream/40 border ${emailError ? "border-danger ring-1 ring-danger" : "border-brown-900/15"
+                    } rounded-full px-4 py-2.5 text-xs text-brown-900 focus:outline-none focus:ring-2 focus:ring-orange-500 font-medium`}
                 />
                 {emailError && (
                   <div className="mt-2 p-2.5 rounded-xl bg-orange-100/70 border border-danger/30 text-left flex flex-col gap-1">
@@ -467,11 +467,10 @@ export default function ProfileSecurityFlow({
                             setGender(g);
                             setIsGenderOpen(false);
                           }}
-                          className={`w-full text-left px-3 py-2 rounded-xl text-xs font-medium transition-colors flex items-center justify-between ${
-                            gender === g
-                              ? "bg-green-100 text-brown-900 font-bold"
-                              : "text-brown-700 hover:bg-cream/70 hover:text-brown-900"
-                          }`}
+                          className={`w-full text-left px-3 py-2 rounded-xl text-xs font-medium transition-colors flex items-center justify-between ${gender === g
+                            ? "bg-green-100 text-brown-900 font-bold"
+                            : "text-brown-700 hover:bg-cream/70 hover:text-brown-900"
+                            }`}
                         >
                           <span>{g}</span>
                           {gender === g && (
@@ -553,11 +552,10 @@ export default function ProfileSecurityFlow({
                               setLocation(city);
                               setIsLocationOpen(false);
                             }}
-                            className={`w-full text-left px-2.5 py-2 rounded-xl text-xs font-medium transition-colors flex items-center justify-between ${
-                              location === city
-                                ? "bg-green-100 text-brown-900 font-bold"
-                                : "text-brown-700 hover:bg-cream/70 hover:text-brown-900"
-                            }`}
+                            className={`w-full text-left px-2.5 py-2 rounded-xl text-xs font-medium transition-colors flex items-center justify-between ${location === city
+                              ? "bg-green-100 text-brown-900 font-bold"
+                              : "text-brown-700 hover:bg-cream/70 hover:text-brown-900"
+                              }`}
                           >
                             <span className="truncate">{city}</span>
                             {location === city && (
@@ -570,22 +568,22 @@ export default function ProfileSecurityFlow({
                         {POPULAR_CITIES.filter((c) =>
                           c.toLowerCase().includes(locationSearch.toLowerCase().trim())
                         ).length === 0 && (
-                          <div className="p-2 text-center text-[11px] text-brown-700/70">
-                            <span>Kota tidak ada di daftar.</span>
-                            {locationSearch.trim() && (
-                              <button
-                                type="button"
-                                onClick={() => {
-                                  setLocation(locationSearch.trim());
-                                  setIsLocationOpen(false);
-                                }}
-                                className="mt-1.5 block w-full px-2.5 py-2 bg-orange-100 text-orange-600 font-bold rounded-xl text-xs hover:bg-orange-200 transition-colors"
-                              >
-                                Gunakan &quot;{locationSearch.trim()}&quot;
-                              </button>
-                            )}
-                          </div>
-                        )}
+                            <div className="p-2 text-center text-[11px] text-brown-700/70">
+                              <span>Kota tidak ada di daftar.</span>
+                              {locationSearch.trim() && (
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    setLocation(locationSearch.trim());
+                                    setIsLocationOpen(false);
+                                  }}
+                                  className="mt-1.5 block w-full px-2.5 py-2 bg-orange-100 text-orange-600 font-bold rounded-xl text-xs hover:bg-orange-200 transition-colors"
+                                >
+                                  Gunakan &quot;{locationSearch.trim()}&quot;
+                                </button>
+                              )}
+                            </div>
+                          )}
                       </div>
                     </div>
                   )}
@@ -687,61 +685,54 @@ export default function ProfileSecurityFlow({
                   Password Strength
                 </span>
                 <span
-                  className={`text-[11px] font-extrabold ${
-                    strengthScore === 3
-                      ? "text-green-500"
-                      : strengthScore === 2
+                  className={`text-[11px] font-extrabold ${strengthScore === 3
+                    ? "text-green-500"
+                    : strengthScore === 2
                       ? "text-orange-500"
                       : "text-danger"
-                  }`}
+                    }`}
                 >
                   {strengthScore === 3
                     ? "Kuat ✨"
                     : strengthScore === 2
-                    ? "Sedang ⚡"
-                    : "Lemah (Tingkatkan!) 💪"}
+                      ? "Sedang ⚡"
+                      : "Lemah (Tingkatkan!) 💪"}
                 </span>
               </div>
 
               {/* 3-Bar Segments */}
               <div className="grid grid-cols-3 gap-1.5">
                 <div
-                  className={`h-2 rounded-full transition-all ${
-                    strengthScore >= 1 ? (strengthScore === 1 ? "bg-danger" : "bg-orange-500") : "bg-brown-900/15"
-                  }`}
+                  className={`h-2 rounded-full transition-all ${strengthScore >= 1 ? (strengthScore === 1 ? "bg-danger" : "bg-orange-500") : "bg-brown-900/15"
+                    }`}
                 />
                 <div
-                  className={`h-2 rounded-full transition-all ${
-                    strengthScore >= 2 ? (strengthScore === 2 ? "bg-orange-500" : "bg-green-500") : "bg-brown-900/15"
-                  }`}
+                  className={`h-2 rounded-full transition-all ${strengthScore >= 2 ? (strengthScore === 2 ? "bg-orange-500" : "bg-green-500") : "bg-brown-900/15"
+                    }`}
                 />
                 <div
-                  className={`h-2 rounded-full transition-all ${
-                    strengthScore >= 3 ? "bg-green-500" : "bg-brown-900/15"
-                  }`}
+                  className={`h-2 rounded-full transition-all ${strengthScore >= 3 ? "bg-green-500" : "bg-brown-900/15"
+                    }`}
                 />
               </div>
 
               {/* Requirement Badges */}
               <div className="flex flex-wrap gap-2 pt-1">
                 <span
-                  className={`text-[10px] font-bold px-2.5 py-1 rounded-full flex items-center gap-1 ${
-                    hasMinLength ? "bg-green-100 text-green-500" : "bg-cream text-brown-700/60"
-                  }`}
+                  className={`text-[10px] font-bold px-2.5 py-1 rounded-full flex items-center gap-1 ${hasMinLength ? "bg-green-100 text-green-500" : "bg-cream text-brown-700/60"
+                    }`}
                 >
                   {hasMinLength ? "✓" : "○"} Minimal 8 Karakter
                 </span>
                 <span
-                  className={`text-[10px] font-bold px-2.5 py-1 rounded-full flex items-center gap-1 ${
-                    hasNumber ? "bg-green-100 text-green-500" : "bg-cream text-brown-700/60"
-                  }`}
+                  className={`text-[10px] font-bold px-2.5 py-1 rounded-full flex items-center gap-1 ${hasNumber ? "bg-green-100 text-green-500" : "bg-cream text-brown-700/60"
+                    }`}
                 >
                   {hasNumber ? "✓" : "○"} Ada Angka (0-9)
                 </span>
                 <span
-                  className={`text-[10px] font-bold px-2.5 py-1 rounded-full flex items-center gap-1 ${
-                    hasSpecial ? "bg-green-100 text-green-500" : "bg-cream text-brown-700/60"
-                  }`}
+                  className={`text-[10px] font-bold px-2.5 py-1 rounded-full flex items-center gap-1 ${hasSpecial ? "bg-green-100 text-green-500" : "bg-cream text-brown-700/60"
+                    }`}
                 >
                   {hasSpecial ? "✓" : "○"} Karakter Khusus (!@#)
                 </span>
@@ -966,6 +957,11 @@ export default function ProfileSecurityFlow({
                   });
                   const data = await res.json();
                   if (res.ok) {
+                    // Akun sudah berhasil dibuat dan session cookie
+                    // sudah diberikan oleh backend.
+                    // Sekarang wajib menyetujui Terms sebelum lanjut.
+                    onSignupSuccess(email.trim());
+
                     setStep("FINGERPRINT");
                   } else {
                     setOtpError(data.error || "Kode OTP salah atau telah kadaluarsa.");
@@ -1017,23 +1013,21 @@ export default function ProfileSecurityFlow({
             <button
               type="button"
               onClick={handleScanFingerprint}
-              className={`relative w-28 h-28 rounded-full border-4 flex items-center justify-center transition-all group ${
-                isFingerprintScanned
-                  ? "border-green-500 bg-green-100/50 shadow-lg scale-105"
-                  : isScanning
+              className={`relative w-28 h-28 rounded-full border-4 flex items-center justify-center transition-all group ${isFingerprintScanned
+                ? "border-green-500 bg-green-100/50 shadow-lg scale-105"
+                : isScanning
                   ? "border-orange-500 bg-orange-100/30 animate-pulse"
                   : "border-brown-900/15 bg-cream/40 hover:border-orange-500 hover:scale-102"
-              }`}
+                }`}
             >
               {/* SVG Sidik Jari Khas Figma */}
               <svg
-                className={`w-16 h-16 transition-colors ${
-                  isFingerprintScanned
-                    ? "text-green-500"
-                    : isScanning
+                className={`w-16 h-16 transition-colors ${isFingerprintScanned
+                  ? "text-green-500"
+                  : isScanning
                     ? "text-orange-500"
                     : "text-brown-900/70 group-hover:text-brown-900"
-                }`}
+                  }`}
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -1056,8 +1050,8 @@ export default function ProfileSecurityFlow({
                 {isFingerprintScanned
                   ? "Sidik Jari Berhasil Didaftarkan! ✨"
                   : isScanning
-                  ? "Memindai Sensor Biometrik..."
-                  : "Ketuk untuk Memindai Sidik Jari"}
+                    ? "Memindai Sensor Biometrik..."
+                    : "Ketuk untuk Memindai Sidik Jari"}
               </h3>
               <p className="text-xs text-brown-700/80 mt-1 max-w-xs leading-relaxed">
                 Scan your biometric fingerprint to make your account more secure and enable instant login.

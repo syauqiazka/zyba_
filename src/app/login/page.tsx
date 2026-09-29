@@ -73,6 +73,52 @@ function LoginContent({
       window.location.search
     );
 
+    const termsRequired =
+      params.get("terms_required") === "1";
+
+    if (termsRequired) {
+      const redirectParam = params.get("redirect");
+
+      const safeRedirect =
+        redirectParam &&
+          redirectParam.startsWith("/") &&
+          !redirectParam.startsWith("//")
+          ? redirectParam
+          : "/dashboard";
+
+      const loadTermsUser = async () => {
+        try {
+          const res = await fetch("/api/user/me", {
+            cache: "no-store",
+          });
+
+          if (!res.ok) return;
+
+          const data = await res.json();
+          const user = data?.user;
+
+          if (!user?.email) return;
+
+          const needsTerms =
+            !user.termsAcceptedAt ||
+            user.termsVersion !== CURRENT_TERMS_VERSION;
+
+          if (needsTerms) {
+            setPendingUserEmail(user.email);
+            setPendingRedirect(safeRedirect);
+            setShowTerms(true);
+          }
+        } catch (error) {
+          console.error(
+            "Failed to load user for Terms:",
+            error
+          );
+        }
+      };
+
+      loadTermsUser();
+    }
+
     const tab = params.get("tab");
 
     if (tab === "signup") {
@@ -336,8 +382,8 @@ function LoginContent({
                           switchMode("SIGN_IN")
                         }
                         className={`rounded-full px-4 py-2 text-xs font-bold transition-all ${authMode === "SIGN_IN"
-                            ? "bg-brown-900 text-white shadow-sm"
-                            : "text-brown-700 hover:text-brown-900"
+                          ? "bg-brown-900 text-white shadow-sm"
+                          : "text-brown-700 hover:text-brown-900"
                           }`}
                       >
                         Masuk
@@ -349,8 +395,8 @@ function LoginContent({
                           switchMode("SIGN_UP")
                         }
                         className={`rounded-full px-4 py-2 text-xs font-bold transition-all ${authMode === "SIGN_UP"
-                            ? "bg-brown-900 text-white shadow-sm"
-                            : "text-brown-700 hover:text-brown-900"
+                          ? "bg-brown-900 text-white shadow-sm"
+                          : "text-brown-700 hover:text-brown-900"
                           }`}
                       >
                         Daftar
@@ -405,6 +451,11 @@ function LoginContent({
                       onSwitchToSignIn={() =>
                         switchMode("SIGN_IN")
                       }
+                      onSignupSuccess={(userEmail) => {
+                        setPendingUserEmail(userEmail);
+                        setPendingRedirect("/assessment");
+                        setShowTerms(true);
+                      }}
                     />
                   )}
 
@@ -447,11 +498,6 @@ function LoginContent({
       <TermsAgreementModal
         open={showTerms}
         onAccept={handleAcceptTerms}
-        onClose={() => {
-          if (!isAcceptingTerms) {
-            setShowTerms(false);
-          }
-        }}
       />
     </>
   );

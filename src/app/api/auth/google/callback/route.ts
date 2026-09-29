@@ -181,23 +181,38 @@ export async function GET(request: NextRequest) {
       onboardingCompleted: user.onboardingCompleted ?? false,
     });
 
-    // 5. Redirect pengguna baru ke Asesmen Awal, pengguna lama ke Dashboard
+    // 5. Tentukan tujuan setelah login
     const destination =
-      isNewUser || !user.onboardingCompleted ? "/assessment" : "/dashboard";
-    const response = redirect(destination);
+      isNewUser || !user.onboardingCompleted
+        ? "/assessment"
+        : "/dashboard";
+
+    // Jika Terms belum diterima / versinya sudah tidak sesuai,
+    // arahkan ke halaman login agar TermsAgreementModal bisa muncul.
+    const needsTerms =
+      !user.termsAcceptedAt ||
+      user.termsVersion !== "1.0";
+
+    const finalDestination = needsTerms
+      ? `/login?terms_required=1&redirect=${encodeURIComponent(destination)}`
+      : destination;
+
+    const response = redirect(finalDestination);
 
     response.cookies.set("auth-token", sessionToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "lax",
       path: "/",
-      maxAge: 60 * 60 * 24 * 30, // 30 hari
+      maxAge: 60 * 60 * 24 * 30,
     });
 
     // Bersihkan cookie temporary state
     response.cookies.delete("google_oauth_state");
 
     return response;
+
+
   } catch (err) {
     console.error("Error pada callback Google OAuth:", err);
     return redirect("/login?error=auth_internal_error");
