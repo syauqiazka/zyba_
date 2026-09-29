@@ -278,14 +278,6 @@ export default function ProfileSecurityFlow({
         <div className="flex flex-col">
           {/* Header Kubah Organik Hijau */}
           <div className="relative w-full bg-[#E2EBD2] pt-8 pb-10 px-6 flex flex-col items-center">
-            <button
-              type="button"
-              onClick={onSwitchToSignIn}
-              className="absolute left-5 top-5 w-8 h-8 rounded-full bg-white/80 hover:bg-white text-brown-900 flex items-center justify-center text-sm shadow-xs transition-colors"
-              title="Kembali ke Sign In"
-            >
-              ←
-            </button>
             <span className="text-xs font-bold uppercase tracking-widest text-brown-700/70">
               Step 1 of 6 • Profile Setup
             </span>
@@ -353,7 +345,7 @@ export default function ProfileSecurityFlow({
             <button
               type="button"
               onClick={() => setStep("SELECT_AVATAR")}
-              className="absolute left-5 top-5 w-8 h-8 rounded-full bg-white/80 hover:bg-white text-brown-900 flex items-center justify-center text-sm shadow-xs transition-colors"
+              style={{ position: "absolute" }} className="absolute left-5 top-5 z-20 w-8 h-8 rounded-full bg-white/80 hover:bg-white text-brown-900 flex items-center justify-center text-sm shadow-xs transition-colors"
             >
               ←
             </button>
@@ -662,7 +654,7 @@ export default function ProfileSecurityFlow({
             <button
               type="button"
               onClick={() => setStep("PROFILE_SETUP")}
-              className="absolute left-5 top-5 w-8 h-8 rounded-full bg-white/80 hover:bg-white text-brown-900 flex items-center justify-center text-sm shadow-xs transition-colors"
+              style={{ position: "absolute" }} className="absolute left-5 top-5 z-20 w-8 h-8 rounded-full bg-white/80 hover:bg-white text-brown-900 flex items-center justify-center text-sm shadow-xs transition-colors"
             >
               ←
             </button>
@@ -831,7 +823,7 @@ export default function ProfileSecurityFlow({
             <button
               type="button"
               onClick={() => setStep("PASSWORD_STRENGTH")}
-              className="absolute left-5 top-5 w-8 h-8 rounded-full bg-white/80 hover:bg-white text-brown-900 flex items-center justify-center text-sm shadow-xs transition-colors"
+              style={{ position: "absolute" }} className="absolute left-5 top-5 z-20 w-8 h-8 rounded-full bg-white/80 hover:bg-white text-brown-900 flex items-center justify-center text-sm shadow-xs transition-colors"
             >
               ←
             </button>
@@ -1008,7 +1000,7 @@ export default function ProfileSecurityFlow({
             <button
               type="button"
               onClick={() => setStep("OTP_VERIFY")}
-              className="absolute left-5 top-5 w-8 h-8 rounded-full bg-white/80 hover:bg-white text-brown-900 flex items-center justify-center text-sm shadow-xs transition-colors"
+              style={{ position: "absolute" }} className="absolute left-5 top-5 z-20 w-8 h-8 rounded-full bg-white/80 hover:bg-white text-brown-900 flex items-center justify-center text-sm shadow-xs transition-colors"
             >
               ←
             </button>
@@ -1094,7 +1086,7 @@ export default function ProfileSecurityFlow({
             <button
               type="button"
               onClick={() => setStep("FINGERPRINT")}
-              className="absolute left-5 top-5 w-8 h-8 rounded-full bg-white/80 hover:bg-white text-brown-900 flex items-center justify-center text-sm shadow-xs transition-colors"
+              style={{ position: "absolute" }} className="absolute left-5 top-5 z-20 w-8 h-8 rounded-full bg-white/80 hover:bg-white text-brown-900 flex items-center justify-center text-sm shadow-xs transition-colors"
             >
               ←
             </button>

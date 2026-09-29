@@ -175,7 +175,8 @@ export default function SignInCard({
                   (value) => !value
                 )
               }
-              className="absolute right-3 top-1/2 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-xl text-brown-700/50 transition-colors hover:bg-brown-900/5 hover:text-brown-900"
+              style={{ position: "absolute" }}
+              className="absolute right-3 top-1/2 -translate-y-1/2 flex h-9 w-9 items-center justify-center rounded-xl text-brown-700/50 transition-colors hover:bg-brown-900/5 hover:text-brown-900 z-10"
               aria-label={
                 showPassword
                   ? "Sembunyikan kata sandi"

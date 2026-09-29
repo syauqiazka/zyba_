@@ -82,7 +82,7 @@ export default function LandingHeader() {
         </Link>
 
         <nav
-          className="landing-nav-links"
+          className="landing-nav-links hidden md:flex"
           aria-label="Navigasi utama"
         >
           {NAV_ITEMS.map((item) => (

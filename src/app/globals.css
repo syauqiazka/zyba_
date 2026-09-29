@@ -64,11 +64,6 @@ button:focus-visible {
   outline-offset: 3px;
 }
 
-main button:not([aria-hidden]),
-main a:not([aria-hidden]) {
-  position: relative;
-}
-
 main input,
 main textarea,
 main select {
@@ -2829,6 +2824,53 @@ main select:focus {
 }
 
 @media (max-width: 768px) {
+  /* Navigation */
+  .landing-nav-links {
+    display: none !important;
+  }
+
+  .landing-container {
+    width: min(100% - 28px, 1180px);
+  }
+
+  /* Features Section */
+  .split-heading {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .section-heading h2 {
+    font-size: clamp(30px, 8.5vw, 42px);
+  }
+
+  .feature-row {
+    grid-template-columns: 44px minmax(0, 1fr) 36px;
+    gap: 12px;
+    padding: 18px 4px;
+  }
+
+  .feature-number {
+    display: none;
+  }
+
+  .feature-icon {
+    width: 40px;
+    height: 40px;
+  }
+
+  .feature-content strong {
+    font-size: 16px;
+  }
+
+  .feature-content span {
+    font-size: 12px;
+  }
+
+  .feature-arrow {
+    width: 34px;
+    height: 34px;
+  }
+
   .feature-detail {
     display: block;
     padding-bottom: 24px;
@@ -2841,6 +2883,80 @@ main select:focus {
 
   .feature-detail-meta {
     display: none;
+  }
+
+  /* Cara Kerja ZYBA / Journey Section Mobile */
+  .journey-section {
+    padding-top: 40px;
+    padding-bottom: 70px;
+  }
+
+  .journey-card {
+    grid-template-columns: 1fr !important;
+    min-height: auto;
+    border-radius: 26px;
+    overflow: hidden;
+  }
+
+  .journey-copy {
+    padding: 30px 20px 24px;
+  }
+
+  .journey-copy h2 {
+    font-size: clamp(28px, 8vw, 36px);
+    margin: 12px 0 0;
+  }
+
+  .journey-copy > p {
+    font-size: 13px;
+    margin: 14px 0 0;
+    line-height: 1.65;
+  }
+
+  .journey-points {
+    grid-template-columns: 1fr;
+    gap: 14px;
+    margin-top: 24px;
+  }
+
+  .journey-points > div {
+    padding-top: 10px;
+  }
+
+  .journey-visual {
+    min-height: 280px;
+    border-top: 1px solid rgba(59, 42, 32, 0.08);
+  }
+
+  .journey-visual::before {
+    width: 280px;
+    height: 280px;
+  }
+
+  .journey-visual::after {
+    width: 190px;
+    height: 190px;
+  }
+
+  .journey-node {
+    width: 140px;
+    padding: 11px;
+    border-radius: 14px;
+  }
+
+  .node-one {
+    top: 10%;
+    left: 8%;
+  }
+
+  .node-two {
+    top: 36%;
+    right: 8%;
+  }
+
+  .node-three {
+    left: 14%;
+    bottom: 10%;
   }
 }
 
