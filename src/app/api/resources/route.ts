@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { accountDb } from "@/backend/db/accountClient";
 
+export const dynamic = "force-dynamic";
+
 export async function GET(req: NextRequest) {
   try {
     const { searchParams } = new URL(req.url);

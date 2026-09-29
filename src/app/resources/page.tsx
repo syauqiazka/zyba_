@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { BookOpen, Headphones, Sparkles, Filter } from "lucide-react";
 import ResourceCard, { ResourceItem } from "./components/ResourceCard";
 import ResourcePlayerModal from "./components/ResourcePlayerModal";

@@ -1,14 +1,22 @@
 "use client";
 
 import React, { useState } from "react";
-import { AchievementDef } from "@/lib/achievements/definitions";
-
 import { X } from "lucide-react";
 import BadgeLucideIcon from "./BadgeLucideIcon";
 
+export interface BadgeOption {
+  id?: string;
+  key: string;
+  title: string;
+  description?: string;
+  icon: string;
+  badgeColor: string;
+  badgeTextColor: string;
+}
+
 interface Props {
   slot: number;
-  unlockedAchievements: AchievementDef[];
+  unlockedAchievements: BadgeOption[];
   currentBadgeKey?: string;
   onSelect: (key: string, customLabel?: string) => void;
   onClose: () => void;
@@ -108,7 +116,7 @@ export default function BadgePickerModal({ slot, unlockedAchievements, currentBa
 
             {/* Preview */}
             <div className={`rounded-2xl p-3 flex items-center gap-3 ${selectedDef.badgeColor}`}>
-              <span className="text-2xl">{selectedDef.icon}</span>
+              <BadgeLucideIcon name={selectedDef.icon} className={`w-7 h-7 flex-shrink-0 ${selectedDef.badgeTextColor}`} />
               <div>
                 <div className={`text-xs font-bold ${selectedDef.badgeTextColor}`}>
                   {customLabel || selectedDef.title}
