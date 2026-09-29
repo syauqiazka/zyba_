@@ -58,9 +58,9 @@ export default function CompanionPage() {
   const hasMessages = (activeConv?.messages || []).length > 0;
 
   return (
-    <div className="flex flex-col h-full min-h-0">
-      {/* Chat Window */}
-      <div className="flex-1 flex flex-col bg-white rounded-3xl border border-brown-900/10 overflow-hidden shadow-sm min-h-0">
+    <div className="flex flex-col h-full min-h-0 overflow-hidden">
+      {/* Chat Window — fills the remaining height, no rounded corners on mobile */}
+      <div className="flex-1 flex flex-col bg-white md:rounded-3xl border-0 md:border border-brown-900/10 overflow-hidden shadow-sm min-h-0">
           <ChatHeader
             activeConv={activeConv}
             selectedModel={selectedModel}

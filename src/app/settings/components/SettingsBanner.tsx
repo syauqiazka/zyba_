@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import React from "react";
 
@@ -14,15 +14,15 @@ export default function SettingsBanner({
   isSaved,
 }: SettingsBannerProps) {
   return (
-    <div className="glass-card rounded-3xl p-4 sm:p-6 md:p-7 border border-brown-900/10 bg-gradient-to-r from-cream via-white to-green-100/40 flex flex-col md:flex-row md:items-center justify-between gap-6 shadow-sm">
+    <div className="glass-card rounded-3xl p-4 sm:p-6 md:p-7 border border-brown-900/10 bg-gradient-to-r from-cream via-white to-green-100/40 flex flex-col gap-4 shadow-sm">
       <div>
-        <div className="flex items-center gap-2 mb-1">
+        <div className="flex items-center gap-2 mb-1 flex-wrap">
           <span className="px-2.5 py-0.5 rounded-full bg-brown-900 text-white text-xs font-bold uppercase tracking-wider">
             Account & Settings
           </span>
           <span className="text-xs text-brown-700">Zyba Settings</span>
         </div>
-        <h1 className="font-display text-3xl font-extrabold text-brown-900">
+        <h1 className="font-display text-2xl sm:text-3xl font-extrabold text-brown-900">
           Pengaturan Akun & Presensi
         </h1>
         <p className="text-xs text-brown-700 mt-1 max-w-xl">
@@ -30,17 +30,17 @@ export default function SettingsBanner({
         </p>
       </div>
 
-      <div className="flex items-center gap-2.5 shrink-0">
+      <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5">
         <button
           type="button"
           onClick={onOpenProfileModal}
-          className="bg-brown-900 hover:bg-orange-500 text-white font-bold text-xs px-4 py-3 rounded-full transition-colors shadow-sm flex items-center gap-1.5 cursor-pointer"
+          className="bg-brown-900 hover:bg-orange-500 text-white font-bold text-xs px-4 py-3 rounded-full transition-colors shadow-sm flex items-center justify-center gap-1.5 cursor-pointer"
         >
-          <span>⚙️️ Pengaturan Profil</span>
+          <span>⚙️ Pengaturan Profil</span>
         </button>
         <button
           onClick={onSave}
-          className="bg-brown-900 hover:bg-orange-500 text-white font-bold text-xs px-6 py-3 rounded-full transition-colors shadow-md shrink-0"
+          className="bg-brown-900 hover:bg-orange-500 text-white font-bold text-xs px-6 py-3 rounded-full transition-colors shadow-md text-center"
         >
           {isSaved ? "✓ Tersimpan!" : "Simpan Perubahan →"}
         </button>
@@ -48,4 +48,3 @@ export default function SettingsBanner({
     </div>
   );
 }
-

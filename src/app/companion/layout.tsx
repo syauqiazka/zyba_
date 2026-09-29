@@ -21,7 +21,7 @@ function CompanionLayoutInner({ children }: { children: React.ReactNode }) {
   const [sidebarVisible, setSidebarVisible] = useState(true);
 
   return (
-    <div className="flex h-screen overflow-hidden bg-cream relative">
+    <div className="flex bg-cream relative" style={{ height: '100dvh', overflow: 'hidden' }}>
       {/* Backdrop overlay for mobile */}
       {mobileSidebarOpen && (
         <div
@@ -32,7 +32,7 @@ function CompanionLayoutInner({ children }: { children: React.ReactNode }) {
 
       {/* Sidebar — hidden by default on mobile, slides in when open */}
       <div
-        className={`fixed md:relative top-0 left-0 z-50 h-screen transition-transform duration-300 ease-in-out
+        className={`fixed md:relative top-0 left-0 z-50 h-full transition-transform duration-300 ease-in-out
           ${mobileSidebarOpen ? "translate-x-0 shadow-2xl" : "-translate-x-full"}
           md:translate-x-0`}
       >

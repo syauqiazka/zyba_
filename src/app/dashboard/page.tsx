@@ -762,11 +762,7 @@ export default function DashboardPage() {
         </div>
 
         <div className="flex items-center gap-3">
-          <Link
-            href="/settings"
-            className="flex items-center gap-3 hover:opacity-80 transition-opacity"
-            title="Pengaturan akun"
-          >
+          <div className="flex items-center gap-3" title="Daily Streak">
             <div className="flex flex-col items-end">
               <span className="text-xs font-bold text-brown-900">
                 {userData.hasAssessment ? "Daily Streak" : "Status Pengguna"}
@@ -787,7 +783,7 @@ export default function DashboardPage() {
             >
               {userData.hasAssessment ? `🔥 ${userData.streak}` : "🌱"}
             </div>
-          </Link>
+          </div>
         </div>
       </div>
 

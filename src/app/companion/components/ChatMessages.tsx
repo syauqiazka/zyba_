@@ -74,17 +74,17 @@ export default function ChatMessages({
   // 1. EXACT CLAUDE.AI EMPTY STATE (Image 1)
   if (messages.length === 0) {
     return (
-      <div className="flex-1 overflow-y-auto p-4 sm:p-8 flex flex-col items-center justify-center text-center">
-        {/* Emblem + "You're here!" */}
-        <div className="flex flex-col items-center justify-center gap-2 mb-7">
+      <div className="flex-1 overflow-y-auto p-3 sm:p-6 md:p-8 flex flex-col items-center justify-center text-center min-h-0">
+        {/* Emblem + Greeting */}
+        <div className="flex flex-col items-center justify-center gap-2 mb-5 sm:mb-7">
           {/* Zyba Character Avatar */}
-          <div className="w-14 h-14 rounded-3xl bg-cream border-2 border-orange-500/20 flex items-center justify-center text-3xl shadow-sm select-none">
+          <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-3xl bg-cream border-2 border-orange-500/20 flex items-center justify-center text-2xl sm:text-3xl shadow-sm select-none">
             {persona.emoji}
           </div>
-          <h1 className="font-display font-extrabold text-2xl sm:text-3xl text-brown-900 tracking-tight">
+          <h1 className="font-display font-extrabold text-xl sm:text-2xl md:text-3xl text-brown-900 tracking-tight">
             Halo! Aku {persona.name} (｡•̀ᴗ-)✧
           </h1>
-          <p className="text-xs text-brown-700 max-w-md">
+          <p className="text-xs text-brown-700 max-w-xs sm:max-w-md px-2">
             {persona.description}. Ceritakan apa saja yang ada di pikiranmu hari ini~
           </p>
         </div>
