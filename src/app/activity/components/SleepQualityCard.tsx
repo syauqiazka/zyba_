@@ -1,11 +1,11 @@
-"use client";
+﻿"use client";
 
 import React from "react";
 import { Moon, Lightbulb } from "lucide-react";
 
 export default function SleepQualityCard() {
   return (
-    <div className="lg:col-span-5 glass-card rounded-3xl p-7 border border-brown-900/10 flex flex-col justify-between bg-gradient-to-b from-white to-cream/40 shadow-xs">
+    <div className="lg:col-span-5 glass-card rounded-3xl p-4 sm:p-6 md:p-7 border border-brown-900/10 flex flex-col justify-between bg-gradient-to-b from-white to-cream/40 shadow-xs">
       <div>
         <div className="flex items-center justify-between mb-4">
           <span className="text-xs font-bold text-brown-700 uppercase tracking-wider flex items-center gap-1.5">
@@ -43,3 +43,4 @@ export default function SleepQualityCard() {
     </div>
   );
 }
+

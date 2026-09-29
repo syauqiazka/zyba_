@@ -56,6 +56,9 @@ function PageLoadingFallback() {
   );
 }
 
+import Link from "next/link";
+import MobileBottomNav from "@/components/ui/MobileBottomNav";
+
 export default function ClientLayout({
   children,
 }: {
@@ -99,51 +102,86 @@ export default function ClientLayout({
     );
   }
 
-  // Protected pages — global sidebar
+  // Protected pages — global sidebar + mobile top bar + mobile bottom nav
   return (
     <>
       <NavigationProgress />
 
-      {/* Mobile: hamburger button fixed top-left */}
-      <button
-        type="button"
-        onClick={() => setMobileSidebarOpen(true)}
-        className={`md:hidden fixed top-4 left-4 z-40 w-10 h-10 rounded-xl bg-white border border-brown-900/10 shadow-sm flex items-center justify-center text-brown-900 active:scale-95 transition-all duration-200 ${mobileSidebarOpen
-            ? "opacity-0 pointer-events-none"
-            : "opacity-100"
-          }`}
-        aria-label="Buka menu"
-      >
-        <svg
-          width="18"
-          height="18"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2.5"
-          strokeLinecap="round"
-        >
-          <line x1="3" y1="6" x2="21" y2="6" />
-          <line x1="3" y1="12" x2="21" y2="12" />
-          <line x1="3" y1="18" x2="21" y2="18" />
-        </svg>
-      </button>
+      {/* Mobile Sticky Top Header Bar */}
+      <header className="md:hidden fixed top-0 left-0 right-0 z-30 h-14 bg-white/95 backdrop-blur-md border-b border-brown-900/10 px-4 flex items-center justify-between shadow-2xs">
+        <div className="flex items-center gap-2.5">
+          <button
+            type="button"
+            onClick={() => setMobileSidebarOpen(true)}
+            className="w-9 h-9 rounded-xl bg-cream border border-brown-900/10 flex items-center justify-center text-brown-900 active:scale-95 transition-all"
+            aria-label="Buka menu lengkap"
+            title="Menu Lengkap"
+          >
+            <svg
+              width="17"
+              height="17"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2.5"
+              strokeLinecap="round"
+            >
+              <line x1="3" y1="6" x2="21" y2="6" />
+              <line x1="3" y1="12" x2="21" y2="12" />
+              <line x1="3" y1="18" x2="21" y2="18" />
+            </svg>
+          </button>
+
+          <Link href="/dashboard" className="flex items-center gap-2">
+            <div className="relative w-7 h-7 shrink-0 flex items-center justify-center rounded-xl bg-cream border border-orange-500/20 shadow-2xs">
+              <div className="absolute w-2.5 h-2.5 rounded-full bg-orange-500 -top-0.5 left-1/2 -translate-x-1/2" />
+              <div className="absolute w-2.5 h-2.5 rounded-full bg-green-500 -bottom-0.5 left-1/2 -translate-x-1/2" />
+              <div className="absolute w-2.5 h-2.5 rounded-full bg-orange-500 -left-0.5 top-1/2 -translate-y-1/2" />
+              <div className="absolute w-2.5 h-2.5 rounded-full bg-green-500 -right-0.5 top-1/2 -translate-y-1/2" />
+              <div className="w-2 h-2 rounded-full bg-brown-900 z-10" />
+            </div>
+            <span className="font-display font-black text-base tracking-tight text-brown-900">
+              ZYBA
+            </span>
+          </Link>
+        </div>
+
+        <div className="flex items-center gap-2">
+          <Link
+            href="/achievements"
+            className="px-2.5 py-1 rounded-full bg-orange-100 text-orange-600 text-[11px] font-bold flex items-center gap-1 active:scale-95 transition-transform"
+            title="Lihat Pencapaian"
+          >
+            <span>🏆</span>
+            <span>Badge</span>
+          </Link>
+          <Link
+            href="/settings"
+            className="w-9 h-9 rounded-xl bg-cream border border-brown-900/10 flex items-center justify-center text-brown-700 active:scale-95 transition-all text-xs"
+            title="Pengaturan"
+            aria-label="Pengaturan"
+          >
+            ⚙️
+          </Link>
+        </div>
+      </header>
 
       {/* Mobile: backdrop overlay */}
       {mobileSidebarOpen && (
         <div
-          className="md:hidden fixed inset-0 z-40 bg-black/60 backdrop-blur-xs transition-opacity duration-300"
+          className="md:hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-xs transition-opacity duration-300"
           onClick={() => setMobileSidebarOpen(false)}
         />
       )}
 
       <div className="flex items-start min-h-screen">
-        {/* Sidebar */}
+        {/* Sidebar (Desktop sticky, Mobile sliding drawer) */}
         <div
-          className={`fixed md:sticky top-0 left-0 z-50 h-screen transition-transform duration-300 md:translate-x-0 ${mobileSidebarOpen
+          className={`fixed md:sticky top-0 left-0 z-50 h-screen transition-transform duration-300 md:translate-x-0 ${
+            mobileSidebarOpen
               ? "translate-x-0 shadow-2xl"
-              : "-translate-x-full"
-            }`}
+              : "-translate-x-full md:translate-x-0"
+          }`}
         >
           <Suspense fallback={<SidebarSkeleton />}>
             <Sidebar
@@ -152,12 +190,16 @@ export default function ClientLayout({
           </Suspense>
         </div>
 
-        <main className="flex-1 min-w-0 px-4 pt-16 pb-12 md:px-6 md:pt-6 lg:px-10 lg:pt-8 overflow-x-hidden">
+        {/* Main Content Area */}
+        <main className="flex-1 min-w-0 px-3.5 pt-[68px] pb-24 sm:px-6 md:px-6 md:pt-6 md:pb-12 lg:px-10 lg:pt-8 overflow-x-hidden">
           <Suspense fallback={<PageLoadingFallback />}>
             {children}
           </Suspense>
         </main>
       </div>
+
+      {/* Mobile Bottom Navigation Bar */}
+      <MobileBottomNav />
     </>
   );
 }

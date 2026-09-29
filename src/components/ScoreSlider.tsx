@@ -314,6 +314,7 @@ export default function ScoreSlider({
           cursor-pointer
           opacity-0
           appearance-none
+          touch-none
         "
             />
         </div>

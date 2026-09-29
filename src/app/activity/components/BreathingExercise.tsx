@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 interface BreathingExerciseProps {
   breathingActive: boolean;
@@ -20,7 +20,7 @@ export default function BreathingExercise({
   formatTime,
 }: BreathingExerciseProps) {
   return (
-    <div className="lg:col-span-7 glass-card rounded-3xl p-7 border border-brown-900/10 flex flex-col items-center justify-between text-center relative overflow-hidden bg-gradient-to-br from-white via-green-100/20 to-cream">
+    <div className="lg:col-span-7 glass-card rounded-3xl p-4 sm:p-6 md:p-7 border border-brown-900/10 flex flex-col items-center justify-between text-center relative overflow-hidden bg-gradient-to-br from-white via-green-100/20 to-cream">
       <div className="flex items-center justify-between w-full mb-2">
         <span className="text-xs font-bold text-green-600 uppercase tracking-wider flex items-center gap-1.5">
           <Wind size={15} className="text-green-600" />
@@ -79,3 +79,4 @@ export default function BreathingExercise({
     </div>
   );
 }
+

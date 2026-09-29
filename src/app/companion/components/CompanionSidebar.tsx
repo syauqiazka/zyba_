@@ -177,6 +177,18 @@ export default function CompanionSidebar({
   if (!sidebarVisible) {
     return (
       <aside className="flex flex-col w-14 shrink-0 bg-[#FAF7F2] border-r border-brown-900/10 h-screen items-center py-3 gap-2 select-none transition-all duration-300 z-20">
+        {/* Back to Dashboard */}
+        <Link
+          href="/dashboard"
+          className="p-2 rounded-xl text-brown-700/50 hover:text-brown-900 hover:bg-gradient-to-r hover:from-orange-100/80 hover:to-green-100/80 hover:shadow-sm transition-all duration-300"
+          title="Kembali ke Dashboard ZYBA"
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+            <polyline points="9 22 9 12 15 12 15 22" />
+          </svg>
+        </Link>
+
         {/* Toggle back open */}
         <button
           type="button"

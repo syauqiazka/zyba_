@@ -38,7 +38,7 @@ export default function AssessmentPage() {
   const [customPhysicalSymptom, setCustomPhysicalSymptom] = useState("");
   const [sleepRating, setSleepRating] = useState(3);
   const [stressRating, setStressRating] = useState(2);
-  const [medications, setMedications] = useState("");
+  const [medications, setMedications] = useState<string[]>([]);
   const [mentalSymptoms, setMentalSymptoms] = useState<string[]>([]);
   const [customMentalSymptom, setCustomMentalSymptom] = useState("");
   const [expressionText, setExpressionText] = useState("");
@@ -94,7 +94,7 @@ export default function AssessmentPage() {
         finalMental.push(customMentalSymptom.trim());
       }
 
-      const finalMedications = medications.trim() || "Tidak ada";
+      const finalMedications = medications.length > 0 ? medications.join("; ") : "Tidak ada";
       const finalExpression = expressionText.trim() || "Tidak ada catatan tambahan.";
 
       try {

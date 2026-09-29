@@ -6,6 +6,7 @@ import ScoreSlider, {
   scoreTint,
 } from "@/components/ScoreSlider";
 import { MOODS } from "@/lib/moods";
+import TagInput from "@/components/ui/TagInput";
 
 interface QuestionStepProps {
   currentStep: number;
@@ -29,8 +30,8 @@ interface QuestionStepProps {
   setSleepRating: React.Dispatch<React.SetStateAction<number>>;
   stressRating: number;
   setStressRating: React.Dispatch<React.SetStateAction<number>>;
-  medications: string;
-  setMedications: React.Dispatch<React.SetStateAction<string>>;
+  medications: string[];
+  setMedications: React.Dispatch<React.SetStateAction<string[]>>;
   mentalSymptoms: string[];
   setMentalSymptoms: React.Dispatch<React.SetStateAction<string[]>>;
   customMentalSymptom: string;
@@ -187,17 +188,20 @@ export default function QuestionStep({
               </p>
             </div>
 
-            <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
+            <div className="grid grid-cols-2 sm:grid-cols-5 gap-2.5 sm:gap-3">
               {MOODS.map((m) => {
                 const isSelected = mood === m.value;
                 const isHappy = m.value === "HAPPY";
+                const isOverjoyed = m.value === "OVERJOYED";
                 return (
                   <button
                     key={m.value}
                     type="button"
                     onClick={() => setMood(m.value)}
                     style={isSelected ? { backgroundColor: m.bg } : undefined}
-                    className={`flex flex-col items-center justify-center gap-2 p-4 rounded-2xl border-2 transition-all duration-200 cursor-pointer ${
+                    className={`flex flex-col items-center justify-center gap-1.5 sm:gap-2 p-3.5 sm:p-4 rounded-2xl border-2 transition-all duration-200 cursor-pointer ${
+                      isOverjoyed ? "col-span-2 sm:col-span-1" : ""
+                    } ${
                       isSelected
                         ? `${isHappy ? "text-brown-900" : "text-white"} border-transparent shadow-md scale-[1.03]`
                         : "bg-white border-brown-900/10 text-brown-700 hover:border-brown-900/25 hover:bg-cream/40 hover:-translate-y-0.5"
@@ -397,7 +401,7 @@ export default function QuestionStep({
           </div>
         )}
 
-        {/* Step 7: Obat & Suplemen — Tanpa teks default 'Tidak ada' yang harus dihapus, bisa langsung di-skip */}
+        {/* Step 7: Obat & Suplemen — Chip/tag input seperti email, bisa di-skip */}
         {currentStep === 7 && (
           <div className="flex flex-col gap-3">
             <div>
@@ -409,12 +413,11 @@ export default function QuestionStep({
               </p>
             </div>
 
-            <input
-              type="text"
-              value={medications}
-              onChange={(e) => setMedications(e.target.value)}
-              placeholder="Contoh: Vitamin D, suplemen magnesium, obat lambung..."
-              className="w-full rounded-2xl border border-brown-900/12 bg-[#fbf9f5] px-4 py-3.5 text-xs text-brown-900 font-medium placeholder:text-brown-700/35 outline-none transition-all focus:border-orange-500/60 focus:bg-white focus:ring-4 focus:ring-orange-500/10 mt-1"
+            <TagInput
+              tags={medications}
+              onChange={setMedications}
+              placeholder="Ketik nama obat/suplemen, tekan Enter untuk tambah..."
+              hint="💊 Contoh: Vitamin D · Suplemen Magnesium · Obat Lambung — Tekan Enter/Tab setiap item. Kosongkan dan langsung klik Lanjut jika tidak ada."
             />
 
             <div className="rounded-2xl bg-orange-500/8 border border-orange-500/20 p-3.5 text-xs text-brown-800 flex items-start gap-2.5">

@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import React from "react";
 
@@ -14,7 +14,7 @@ export default function SettingsBanner({
   isSaved,
 }: SettingsBannerProps) {
   return (
-    <div className="glass-card rounded-3xl p-7 border border-brown-900/10 bg-gradient-to-r from-cream via-white to-green-100/40 flex flex-col md:flex-row md:items-center justify-between gap-6 shadow-sm">
+    <div className="glass-card rounded-3xl p-4 sm:p-6 md:p-7 border border-brown-900/10 bg-gradient-to-r from-cream via-white to-green-100/40 flex flex-col md:flex-row md:items-center justify-between gap-6 shadow-sm">
       <div>
         <div className="flex items-center gap-2 mb-1">
           <span className="px-2.5 py-0.5 rounded-full bg-brown-900 text-white text-xs font-bold uppercase tracking-wider">
@@ -36,7 +36,7 @@ export default function SettingsBanner({
           onClick={onOpenProfileModal}
           className="bg-brown-900 hover:bg-orange-500 text-white font-bold text-xs px-4 py-3 rounded-full transition-colors shadow-sm flex items-center gap-1.5 cursor-pointer"
         >
-          <span>⚙️ Pengaturan Profil</span>
+          <span>⚙️️ Pengaturan Profil</span>
         </button>
         <button
           onClick={onSave}
@@ -48,3 +48,4 @@ export default function SettingsBanner({
     </div>
   );
 }
+

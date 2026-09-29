@@ -38,7 +38,7 @@ export default function ScoreBreakdown() {
   const communitySupport = Math.min(100, Math.max(20, Math.round(score * 1.02)));
 
   return (
-    <div className="lg:col-span-7 glass-card rounded-3xl p-7 border border-brown-900/10 flex flex-col justify-between">
+    <div className="lg:col-span-7 glass-card rounded-3xl p-4 sm:p-6 md:p-7 border border-brown-900/10 flex flex-col justify-between">
       <div className="flex items-center justify-between mb-4">
         <h2 className="font-display text-lg font-bold text-brown-900">
           Analisis Komponen Zyba Score ({score}/100)
@@ -103,3 +103,4 @@ export default function ScoreBreakdown() {
     </div>
   );
 }
+

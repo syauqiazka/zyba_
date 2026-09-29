@@ -136,7 +136,7 @@ export default function DailyAssessmentPage() {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
         {/* Left: Form or Summary */}
         <div className="lg:col-span-7">
-          <div className="glass-card rounded-3xl p-7 border border-brown-900/10 bg-white">
+          <div className="glass-card rounded-3xl p-4 sm:p-6 md:p-7 border border-brown-900/10 bg-white">
             {pageState === "loading" && (
               <div className="flex flex-col gap-4 animate-pulse">
                 <div className="h-6 w-48 bg-cream rounded" />

@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import React from "react";
 import { Footprints, Flame, Dumbbell, Activity, Plus } from "lucide-react";
@@ -19,7 +19,7 @@ export default function ActivityTracker({
   onAddProgress,
 }: ActivityTrackerProps) {
   return (
-    <div className="glass-card rounded-3xl p-7 border border-brown-900/10 flex flex-col gap-6 shadow-xs">
+    <div className="glass-card rounded-3xl p-4 sm:p-6 md:p-7 border border-brown-900/10 flex flex-col gap-6 shadow-xs">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <h2 className="font-display text-xl font-extrabold text-brown-900 flex items-center gap-2">
@@ -105,3 +105,4 @@ export default function ActivityTracker({
     </div>
   );
 }
+

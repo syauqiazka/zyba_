@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import React, { useRef } from "react";
 import ComposeBox from "./components/ComposeBox";
@@ -110,7 +110,7 @@ export default function CommunityPage() {
       <button
         type="button"
         onClick={() => setIsPostModalOpen(true)}
-        className="fixed bottom-6 right-6 w-14 h-14 rounded-full bg-orange-500 text-white shadow-xl hover:bg-orange-600 hover:scale-105 active:scale-95 transition-all flex items-center justify-center z-40"
+        className="fixed bottom-24 md:bottom-6 right-4 sm:right-6 w-14 h-14 rounded-full bg-orange-500 text-white shadow-xl hover:bg-orange-600 hover:scale-105 active:scale-95 transition-all flex items-center justify-center z-40"
         title="Tulis thread baru"
         aria-label="Tulis thread baru"
       >
@@ -137,3 +137,4 @@ export default function CommunityPage() {
     </div>
   );
 }
+

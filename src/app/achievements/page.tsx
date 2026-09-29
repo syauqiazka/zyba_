@@ -117,7 +117,7 @@ export default function AchievementsPage() {
   }
 
   return (
-    <div className="flex-1 overflow-y-auto p-4 md:p-6 lg:p-8 space-y-6 max-w-4xl mx-auto w-full">
+    <div className="flex-1 space-y-6 max-w-4xl mx-auto w-full pb-8">
       {/* ── Header ── */}
       <div>
         <h1 className="font-display font-bold text-2xl md:text-3xl text-brown-900">
@@ -158,14 +158,14 @@ export default function AchievementsPage() {
                     {/* Remove button */}
                     <button
                       onClick={() => handleRemoveBadge(slot)}
-                      className="absolute top-2 right-2 w-6 h-6 rounded-full bg-brown-900/10 hover:bg-danger hover:text-white text-brown-700 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                      className="absolute top-1.5 right-1.5 w-6 h-6 rounded-full bg-white/70 md:bg-brown-900/10 hover:bg-danger hover:text-white text-brown-700 flex items-center justify-center opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity shadow-xs"
                       title="Hapus badge"
                     >
                       <X size={12} />
                     </button>
                     <button
                       onClick={() => setPickerSlot(slot)}
-                      className="absolute bottom-2 right-2 w-6 h-6 rounded-full bg-brown-900/10 hover:bg-orange-500 hover:text-white text-brown-700 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                      className="absolute bottom-1.5 right-1.5 w-6 h-6 rounded-full bg-white/70 md:bg-brown-900/10 hover:bg-orange-500 hover:text-white text-brown-700 flex items-center justify-center opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity shadow-xs"
                       title="Ganti badge"
                     >
                       <Edit3 size={12} />

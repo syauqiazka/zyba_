@@ -31,10 +31,10 @@ export default function TrackerChecklist({
   toggleTracker,
 }: TrackerChecklistProps) {
   return (
-    <section className="glass-card rounded-3xl p-7 border border-brown-900/10">
-      <div className="flex items-center justify-between mb-6">
+    <section className="glass-card rounded-3xl p-5 sm:p-7 border border-brown-900/10">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
         <div>
-          <h2 className="font-display text-xl font-extrabold text-brown-900">
+          <h2 className="font-display text-lg sm:text-xl font-extrabold text-brown-900">
             Zyba Tracker Checklist
           </h2>
           <p className="text-xs text-brown-700 mt-0.5">

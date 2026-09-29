@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import React, { useState, useMemo } from "react";
 import { MOODS } from "@/lib/moods";
@@ -54,11 +54,11 @@ export interface Pagination {
 }
 
 export const SLEEP_OPTIONS = [
-  { rating: 1, label: "< 4 jam", desc: "Insomnia", icon: "😴" },
-  { rating: 2, label: "4-5 jam", desc: "Kurang Nyenyak", icon: "🥱" },
-  { rating: 3, label: "6-7 jam", desc: "Cukup", icon: "🛌" },
-  { rating: 4, label: "7-8 jam", desc: "Pulas & Optimal", icon: "🌙" },
-  { rating: 5, label: "> 8 jam", desc: "Sangat Segar", icon: "🌟" },
+  { rating: 1, label: "< 4 jam", desc: "Insomnia", icon: "ðŸ˜´" },
+  { rating: 2, label: "4-5 jam", desc: "Kurang Nyenyak", icon: "ðŸ¥±" },
+  { rating: 3, label: "6-7 jam", desc: "Cukup", icon: "ðŸ›Œ" },
+  { rating: 4, label: "7-8 jam", desc: "Pulas & Optimal", icon: "ðŸŒ™" },
+  { rating: 5, label: "> 8 jam", desc: "Sangat Segar", icon: "ðŸŒŸ" },
 ];
 
 export const PHYSICAL_SYMPTOMS_LIST = [
@@ -261,10 +261,10 @@ export function DailyAssessmentForm({ onSubmit, isSubmitting, onMoodChange }: Fo
   }, [mood, stressLevel, anxietyLevel, satisfactionLevel, productivityLevel, meTimeLevel, sleepRating, sleepHours, energyLevel, eatingHabit, physicalActivity, socialConnection, socialSupport, communityInteraction]);
 
   const STEPS = [
-    { title: "Aspek Mental", icon: "🧠", subtitle: "6 Pertanyaan Emosi & Fokus" },
+    { title: "Aspek Mental", icon: "ðŸ§ ", subtitle: "6 Pertanyaan Emosi & Fokus" },
     { title: "Aspek Fisik", icon: "⚡", subtitle: "5 Pertanyaan Tidur & Tubuh" },
-    { title: "Aspek Sosial", icon: "🤝", subtitle: "3 Pertanyaan Koneksi & Dukungan" },
-    { title: "Gratitude & Refleksi", icon: "💛", subtitle: "Hal Positif & AI Screening" },
+    { title: "Aspek Sosial", icon: "ðŸ¤", subtitle: "3 Pertanyaan Koneksi & Dukungan" },
+    { title: "Gratitude & Refleksi", icon: "ðŸ’›", subtitle: "Hal Positif & AI Screening" },
   ];
 
   const handleSubmit = async () => {
@@ -335,7 +335,7 @@ export function DailyAssessmentForm({ onSubmit, isSubmitting, onMoodChange }: Fo
       {step === 0 && (
         <div className="flex flex-col gap-6 animate-in fade-in duration-200">
           <div className="flex items-center gap-2 p-3 bg-orange-100/50 rounded-2xl border border-orange-500/20 text-xs text-brown-800">
-            <span className="text-base">🧠</span>
+            <span className="text-base">ðŸ§ </span>
             <span className="font-semibold">
               Aspek Mental berkontribusi <strong>50%</strong> pada kalkulasi Zyba Score harianmu.
             </span>
@@ -358,11 +358,12 @@ export function DailyAssessmentForm({ onSubmit, isSubmitting, onMoodChange }: Fo
                       setMood(m.value);
                       onMoodChange?.(m.value);
                     }}
-                    className={`justify-center ${choiceClass(isSelected)}`}
+                    style={isSelected ? { backgroundColor: m.bg } : undefined}
+                    className={`flex flex-col items-center justify-center gap-1.5 p-3 rounded-2xl border-2 transition-all duration-200 cursor-pointer ${isSelected ? `${m.value === "HAPPY" ? "text-brown-900" : "text-white"} border-transparent shadow-md scale-[1.03]` : "bg-white border-brown-900/10 text-brown-700 hover:border-brown-900/25 hover:bg-cream/40 hover:-translate-y-0.5"}`}
                   >
-                    <span className="text-xl sm:text-2xl mr-1">{m.emoji}</span>
-                    <span>{m.label}</span>
-                    {isSelected && <span className="text-orange-500 font-extrabold ml-1">✓</span>}
+                    <span className="text-xl sm:text-2xl select-none">{m.emoji}</span>
+                    <span className="text-xs font-bold">{m.label}</span>
+                    {isSelected && <span className={`text-[10px] font-extrabold px-2 py-0.5 rounded-full mt-0.5 ${m.value === "HAPPY" ? "bg-brown-900/15 text-brown-900" : "bg-white/25 text-white"}`}>✓ Dipilih</span>}
                   </button>
                 );
               })}
@@ -574,7 +575,7 @@ export function DailyAssessmentForm({ onSubmit, isSubmitting, onMoodChange }: Fo
       {step === 2 && (
         <div className="flex flex-col gap-6 animate-in fade-in duration-200">
           <div className="flex items-center gap-2 p-3 bg-cream/70 rounded-2xl border border-brown-900/10 text-xs text-brown-800">
-            <span className="text-base">🤝</span>
+            <span className="text-base">ðŸ¤</span>
             <span className="font-semibold">
               Aspek Sosial berkontribusi <strong>25%</strong> pada kalkulasi Zyba Score harianmu.
             </span>
@@ -684,7 +685,7 @@ export function DailyAssessmentForm({ onSubmit, isSubmitting, onMoodChange }: Fo
           {/* 15. Gratitude */}
           <div>
             <h3 className="font-display text-sm font-bold text-brown-900 mb-1">
-              15. Hal Positif / Gratitude Hari Ini (Opsional) 🌟
+              15. Hal Positif / Gratitude Hari Ini (Opsional) ðŸŒŸ
             </h3>
             <p className="text-xs text-brown-700 mb-2">
               Satu hal kecil atau pencapaian yang membuatmu bersyukur hari ini:

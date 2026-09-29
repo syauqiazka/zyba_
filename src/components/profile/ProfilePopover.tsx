@@ -113,7 +113,7 @@ export default function ProfilePopover({
   };
 
   const handleSaveCustomStatus = () => {
-    const trimmed = customStatusInput.trim() || "when yah";
+    const trimmed = customStatusInput.trim() || "Healing & Bertumbuh";
     setCustomStatus(trimmed);
     setIsEditingCustomStatus(false);
     try {
@@ -226,7 +226,7 @@ export default function ProfilePopover({
                   onChange={(e) => setCustomStatusInput(e.target.value)}
                   onKeyDown={(e) => e.key === "Enter" && handleSaveCustomStatus()}
                   className="bg-transparent text-xs text-brown-900 outline-hidden w-28 font-medium"
-                  placeholder="Set status..."
+                  placeholder="Ketik statusmu..."
                   autoFocus
                 />
                 <button

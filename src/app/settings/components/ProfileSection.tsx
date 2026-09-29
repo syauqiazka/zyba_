@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import React, { useRef, useState, useEffect, useCallback } from "react";
 import { isAvatarUrl, resolveAvatar } from "@/lib/avatarUtils";
@@ -25,14 +25,14 @@ interface ProfileSectionProps {
 }
 
 const PRESET_EMOJIS = [
-  { key: "fox", emoji: "🦊" },
-  { key: "panda", emoji: "🐼" },
-  { key: "lion", emoji: "🦁" },
-  { key: "rabbit", emoji: "🐰" },
-  { key: "koala", emoji: "🐨" },
-  { key: "cat", emoji: "🐱" },
-  { key: "leaf", emoji: "🌿" },
-  { key: "flower", emoji: "🌸" },
+  { key: "fox", emoji: "ðŸ¦Š" },
+  { key: "panda", emoji: "ðŸ¼" },
+  { key: "lion", emoji: "ðŸ¦" },
+  { key: "rabbit", emoji: "ðŸ°" },
+  { key: "koala", emoji: "ðŸ¨" },
+  { key: "cat", emoji: "ðŸ±" },
+  { key: "leaf", emoji: "ðŸŒ¿" },
+  { key: "flower", emoji: "ðŸŒ¸" },
 ];
 
 export default function ProfileSection({
@@ -206,7 +206,7 @@ export default function ProfileSection({
   const isImg = isAvatarUrl(avatarUrl);
 
   return (
-    <div className="lg:col-span-7 glass-card rounded-3xl p-7 border border-brown-900/10 flex flex-col gap-6 bg-white">
+    <div className="lg:col-span-7 glass-card rounded-3xl p-4 sm:p-6 md:p-7 border border-brown-900/10 flex flex-col gap-6 bg-white">
       <h2 className="font-display text-lg font-bold text-brown-900 border-b border-brown-900/10 pb-3">
         1. Profil Pengguna
       </h2>
@@ -307,7 +307,7 @@ export default function ProfileSection({
 
       {uploadError && (
         <div className="bg-red-50 border border-red-200 text-red-700 text-xs px-3 py-2 rounded-xl">
-          ⚠ {uploadError}
+          ⚠️ {uploadError}
         </div>
       )}
 
@@ -408,3 +408,4 @@ export default function ProfileSection({
     </div>
   );
 }
+
