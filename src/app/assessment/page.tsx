@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { detectRisk } from "@/lib/crisisDetection";
 import AssessmentNav from "./components/AssessmentNav";
 import QuestionStep from "./components/QuestionStep";
@@ -26,6 +26,16 @@ const STEPS = [
 export default function AssessmentPage() {
   const router = useRouter();
   const [currentStep, setCurrentStep] = useState(0);
+  const contentRef = useRef<HTMLDivElement>(null);
+
+  // Scroll otomatis ke atas konten asesmen saat berpindah step
+  const scrollToTop = () => {
+    if (contentRef.current) {
+      contentRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
+    } else {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  };
 
   // Form State — input awal bersih dengan placeholder (tanpa teks bawaan yang harus dihapus)
   const [goal, setGoal] = useState("Stress Relief & Relaxation");
@@ -132,11 +142,15 @@ export default function AssessmentPage() {
       }
     } else {
       setCurrentStep((prev) => prev + 1);
+      setTimeout(scrollToTop, 50);
     }
   };
 
   const handlePrev = () => {
-    if (currentStep > 0) setCurrentStep((prev) => prev - 1);
+    if (currentStep > 0) {
+      setCurrentStep((prev) => prev - 1);
+      setTimeout(scrollToTop, 50);
+    }
   };
 
   const toggleSymptom = (list: string[], setList: (l: string[]) => void, item: string) => {
@@ -200,7 +214,7 @@ export default function AssessmentPage() {
       </header>
 
       {/* ===== Main Content ===== */}
-      <div className="flex-1 max-w-[1200px] w-full mx-auto px-4 py-6 sm:px-6 md:px-10 md:py-10 flex flex-col justify-center">
+      <div ref={contentRef} className="flex-1 max-w-[1200px] w-full mx-auto px-4 py-6 sm:px-6 md:px-10 md:py-10 flex flex-col justify-center">
         {/* Page title */}
         {!isCompleted && !isCompiling && (
           <div className="mb-4 sm:mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-2">

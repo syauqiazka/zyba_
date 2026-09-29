@@ -25,14 +25,14 @@ interface ProfileSectionProps {
 }
 
 const PRESET_EMOJIS = [
-  { key: "fox", emoji: "ðŸ¦Š" },
-  { key: "panda", emoji: "ðŸ¼" },
-  { key: "lion", emoji: "ðŸ¦" },
-  { key: "rabbit", emoji: "ðŸ°" },
-  { key: "koala", emoji: "ðŸ¨" },
-  { key: "cat", emoji: "ðŸ±" },
-  { key: "leaf", emoji: "ðŸŒ¿" },
-  { key: "flower", emoji: "ðŸŒ¸" },
+  { key: "fox", emoji: "🦊" },
+  { key: "panda", emoji: "🐼" },
+  { key: "lion", emoji: "🦁" },
+  { key: "rabbit", emoji: "🐰" },
+  { key: "koala", emoji: "🐨" },
+  { key: "cat", emoji: "🐱" },
+  { key: "leaf", emoji: "🌿" },
+  { key: "flower", emoji: "🌸" },
 ];
 
 export default function ProfileSection({
