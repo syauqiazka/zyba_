@@ -24,10 +24,17 @@ model User {
   companionPersona CompanionPersona @default(KINA)
   plan             Plan             @default(FREE)
 
-  onboardingCompleted Boolean @default(false)
-  zybaScore           Int?
-  stressLevel         Int?
-  streak              Int?
+onboardingCompleted Boolean @default(false)
+
+termsAcceptedAt DateTime?
+termsVersion    String?
+
+communityGuidelinesAcceptedAt DateTime?
+communityGuidelinesVersion   String?
+
+zybaScore     Int?
+stressLevel   Int?
+streak        Int?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
