@@ -1,23 +1,33 @@
 import { PrismaClient } from "@/generated/companion-client";
 
-const g = globalThis as unknown as { companionDb: PrismaClient | undefined };
+const globalForCompanionDb = globalThis as unknown as {
+  companionDb?: PrismaClient;
+};
 
 const dbUrl =
   process.env.DATABASE_URL_COMPANION ||
-  process.env.DIRECT_URL_COMPANION ||
-  process.env.DATABASE_URL;
+  process.env.DIRECT_URL_COMPANION;
+
+if (!dbUrl) {
+  throw new Error(
+    "DATABASE_URL_COMPANION / DIRECT_URL_COMPANION belum diset."
+  );
+}
 
 export const companionDb =
-  g.companionDb ??
-  new PrismaClient(
-    dbUrl
-      ? {
-          datasources: {
-            db: { url: dbUrl },
-          },
-        }
-      : undefined
-  );
+  globalForCompanionDb.companionDb ??
+  new PrismaClient({
+    datasources: {
+      db: {
+        url: dbUrl,
+      },
+    },
+    log:
+      process.env.NODE_ENV === "development"
+        ? ["warn", "error"]
+        : ["error"],
+  });
 
-g.companionDb = companionDb;
-
+if (process.env.NODE_ENV !== "production") {
+  globalForCompanionDb.companionDb = companionDb;
+}

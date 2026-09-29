@@ -1,23 +1,33 @@
 import { PrismaClient } from "@/generated/account-client";
 
-const g = globalThis as unknown as { accountDb: PrismaClient | undefined };
+const globalForAccountDb = globalThis as unknown as {
+  accountDb?: PrismaClient;
+};
 
 const dbUrl =
   process.env.DATABASE_URL_ACCOUNT ||
-  process.env.DIRECT_URL_ACCOUNT ||
-  process.env.DATABASE_URL;
+  process.env.DIRECT_URL_ACCOUNT;
+
+if (!dbUrl) {
+  throw new Error(
+    "DATABASE_URL_ACCOUNT / DIRECT_URL_ACCOUNT belum diset."
+  );
+}
 
 export const accountDb =
-  g.accountDb ??
-  new PrismaClient(
-    dbUrl
-      ? {
-          datasources: {
-            db: { url: dbUrl },
-          },
-        }
-      : undefined
-  );
+  globalForAccountDb.accountDb ??
+  new PrismaClient({
+    datasources: {
+      db: {
+        url: dbUrl,
+      },
+    },
+    log:
+      process.env.NODE_ENV === "development"
+        ? ["warn", "error"]
+        : ["error"],
+  });
 
-g.accountDb = accountDb;
-
+if (process.env.NODE_ENV !== "production") {
+  globalForAccountDb.accountDb = accountDb;
+}
