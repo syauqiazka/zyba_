@@ -33,6 +33,8 @@ onboardingCompleted Boolean @default(false)
 
 termsAcceptedAt DateTime?
 termsVersion    String?
+communityGuidelinesAcceptedAt DateTime?
+communityGuidelinesVersion   String?
 
 zybaScore Int?
 

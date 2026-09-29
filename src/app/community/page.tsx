@@ -8,6 +8,7 @@ import CrisisBanner from "@/app/companion/components/CrisisBanner";
 import { useCommunity } from "./context/CommunityContext";
 import { Sprout } from "lucide-react";
 
+
 /**
  * Community Root Page — /community
  * Renders the "For you" feed (default view).

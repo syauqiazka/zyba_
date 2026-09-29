@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { CommunityProvider } from "./context/CommunityContext";
 import CommunitySidebar from "./components/CommunitySidebar";
+import CommunityGuidelinesGate from "./components/CommunityGuidelinesGate";
 
 /**
  * Community Layout — Instagram-style contextual sidebar + mobile off-canvas drawer.
@@ -49,9 +50,8 @@ function CommunityLayoutInner({ children }: { children: React.ReactNode }) {
 
       {/* Sidebar: off-canvas drawer on mobile, sticky on desktop */}
       <div
-        className={`fixed md:sticky top-0 left-0 z-50 h-screen transition-transform duration-300 md:translate-x-0 ${
-          mobileSidebarOpen ? "translate-x-0 shadow-2xl" : "-translate-x-full md:translate-x-0"
-        }`}
+        className={`fixed md:sticky top-0 left-0 z-50 h-screen transition-transform duration-300 md:translate-x-0 ${mobileSidebarOpen ? "translate-x-0 shadow-2xl" : "-translate-x-full md:translate-x-0"
+          }`}
       >
         <CommunitySidebar onClose={() => setMobileSidebarOpen(false)} />
       </div>
@@ -64,10 +64,18 @@ function CommunityLayoutInner({ children }: { children: React.ReactNode }) {
   );
 }
 
-export default function CommunityLayout({ children }: { children: React.ReactNode }) {
+export default function CommunityLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
     <CommunityProvider>
-      <CommunityLayoutInner>{children}</CommunityLayoutInner>
+      <CommunityGuidelinesGate>
+        <CommunityLayoutInner>
+          {children}
+        </CommunityLayoutInner>
+      </CommunityGuidelinesGate>
     </CommunityProvider>
   );
 }
