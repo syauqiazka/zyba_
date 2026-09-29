@@ -294,9 +294,16 @@ export async function POST(request: NextRequest) {
       });
 
       const response = NextResponse.json({
-        user: { id: user.id, email: user.email, name: user.name, zybaScore: user.zybaScore },
+        user: {
+          id: user.id,
+          email: user.email,
+          name: user.name,
+          zybaScore: user.zybaScore,
+          termsAcceptedAt: user.termsAcceptedAt,
+          termsVersion: user.termsVersion,
+          onboardingCompleted: user.onboardingCompleted ?? false,
+        },
         token: sessionToken,
-        onboardingCompleted: user.onboardingCompleted ?? false,
       });
 
       response.cookies.set("auth-token", sessionToken, {
