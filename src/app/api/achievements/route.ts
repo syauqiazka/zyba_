@@ -1,15 +1,11 @@
 /**
  * GET /api/achievements
- * Returns all achievements with unlock status for the current user.
- *
- * GET /api/achievements?unseen=1
- * Returns newly unlocked unseen achievements (for toast notifications).
+ * Returns all badges/achievements from DB with unlock status based on real UserBadge count.
  */
 
 import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
+import { accountDb } from "@/backend/db/accountClient";
 import { verifySessionToken } from "@/lib/auth";
-import { ACHIEVEMENT_DEFS } from "@/lib/achievements/definitions";
 
 async function getUserId(req: NextRequest): Promise<string | null> {
   const token = req.cookies.get("auth-token")?.value;
@@ -18,6 +14,16 @@ async function getUserId(req: NextRequest): Promise<string | null> {
   return session?.userId ?? null;
 }
 
+// Category styling map for badge cards
+const CATEGORY_COLORS: Record<string, { bg: string; text: string }> = {
+  Streak: { bg: "bg-orange-100", text: "text-orange-600" },
+  Wellness: { bg: "bg-green-100", text: "text-green-700" },
+  Companion: { bg: "bg-indigo-100", text: "text-indigo-700" },
+  Sosial: { bg: "bg-amber-100", text: "text-amber-700" },
+  Aktivitas: { bg: "bg-emerald-100", text: "text-emerald-700" },
+  Spesial: { bg: "bg-purple-100", text: "text-purple-700" },
+};
+
 export async function GET(request: NextRequest) {
   try {
     const userId = await getUserId(request);
@@ -25,97 +31,62 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { searchParams } = new URL(request.url);
-    const unseenOnly = searchParams.get("unseen") === "1";
-
-    // Seed achievements if table is empty
-    const count = await prisma.achievement.count();
-    if (count === 0) {
-      await seedAchievementsToDb();
-    }
-
-    const userAchievements = await prisma.userAchievement.findMany({
-      where: { userId },
-      include: { achievement: true },
-      orderBy: { unlockedAt: "desc" },
+    // 1. Fetch all badges from DB
+    const allBadges = await accountDb.badge.findMany({
+      orderBy: { xpReward: "asc" },
     });
 
-    if (unseenOnly) {
-      const unseen = userAchievements.filter((ua) => !ua.seen);
-      if (unseen.length > 0) {
-        await prisma.userAchievement.updateMany({
-          where: { userId, seen: false },
-          data: { seen: true },
-        });
-      }
-      return NextResponse.json({
-        achievements: unseen.map((ua) => ({
-          key: ua.achievement.key,
-          title: ua.achievement.title,
-          icon: ua.achievement.icon,
-          xpReward: ua.achievement.xpReward,
-          unlockedAt: ua.unlockedAt,
-        })),
-      });
-    }
+    // 2. Fetch all userBadges earned by this user
+    const userBadges = await accountDb.userBadge.findMany({
+      where: { userId },
+      include: { badge: true },
+      orderBy: { earnedAt: "desc" },
+    });
+
+    const user = await accountDb.user.findUnique({
+      where: { id: userId },
+      select: { streakDays: true, streak: true },
+    });
 
     const unlockedMap = new Map(
-      userAchievements.map((ua) => [ua.achievement.key, ua.unlockedAt])
+      userBadges.map((ub) => [ub.badge.key, ub.earnedAt.toISOString()])
     );
 
-    const allWithStatus = ACHIEVEMENT_DEFS
-      .filter((def) => !def.isSecret || unlockedMap.has(def.key))
-      .map((def) => ({
-        ...def,
-        unlocked: unlockedMap.has(def.key),
-        unlockedAt: unlockedMap.get(def.key) ?? null,
-      }));
-
-    // Also fetch user streak for header stats
-    const user = await prisma.user.findUnique({
-      where: { id: userId },
-      select: { streakDays: true },
+    const achievements = allBadges.map((b) => {
+      const colors = CATEGORY_COLORS[b.category] || { bg: "bg-cream", text: "text-brown-900" };
+      return {
+        id: b.id,
+        key: b.key,
+        title: b.name,
+        description: b.description,
+        icon: b.icon, // Lucide icon name, e.g. "Flame", "Heart", "Wind", etc.
+        category: b.category.toUpperCase(),
+        xpReward: b.xpReward,
+        badgeColor: colors.bg,
+        badgeTextColor: colors.text,
+        unlocked: unlockedMap.has(b.key),
+        unlockedAt: unlockedMap.get(b.key) ?? null,
+      };
     });
+
+    const totalUnlocked = userBadges.length;
+    const totalBadges = allBadges.length;
+    const totalXp = userBadges.reduce((sum, ub) => sum + (ub.badge?.xpReward || 0), 0);
+    const streakDays = user?.streakDays || user?.streak || 0;
 
     return NextResponse.json({
-      achievements: allWithStatus,
-      totalUnlocked: unlockedMap.size,
-      totalXp: ACHIEVEMENT_DEFS
-        .filter((d) => unlockedMap.has(d.key))
-        .reduce((s, d) => s + d.xpReward, 0),
-      streakDays: user?.streakDays ?? 0,
+      success: true,
+      achievements,
+      totalUnlocked,
+      totalCount: totalBadges,
+      totalXp,
+      streakDays,
     });
   } catch (error: any) {
+    console.error("[Achievements API GET] Error:", error);
     return NextResponse.json(
-      { error: error?.message || "Internal server error" },
+      { error: error?.message || "Gagal memuat data pencapaian." },
       { status: 500 }
     );
-  }
-}
-
-async function seedAchievementsToDb() {
-  for (const def of ACHIEVEMENT_DEFS) {
-    await prisma.achievement.upsert({
-      where: { key: def.key },
-      update: {
-        title: def.title,
-        description: def.description,
-        icon: def.icon,
-        category: def.category as any,
-        threshold: def.threshold ?? null,
-        isSecret: def.isSecret ?? false,
-        xpReward: def.xpReward,
-      },
-      create: {
-        key: def.key,
-        title: def.title,
-        description: def.description,
-        icon: def.icon,
-        category: def.category as any,
-        threshold: def.threshold ?? null,
-        isSecret: def.isSecret ?? false,
-        xpReward: def.xpReward,
-      },
-    });
   }
 }

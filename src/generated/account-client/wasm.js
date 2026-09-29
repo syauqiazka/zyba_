@@ -222,6 +222,7 @@ exports.Prisma.ResourceScalarFieldEnum = {
   title: 'title',
   author: 'author',
   coverUrl: 'coverUrl',
+  audioUrl: 'audioUrl',
   durationMin: 'durationMin',
   body: 'body',
   isPro: 'isPro',
@@ -273,11 +274,22 @@ exports.Prisma.UserAchievementScalarFieldEnum = {
   seen: 'seen'
 };
 
+exports.Prisma.BadgeScalarFieldEnum = {
+  id: 'id',
+  key: 'key',
+  name: 'name',
+  description: 'description',
+  category: 'category',
+  icon: 'icon',
+  xpReward: 'xpReward'
+};
+
 exports.Prisma.UserBadgeScalarFieldEnum = {
   id: 'id',
   userId: 'userId',
+  badgeId: 'badgeId',
+  earnedAt: 'earnedAt',
   slot: 'slot',
-  badgeKey: 'badgeKey',
   customLabel: 'customLabel',
   updatedAt: 'updatedAt'
 };
@@ -337,7 +349,8 @@ exports.ActivityType = exports.$Enums.ActivityType = {
 
 exports.ResourceType = exports.$Enums.ResourceType = {
   ARTICLE: 'ARTICLE',
-  COURSE: 'COURSE'
+  COURSE: 'COURSE',
+  AUDIO: 'AUDIO'
 };
 
 exports.SubscriptionStatus = exports.$Enums.SubscriptionStatus = {
@@ -377,6 +390,7 @@ exports.Prisma.ModelName = {
   Payment: 'Payment',
   Achievement: 'Achievement',
   UserAchievement: 'UserAchievement',
+  Badge: 'Badge',
   UserBadge: 'UserBadge'
 };
 

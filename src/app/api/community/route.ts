@@ -119,11 +119,20 @@ export async function POST(req: NextRequest) {
     });
     invalidateCommunityCache();
 
+    let unlockedBadges: any[] = [];
+    try {
+      const { triggerBadgeCheck } = await import("@/lib/badges/badgeService");
+      unlockedBadges = await triggerBadgeCheck(userId, "community_post");
+    } catch (badgeErr) {
+      console.warn("[Community Badge] Trigger error:", badgeErr);
+    }
+
     return NextResponse.json({
       success: true,
       isRisk,
       crisisResources: isRisk ? CRISIS_RESOURCES : null,
       post: savedPost,
+      unlockedBadges,
       message: isRisk
         ? "Konten terdeteksi membutuhkan pendampingan darurat. Bantuan krisis tersedia."
         : "Postingan berhasil dipublikasikan.",

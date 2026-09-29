@@ -93,6 +93,10 @@ export async function POST(req: NextRequest) {
       snapToken: midtransData.token,
       orderId,
       amount: PLUS_MONTHLY_PRICE,
+      snapUrl: MIDTRANS_IS_PRODUCTION
+        ? "https://app.midtrans.com/snap/snap.js"
+        : "https://app.sandbox.midtrans.com/snap/snap.js",
+      clientKey: process.env.MIDTRANS_CLIENT_KEY || "",
     });
   } catch (err: any) {
     console.error("[Checkout] Error:", err);

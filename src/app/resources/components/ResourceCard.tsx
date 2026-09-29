@@ -14,14 +14,15 @@ import {
 
 export interface ResourceItem {
   id: string;
-  type: "ARTICLE" | "COURSE";
+  type: "ARTICLE" | "COURSE" | "AUDIO";
   title: string;
   author: string;
   duration: string;
   category: string;
   isPro: boolean;
-  iconName: "book" | "headphones" | "moon" | "graduation" | "brain" | "heart";
+  iconName: "book" | "headphones" | "moon" | "graduation" | "brain" | "heart" | "music";
   desc: string;
+  audioUrl?: string;
   articleContent?: string[];
 }
 
@@ -40,6 +41,7 @@ const ICON_THEMES: Record<
   graduation: { bg: "bg-amber-100", text: "text-amber-700", border: "border-amber-500/25" },
   brain: { bg: "bg-purple-100", text: "text-purple-700", border: "border-purple-500/25" },
   heart: { bg: "bg-rose-100", text: "text-rose-600", border: "border-rose-500/25" },
+  music: { bg: "bg-orange-100", text: "text-orange-600", border: "border-orange-500/25" },
 };
 
 export function ResourceIcon({
@@ -62,6 +64,8 @@ export function ResourceIcon({
       return <Brain className={className} />;
     case "heart":
       return <Heart className={className} />;
+    case "music":
+      return <Headphones className={className} />;
     default:
       return <BookOpen className={className} />;
   }

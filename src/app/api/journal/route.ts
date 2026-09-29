@@ -26,11 +26,25 @@ export async function POST(req: NextRequest) {
     if (!content?.trim()) return NextResponse.json({ error: "Isi journal tidak boleh kosong." }, { status: 400 });
     const isRisk = detectRisk(content);
     let savedEntry = null;
+    let unlockedBadges: any[] = [];
     if (userId) {
-      try { savedEntry = await accountDb.journalEntry.create({ data: { userId, title: title || "Entri Mood Harian", content, mood: mood || undefined } }); }
-      catch (e) { console.warn("DB journal fallback:", e); }
+      try {
+        savedEntry = await accountDb.journalEntry.create({
+          data: { userId, title: title || "Entri Mood Harian", content, mood: mood || undefined },
+        });
+        const { triggerBadgeCheck } = await import("@/lib/badges/badgeService");
+        unlockedBadges = await triggerBadgeCheck(userId, "journal_entry");
+      } catch (e) {
+        console.warn("DB journal fallback:", e);
+      }
     }
-    return NextResponse.json({ success: true, isRisk, crisisResources: isRisk ? CRISIS_RESOURCES : null, entry: savedEntry || { id: `j-${Date.now()}`, title: title || "Entri Mood Harian", content, mood: mood || "NEUTRAL", createdAt: new Date().toISOString() } });
+    return NextResponse.json({
+      success: true,
+      isRisk,
+      crisisResources: isRisk ? CRISIS_RESOURCES : null,
+      entry: savedEntry || { id: `j-${Date.now()}`, title: title || "Entri Mood Harian", content, mood: mood || "NEUTRAL", createdAt: new Date().toISOString() },
+      unlockedBadges,
+    });
   } catch (err: any) {
     return NextResponse.json({ error: err.message || "Gagal menyimpan journal." }, { status: 500 });
   }

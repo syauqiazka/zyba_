@@ -40,13 +40,13 @@ export default function ZybaPlusPage() {
         throw new Error(errData.error || "Checkout failed");
       }
 
-      const { snapToken, orderId } = await res.json();
+      const { snapToken, orderId, snapUrl, clientKey } = await res.json();
 
       // 2. Load Midtrans Snap.js kalau belum
       if (!window.snap) {
         const script = document.createElement("script");
-        script.src = "https://app.sandbox.midtrans.com/snap/snap.js";
-        script.setAttribute("data-client-key", process.env.NEXT_PUBLIC_MIDTRANS_CLIENT_KEY || "");
+        script.src = snapUrl || "https://app.midtrans.com/snap/snap.js";
+        script.setAttribute("data-client-key", clientKey || "");
         document.body.appendChild(script);
 
         await new Promise((resolve) => {

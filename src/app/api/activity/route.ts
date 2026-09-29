@@ -190,10 +190,17 @@ export async function POST(req: NextRequest) {
       },
     });
 
-    // Check achievement for activity completion
+    // Check achievement & badge for activity completion
     let unlockedAchievements: string[] = [];
+    let unlockedBadges: any[] = [];
     if (completed) {
       try {
+        const { triggerBadgeCheck } = await import("@/lib/badges/badgeService");
+        unlockedBadges = await triggerBadgeCheck(
+          user.userId,
+          resolvedType === "BREATHING" ? "breathing_complete" : "activity_complete"
+        );
+
         const totalCompleted = await accountDb.activityLog.count({
           where: { userId: user.userId, completed: true },
         });
@@ -202,7 +209,7 @@ export async function POST(req: NextRequest) {
           activityCount: totalCompleted,
         });
       } catch (err) {
-        console.warn("[Activity Achievement] Check error:", err);
+        console.warn("[Activity Achievement/Badge] Check error:", err);
       }
     }
 
@@ -210,6 +217,7 @@ export async function POST(req: NextRequest) {
       success: true,
       activity,
       unlockedAchievements,
+      unlockedBadges,
     });
   } catch (error: any) {
     console.error("[Activity API POST] Error:", error);

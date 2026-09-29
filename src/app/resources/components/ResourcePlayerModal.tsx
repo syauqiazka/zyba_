@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useRef, useState, useEffect } from "react";
 import {
   Play,
   Pause,
@@ -10,7 +10,9 @@ import {
   Clock,
   User,
   Volume2,
+  VolumeX,
   BookOpen,
+  Music,
 } from "lucide-react";
 import { ResourceItem, ResourceIcon } from "./ResourceCard";
 
@@ -31,17 +33,86 @@ export default function ResourcePlayerModal({
   onComplete,
   onClose,
 }: ResourcePlayerModalProps) {
+  const isAudioType = resource.type === "COURSE" || resource.type === "AUDIO";
+  const audioSrc = resource.audioUrl || "/audio/relaxation-breathe.ogg";
+
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const [currentTime, setCurrentTime] = useState(0);
+  const [duration, setDuration] = useState(180);
+  const [volume, setVolume] = useState(0.7);
+  const [isMuted, setIsMuted] = useState(false);
+
+  useEffect(() => {
+    if (!audioRef.current || !isAudioType) return;
+    if (isAudioPlaying) {
+      audioRef.current.play().catch((err) => console.warn("Audio play error:", err));
+    } else {
+      audioRef.current.pause();
+    }
+  }, [isAudioPlaying, isAudioType]);
+
+  useEffect(() => {
+    if (audioRef.current) {
+      audioRef.current.volume = isMuted ? 0 : volume;
+    }
+  }, [volume, isMuted]);
+
+  const handleTimeUpdate = () => {
+    if (audioRef.current) {
+      setCurrentTime(audioRef.current.currentTime);
+      if (audioRef.current.duration && !isNaN(audioRef.current.duration)) {
+        setDuration(audioRef.current.duration);
+      }
+    }
+  };
+
+  const handleSeek = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const time = parseFloat(e.target.value);
+    setCurrentTime(time);
+    if (audioRef.current) {
+      audioRef.current.currentTime = time;
+    }
+  };
+
+  const formatSecs = (secs: number) => {
+    const m = Math.floor(secs / 60);
+    const s = Math.floor(secs % 60);
+    return `${m < 10 ? "0" : ""}${m}:${s < 10 ? "0" : ""}${s}`;
+  };
+
   return (
-    <div className="fixed inset-0 z-50 bg-brown-900/40 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in duration-200">
-      <div className="bg-white rounded-3xl p-6 md:p-8 max-w-xl w-full shadow-2xl border border-brown-900/10 flex flex-col gap-6 max-h-[90vh] overflow-y-auto">
+    <div className="fixed inset-0 z-50 bg-brown-900/40 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4 animate-in fade-in duration-200">
+      <div className="bg-white rounded-3xl p-5 sm:p-7 md:p-8 max-w-xl w-full shadow-2xl border border-brown-900/10 flex flex-col gap-5 max-h-[92vh] overflow-y-auto no-scrollbar">
+        {/* Hidden Audio Element for actual playback */}
+        {isAudioType && (
+          <audio
+            ref={audioRef}
+            src={audioSrc}
+            onTimeUpdate={handleTimeUpdate}
+            onLoadedMetadata={() => {
+              if (audioRef.current && audioRef.current.duration) {
+                setDuration(audioRef.current.duration);
+              }
+            }}
+            onEnded={() => {
+              onComplete();
+            }}
+          />
+        )}
+
         {/* Header row */}
-        <div className="flex items-center justify-between border-b border-brown-900/8 pb-4">
-          <div className="flex items-center gap-2">
+        <div className="flex items-center justify-between border-b border-brown-900/8 pb-3.5">
+          <div className="flex items-center gap-2 flex-wrap">
             <span className="text-xs font-bold px-3 py-1 rounded-full bg-green-100 text-green-700 flex items-center gap-1.5">
               {resource.type === "COURSE" ? (
                 <>
                   <Volume2 size={13} />
                   KURSUS AUDIO
+                </>
+              ) : resource.type === "AUDIO" ? (
+                <>
+                  <Music size={13} />
+                  AUDIO AMBIENT
                 </>
               ) : (
                 <>
@@ -55,96 +126,122 @@ export default function ResourcePlayerModal({
             </span>
           </div>
           <button
+            type="button"
             onClick={onClose}
-            className="w-8 h-8 rounded-full bg-brown-900/5 hover:bg-brown-900/10 text-brown-700 flex items-center justify-center transition-colors"
+            className="min-h-[44px] min-w-[44px] rounded-full bg-brown-900/5 hover:bg-brown-900/10 text-brown-700 flex items-center justify-center transition-colors active:scale-95"
             aria-label="Tutup"
           >
-            <X size={16} />
+            <X size={18} />
           </button>
         </div>
 
         {/* Resource Meta & Banner */}
         <div className="flex items-start gap-4">
-          <div className="w-16 h-16 rounded-2xl bg-cream border border-orange-500/20 text-brown-900 flex items-center justify-center shrink-0 shadow-sm">
-            <ResourceIcon name={resource.iconName} className="w-8 h-8 text-orange-600" />
+          <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-cream border border-orange-500/20 text-brown-900 flex items-center justify-center shrink-0 shadow-xs">
+            <ResourceIcon name={resource.iconName} className="w-7 h-7 text-orange-600" />
           </div>
           <div>
-            <h3 className="font-display font-extrabold text-xl text-brown-900 leading-snug">
+            <h3 className="font-display font-extrabold text-lg sm:text-xl text-brown-900 leading-snug">
               {resource.title}
             </h3>
             <div className="flex items-center gap-1.5 mt-1.5 text-xs text-brown-700">
-              <User size={12} />
-              <span>Oleh <strong className="font-semibold text-brown-900">{resource.author}</strong></span>
+              <User size={13} />
+              <span>
+                Oleh <strong className="font-semibold text-brown-900">{resource.author}</strong>
+              </span>
             </div>
           </div>
         </div>
 
-        {/* Audio Player State if COURSE */}
-        {resource.type === "COURSE" ? (
-          <div className="bg-cream/70 p-6 rounded-2xl border border-brown-900/10 flex flex-col items-center gap-4 text-center shadow-inner">
+        {/* Audio Player State if COURSE or AUDIO */}
+        {isAudioType ? (
+          <div className="bg-cream/70 p-5 sm:p-6 rounded-2xl border border-brown-900/10 flex flex-col items-center gap-4 text-center shadow-inner">
             <span className="text-xs font-bold text-brown-900 flex items-center gap-2">
-              <Volume2 size={14} className={isAudioPlaying ? "text-orange-500 animate-pulse" : "text-brown-700"} />
-              {isAudioPlaying
-                ? `Sedang Memutar: ${resource.title}`
-                : "Sesi Audio Siap Diputar"}
+              <Volume2
+                size={16}
+                className={isAudioPlaying ? "text-orange-500 animate-pulse" : "text-brown-700"}
+              />
+              {isAudioPlaying ? "Sedang Memutar Audio" : "Sesi Audio Siap Diputar"}
             </span>
-            <span className="font-display text-4xl font-extrabold text-brown-900 tracking-tight">
-              {isAudioPlaying ? "05:55" : "00:00"}
+            <span className="font-display text-3xl sm:text-4xl font-extrabold text-brown-900 tracking-tight">
+              {formatSecs(currentTime)} / {formatSecs(duration)}
             </span>
 
-            {/* Progress bar */}
-            <div className="w-full h-2.5 rounded-full bg-white overflow-hidden border border-brown-900/10 shadow-inner">
-              <div
-                className={`h-full bg-gradient-to-r from-orange-400 to-green-500 transition-all ${
-                  isAudioPlaying ? "w-full duration-[10000ms]" : "w-0"
-                }`}
+            {/* Seek bar */}
+            <div className="w-full flex items-center gap-2">
+              <input
+                type="range"
+                min="0"
+                max={duration || 100}
+                value={currentTime}
+                onChange={handleSeek}
+                className="w-full h-2 bg-brown-900/15 rounded-lg appearance-none cursor-pointer accent-orange-500"
+                aria-label="Posisi Audio"
               />
             </div>
 
-            <div className="flex flex-wrap items-center justify-center gap-3 mt-2">
+            {/* Play controls: big touch target buttons */}
+            <div className="flex flex-wrap items-center justify-center gap-3 mt-1 w-full">
               <button
                 type="button"
                 onClick={onPlayToggle}
-                className="px-6 py-2.5 rounded-full bg-brown-900 text-white font-bold text-xs hover:bg-orange-500 transition-colors shadow-md flex items-center gap-2"
+                className="min-h-[44px] px-7 py-3 rounded-full bg-brown-900 text-white font-bold text-xs hover:bg-orange-500 transition-colors shadow-md flex items-center gap-2 active:scale-95"
               >
                 {isAudioPlaying ? (
                   <>
-                    <Pause size={14} /> Jeda Audio
+                    <Pause size={16} /> Jeda Audio
                   </>
                 ) : (
                   <>
-                    <Play size={14} /> Putar Audio
+                    <Play size={16} className="ml-0.5" /> Putar Audio
                   </>
                 )}
               </button>
+
               <button
                 type="button"
                 onClick={onComplete}
-                className="px-5 py-2.5 rounded-full bg-green-500 text-white font-bold text-xs hover:bg-green-600 transition-colors shadow-sm flex items-center gap-1.5"
+                className="min-h-[44px] px-5 py-3 rounded-full bg-green-600 text-white font-bold text-xs hover:bg-green-700 transition-colors shadow-sm flex items-center gap-1.5 active:scale-95"
               >
-                <CheckCircle2 size={14} /> Selesaikan Sesi
+                <CheckCircle2 size={16} /> Tandai Selesai
               </button>
+
+              <div className="flex items-center gap-2 ml-1">
+                <button
+                  type="button"
+                  onClick={() => setIsMuted(!isMuted)}
+                  className="min-h-[44px] min-w-[44px] rounded-full bg-white text-brown-700 hover:bg-brown-100 flex items-center justify-center transition-colors"
+                  aria-label={isMuted ? "Bunyikan" : "Bisukan"}
+                >
+                  {isMuted ? <VolumeX size={17} /> : <Volume2 size={17} />}
+                </button>
+                <input
+                  type="range"
+                  min="0"
+                  max="1"
+                  step="0.05"
+                  value={isMuted ? 0 : volume}
+                  onChange={(e) => {
+                    setVolume(parseFloat(e.target.value));
+                    if (isMuted) setIsMuted(false);
+                  }}
+                  className="w-16 h-2 bg-brown-900/15 rounded-lg appearance-none cursor-pointer accent-orange-500"
+                  aria-label="Volume Audio"
+                />
+              </div>
             </div>
           </div>
         ) : (
           /* Article Body Text */
-          <div className="text-xs text-brown-900 leading-relaxed bg-cream/40 p-5 rounded-2xl border border-brown-900/10 max-h-[260px] overflow-y-auto space-y-3">
+          <div className="text-xs sm:text-sm text-brown-900 leading-relaxed bg-cream/40 p-5 sm:p-6 rounded-2xl border border-brown-900/10 max-h-[380px] overflow-y-auto space-y-4">
             {resource.articleContent && resource.articleContent.length > 0 ? (
               resource.articleContent.map((paragraph, idx) => (
-                <p key={idx}>{paragraph}</p>
+                <p key={idx} className="text-brown-800 leading-relaxed">
+                  {paragraph}
+                </p>
               ))
             ) : (
-              <>
-                <p>
-                  Pikiran berlebih (overthinking) terjadi ketika amigdala merespons potensi ancaman masa depan dengan mengaktifkan hormon stres kortisol secara berlebihan.
-                </p>
-                <p>
-                  Dengan melatih kesadaran penuh (mindfulness), kita dapat mengaktifkan kembali korteks prefrontal untuk memproses emosi secara rasional dan menghentikan lingkaran kecemasan berulang.
-                </p>
-                <p className="font-semibold text-green-700 bg-green-50 p-3 rounded-xl border border-green-200">
-                  💡 Tips Praktis: Ketika kamu mulai terjebak dalam siklus overthinking, tarik napas 4 detik, tahan 4 detik, dan hembuskan perlahan 6 detik. Fokuskan perhatianmu sepenuhnya pada sensasi fisik udara yang keluar.
-                </p>
-              </>
+              <p className="text-brown-800 leading-relaxed">{resource.desc}</p>
             )}
           </div>
         )}
@@ -155,9 +252,9 @@ export default function ResourcePlayerModal({
             <div className="w-10 h-10 rounded-full bg-green-500 text-white flex items-center justify-center shadow-sm">
               <Award size={20} />
             </div>
-            <span className="text-sm font-bold text-brown-900">Sesi Selesai! ✧(≧∀≦)✧</span>
-            <span className="text-[11px] text-brown-700">
-              Zyba Score kamu meningkat +10 poin untuk konsistensi self-care hari ini.
+            <span className="text-sm font-bold text-brown-900">Sesi Edukasi Selesai!</span>
+            <span className="text-xs text-brown-700">
+              Zyba Score kamu meningkat untuk konsistensi perawatan diri hari ini.
             </span>
           </div>
         )}

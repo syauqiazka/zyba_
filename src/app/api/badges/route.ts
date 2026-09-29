@@ -1,11 +1,11 @@
 /**
- * GET  /api/badges — get user's pinned badge slots (0-2)
- * POST /api/badges — set a badge in a slot { slot, badgeKey, customLabel? }
- * DELETE /api/badges?slot=N — clear a slot
+ * GET  /api/badges — get all badges and user's earned badges & pinned slots (0-2)
+ * POST /api/badges — pin a badge to slot { slot, badgeKey, customLabel? }
+ * DELETE /api/badges?slot=N — unpin badge from slot
  */
 
 import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
+import { accountDb } from "@/backend/db/accountClient";
 import { verifySessionToken } from "@/lib/auth";
 
 async function getUserId(req: NextRequest): Promise<string | null> {
@@ -20,14 +20,53 @@ export async function GET(request: NextRequest) {
     const userId = await getUserId(request);
     if (!userId) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-    const badges = await prisma.userBadge.findMany({
-      where: { userId },
-      orderBy: { slot: "asc" },
-    });
+    const [allBadges, userBadges, user] = await Promise.all([
+      accountDb.badge.findMany({ orderBy: { xpReward: "asc" } }),
+      accountDb.userBadge.findMany({
+        where: { userId },
+        include: { badge: true },
+        orderBy: { earnedAt: "desc" },
+      }),
+      accountDb.user.findUnique({
+        where: { id: userId },
+        select: { streakDays: true, streak: true },
+      }),
+    ]);
 
-    return NextResponse.json({ badges });
+    const earnedBadgeIds = new Set(userBadges.map((ub) => ub.badgeId));
+    const pinnedBadges = userBadges.filter((ub) => ub.slot !== null && ub.slot !== undefined);
+
+    const totalXp = userBadges.reduce((sum, ub) => sum + (ub.badge?.xpReward || 0), 0);
+    const streakDays = user?.streakDays || user?.streak || 0;
+
+    return NextResponse.json({
+      success: true,
+      totalBadges: allBadges.length,
+      earnedCount: userBadges.length,
+      totalXp,
+      streakDays,
+      badges: pinnedBadges.map((ub) => ({
+        slot: ub.slot,
+        badgeKey: ub.badge.key,
+        badgeName: ub.badge.name,
+        icon: ub.badge.icon,
+        customLabel: ub.customLabel || ub.badge.name,
+      })),
+      allBadges: allBadges.map((b) => ({
+        id: b.id,
+        key: b.key,
+        name: b.name,
+        description: b.description,
+        category: b.category,
+        icon: b.icon,
+        xpReward: b.xpReward,
+        unlocked: earnedBadgeIds.has(b.id),
+        unlockedAt: userBadges.find((ub) => ub.badgeId === b.id)?.earnedAt || null,
+      })),
+    });
   } catch (error: any) {
-    return NextResponse.json({ error: error?.message }, { status: 500 });
+    console.error("[Badges API GET] Error:", error);
+    return NextResponse.json({ error: error?.message || "Internal server error" }, { status: 500 });
   }
 }
 
@@ -39,32 +78,40 @@ export async function POST(request: NextRequest) {
     const { slot, badgeKey, customLabel } = await request.json();
 
     if (typeof slot !== "number" || slot < 0 || slot > 2) {
-      return NextResponse.json({ error: "Invalid slot (0–2)" }, { status: 400 });
+      return NextResponse.json({ error: "Slot tidak valid (0–2)" }, { status: 400 });
     }
 
-    // Verify user has unlocked this achievement
-    const achievement = await prisma.achievement.findUnique({ where: { key: badgeKey } });
-    if (!achievement) return NextResponse.json({ error: "Badge tidak ditemukan" }, { status: 404 });
+    // Find the badge
+    const badge = await accountDb.badge.findUnique({ where: { key: badgeKey } });
+    if (!badge) return NextResponse.json({ error: "Badge tidak ditemukan" }, { status: 404 });
 
-    const unlocked = await prisma.userAchievement.findFirst({
-      where: { userId, achievementId: achievement.id },
+    // Verify user has earned this badge
+    const userBadge = await accountDb.userBadge.findUnique({
+      where: { userId_badgeId: { userId, badgeId: badge.id } },
     });
-    if (!unlocked) {
-      return NextResponse.json(
-        { error: "Achievement belum di-unlock" },
-        { status: 403 }
-      );
+    if (!userBadge) {
+      return NextResponse.json({ error: "Badge belum diraih" }, { status: 403 });
     }
 
-    const badge = await prisma.userBadge.upsert({
-      where: { userId_slot: { userId, slot } },
-      update: { badgeKey, customLabel: customLabel ?? null },
-      create: { userId, slot, badgeKey, customLabel: customLabel ?? null },
+    // Reset previous badge in this slot if any
+    await accountDb.userBadge.updateMany({
+      where: { userId, slot },
+      data: { slot: null },
     });
 
-    return NextResponse.json({ badge });
+    // Update this badge to slot
+    const updated = await accountDb.userBadge.update({
+      where: { id: userBadge.id },
+      data: {
+        slot,
+        customLabel: customLabel ?? null,
+      },
+    });
+
+    return NextResponse.json({ success: true, badge: updated });
   } catch (error: any) {
-    return NextResponse.json({ error: error?.message }, { status: 500 });
+    console.error("[Badges API POST] Error:", error);
+    return NextResponse.json({ error: error?.message || "Internal server error" }, { status: 500 });
   }
 }
 
@@ -77,12 +124,17 @@ export async function DELETE(request: NextRequest) {
     const slot = parseInt(searchParams.get("slot") ?? "");
 
     if (isNaN(slot) || slot < 0 || slot > 2) {
-      return NextResponse.json({ error: "Invalid slot" }, { status: 400 });
+      return NextResponse.json({ error: "Slot tidak valid" }, { status: 400 });
     }
 
-    await prisma.userBadge.deleteMany({ where: { userId, slot } });
-    return NextResponse.json({ ok: true });
+    await accountDb.userBadge.updateMany({
+      where: { userId, slot },
+      data: { slot: null },
+    });
+
+    return NextResponse.json({ success: true });
   } catch (error: any) {
-    return NextResponse.json({ error: error?.message }, { status: 500 });
+    console.error("[Badges API DELETE] Error:", error);
+    return NextResponse.json({ error: error?.message || "Internal server error" }, { status: 500 });
   }
 }

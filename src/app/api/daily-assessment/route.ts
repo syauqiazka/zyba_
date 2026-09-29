@@ -612,9 +612,12 @@ export async function POST(req: NextRequest) {
     // Invalidate caches immediately so dashboard & assessment update instantly
     invalidateDailyAssessmentCache(neonUserId);
 
-    // Achievement check (fire-and-forget)
+    // Achievement & Badge check (fire-and-forget)
     checkAndUnlock(neonUserId, { type: "mood_checkin" }).catch(() => {});
     checkAndUnlock(neonUserId, { type: "login" }).catch(() => {});
+    import("@/lib/badges/badgeService").then(({ triggerBadgeCheck }) => {
+      triggerBadgeCheck(neonUserId, "mood_checkin").catch(() => {});
+    });
 
     // =================================================
     // RESPONSE

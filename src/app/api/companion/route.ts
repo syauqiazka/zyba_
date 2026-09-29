@@ -93,9 +93,12 @@ export async function POST(req: NextRequest) {
           data: { updatedAt: new Date() },
         });
 
-        // Achievement check (fire-and-forget, no await to keep response fast)
+        // Achievement & Badge check (fire-and-forget, no await to keep response fast)
         const convCount = await companionDb.conversation.count({ where: { userId: session.userId } });
         checkAndUnlock(session.userId, { type: "companion_message", conversationCount: convCount }).catch(() => {});
+        import("@/lib/badges/badgeService").then(({ triggerBadgeCheck }) => {
+          triggerBadgeCheck(session.userId, "companion_message").catch(() => {});
+        });
       } catch (dbErr) {
         console.error("[Companion] Message save failed:", dbErr);
         // Continue — AI reply tetap dikembalikan meski save gagal

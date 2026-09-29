@@ -131,7 +131,7 @@ Sleep Quality, breathing exercise, exercise completed, activity target, choose a
 
 ## 5. Panduan Konversi Mobile → Desktop
 
-1. **Navigasi**: bottom nav mobile → **sidebar kiri fixed** (~240–280px): Dashboard, Assessment Harian, Zyba Companion, Smart Activity Planner, Wellness Journey, Zyba Community, Resources, Pencapaian (`/achievements`), Settings.
+1. **Navigasi**: bottom nav mobile → **sidebar kiri fixed** (~240–280px): Dashboard, Mood Check-In, Zyba Companion, Smart Activity Planner, Wellness Journey, Zyba Community, Resources, Settings.
 2. **Layout grid**: container max-width 1200–1280px, grid 12 kolom. Halaman list (Resources, Community, Activity) pakai **grid multi-kolom** (2–3 kolom).
 3. **Assessment**: gabung jadi **form multi-step** — panel kiri progress stepper, panel kanan pertanyaan aktif.
 4. **Chat (Zyba Companion)**: **dua panel** — kiri daftar percakapan, kanan jendela chat aktif (pola WhatsApp Web/Slack).
@@ -2026,6 +2026,90 @@ Ditemukan halaman `/pencapaian` (gamifikasi streak, XP, badge kategori Streak/We
 - Tambahkan model `Badge`/`UserBadge` di Account DB (Bagian 17) kalau belum ada, untuk tracking progress (`0/19` yang terlihat di screenshot harus berasal dari data real, bukan hardcoded).
 - Pastikan ikon di halaman ini juga konsisten Lucide (F.2).
 - Update Bagian 5.1 (sidebar utama) untuk memasukkan "Pencapaian" sebagai item nav resmi.
+
+---
+
+## Lampiran G — Konten Resources Real, Musik, Koneksi Data, Finalisasi Premium
+
+### G.1 Musik Gratis & Legal — ElevenLabs Music
+
+**Sumber**: [ElevenLabs Music](https://elevenlabs.io/music) — produk yang sama dengan provider TTS kita (Bagian 19.2), sekarang juga menyediakan **musik royalty-free, no-copyright, gratis di-download**. Ini menghindari masalah lisensi total (tidak perlu embed YouTube/Spotify yang berisiko copyright, tidak perlu bayar layanan musik berbayar).
+
+**Cara pakai**:
+1. Download beberapa track ambient/relaxation dari elevenlabs.io/music (kategori: Ambient, Relaxation, Sleep, Meditation — sesuai kebutuhan tiap fitur).
+2. Simpan file MP3 hasil download ke storage server (Bagian E.3 — `public/audio/` di server self-hosted).
+3. Tambahkan sebagai `Resource` bertipe audio di database (lihat model `Resource` di Bagian 7), atau sebagai background sound opsional di fitur **Zyba Hours (Breathing Exercise)** yang sudah ada di Smart Activity Planner — kasih toggle "Putar musik latar" saat sesi napas berjalan.
+4. Kategori musik yang disarankan untuk ZYBA: **Fokus/Belajar** (ambient tenang), **Tidur** (sleep/slow ambient), **Relaksasi/Napas** (relaxation, dipakai bareng breathing exercise), **Semangat Ringan** (buat "Rencana Aksi"/olahraga ringan di Activity Planner — tempo lebih hidup dikit).
+
+> Kalau butuh variasi lebih banyak dari yang di-download manual, ElevenLabs Music juga punya AI generator buat bikin track custom sesuai mood — bisa dipakai kalau target durasi/nuansa spesifik nggak ketemu di katalog yang ada.
+
+### G.2 Artikel Resources — Konten Nyata, Bukan Filler
+
+6 artikel dengan substansi nyata (teknik berbasis bukti — CBT, sleep science, grounding technique), ditulis dalam Bahasa Indonesia (Bagian F.1), bukan konten generik:
+
+1. **"Cara Mengelola Stres Akademik Tanpa Burnout"** — time-blocking vs to-do list biasa, teknik Pomodoro yang disesuaikan buat belajar, kapan istirahat itu produktif (bukan buang waktu), tanda-tanda awal burnout yang sering diabaikan.
+2. **"Sleep Hygiene: Kenapa Begadang Bikin Makin Cemas"** — hubungan kurang tidur & kadar kortisol, kenapa konsistensi jam tidur-bangun lebih penting dari durasi semata, efek scroll HP sebelum tidur (blue light + dopamine loop), teknik "wind-down routine" 30 menit sebelum tidur.
+3. **"Teknik Grounding 5-4-3-2-1 untuk Meredakan Kecemasan Mendadak"** — penjelasan teknik grounding sensorik (5 hal dilihat, 4 didengar, 3 disentuh, 2 dicium, 1 dirasa), kapan paling efektif dipakai, kombinasi dengan box breathing (nyambung ke fitur Zyba Hours).
+4. **"Kapan Harus Cari Bantuan Profesional, Bukan Cuma Curhat ke Teman"** — tanda yang perlu diwaspadai (durasi, intensitas, mengganggu fungsi harian), beda "sedih biasa" vs butuh bantuan profesional, cara mulai cari psikolog/konselor pertama kali termasuk opsi terjangkau di Indonesia.
+5. **"Journaling: Bukan Cuma Nulis Diary, Ini Manfaat Nyatanya"** — expressive writing dan riset soal manfaatnya ke stres, teknik journaling simpel buat yang nggak suka nulis panjang (bullet journaling emosi) — nyambung langsung ke fitur Health Journal yang sudah ada.
+6. **"Overthinking vs Reflektif: Cara Bedain dan Cara Berhenti"** — ciri overthinking yang bikin capek (bukan solutif), teknik "worry window" (jadwalin waktu khusus buat mikirin kekhawatiran), cognitive defusion sederhana ala CBT.
+
+**Instruksi ke Antigravity**: tulis masing-masing artikel penuh (400-700 kata) berdasarkan poin-poin di atas, bahasa santai tapi informatif (hindari nada "artikel kesehatan generik/AI slop" — pakai contoh konkret situasi Gen Z Indonesia, bukan cuma teori umum). Simpan sebagai seed data `Resource` (tipe `ARTICLE`) di Account DB, isi field `body`, `author` (boleh atas nama "Tim Zyba Wellness" kalau tidak ada psikolog resmi yang mem-verifikasi), `durationMin` (estimasi waktu baca).
+
+### G.3 Smart Activity Planner & Pencapaian — Koneksi Data Nyata
+
+**Tambahkan model Badge di Account DB** (mengisi gap dari Bagian F.4):
+
+```prisma
+model Badge {
+  id          String @id @default(cuid())
+  key         String @unique // "first_day", "3_day_streak", "first_mood", dst.
+  name        String
+  description String
+  category    String // "Streak" | "Wellness" | "Companion" | "Sosial" | "Aktivitas" | "Spesial"
+  icon        String // nama ikon Lucide
+  xpReward    Int    @default(10)
+}
+
+model UserBadge {
+  id       String   @id @default(cuid())
+  userId   String
+  badgeId  String
+  badge    Badge    @relation(fields: [badgeId], references: [id])
+  earnedAt DateTime @default(now())
+  @@unique([userId, badgeId])
+  @@map("user_badges")
+}
+```
+
+**Trigger badge otomatis** — hubungkan ke aksi yang sudah ada di fitur lain (ini yang bikin Pencapaian terasa terhubung ke seluruh app, bukan sistem terpisah):
+- Selesai Assessment Harian pertama kali → badge "Mood Pertama".
+- 3 hari berturut-turut ada aktivitas apa pun (mood/journal/activity) → badge "3 Hari Berturut-turut" (cek dari `User` streak counter yang sudah ada).
+- Kirim pesan pertama ke Zyba Companion → badge "Sapa ZYBA".
+- Post pertama di Zyba Community → badge "Penulis Pertama".
+- Selesaikan 10 entri journal → badge "10 Catatan Jiwa".
+- Selesaikan sesi breathing exercise pertama → badge terkait Aktivitas.
+
+Setiap kali salah satu aksi ini terjadi (di endpoint API terkait — `api/mood`, `api/companion/message`, `api/community` POST, dll.), cek apakah kondisi badge terpenuhi, kalau ya `create` record `UserBadge` (pakai `@@unique` di atas biar tidak dobel). **Progress "0/19" di halaman Pencapaian harus dihitung dari `UserBadge.count()` real**, bukan angka statis.
+
+**Smart Activity Planner**: pastikan tiap aktivitas yang diselesaikan (`ActivityLog`) benar-benar masuk ke perhitungan `calculateFisikScore` (Bagian D.2/D.4) — cek lagi apakah koneksi ini sudah jalan setelah implementasi terakhir, karena ini fondasi Zyba Score yang butuh data lintas fitur.
+
+### G.4 Finalisasi Zyba Plus — API Key Midtrans Sudah Ada
+
+Karena API key Midtrans sudah didapat, langkah tersisa dari Bagian 26 tinggal eksekusi teknis:
+
+1. Masukkan `MIDTRANS_SERVER_KEY` dan `MIDTRANS_CLIENT_KEY` ke `.env` **di server** (bukan `.env.example`, dan **jangan** commit ke git — Bagian 26.5).
+2. Set `MIDTRANS_IS_PRODUCTION` sesuai jenis key yang didapat — **cek dulu** apakah key yang dikasih itu Sandbox atau Production (biasanya kelihatan dari dashboard Midtrans, key production biasanya butuh proses approval bisnis tambahan). Kalau ragu, pakai dulu di mode Sandbox (`"false"`) sampai yakin.
+3. Jalankan verifikasi checklist Bagian 26.5 lengkap: signature webhook, idempotency, expiry check.
+4. Update webhook URL di dashboard Midtrans ke domain final (`https://jhic.zyba.my.id/api/billing/webhook` atau `zyba.my.id`, sesuai domain yang dipakai — Bagian E.4).
+5. Test transaksi end-to-end beneran (bukan cuma baca kode) — kalau masih Sandbox, pakai data test Midtrans; kalau sudah Production, test dengan nominal kecil dulu.
+
+### G.5 Pengingat: Anti-AI-Slop & Responsif
+
+Berlaku untuk **semua** konten baru di atas (artikel, halaman musik, badge):
+- Ikon **wajib Lucide**, bukan emoji (Bagian 3, F.2) — termasuk ikon kategori musik dan badge baru.
+- Copy/teks **wajib Bahasa Indonesia** konsisten (Bagian F.1) — jangan ada sisa artikel/label berbahasa Inggris.
+- Layout Resources (grid artikel + player musik) harus dites di breakpoint mobile (Bagian 15) — terutama player musik, pastikan kontrolnya (play/pause/volume) cukup besar untuk disentuh di HP, bukan cuma didesain buat mouse.
 
 ---
 

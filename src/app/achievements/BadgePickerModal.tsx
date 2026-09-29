@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { AchievementDef } from "@/lib/achievements/definitions";
 
 import { X } from "lucide-react";
+import BadgeLucideIcon from "./BadgeLucideIcon";
 
 interface Props {
   slot: number;
@@ -80,7 +81,7 @@ export default function BadgePickerModal({ slot, unlockedAchievements, currentBa
                   : `border-transparent ${ach.badgeColor} hover:border-orange-200`
                 } ${ach.badgeColor}`}
             >
-              <span className="text-2xl">{ach.icon}</span>
+              <BadgeLucideIcon name={ach.icon} className={`w-6 h-6 ${ach.badgeTextColor}`} />
               <span className={`text-[10px] font-bold text-center leading-tight ${ach.badgeTextColor}`}>
                 {ach.title}
               </span>
