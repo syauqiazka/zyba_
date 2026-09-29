@@ -64,10 +64,12 @@ export default function AchievementsPage() {
   const [totalCount, setTotalCount] = useState(0);
   const [activeCategory, setActiveCategory] = useState<AchievementCategory>("ALL");
   const [loading, setLoading] = useState(true);
+  const [apiError, setApiError] = useState<string | null>(null);
   const [pickerSlot, setPickerSlot] = useState<number | null>(null);
 
   const fetchData = useCallback(async () => {
     setLoading(true);
+    setApiError(null);
     try {
       const [achRes, badgeRes] = await Promise.all([
         fetch("/api/achievements"),
@@ -76,7 +78,10 @@ export default function AchievementsPage() {
       const achData = await achRes.json();
       const badgeData = await badgeRes.json();
 
-      if (achData.achievements) {
+      if (!achRes.ok) {
+        console.error("[Achievements] API error:", achRes.status, achData);
+        setApiError(achData?.error || `HTTP ${achRes.status}`);
+      } else if (achData.achievements) {
         setAchievements(achData.achievements);
         setTotalXp(achData.totalXp ?? 0);
         setStreakDays(achData.streakDays ?? 0);
@@ -92,6 +97,7 @@ export default function AchievementsPage() {
       }
     } catch (e) {
       console.error("[AchievementsPage] Error fetching data:", e);
+      setApiError("Gagal memuat data. Coba refresh halaman.");
     } finally {
       setLoading(false);
     }
@@ -157,7 +163,18 @@ export default function AchievementsPage() {
         </p>
       </div>
 
-      {/* ── Stats Row ── */}
+      {/* Error Banner */}
+      {apiError && (
+        <div className="bg-orange-50 border border-orange-200 rounded-2xl px-4 py-3 text-sm text-orange-700 flex items-center gap-2">
+          <Sparkles size={15} className="shrink-0" />
+          <span>
+            Gagal memuat badge: <strong>{apiError}</strong>.{" "}
+            <button onClick={fetchData} className="underline font-bold">Coba lagi</button>
+          </span>
+        </div>
+      )}
+
+      {/* Stats Row */}
       <div className="grid grid-cols-3 gap-3">
         <StatCard
           value={`${streakDays} Hari`}
