@@ -29,8 +29,12 @@ model User {
   communicationStyle CommunicationStyle @default(FORMAL)
   plan               Plan               @default(FREE)
 
-  onboardingCompleted Boolean @default(false)
-  zybaScore            Int?    // skor awal dari onboarding assessment
+onboardingCompleted Boolean @default(false)
+
+termsAcceptedAt DateTime?
+termsVersion    String?
+
+zybaScore Int?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

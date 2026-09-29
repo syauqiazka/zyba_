@@ -9,7 +9,47 @@ import DesktopShowcase from "./components/DesktopShowcase";
 import SignInCard from "./components/SignInCard";
 import ForgotPasswordCard from "./components/ForgotPasswordCard";
 import ProfileSecurityFlow from "./components/ProfileSecurityFlow";
+import TermsAgreementModal from "./components/TermsAgreementModal";
 
+
+const handleTermsRequired = (
+  email: string,
+  redirect: string
+) => {
+  setPendingUserEmail(email);
+  setPendingRedirect(redirect);
+  setShowTerms(true);
+};
+const handleLoginSuccess = (data: any) => {
+  const user = data.user;
+
+  const needsTerms =
+    !user?.termsAcceptedAt ||
+    user?.termsVersion !== "1.0";
+
+  if (needsTerms) {
+    handleTermsRequired(
+      user.email,
+      user.onboardingCompleted
+        ? "/dashboard"
+        : "/assessment"
+    );
+
+    return;
+  }
+
+  window.location.href = user.onboardingCompleted
+    ? "/dashboard"
+    : "/assessment";
+};
+const handleTermsRequired = (
+  email: string,
+  redirect: string
+) => {
+  setPendingUserEmail(email);
+  setPendingRedirect(redirect);
+  setShowTerms(true);
+};
 type AuthMode =
   | "SIGN_IN"
   | "FORGOT_PASSWORD"
@@ -239,8 +279,8 @@ function LoginContent({
                         switchMode("SIGN_IN")
                       }
                       className={`rounded-full px-4 py-2 text-xs font-bold transition-all ${authMode === "SIGN_IN"
-                          ? "bg-brown-900 text-white shadow-sm"
-                          : "text-brown-700 hover:text-brown-900"
+                        ? "bg-brown-900 text-white shadow-sm"
+                        : "text-brown-700 hover:text-brown-900"
                         }`}
                     >
                       Masuk
@@ -252,8 +292,8 @@ function LoginContent({
                         switchMode("SIGN_UP")
                       }
                       className={`rounded-full px-4 py-2 text-xs font-bold transition-all ${authMode === "SIGN_UP"
-                          ? "bg-brown-900 text-white shadow-sm"
-                          : "text-brown-700 hover:text-brown-900"
+                        ? "bg-brown-900 text-white shadow-sm"
+                        : "text-brown-700 hover:text-brown-900"
                         }`}
                     >
                       Daftar

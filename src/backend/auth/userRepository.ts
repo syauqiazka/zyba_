@@ -9,11 +9,16 @@ export interface StoredUser {
   username?: string | null;
   passwordHash: string;
   name: string;
+
+  termsAcceptedAt?: string | null;
+  termsVersion?: string | null;
+
   avatarUrl?: string | null;
   phone?: string | null;
   location?: string | null;
   bio?: string | null;
-  communicationStyle?: string; // legacy, mapped from companionPersona
+
+  communicationStyle?: string;
   plan?: "FREE" | "PLUS";
   onboardingCompleted: boolean;
   zybaScore?: number | null;
@@ -137,6 +142,13 @@ function dbToStored(user: any): StoredUser {
     communicationStyle: user.companionPersona as any,
     plan: user.plan as any,
     onboardingCompleted: user.onboardingCompleted,
+
+    termsAcceptedAt: user.termsAcceptedAt
+      ? user.termsAcceptedAt.toISOString()
+      : null,
+
+    termsVersion: user.termsVersion ?? null,
+
     zybaScore: user.zybaScore,
     stressLevel: user.stressLevel,
     lastAvatarChangeAt: user.lastAvatarChangeAt
@@ -202,7 +214,7 @@ export const userRepository = {
       const localUsers = readLocalUsers();
       const found = localUsers.find((u) => u.id === id);
       if (found) return found;
-    } catch {}
+    } catch { }
 
     if (id === "user_demo_alex") {
       return {
@@ -266,7 +278,7 @@ export const userRepository = {
         const users = readLocalUsers();
         users.push(newUser);
         writeLocalUsers(users);
-      } catch {}
+      } catch { }
       return newUser;
     }
   },
@@ -317,7 +329,7 @@ export const userRepository = {
               users[idx].id = existingByEmail.id;
               writeLocalUsers(users);
             }
-          } catch {}
+          } catch { }
           return { neonId: existingByEmail.id };
         }
       } catch (e: any) {
@@ -356,7 +368,7 @@ export const userRepository = {
           users[idx].id = created.id;
           writeLocalUsers(users);
         }
-      } catch {}
+      } catch { }
 
       return { neonId: created.id };
     } catch (createErr: any) {
@@ -376,7 +388,7 @@ export const userRepository = {
           select: { id: true },
         });
         if (userById) return { neonId: userById.id };
-      } catch {}
+      } catch { }
 
       return null;
     }
@@ -400,8 +412,28 @@ export const userRepository = {
           phone: data.phone ?? undefined,
           location: data.location ?? undefined,
           bio: data.bio ?? undefined,
+
+          // Terms & Agreement
+          ...(data.termsAcceptedAt !== undefined
+            ? {
+              termsAcceptedAt: data.termsAcceptedAt
+                ? new Date(data.termsAcceptedAt)
+                : null,
+            }
+            : {}),
+
+          ...(data.termsVersion !== undefined
+            ? {
+              termsVersion: data.termsVersion,
+            }
+            : {}),
+
           ...(data.lastAvatarChangeAt !== undefined
-            ? { lastAvatarChangeAt: data.lastAvatarChangeAt ? new Date(data.lastAvatarChangeAt) : null }
+            ? {
+              lastAvatarChangeAt: data.lastAvatarChangeAt
+                ? new Date(data.lastAvatarChangeAt)
+                : null,
+            }
             : {}),
         },
       });
@@ -418,7 +450,7 @@ export const userRepository = {
           writeLocalUsers(users);
           return users[idx];
         }
-      } catch {}
+      } catch { }
       return null;
     }
   },

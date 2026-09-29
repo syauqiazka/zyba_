@@ -7,11 +7,45 @@ import { createSessionToken } from "@/lib/auth";
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
+
     const { email, otp, name, password } = body;
     const action = (body.action || "").toUpperCase();
 
-    // Google Auth Action
+    // =========================
+    // ACCEPT TERMS
+    // =========================
+    // =========================
+    // ACCEPT TERMS
+    // =========================
+    if (action === "ACCEPT_TERMS") {
+      const user = await userRepository.findByEmail(email);
+
+      if (!user) {
+        return NextResponse.json(
+          { error: "User tidak ditemukan." },
+          { status: 404 }
+        );
+      }
+
+      const acceptedAt = new Date();
+
+      await userRepository.update(user.id, {
+        termsAcceptedAt: acceptedAt.toISOString(),
+        termsVersion: "1.0",
+      });
+
+      return NextResponse.json({
+        success: true,
+        termsAcceptedAt: acceptedAt.toISOString(),
+        termsVersion: "1.0",
+      });
+    }
+
+    // =========================
+    // GOOGLE AUTH
+    // =========================
     if (action === "GOOGLE_AUTH") {
+      // kode Google Auth kamu yang sekarang...
       const googleEmail = email || "alex.rivera@gmail.com";
       const googleName = name || "Alex Rivera";
       const avatarUrl = body.avatarUrl || "🦊";
