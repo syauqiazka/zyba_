@@ -170,16 +170,21 @@ export async function GET(req: NextRequest) {
         id: user.id,
         name: user.name,
         email: user.email,
-        username: user.username || null,
-        bio: user.bio || null,
-        phone: user.phone || null,
-        location: user.location || null,
-        avatarUrl: user.avatarUrl || "🦊",
-        avatarKey: user.avatarUrl || "fox",
-        plan,
+        username: user.username,
+        bio: user.bio,
+        phone: user.phone,
+        location: user.location,
+        avatarUrl: user.avatarUrl,
+        avatarKey: user.avatarKey,
+        plan: user.plan,
         onboardingCompleted: user.onboardingCompleted,
+
+        // Terms & Agreement
+        termsAcceptedAt: user.termsAcceptedAt,
+        termsVersion: user.termsVersion,
+
         createdAt: user.createdAt,
-      },
+      }
       stats: {
         zybaScore,
         hasAssessment,
