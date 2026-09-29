@@ -175,7 +175,6 @@ export async function GET(req: NextRequest) {
         phone: user.phone,
         location: user.location,
         avatarUrl: user.avatarUrl,
-        avatarKey: user.avatarKey,
         plan: user.plan,
         onboardingCompleted: user.onboardingCompleted,
 
@@ -184,7 +183,7 @@ export async function GET(req: NextRequest) {
         termsVersion: user.termsVersion,
 
         createdAt: user.createdAt,
-      }
+      },
       stats: {
         zybaScore,
         hasAssessment,
