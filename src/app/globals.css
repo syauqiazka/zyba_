@@ -64,6 +64,15 @@ button:focus-visible {
   outline-offset: 3px;
 }
 
+/* Hide scrollbar but keep scrollable */
+.scrollbar-none {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+}
+
 main input,
 main textarea,
 main select {

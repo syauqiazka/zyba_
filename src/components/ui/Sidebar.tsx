@@ -6,16 +6,26 @@ import { usePathname, useRouter } from "next/navigation";
 import ProfilePopover, { ProfileUser } from "../profile/ProfilePopover";
 import ProfileSettingsModal from "../profile/ProfileSettingsModal";
 import UserAvatar from "./UserAvatar";
+import {
+  Home,
+  CalendarCheck,
+  MessageCircle,
+  Zap,
+  Heart,
+  Users,
+  BookOpen,
+  Trophy,
+} from "lucide-react";
 
 const NAV_ITEMS = [
-  { href: "/dashboard", label: "Dashboard", icon: "home" },
-  { href: "/daily-assessment", label: "Assessment Harian", icon: "calendar-check" },
-  { href: "/companion", label: "Zyba Companion", icon: "bot" },
-  { href: "/activity", label: "Smart Activity Planner", icon: "activity" },
-  { href: "/wellness-journey", label: "Wellness Journey", icon: "heart" },
-  { href: "/community", label: "Zyba Community", icon: "users" },
-  { href: "/resources", label: "Resources", icon: "book" },
-  { href: "/achievements", label: "Pencapaian", icon: "trophy" },
+  { href: "/dashboard", label: "Dashboard", icon: Home },
+  { href: "/daily-assessment", label: "Assessment Harian", icon: CalendarCheck },
+  { href: "/companion", label: "Zyba Companion", icon: MessageCircle },
+  { href: "/activity", label: "Smart Activity Planner", icon: Zap },
+  { href: "/wellness-journey", label: "Wellness Journey", icon: Heart },
+  { href: "/community", label: "Zyba Community", icon: Users },
+  { href: "/resources", label: "Resources", icon: BookOpen },
+  { href: "/achievements", label: "Pencapaian", icon: Trophy },
 ];
 
 export default function Sidebar({ onClose }: { onClose?: () => void }) {
@@ -98,10 +108,11 @@ export default function Sidebar({ onClose }: { onClose?: () => void }) {
   };
 
   return (
-    <aside className="w-[82vw] max-w-[290px] md:w-20 lg:w-64 shrink-0 border-r border-brown-900/10 bg-cream min-h-screen p-3 md:p-3 lg:p-5 flex flex-col justify-between sticky top-0 h-screen z-30 shadow-[12px_0_36px_-28px_rgba(59,42,32,0.5)] transition-all duration-300">
-      <div className="flex flex-col gap-5">
+    <aside className="w-[82vw] max-w-[290px] md:w-20 lg:w-64 shrink-0 border-r border-brown-900/10 bg-cream p-3 md:p-3 lg:p-5 flex flex-col sticky top-0 h-screen z-30 shadow-[12px_0_36px_-28px_rgba(59,42,32,0.5)] transition-all duration-300 overflow-hidden">
+      {/* Top section: Logo + Nav — scrollable on small screens */}
+      <div className="flex flex-col gap-5 flex-1 overflow-y-auto min-h-0 scrollbar-none">
         {/* Brand Logo & Close button row */}
-        <div className="flex items-center justify-between px-1 pt-1 pb-1">
+        <div className="flex items-center justify-between px-1 pt-1 pb-1 shrink-0">
           <Link href="/dashboard" className="flex items-center gap-3 group justify-start md:justify-center lg:justify-start" title="ZYBA Wellness">
             <div className="relative w-9 h-9 shrink-0 flex items-center justify-center rounded-2xl bg-cream border border-orange-500/20 shadow-sm group-hover:scale-105 transition-transform">
               {/* 4-petal floral logomark (Orange & Green) */}
@@ -139,6 +150,7 @@ export default function Sidebar({ onClose }: { onClose?: () => void }) {
         {/* Navigation links */}
         <nav className="flex flex-col gap-1.5">
           {NAV_ITEMS.map((item) => {
+            const Icon = item.icon;
             const isActive = pathname === item.href || (item.href !== "/dashboard" && pathname?.startsWith(item.href));
             return (
               <Link
@@ -152,7 +164,11 @@ export default function Sidebar({ onClose }: { onClose?: () => void }) {
                     : "text-brown-700 hover:-translate-y-0.5 hover:bg-gradient-to-r hover:from-orange-100/80 hover:to-green-100/80 hover:text-brown-900 hover:shadow-xs"
                 }`}
               >
-                <RenderIcon name={item.icon} isActive={isActive} />
+                <Icon
+                  size={18}
+                  strokeWidth={isActive ? 2.4 : 2}
+                  className={isActive ? "text-cream shrink-0" : "text-brown-700 shrink-0"}
+                />
                 <span className="md:hidden lg:inline truncate">{item.label}</span>
                 {item.href === "/companion" && (
                   <span className="ml-auto text-[10px] font-semibold tracking-wide px-2 py-0.5 rounded-full bg-orange-100 text-orange-500 md:hidden lg:inline">
@@ -165,8 +181,8 @@ export default function Sidebar({ onClose }: { onClose?: () => void }) {
         </nav>
       </div>
 
-      {/* Footer Profile & Zyba Plus Badge */}
-      <div className="flex flex-col gap-3 pt-4 border-t border-brown-900/10">
+      {/* Footer Profile & Zyba Plus Badge — always visible, never scrolls away */}
+      <div className="flex flex-col gap-3 pt-4 border-t border-brown-900/10 shrink-0">
         <Link
           href="/settings/zyba-plus"
           title={currentUser.plan === "PLUS" ? "Zyba Plus" : "Upgrade Pro"}
@@ -289,90 +305,4 @@ export default function Sidebar({ onClose }: { onClose?: () => void }) {
     </aside>
   );
 }
-
-function RenderIcon({ name, isActive }: { name: string; isActive: boolean }) {
-  const strokeClass = isActive ? "stroke-cream" : "stroke-brown-700";
-  switch (name) {
-    case "home":
-      return (
-        <svg className={`w-4 h-4 ${strokeClass}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-          <path strokeLinecap="round" strokeLinejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-        </svg>
-      );
-    case "clipboard-check":
-      // ClipboardCheck — Assessment (onboarding baseline)
-      return (
-        <svg className={`w-4 h-4 ${strokeClass}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-          <path strokeLinecap="round" strokeLinejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-          <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4" />
-        </svg>
-      );
-    case "calendar-check":
-      // CalendarCheck2 — Assessment Harian
-      return (
-        <svg className={`w-4 h-4 ${strokeClass}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-          <rect x="3" y="4" width="18" height="18" rx="2" ry="2" strokeLinecap="round" strokeLinejoin="round" />
-          <path strokeLinecap="round" strokeLinejoin="round" d="M16 2v4M8 2v4M3 10h18" />
-          <path strokeLinecap="round" strokeLinejoin="round" d="M9 16l2 2 4-4" />
-        </svg>
-      );
-    case "smile":
-      // Smile — Mood Check-In
-      return (
-        <svg className={`w-4 h-4 ${strokeClass}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-          <path strokeLinecap="round" strokeLinejoin="round" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-        </svg>
-      );
-    case "bot":
-      return (
-        <svg className={`w-4 h-4 ${strokeClass}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-          <path strokeLinecap="round" strokeLinejoin="round" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-4l-4 4z" />
-        </svg>
-      );
-    case "activity":
-      return (
-        <svg className={`w-4 h-4 ${strokeClass}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-          <path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
-        </svg>
-      );
-    case "heart":
-      return (
-        <svg className={`w-4 h-4 ${strokeClass}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-          <path strokeLinecap="round" strokeLinejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-        </svg>
-      );
-    case "users":
-      return (
-        <svg className={`w-4 h-4 ${strokeClass}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-          <path strokeLinecap="round" strokeLinejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-        </svg>
-      );
-    case "book":
-      return (
-        <svg className={`w-4 h-4 ${strokeClass}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-          <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-        </svg>
-      );
-    case "settings":
-      // Settings gear icon
-      return (
-        <svg className={`w-4 h-4 ${strokeClass}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-          <path strokeLinecap="round" strokeLinejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-          <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-        </svg>
-      );
-    case "trophy":
-      return (
-        <svg className={`w-4 h-4 ${strokeClass}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-          <path strokeLinecap="round" strokeLinejoin="round" d="M12 15c3.314 0 6-2.686 6-6V3H6v6c0 3.314 2.686 6 6 6z" />
-          <path strokeLinecap="round" strokeLinejoin="round" d="M6 3H3v3a3 3 0 003 3M18 3h3v3a3 3 0 01-3 3" />
-          <path strokeLinecap="round" strokeLinejoin="round" d="M12 15v4M8 19h8" />
-        </svg>
-      );
-    default:
-      return null;
-  }
-}
-
-
 

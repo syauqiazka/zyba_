@@ -146,24 +146,7 @@ export default function ClientLayout({
           </Link>
         </div>
 
-        <div className="flex items-center gap-2">
-          <Link
-            href="/achievements"
-            className="px-2.5 py-1 rounded-full bg-orange-100 text-orange-600 text-[11px] font-bold flex items-center gap-1 active:scale-95 transition-transform"
-            title="Lihat Pencapaian"
-          >
-            <span>🏆</span>
-            <span>Badge</span>
-          </Link>
-          <Link
-            href="/settings"
-            className="w-9 h-9 rounded-xl bg-cream border border-brown-900/10 flex items-center justify-center text-brown-700 active:scale-95 transition-all text-xs"
-            title="Pengaturan"
-            aria-label="Pengaturan"
-          >
-            ⚙️
-          </Link>
-        </div>
+
       </header>
 
       {/* Mobile: backdrop overlay */}
