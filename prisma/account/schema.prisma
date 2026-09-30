@@ -1,7 +1,7 @@
 generator client {
-  provider = "prisma-client-js"
+  provider      = "prisma-client-js"
   binaryTargets = ["native", "debian-openssl-3.0.x", "debian-openssl-1.1.x"]
-  output = "../../src/generated/account-client"
+  output        = "../../src/generated/account-client"
 }
 
 datasource db {
@@ -24,17 +24,16 @@ model User {
   companionPersona CompanionPersona @default(KINA)
   plan             Plan             @default(FREE)
 
-onboardingCompleted Boolean @default(false)
+  onboardingCompleted Boolean @default(false)
 
-termsAcceptedAt DateTime?
-termsVersion    String?
+  termsAcceptedAt               DateTime?
+  termsVersion                  String?
+  communityGuidelinesAcceptedAt DateTime?
+  communityGuidelinesVersion    String?
 
-communityGuidelinesAcceptedAt DateTime?
-communityGuidelinesVersion   String?
-
-zybaScore     Int?
-stressLevel   Int?
-streak        Int?
+  zybaScore   Int?
+  stressLevel Int?
+  streak      Int?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -48,18 +47,19 @@ streak        Int?
   subscriptions    Subscription[]
   userAchievements UserAchievement[]
   userBadges       UserBadge[]
-  streakDays         Int?             @default(0)
+
+  streakDays         Int?      @default(0)
   lastStreakDate     DateTime?
   lastAvatarChangeAt DateTime?
 
   @@map("users")
 }
 
-// FASE 4: ganti CommunicationStyle → CompanionPersona (mapping 1:1)
+// FASE 4: ganti CommunicationStyle → CompanionPersona
 enum CompanionPersona {
-  KINA  // dulu CASUAL
+  KINA // dulu CASUAL
   OLLIE // dulu FORMAL
-  RUBI  // dulu FUN
+  RUBI // dulu FUN
   BRUNO // baru
 }
 
@@ -125,9 +125,9 @@ model MoodEntry {
 }
 
 model DailyAssessment {
-  id              String    @id @default(cuid())
-  userId          String
-  user             User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id     String @id @default(cuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   date            String
   mood            MoodLevel
@@ -136,15 +136,14 @@ model DailyAssessment {
   energyTags      String[]
   reflection      String?
   flaggedForRisk  Boolean   @default(false)
-
-  // ⭐ SCORE HARIAN
   calculatedScore Int?
 
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@unique([userId, date])
   @@index([userId, createdAt])
+  @@index([userId, date, createdAt])
   @@map("daily_assessments")
 }
 
@@ -214,9 +213,11 @@ model Subscription {
   startDate DateTime?
   endDate   DateTime?
   createdAt DateTime           @default(now())
-  payments  Payment[]
+
+  payments Payment[]
 
   @@index([userId])
+  @@index([userId, status, endDate, createdAt])
   @@map("subscriptions")
 }
 
@@ -254,25 +255,23 @@ enum PaymentStatus {
   CANCELLED
 }
 
-// ---------- ACHIEVEMENTS & BADGES (G.3) ----------
-
 enum AchievementCategory {
-  STREAK      // daily login/mood check-in streaks
-  WELLNESS    // mood & journal milestones
-  SOCIAL      // community engagement
-  COMPANION   // chat interactions
-  ACTIVITY    // physical activity
-  SPECIAL     // rare/event-based
+  STREAK
+  WELLNESS
+  SOCIAL
+  COMPANION
+  ACTIVITY
+  SPECIAL
 }
 
 model Achievement {
   id          String              @id @default(cuid())
-  key         String              @unique  // e.g. "streak_7", "mood_30"
+  key         String              @unique
   title       String
   description String
-  icon        String              // Lucide icon name
+  icon        String
   category    AchievementCategory
-  threshold   Int?                // numeric threshold to unlock
+  threshold   Int?
   isSecret    Boolean             @default(false)
   xpReward    Int                 @default(10)
 
@@ -294,21 +293,20 @@ model UserAchievement {
   @@map("user_achievements")
 }
 
-// Model Badge resmi sesuai AGENTS.md Lampiran G.3
 model Badge {
-  id          String      @id @default(cuid())
-  key         String      @unique // "first_day", "3_day_streak", "first_mood", dst.
+  id          String @id @default(cuid())
+  key         String @unique
   name        String
   description String
-  category    String      // "Streak" | "Wellness" | "Companion" | "Sosial" | "Aktivitas" | "Spesial"
-  icon        String      // nama ikon Lucide (bukan emoji)
-  xpReward    Int         @default(10)
-  userBadges  UserBadge[]
+  category    String
+  icon        String
+  xpReward    Int    @default(10)
+
+  userBadges UserBadge[]
 
   @@map("badges")
 }
 
-// UserBadge resmi sesuai AGENTS.md Lampiran G.3
 model UserBadge {
   id          String   @id @default(cuid())
   userId      String
@@ -316,8 +314,8 @@ model UserBadge {
   badgeId     String
   badge       Badge    @relation(fields: [badgeId], references: [id], onDelete: Cascade)
   earnedAt    DateTime @default(now())
-  slot        Int?     // display slot index 0-2 (up to 3 pinned badges)
-  customLabel String?  // optional user rename
+  slot        Int?
+  customLabel String?
   updatedAt   DateTime @default(now()) @updatedAt
 
   @@unique([userId, badgeId])
