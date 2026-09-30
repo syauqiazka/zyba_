@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import {
   LandingHeader,
   LandingHero,
@@ -5,6 +6,12 @@ import {
   LandingAbout,
   LandingCta,
 } from "@/components/landing";
+
+export const metadata: Metadata = {
+  alternates: {
+    canonical: "/",
+  },
+};
 
 export default function LandingPage() {
   return (

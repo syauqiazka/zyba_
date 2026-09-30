@@ -27,8 +27,8 @@ const config: Config = {
         pill: "999px",
       },
       fontFamily: {
-        display: ["Manrope", "sans-serif"],
-        body: ["DM Sans", "sans-serif"],
+        display: ["var(--font-manrope)", "sans-serif"],
+        body: ["var(--font-dm-sans)", "sans-serif"],
       },
     },
   },

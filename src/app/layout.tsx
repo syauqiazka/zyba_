@@ -1,21 +1,50 @@
 import type { Metadata } from "next";
+import { DM_Sans, Manrope } from "next/font/google";
 import ClientLayout from "./ClientLayout";
 import "./globals.css";
 
+const dmSans = DM_Sans({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-dm-sans",
+});
+
+const manrope = Manrope({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-manrope",
+});
+
+const siteUrl =
+  process.env.NEXT_PUBLIC_SITE_URL || "https://jhic.zyba.my.id";
+
 export const metadata: Metadata = {
-  title: "ZYBA — Gen Z Wellness Support",
+  metadataBase: new URL(siteUrl),
+
+  title: {
+    default: "ZYBA — Gen Z Wellness Support",
+    template: "%s | ZYBA",
+  },
+
   description:
     "Pendamping kesehatan mental, fisik, dan sosial berbasis AI untuk Gen Z.",
-  icons: {
-    icon: [
-      { url: "/icon.svg", type: "image/svg+xml" },
-      { url: "/favicon.png", type: "image/png", sizes: "64x64" },
-      { url: "/favicon.ico", sizes: "any" },
-    ],
-    apple: [
-      { url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" },
-    ],
-    shortcut: ["/favicon.ico"],
+
+  applicationName: "ZYBA",
+
+  openGraph: {
+    type: "website",
+    locale: "id_ID",
+    siteName: "ZYBA",
+    title: "ZYBA — Gen Z Wellness Support",
+    description:
+      "Pendamping kesehatan mental, fisik, dan sosial berbasis AI untuk Gen Z.",
+  },
+
+  twitter: {
+    card: "summary",
+    title: "ZYBA — Gen Z Wellness Support",
+    description:
+      "Pendamping kesehatan mental, fisik, dan sosial berbasis AI untuk Gen Z.",
   },
 };
 
@@ -25,17 +54,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="id">
-      <head>
-        <link rel="icon" href="/icon.svg" type="image/svg+xml" />
-        <link rel="icon" href="/favicon.png" type="image/png" sizes="64x64" />
-        <link rel="alternate icon" href="/favicon.ico" sizes="any" />
-        <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
-        <link rel="preconnect" href="https://generativelanguage.googleapis.com" />
-        <link rel="preconnect" href="https://api.groq.com" />
-        <link rel="preconnect" href="https://openrouter.ai" />
-        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
-      </head>
+    <html
+      lang="id"
+      className={`${dmSans.variable} ${manrope.variable}`}
+    >
       <body>
         <ClientLayout>{children}</ClientLayout>
       </body>
