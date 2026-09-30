@@ -3,6 +3,8 @@
 const path = require("path");
 
 const nextConfig = {
+  output: "standalone",
+  output: "standalone",
   eslint: {
     ignoreDuringBuilds: true,
   },
