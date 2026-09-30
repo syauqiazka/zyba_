@@ -41,8 +41,7 @@ export default function TermsAgreementModal({
             />
 
             {/* Modal */}
-            <div className="relative z-10 w-full max-w-lg overflow-hidden rounded-[28px] bg-[#F7F2E7] shadow-2xl border border-brown-900/10">
-
+            <div className="relative z-10 flex max-h-[calc(100dvh-2rem)] w-full max-w-lg flex-col overflow-hidden rounded-[28px] border border-brown-900/10 bg-[#F7F2E7] shadow-2xl">
                 {/* Header */}
                 <div className="flex items-start justify-between gap-4 px-6 pt-6 pb-4 sm:px-8 sm:pt-8">
                     <div className="flex items-start gap-4">

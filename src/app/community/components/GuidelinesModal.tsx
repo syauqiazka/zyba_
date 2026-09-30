@@ -65,7 +65,7 @@ export default function CommunityGuidelinesModal({
                 </div>
 
                 {/* Content */}
-                <div className="mx-6 max-h-[50vh] overflow-y-auto rounded-2xl border border-brown-900/10 bg-white/60 p-5 sm:mx-8 sm:p-6">
+                <div className="mx-6 min-h-0 flex-1 overflow-y-auto rounded-2xl border border-brown-900/10 bg-white/60 p-5 sm:mx-8 sm:p-6">
                     <div className="space-y-6">
 
                         {/* Respect */}
