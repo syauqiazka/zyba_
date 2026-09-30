@@ -67,29 +67,35 @@ export async function GET(req: NextRequest) {
     // =================================================
     // Wrap in try-catch: local-fallback users (user_TIMESTAMP_xxx) don't exist in Neon,
     // so these queries will throw. We must not crash — return nulls/empty arrays instead.
-    const [latestDaily, activeSubscription, expiredSubscriptions, initialAssessment] =
-      await Promise.all([
-        accountDb.dailyAssessment.findFirst({
-          where: { userId: user.id },
-          orderBy: [{ date: "desc" }, { createdAt: "desc" }],
-        }).catch(() => null),
-        accountDb.subscription.findFirst({
-          where: {
-            userId: user.id,
-            status: "ACTIVE",
-            endDate: { gte: new Date() },
-          },
-          orderBy: { createdAt: "desc" },
-        }).catch(() => null),
-        accountDb.subscription.findMany({
-          where: {
-            userId: user.id,
-            status: "ACTIVE",
-            endDate: { lt: new Date() },
-          },
-        }).catch(() => []),
-        userRepository.getLatestAssessment(user.id),
-      ]);
+    const [latestDaily, activeSubscription, expiredSubscription, initialAssessment] =
+  await Promise.all([
+    accountDb.dailyAssessment.findFirst({
+      where: { userId: user.id },
+      orderBy: [{ date: "desc" }, { createdAt: "desc" }],
+    }).catch(() => null),
+
+    accountDb.subscription.findFirst({
+      where: {
+        userId: user.id,
+        status: "ACTIVE",
+        endDate: { gte: new Date() },
+      },
+      orderBy: { createdAt: "desc" },
+    }).catch(() => null),
+
+    accountDb.subscription.findFirst({
+      where: {
+        userId: user.id,
+        status: "ACTIVE",
+        endDate: { lt: new Date() },
+      },
+      select: {
+        id: true,
+      },
+    }).catch(() => null),
+
+    userRepository.getLatestAssessment(user.id),
+  ]);
 
     // =================================================
     // SCORE & CONDITION
@@ -139,8 +145,7 @@ export async function GET(req: NextRequest) {
     // =================================================
     // SUBSCRIPTION STATUS
     // =================================================
-    if (expiredSubscriptions && expiredSubscriptions.length > 0) {
-      // Background async update, tidak perlu memblokir response
+if (expiredSubscription) {      // Background async update, tidak perlu memblokir response
       accountDb.subscription
         .updateMany({
           where: {
