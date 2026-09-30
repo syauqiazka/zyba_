@@ -3,7 +3,7 @@ import { accountDb } from "@/backend/db/accountClient";
 import { detectRisk, CRISIS_RESOURCES } from "@/lib/crisisDetection";
 import { verifySessionToken } from "@/lib/auth";
 import { checkAndUnlock } from "@/lib/achievements/engine";
-
+import { invalidateUserMeCache } from "@/lib/server/userMeCache";
 // =====================================================
 // USER ID
 // =====================================================
@@ -610,7 +610,8 @@ export async function POST(req: NextRequest) {
     }
 
     // Invalidate caches immediately so dashboard & assessment update instantly
-    invalidateDailyAssessmentCache(neonUserId);
+invalidateDailyAssessmentCache(neonUserId);
+invalidateUserMeCache(neonUserId);
 
     // Achievement & Badge check (fire-and-forget)
     checkAndUnlock(neonUserId, { type: "mood_checkin" }).catch(() => {});

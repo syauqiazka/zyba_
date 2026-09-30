@@ -5,26 +5,17 @@ import { resolveAvatar } from "@/lib/avatarUtils";
 import { accountDb } from "@/backend/db/accountClient";
 import { scoreToCondition } from "@/backend/scoring/zybaScore";
 import bcrypt from "bcryptjs";
-
+import {
+  getUserMeCache,
+  setUserMeCache,
+  invalidateUserMeCache,
+} from "@/lib/server/userMeCache";
 // =====================================================
 // FAST IN-MEMORY CACHE (TTL 6s)
 // Mengeliminasi 20+ query redundan saat banyak komponen
 // memanggil /api/user/me bersamaan pada load halaman.
 // =====================================================
-interface CacheEntry {
-  data: any;
-  timestamp: number;
-}
-const userMeCache = new Map<string, CacheEntry>();
-const CACHE_TTL_MS = 6000;
 
-function invalidateUserCache(userId?: string) {
-  if (userId) {
-    userMeCache.delete(userId);
-  } else {
-    userMeCache.clear();
-  }
-}
 
 export async function GET(req: NextRequest) {
   try {
@@ -41,10 +32,11 @@ export async function GET(req: NextRequest) {
     }
 
     // Cek cache terlebih dahulu
-    const cached = userMeCache.get(session.userId);
-    if (cached && Date.now() - cached.timestamp < CACHE_TTL_MS) {
-      return NextResponse.json(cached.data);
-    }
+const cached = getUserMeCache(session.userId);
+
+if (cached) {
+  return NextResponse.json(cached);
+}
 
     // Pastikan user ada di DB atau auto-restore dari session jika DB baru di-switch/reset
     await userRepository.ensureUserExistsInNeon(
@@ -202,10 +194,10 @@ if (expiredSubscription) {      // Background async update, tidak perlu membloki
     };
 
     // Simpan ke fast cache
-    userMeCache.set(session.userId, {
-      data: responseData,
-      timestamp: Date.now(),
-    });
+setUserMeCache(
+  session.userId,
+  responseData
+);
 
     return NextResponse.json(responseData, {
       headers: {
@@ -304,8 +296,8 @@ export async function PATCH(req: NextRequest) {
     });
 
     // Invalidate cache for both old and new IDs
-    invalidateUserCache(session.userId);
-    if (neonUserId !== session.userId) invalidateUserCache(neonUserId);
+invalidateUserMeCache(session.userId);
+    if (neonUserId !== session.userId) invalidateUserMeCache(neonUserId);;
 
 
     return NextResponse.json({
