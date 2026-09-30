@@ -3,8 +3,9 @@
 const path = require("path");
 
 const nextConfig = {
+  // Optimisasi Docker
   output: "standalone",
-  output: "standalone",
+
   eslint: {
     ignoreDuringBuilds: true,
   },
@@ -16,23 +17,26 @@ const nextConfig = {
         : ["localhost:3000"],
     },
 
-    // =================================================
-    // SERVER HOSTING RESOURCE LIMIT
-    // Batasi worker agar tidak kena EAGAIN / thread limit
-    // =================================================
+    // Batasi resource build VPS
     workerThreads: false,
     cpus: 1,
 
     outputFileTracingRoot: path.resolve(__dirname),
   },
 
+  // Compression response
   compress: true,
+
+  // Jangan tampilkan X-Powered-By
   poweredByHeader: false,
+
   reactStrictMode: true,
   swcMinify: true,
 
+  // Optimisasi gambar
   images: {
     formats: ["image/webp"],
+
     deviceSizes: [
       640,
       750,
@@ -40,6 +44,7 @@ const nextConfig = {
       1080,
       1200,
     ],
+
     imageSizes: [
       16,
       32,
@@ -49,15 +54,11 @@ const nextConfig = {
       128,
       256,
     ],
-    minimumCacheTTL:
-      60 * 60 * 24 * 7,
+
+    minimumCacheTTL: 60 * 60 * 24 * 7,
   },
 
-  webpack(config) {
-    return config;
-  },
-};
-
+  // Cache static assets + security headers ringan
   async headers() {
     return [
       {
@@ -69,6 +70,7 @@ const nextConfig = {
           },
         ],
       },
+
       {
         source: "/favicon.ico",
         headers: [
@@ -78,6 +80,7 @@ const nextConfig = {
           },
         ],
       },
+
       {
         source: "/robots.txt",
         headers: [
@@ -87,6 +90,7 @@ const nextConfig = {
           },
         ],
       },
+
       {
         source: "/sitemap.xml",
         headers: [
@@ -96,6 +100,7 @@ const nextConfig = {
           },
         ],
       },
+
       {
         source: "/:path*",
         headers: [
@@ -111,5 +116,10 @@ const nextConfig = {
       },
     ];
   },
+
+  webpack(config) {
+    return config;
+  },
+};
 
 module.exports = nextConfig;
