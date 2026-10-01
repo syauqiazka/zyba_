@@ -3,7 +3,10 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, BookOpen, Clock, Headphones, Music } from "lucide-react";
 import { accountDb } from "@/backend/db/accountClient";
-import { getResourceSlug, getResourceDescription } from "@/lib/resourceSlug";
+import {
+  getResourceSlug,
+  getResourceDescription,
+} from "@/lib/resourceSlug";
 
 export const dynamic = "force-dynamic";
 
@@ -42,28 +45,30 @@ export async function generateMetadata({
     };
   }
 
-  const description = getResourceDescription(
-    resource.body,
-    `${resource.title} — sumber daya wellness dan kesehatan mental dari ZYBA.`
-  );
+  const description = resource.isPro
+    ? `${resource.title} — konten premium ZYBA Plus untuk kesehatan mental dan wellness.`
+    : getResourceDescription(
+        resource.body,
+        `${resource.title} — sumber daya wellness dan kesehatan mental dari ZYBA.`
+      );
 
   const slug = getResourceSlug(resource.title);
 
-return {
-  title: resource.title,
-  description,
-  robots: resource.isPro
-    ? {
-        index: false,
-        follow: true,
-      }
-    : {
-        index: true,
-        follow: true,
-      },
-  alternates: {
-    canonical: `/resources/${slug}`,
-  },
+  return {
+    title: resource.title,
+    description,
+    robots: resource.isPro
+      ? {
+          index: false,
+          follow: true,
+        }
+      : {
+          index: true,
+          follow: true,
+        },
+    alternates: {
+      canonical: `/resources/${slug}`,
+    },
     openGraph: {
       type: resource.type === "ARTICLE" ? "article" : "website",
       title: resource.title,
@@ -86,8 +91,14 @@ function getTypeLabel(type: string) {
 }
 
 function getTypeIcon(type: string) {
-  if (type === "COURSE") return <Headphones className="w-5 h-5" />;
-  if (type === "AUDIO") return <Music className="w-5 h-5" />;
+  if (type === "COURSE") {
+    return <Headphones className="w-5 h-5" />;
+  }
+
+  if (type === "AUDIO") {
+    return <Music className="w-5 h-5" />;
+  }
+
   return <BookOpen className="w-5 h-5" />;
 }
 
@@ -104,10 +115,12 @@ export default async function ResourceDetailPage({
     notFound();
   }
 
-  const description = getResourceDescription(
-    resource.body,
-    `${resource.title} — sumber daya wellness dan kesehatan mental dari ZYBA.`
-  );
+  const description = resource.isPro
+    ? `${resource.title} — konten premium ZYBA Plus untuk kesehatan mental dan wellness.`
+    : getResourceDescription(
+        resource.body,
+        `${resource.title} — sumber daya wellness dan kesehatan mental dari ZYBA.`
+      );
 
   const paragraphs = resource.body
     ? resource.body
@@ -207,48 +220,48 @@ export default async function ResourceDetailPage({
           ) : null}
         </header>
 
-{resource.isPro ? (
-  <div className="mt-6 glass-card rounded-3xl p-6 sm:p-8 md:p-10 border border-orange-500/20 bg-orange-50/40 text-center">
-    <div className="inline-flex items-center justify-center px-3 py-1.5 rounded-full bg-orange-500 text-white text-xs font-bold mb-4">
-      ZYBA PLUS
-    </div>
+        {resource.isPro ? (
+          <div className="mt-6 glass-card rounded-3xl p-6 sm:p-8 md:p-10 border border-orange-500/20 bg-orange-50/40 text-center">
+            <div className="inline-flex items-center justify-center px-3 py-1.5 rounded-full bg-orange-500 text-white text-xs font-bold mb-4">
+              ZYBA PLUS
+            </div>
 
-    <h2 className="font-display text-xl sm:text-2xl font-extrabold text-brown-900">
-      Konten Premium ZYBA
-    </h2>
+            <h2 className="font-display text-xl sm:text-2xl font-extrabold text-brown-900">
+              Konten Premium ZYBA
+            </h2>
 
-    <p className="mt-2 text-sm sm:text-base text-brown-700 leading-7 max-w-xl mx-auto">
-      Resource ini tersedia untuk pengguna ZYBA Plus. Upgrade untuk mengakses
-      materi edukasi lengkap.
-    </p>
+            <p className="mt-2 text-sm sm:text-base text-brown-700 leading-7 max-w-xl mx-auto">
+              Resource ini tersedia untuk pengguna ZYBA Plus. Upgrade untuk
+              mengakses materi edukasi lengkap.
+            </p>
 
-    <Link
-      href="/resources"
-      className="inline-flex items-center justify-center mt-5 min-h-[44px] px-6 rounded-full bg-brown-900 text-white text-sm font-bold hover:bg-orange-500 transition-colors"
-    >
-      Kembali ke Sumber Daya
-    </Link>
-  </div>
-) : (
-  <div className="mt-6 glass-card rounded-3xl p-6 sm:p-8 md:p-10 border border-brown-900/10 bg-white">
-    {paragraphs.length > 0 ? (
-      <div className="space-y-5">
-        {paragraphs.map((paragraph, index) => (
-          <p
-            key={index}
-            className="text-base sm:text-lg text-brown-800 leading-8"
-          >
-            {paragraph}
-          </p>
-        ))}
-      </div>
-    ) : (
-      <p className="text-base text-brown-700 leading-7">
-        {description}
-      </p>
-    )}
-  </div>
-)}
+            <Link
+              href="/resources"
+              className="inline-flex items-center justify-center mt-5 min-h-[44px] px-6 rounded-full bg-brown-900 text-white text-sm font-bold hover:bg-orange-500 transition-colors"
+            >
+              Kembali ke Sumber Daya
+            </Link>
+          </div>
+        ) : (
+          <div className="mt-6 glass-card rounded-3xl p-6 sm:p-8 md:p-10 border border-brown-900/10 bg-white">
+            {paragraphs.length > 0 ? (
+              <div className="space-y-5">
+                {paragraphs.map((paragraph, index) => (
+                  <p
+                    key={index}
+                    className="text-base sm:text-lg text-brown-800 leading-8"
+                  >
+                    {paragraph}
+                  </p>
+                ))}
+              </div>
+            ) : (
+              <p className="text-base text-brown-700 leading-7">
+                {description}
+              </p>
+            )}
+          </div>
+        )}
       </article>
     </>
   );
