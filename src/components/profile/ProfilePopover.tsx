@@ -153,17 +153,33 @@ export default function ProfilePopover({
   const isPro = user.plan === "PLUS";
 
   return createPortal(
-    <div className="fixed inset-0 z-70 pointer-events-none flex items-end sm:items-end justify-center sm:justify-start">
-      {/* Dimmed backdrop for outside click / mobile touch */}
+    <div className="fixed inset-0 z-[9999] pointer-events-none">
+      {/* Dimmed backdrop */}
       <div
-        className="fixed inset-0 bg-black/35 sm:bg-black/10 backdrop-blur-[1px] pointer-events-auto transition-opacity duration-200"
+        className="fixed inset-0 bg-black/40 sm:bg-black/20 backdrop-blur-[1.5px] pointer-events-auto transition-opacity duration-200"
         onClick={onClose}
       />
 
-      {/* Popover Card */}
+      {/* ── Popover Card
+           Mobile  : centered bottom sheet (full width minus margins)
+           Tablet  : anchored bottom-left, after icon-sidebar (80px)
+           Desktop : anchored bottom-left, after full sidebar (256px)
+      ── */}
       <div
         ref={popoverRef}
-        className="pointer-events-auto relative sm:fixed bottom-3 sm:bottom-16 left-auto sm:left-4 md:left-24 lg:left-64 z-70 w-[calc(100vw-24px)] max-w-sm sm:w-84 rounded-3xl bg-[#FAF7F2] text-brown-900 shadow-2xl border border-brown-900/15 overflow-hidden animate-in fade-in slide-in-from-bottom-3 duration-200 select-none font-body max-h-[88vh] overflow-y-auto"
+        className="
+          pointer-events-auto
+          fixed z-[9999]
+          /* Mobile: bottom sheet, centered */
+          bottom-3 left-3 right-3
+          /* Tablet (md): anchor left after icon sidebar */
+          md:left-[88px] md:right-auto md:bottom-4 md:w-80
+          /* Desktop (lg): anchor left after full sidebar */
+          lg:left-[272px]
+          rounded-3xl bg-[#FAF7F2] text-brown-900 shadow-2xl border border-brown-900/15
+          overflow-hidden animate-in fade-in slide-in-from-bottom-3 duration-200
+          select-none font-body max-h-[88vh] overflow-y-auto
+        "
         style={{
           boxShadow: "0 20px 40px -15px rgba(59, 42, 32, 0.35), 0 0 0 1px rgba(59, 42, 32, 0.08)",
         }}

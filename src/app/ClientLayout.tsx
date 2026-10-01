@@ -78,6 +78,13 @@ export default function ClientLayout({
     } catch {}
   }, []);
 
+  // Close sidebar drawer whenever profile popup is requested (mobile)
+  useEffect(() => {
+    const handler = () => setMobileSidebarOpen(false);
+    window.addEventListener("zyba_open_profile", handler);
+    return () => window.removeEventListener("zyba_open_profile", handler);
+  }, []);
+
   // Public pages + assessment + feature explainer pages
   if (
     pathname === "/" ||
@@ -180,7 +187,7 @@ export default function ClientLayout({
       {/* Mobile: backdrop overlay */}
       {mobileSidebarOpen && (
         <div
-          className="md:hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-xs transition-opacity duration-300"
+          className="md:hidden fixed inset-0 z-40 bg-black/60 backdrop-blur-xs transition-opacity duration-300"
           onClick={() => setMobileSidebarOpen(false)}
         />
       )}
@@ -188,7 +195,7 @@ export default function ClientLayout({
       <div className="flex items-start min-h-screen">
         {/* Sidebar (Desktop sticky, Mobile sliding drawer) */}
         <div
-          className={`fixed md:sticky top-0 left-0 z-50 h-screen transition-transform duration-300 md:translate-x-0 ${
+          className={`fixed md:sticky top-0 left-0 z-40 h-screen transition-transform duration-300 md:translate-x-0 ${
             mobileSidebarOpen
               ? "translate-x-0 shadow-2xl"
               : "-translate-x-full md:translate-x-0"
