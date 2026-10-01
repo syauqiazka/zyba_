@@ -10,6 +10,7 @@ import {
   setUserMeCache,
   invalidateUserMeCache,
 } from "@/lib/server/userMeCache";
+import { invalidateUserPlanCache } from "@/backend/billing/entitlements";
 // =====================================================
 // FAST IN-MEMORY CACHE (TTL 6s)
 // Mengeliminasi 20+ query redundan saat banyak komponen
@@ -147,11 +148,16 @@ if (expiredSubscription) {      // Background async update, tidak perlu membloki
 
       if (!activeSubscription) {
         accountDb.user
-          .update({
-            where: { id: user.id },
-            data: { plan: "FREE" },
-          })
-          .catch((e) => console.error("Update user plan error:", e));
+  .update({
+    where: { id: user.id },
+    data: { plan: "FREE" },
+  })
+  .then(() => {
+    invalidateUserPlanCache(user.id);
+  })
+  .catch((e) =>
+    console.error("Update user plan error:", e)
+  );
       }
     }
 

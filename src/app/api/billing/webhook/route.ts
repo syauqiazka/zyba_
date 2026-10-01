@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { accountDb } from "@/backend/db/accountClient";
 import crypto from "crypto";
+import { invalidateUserPlanCache } from "@/backend/billing/entitlements";
 
 const MIDTRANS_SERVER_KEY = process.env.MIDTRANS_SERVER_KEY;
 
@@ -109,10 +110,14 @@ export async function POST(req: NextRequest) {
         },
       });
 
-      await accountDb.user.update({
-        where: { id: payment.userId },
-        data: { plan: "PLUS" },
-      });
+await accountDb.user.update({
+  where: { id: payment.userId },
+  data: { plan: "PLUS" },
+});
+
+invalidateUserPlanCache(payment.userId);
+
+console.log("[Webhook] Subscription activated for user:", payment.userId);
 
       console.log("[Webhook] Subscription activated for user:", payment.userId);
     } else {
