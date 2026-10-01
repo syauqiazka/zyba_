@@ -135,17 +135,18 @@ export default function ZybaPlusPage() {
   };
 
   return (
-    <div className="min-h-screen bg-cream py-8 px-4">
-      <div className="max-w-2xl mx-auto">
+    <div className="min-h-screen bg-cream py-6 px-4">
+      <div className="max-w-xl mx-auto">
+
         {/* Header */}
         <div className="text-center mb-6">
-          <div className="flex items-center justify-center gap-2 mb-3">
-            <div className="w-10 h-10 rounded-xl bg-orange-500 flex items-center justify-center shadow-lg">
-              <Zap size={20} className="text-white fill-white" />
+          <div className="flex items-center justify-center mb-3">
+            <div className="w-12 h-12 rounded-2xl bg-orange-500 flex items-center justify-center shadow-lg">
+              <Zap size={22} className="text-white fill-white" />
             </div>
           </div>
           <h1 className="font-display text-2xl font-extrabold text-brown-900">Zyba Plus</h1>
-          <p className="text-sm text-brown-700 mt-1 max-w-sm mx-auto">
+          <p className="text-sm text-brown-700 mt-1 max-w-xs mx-auto">
             Akses penuh ke semua AI model, percakapan tanpa batas, dan analitik wellness mendalam.
           </p>
           <span className="inline-block mt-3 text-xs font-bold bg-green-100 text-green-700 px-4 py-1.5 rounded-full">
@@ -153,8 +154,8 @@ export default function ZybaPlusPage() {
           </span>
         </div>
 
-        {/* Plan Cards */}
-        <div className="grid grid-cols-3 gap-2 sm:gap-3 mb-5">
+        {/* Plan Cards — vertical stack on mobile, 3-col on sm+ */}
+        <div className="flex flex-col sm:grid sm:grid-cols-3 gap-2.5 mb-5">
           {PLANS.map((plan) => {
             const isSelected = selected === plan.id;
             return (
@@ -162,30 +163,56 @@ export default function ZybaPlusPage() {
                 key={plan.id}
                 type="button"
                 onClick={() => setSelected(plan.id)}
-                className={`relative flex flex-col items-center text-center p-3 sm:p-4 rounded-2xl border-2 transition-all duration-200 ${
+                className={`relative rounded-2xl border-2 transition-all duration-200 text-left ${
                   isSelected
                     ? "border-orange-500 bg-orange-50 shadow-md"
                     : "border-brown-900/10 bg-white hover:border-orange-300"
                 }`}
               >
+                {/* Badge — top ribbon */}
                 {plan.badge && (
-                  <span className={`absolute -top-2.5 left-1/2 -translate-x-1/2 text-[9px] sm:text-[10px] font-extrabold px-2 py-0.5 rounded-full whitespace-nowrap ${plan.badge.color}`}>
+                  <span
+                    className={`absolute -top-2.5 left-4 text-[10px] font-extrabold px-2.5 py-0.5 rounded-full whitespace-nowrap ${plan.badge.color}`}
+                  >
                     {plan.badge.text}
                   </span>
                 )}
-                {isSelected && (
-                  <span className="absolute top-2 right-2 text-orange-500">
-                    <Check size={14} strokeWidth={3} />
-                  </span>
-                )}
-                <p className="text-xs font-bold text-brown-900 mt-1">{plan.label}</p>
-                <p className="font-display text-lg sm:text-xl font-extrabold text-brown-900 leading-tight mt-1">
-                  {formatPrice(plan.price)}
-                </p>
-                <p className="text-[10px] text-brown-700 mt-0.5">{plan.period}</p>
-                {plan.sub && (
-                  <p className="text-[9px] sm:text-[10px] text-brown-700/60 mt-1 leading-tight">{plan.sub}</p>
-                )}
+
+                {/* Mobile: horizontal compact row */}
+                <div className="sm:hidden flex items-center justify-between px-4 py-3 mt-1">
+                  <div>
+                    <p className="text-xs font-bold text-brown-900">{plan.label}</p>
+                    {plan.sub && (
+                      <p className="text-[10px] text-brown-700/60 mt-0.5 leading-tight">{plan.sub}</p>
+                    )}
+                  </div>
+                  <div className="flex items-baseline gap-1 ml-3">
+                    <span className="font-display text-base font-extrabold text-brown-900">
+                      {formatPrice(plan.price)}
+                    </span>
+                    <span className="text-[10px] text-brown-700 shrink-0">{plan.period}</span>
+                    {isSelected && (
+                      <Check size={14} strokeWidth={3} className="text-orange-500 shrink-0 ml-1" />
+                    )}
+                  </div>
+                </div>
+
+                {/* Desktop: vertical card */}
+                <div className="hidden sm:flex flex-col items-center text-center p-4 mt-1">
+                  {isSelected && (
+                    <span className="absolute top-2 right-2 text-orange-500">
+                      <Check size={14} strokeWidth={3} />
+                    </span>
+                  )}
+                  <p className="text-xs font-bold text-brown-900">{plan.label}</p>
+                  <p className="font-display text-xl font-extrabold text-brown-900 leading-tight mt-1">
+                    {formatPrice(plan.price)}
+                  </p>
+                  <p className="text-[10px] text-brown-700 mt-0.5">{plan.period}</p>
+                  {plan.sub && (
+                    <p className="text-[10px] text-brown-700/60 mt-1 leading-tight">{plan.sub}</p>
+                  )}
+                </div>
               </button>
             );
           })}

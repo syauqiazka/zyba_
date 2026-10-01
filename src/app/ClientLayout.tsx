@@ -68,6 +68,7 @@ export default function ClientLayout({
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
   const [headerAvatar, setHeaderAvatar] = useState<string>("🦊");
 
+  // Baca avatar dari localStorage saat mount
   useEffect(() => {
     try {
       const cached = localStorage.getItem("zyba_user_cache");
@@ -76,6 +77,16 @@ export default function ClientLayout({
         if (parsed?.avatarUrl) setHeaderAvatar(parsed.avatarUrl);
       }
     } catch {}
+  }, []);
+
+  // Sync avatar real-time saat user upload foto baru (tanpa reload)
+  useEffect(() => {
+    const handler = (e: any) => {
+      const url = e?.detail?.avatarUrl;
+      if (url) setHeaderAvatar(url);
+    };
+    window.addEventListener("zyba_user_updated", handler);
+    return () => window.removeEventListener("zyba_user_updated", handler);
   }, []);
 
   // Close sidebar drawer whenever profile popup is requested (mobile)
