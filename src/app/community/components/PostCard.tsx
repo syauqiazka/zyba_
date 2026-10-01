@@ -7,6 +7,7 @@ import { Check } from "lucide-react";
 import { useUserStatus, UserStatusConfig } from "@/hooks/useUserStatus";
 import { isAvatarUrl, resolveAvatar } from "@/lib/avatarUtils";
 import UserAvatar from "@/components/ui/UserAvatar";
+import ReportModal from "./ReportModal";
 
 export interface CommentItem {
   id: string;
@@ -175,7 +176,17 @@ const IcMessageOff = () => <svg width="16" height="16" viewBox="0 0 24 24" fill=
 export default function PostCard({ post, onToggleLike, onToggleRepost, onAddComment, onTagClick, currentUserId }: PostCardProps) {
   const myStatus = useUserStatus();
   const router = useRouter();
-  const { savedPostIds = [], handleToggleSave = () => {}, handleDeletePost, handleArchivePost } = useCommunity();
+  const {
+    savedPostIds = [],
+    handleToggleSave = () => {},
+    handleDeletePost,
+    handleArchivePost,
+    handleHidePost,
+    handleMuteUser,
+    handleBlockUser,
+    showToast,
+    setShowCrisisNotice,
+  } = useCommunity();
   const isSaved = savedPostIds.includes(post.id);
 
   const [showComments, setShowComments] = useState(false);
@@ -183,6 +194,9 @@ export default function PostCard({ post, onToggleLike, onToggleRepost, onAddComm
   const [showShareToast, setShowShareToast] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
+  const [confirmMute, setConfirmMute] = useState(false);
+  const [confirmBlock, setConfirmBlock] = useState(false);
+  const [reportModalOpen, setReportModalOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
   // Close dropdown on outside click
@@ -192,6 +206,8 @@ export default function PostCard({ post, onToggleLike, onToggleRepost, onAddComm
       if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
         setMenuOpen(false);
         setConfirmDelete(false);
+        setConfirmMute(false);
+        setConfirmBlock(false);
       }
     };
     document.addEventListener("mousedown", handler);
@@ -210,9 +226,40 @@ export default function PostCard({ post, onToggleLike, onToggleRepost, onAddComm
     setCommentInput("");
   };
 
+  const fallbackCopyText = (text: string) => {
+    try {
+      const textarea = document.createElement("textarea");
+      textarea.value = text;
+      textarea.style.position = "fixed";
+      textarea.style.left = "-9999px";
+      textarea.style.top = "-9999px";
+      document.body.appendChild(textarea);
+      textarea.focus();
+      textarea.select();
+      document.execCommand("copy");
+      document.body.removeChild(textarea);
+      showToast?.("✓ Tautan berhasil disalin ke clipboard!");
+    } catch {
+      showToast?.("Gagal menyalin tautan", "error");
+    }
+  };
+
   const handleCopyLink = () => {
-    if (navigator.clipboard) {
-      navigator.clipboard.writeText(`${window.location.origin}/community#${post.id}`).catch(() => {});
+    const url = `${window.location.origin}/community#${post.id}`;
+    let copied = false;
+    try {
+      if (navigator?.clipboard?.writeText) {
+        navigator.clipboard.writeText(url).then(() => {
+          showToast?.("✓ Tautan berhasil disalin ke clipboard!");
+        }).catch(() => {
+          fallbackCopyText(url);
+        });
+        copied = true;
+      }
+    } catch {}
+
+    if (!copied) {
+      fallbackCopyText(url);
     }
     setShowShareToast(true);
     setMenuOpen(false);
@@ -272,7 +319,12 @@ export default function PostCard({ post, onToggleLike, onToggleRepost, onAddComm
             <div className="relative" ref={menuRef}>
               <button
                 type="button"
-                onClick={() => { setMenuOpen((v) => !v); setConfirmDelete(false); }}
+                onClick={() => {
+                  setMenuOpen((v) => !v);
+                  setConfirmDelete(false);
+                  setConfirmMute(false);
+                  setConfirmBlock(false);
+                }}
                 className="text-brown-700/30 hover:text-brown-900 transition-colors opacity-0 group-hover:opacity-100 p-1 rounded-lg hover:bg-cream"
                 title="Opsi lainnya"
               >
@@ -317,12 +369,101 @@ export default function PostCard({ post, onToggleLike, onToggleRepost, onAddComm
                   ) : (
                     /* ── VISITOR MENU ───────────────────────── */
                     <>
-                      <MenuItem label="Salin tautan" icon={<IcLink />} onClick={handleCopyLink} />
-                      <MenuItem label="Simpan" icon={<IcBookmark />} onClick={() => { handleToggleSave(post.id); setMenuOpen(false); }} />
-                      <MenuItem label="Tidak tertarik" icon={<IcEyeOff />} onClick={() => setMenuOpen(false)} separator />
-                      <MenuItem label="Bisukan" icon={<IcUserX />} onClick={() => setMenuOpen(false)} separator />
-                      <MenuItem label="Blokir" icon={<IcSlash />} onClick={() => setMenuOpen(false)} danger />
-                      <MenuItem label="Laporkan" icon={<IcAlertCircle />} onClick={() => setMenuOpen(false)} danger />
+                      {confirmMute ? (
+                        <div className="px-3 py-3">
+                          <p className="text-xs text-brown-700 mb-2 leading-relaxed">
+                            Bisukan <strong>@{post.author}</strong>? Postingan dari akun ini tidak akan muncul lagi di feed Anda.
+                          </p>
+                          <div className="flex gap-2">
+                            <button
+                              type="button"
+                              onClick={() => setConfirmMute(false)}
+                              className="flex-1 text-xs font-semibold py-2 rounded-xl border border-brown-900/15 text-brown-700 hover:bg-cream transition-colors"
+                            >
+                              Batal
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                handleMuteUser?.(post.userId || post.author, post.author);
+                                setMenuOpen(false);
+                                setConfirmMute(false);
+                              }}
+                              className="flex-1 text-xs font-semibold py-2 rounded-xl bg-brown-900 text-white hover:bg-brown-800 transition-colors"
+                            >
+                              Bisukan
+                            </button>
+                          </div>
+                        </div>
+                      ) : confirmBlock ? (
+                        <div className="px-3 py-3">
+                          <p className="text-xs text-brown-700 mb-2 leading-relaxed">
+                            Blokir <strong>@{post.author}</strong>? Akun ini tidak dapat melihat profil Anda dan postingannya akan disembunyikan.
+                          </p>
+                          <div className="flex gap-2">
+                            <button
+                              type="button"
+                              onClick={() => setConfirmBlock(false)}
+                              className="flex-1 text-xs font-semibold py-2 rounded-xl border border-brown-900/15 text-brown-700 hover:bg-cream transition-colors"
+                            >
+                              Batal
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                handleBlockUser?.(post.userId || post.author, post.author);
+                                setMenuOpen(false);
+                                setConfirmBlock(false);
+                              }}
+                              className="flex-1 text-xs font-semibold py-2 rounded-xl bg-red-500 text-white hover:bg-red-600 transition-colors"
+                            >
+                              Blokir
+                            </button>
+                          </div>
+                        </div>
+                      ) : (
+                        <>
+                          <MenuItem label="Salin tautan" icon={<IcLink />} onClick={handleCopyLink} />
+                          <MenuItem
+                            label={isSaved ? "Hapus dari Tersimpan" : "Simpan"}
+                            icon={<IcBookmark />}
+                            onClick={() => {
+                              handleToggleSave(post.id);
+                              setMenuOpen(false);
+                            }}
+                          />
+                          <MenuItem
+                            label="Tidak tertarik"
+                            icon={<IcEyeOff />}
+                            onClick={() => {
+                              handleHidePost?.(post.id);
+                              setMenuOpen(false);
+                            }}
+                            separator
+                          />
+                          <MenuItem
+                            label="Bisukan"
+                            icon={<IcUserX />}
+                            onClick={() => setConfirmMute(true)}
+                            separator
+                          />
+                          <MenuItem
+                            label="Blokir"
+                            icon={<IcSlash />}
+                            onClick={() => setConfirmBlock(true)}
+                            danger
+                          />
+                          <MenuItem
+                            label="Laporkan"
+                            icon={<IcAlertCircle />}
+                            onClick={() => {
+                              setMenuOpen(false);
+                              setReportModalOpen(true);
+                            }}
+                            danger
+                          />
+                        </>
+                      )}
                     </>
                   )}
                 </div>
@@ -471,6 +612,23 @@ export default function PostCard({ post, onToggleLike, onToggleRepost, onAddComm
           </div>
         )}
       </div>
+
+      {/* Report Modal */}
+      <ReportModal
+        open={reportModalOpen}
+        postId={post.id}
+        authorName={post.author}
+        onClose={() => setReportModalOpen(false)}
+        onReportSuccess={(isCrisis, hidePostChoice) => {
+          if (hidePostChoice) {
+            handleHidePost?.(post.id);
+          }
+          if (isCrisis) {
+            setShowCrisisNotice?.(true);
+          }
+          showToast?.("✓ Laporan Anda telah diterima dan akan ditinjau tim ZYBA.");
+        }}
+      />
     </article>
   );
 }

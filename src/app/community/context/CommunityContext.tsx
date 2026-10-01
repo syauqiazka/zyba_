@@ -1,6 +1,6 @@
 "use client";
 
-import React, { createContext, useContext, useState, useEffect, useCallback } from "react";
+import React, { createContext, useContext, useState, useEffect, useCallback, useRef } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { Post } from "../components/PostCard";
 import { detectRisk } from "@/lib/crisisDetection";
@@ -95,7 +95,16 @@ interface CommunityContextType {
   followingPosts: Post[];
   currentPosts: Post[];
   savedPostIds: string[];
-  handleToggleSave: (id: string) => void;
+  handleToggleSave: (id: string) => Promise<void>;
+  hiddenPostIds: string[];
+  handleHidePost: (postId: string) => void;
+  mutedUserIds: string[];
+  handleMuteUser: (userId: string, authorName?: string) => void;
+  handleUnmuteUser: (userId: string) => void;
+  blockedUserIds: string[];
+  handleBlockUser: (userId: string, authorName?: string) => Promise<void>;
+  handleUnblockUser: (userId: string) => void;
+  showToast: (message: string, type?: "info" | "success" | "error") => void;
   notifications: CommunityNotification[];
   messages: CommunityMessage[];
   showCrisisNotice: boolean;
@@ -137,6 +146,21 @@ export function CommunityProvider({ children }: { children: React.ReactNode }) {
   const [posts, setPosts] = useState<Post[]>(INITIAL_COMMUNITY_POSTS);
   const [followingPosts, setFollowingPosts] = useState<Post[]>([]);
   const [savedPostIds, setSavedPostIds] = useState<string[]>([]);
+  const [hiddenPostIds, setHiddenPostIds] = useState<string[]>([]);
+  const [mutedUserIds, setMutedUserIds] = useState<string[]>([]);
+  const [blockedUserIds, setBlockedUserIds] = useState<string[]>([]);
+  const [toast, setToast] = useState<{ id: number; message: string; type?: "info" | "success" | "error" } | null>(null);
+  const toastTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  const showToast = useCallback((message: string, type: "info" | "success" | "error" = "success") => {
+    if (toastTimeoutRef.current) clearTimeout(toastTimeoutRef.current);
+    const id = Date.now();
+    setToast({ id, message, type });
+    toastTimeoutRef.current = setTimeout(() => {
+      setToast(null);
+    }, 3000);
+  }, []);
+
   const [notifications, setNotifications] = useState<CommunityNotification[]>(INITIAL_NOTIFICATIONS);
   const [messages, setMessages] = useState<CommunityMessage[]>(INITIAL_MESSAGES);
   const [showCrisisNotice, setShowCrisisNotice] = useState(false);
@@ -147,6 +171,37 @@ export function CommunityProvider({ children }: { children: React.ReactNode }) {
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   const [currentUserName, setCurrentUserName] = useState<string | null>(null);
   const [currentUserAvatar, setCurrentUserAvatar] = useState<string | null>(null);
+
+  // Hydrate local caches instantly (0ms)
+  useEffect(() => {
+    try {
+      const cachedSaved = localStorage.getItem("zyba_saved_posts");
+      if (cachedSaved) setSavedPostIds(JSON.parse(cachedSaved));
+
+      const cachedHidden = localStorage.getItem("zyba_hidden_posts");
+      if (cachedHidden) setHiddenPostIds(JSON.parse(cachedHidden));
+
+      const cachedMuted = localStorage.getItem("zyba_muted_users");
+      if (cachedMuted) setMutedUserIds(JSON.parse(cachedMuted));
+
+      const cachedBlocked = localStorage.getItem("zyba_blocked_users");
+      if (cachedBlocked) setBlockedUserIds(JSON.parse(cachedBlocked));
+    } catch {}
+
+    // Background fetch saved bookmarks from API
+    fetch("/api/community/bookmarks")
+      .then((r) => (r.ok ? r.json() : null))
+      .then((data) => {
+        if (data?.bookmarks) {
+          const ids = data.bookmarks.map((b: any) => b.postId);
+          setSavedPostIds(ids);
+          try {
+            localStorage.setItem("zyba_saved_posts", JSON.stringify(ids));
+          } catch {}
+        }
+      })
+      .catch(() => {});
+  }, []);
 
   useEffect(() => {
     // First try from localStorage cache (instant hydration)
@@ -239,10 +294,116 @@ export function CommunityProvider({ children }: { children: React.ReactNode }) {
     setCurrentView("FOR_YOU");
   };
 
-  const handleToggleSave = (id: string) => {
-    setSavedPostIds((prev) =>
-      prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]
+  const handleToggleSave = async (id: string) => {
+    const isCurrentlySaved = savedPostIds.includes(id);
+    const nextSaved = isCurrentlySaved
+      ? savedPostIds.filter((item) => item !== id)
+      : [...savedPostIds, id];
+
+    // Optimistic update
+    setSavedPostIds(nextSaved);
+    try {
+      localStorage.setItem("zyba_saved_posts", JSON.stringify(nextSaved));
+    } catch {}
+
+    showToast(
+      isCurrentlySaved
+        ? "Postingan dihapus dari Tersimpan"
+        : "✓ Postingan disimpan ke Tersimpan"
     );
+
+    try {
+      if (isCurrentlySaved) {
+        await fetch(`/api/community/bookmarks?postId=${encodeURIComponent(id)}`, {
+          method: "DELETE",
+        });
+      } else {
+        await fetch("/api/community/bookmarks", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ postId: id }),
+        });
+      }
+    } catch (err) {
+      console.warn("Bookmark sync error:", err);
+      // Rollback on failure
+      setSavedPostIds(savedPostIds);
+      try {
+        localStorage.setItem("zyba_saved_posts", JSON.stringify(savedPostIds));
+      } catch {}
+      showToast("Gagal memperbarui status simpan", "error");
+    }
+  };
+
+  const handleHidePost = (postId: string) => {
+    setHiddenPostIds((prev) => {
+      if (prev.includes(postId)) return prev;
+      const next = [...prev, postId];
+      try {
+        localStorage.setItem("zyba_hidden_posts", JSON.stringify(next));
+      } catch {}
+      return next;
+    });
+    showToast("✓ Postingan disembunyikan dari feed Anda");
+  };
+
+  const handleMuteUser = (userId: string, authorName?: string) => {
+    setMutedUserIds((prev) => {
+      const identifiers = [userId];
+      if (authorName && authorName !== userId) identifiers.push(authorName);
+      const next = Array.from(new Set([...prev, ...identifiers]));
+      try {
+        localStorage.setItem("zyba_muted_users", JSON.stringify(next));
+      } catch {}
+      return next;
+    });
+    showToast(`✓ @${authorName || userId} telah dibisukan`);
+  };
+
+  const handleUnmuteUser = (userId: string) => {
+    setMutedUserIds((prev) => {
+      const next = prev.filter((id) => id !== userId);
+      try {
+        localStorage.setItem("zyba_muted_users", JSON.stringify(next));
+      } catch {}
+      return next;
+    });
+    showToast(`Bisukan dibatalkan`);
+  };
+
+  const handleBlockUser = async (userId: string, authorName?: string) => {
+    setBlockedUserIds((prev) => {
+      const identifiers = [userId];
+      if (authorName && authorName !== userId) identifiers.push(authorName);
+      const next = Array.from(new Set([...prev, ...identifiers]));
+      try {
+        localStorage.setItem("zyba_blocked_users", JSON.stringify(next));
+      } catch {}
+      return next;
+    });
+    showToast(`✓ @${authorName || userId} berhasil diblokir`);
+
+    // Unfollow in background if valid target
+    if (userId && !userId.includes(" ")) {
+      try {
+        await fetch(`/api/community/follows/${encodeURIComponent(userId)}`, {
+          method: "DELETE",
+        });
+      } catch (err) {
+        console.warn("Unfollow on block error:", err);
+      }
+    }
+  };
+
+  const handleUnblockUser = (userId: string) => {
+    setBlockedUserIds((prev) => {
+      const next = prev.filter((id) => id !== userId);
+      try {
+        localStorage.setItem("zyba_blocked_users", JSON.stringify(next));
+      } catch {}
+      return next;
+    });
+    showToast(`Blokir dibuka`);
   };
 
   // Determine which posts to show based on currentView
@@ -260,6 +421,17 @@ export function CommunityProvider({ children }: { children: React.ReactNode }) {
   }
 
   const currentPosts = basePosts.filter((p) => {
+    // 1. Exclude hidden posts
+    if (hiddenPostIds.includes(p.id)) return false;
+
+    // 2. Exclude muted authors
+    if (p.userId && mutedUserIds.includes(p.userId)) return false;
+    if (mutedUserIds.includes(p.author)) return false;
+
+    // 3. Exclude blocked authors
+    if (p.userId && blockedUserIds.includes(p.userId)) return false;
+    if (blockedUserIds.includes(p.author)) return false;
+
     const matchesTag =
       selectedTag === "Semua" ||
       (p.tag && p.tag.toLowerCase() === selectedTag.toLowerCase()) ||
@@ -425,6 +597,15 @@ export function CommunityProvider({ children }: { children: React.ReactNode }) {
         currentPosts,
         savedPostIds,
         handleToggleSave,
+        hiddenPostIds,
+        handleHidePost,
+        mutedUserIds,
+        handleMuteUser,
+        handleUnmuteUser,
+        blockedUserIds,
+        handleBlockUser,
+        handleUnblockUser,
+        showToast,
         notifications,
         messages,
         showCrisisNotice,
@@ -441,6 +622,22 @@ export function CommunityProvider({ children }: { children: React.ReactNode }) {
       }}
     >
       {children}
+
+      {/* Global floating toast notification */}
+      {toast && (
+        <div
+          role="status"
+          aria-live="polite"
+          className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 flex items-center gap-2.5 px-4 py-2.5 rounded-full bg-brown-900 text-white shadow-2xl text-xs font-medium animate-in fade-in slide-in-from-bottom-2 duration-150 pointer-events-none"
+        >
+          {toast.type === "error" ? (
+            <span className="text-red-400 font-bold">✕</span>
+          ) : (
+            <span className="text-green-400 font-bold">✓</span>
+          )}
+          <span>{toast.message}</span>
+        </div>
+      )}
     </CommunityContext.Provider>
   );
 }
