@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import React from "react";
 import { Footprints, Flame, Dumbbell, Activity, Plus } from "lucide-react";
@@ -8,7 +8,10 @@ interface ActivityTrackerProps {
   setActiveTab: (tab: "WALKING" | "RUNNING" | "WORKOUT") => void;
   activityProgress: number;
   targetProgress: number;
-  onAddProgress: () => void;
+  onOpenLogModal: () => void;
+  activeCalories?: number;
+  activeDurationMin?: number;
+  activeDistanceKm?: number;
 }
 
 export default function ActivityTracker({
@@ -16,7 +19,10 @@ export default function ActivityTracker({
   setActiveTab,
   activityProgress,
   targetProgress,
-  onAddProgress,
+  onOpenLogModal,
+  activeCalories = 320,
+  activeDurationMin = 42,
+  activeDistanceKm = 3.4,
 }: ActivityTrackerProps) {
   return (
     <div className="glass-card rounded-3xl p-4 sm:p-6 md:p-7 border border-brown-900/10 flex flex-col gap-6 shadow-xs">
@@ -76,29 +82,29 @@ export default function ActivityTracker({
         <div className="flex flex-col justify-center gap-3">
           <div className="flex justify-between items-center text-xs">
             <span className="text-brown-700">Estimasi Kalori Terbakar:</span>
-            <span className="font-bold text-brown-900">320 kcal</span>
+            <span className="font-bold text-brown-900">{activeCalories} kcal</span>
           </div>
           <div className="flex justify-between items-center text-xs">
             <span className="text-brown-700">Durasi Aktif:</span>
-            <span className="font-bold text-brown-900">42 Menit</span>
+            <span className="font-bold text-brown-900">{activeDurationMin} Menit</span>
           </div>
           <div className="flex justify-between items-center text-xs">
             <span className="text-brown-700">Jarak Tempuh:</span>
-            <span className="font-bold text-brown-900">3.4 km</span>
+            <span className="font-bold text-brown-900">{activeDistanceKm} km</span>
           </div>
         </div>
 
         <div className="flex flex-col items-center justify-center gap-3 bg-cream/50 p-4 rounded-2xl border border-brown-900/10">
           <button
             type="button"
-            onClick={onAddProgress}
-            className="w-full py-3 rounded-full bg-green-500 hover:bg-green-600 text-white font-bold text-xs transition-colors shadow-md flex items-center justify-center gap-1.5"
+            onClick={onOpenLogModal}
+            className="w-full py-3 rounded-full bg-green-500 hover:bg-green-600 text-white font-bold text-xs transition-colors shadow-md flex items-center justify-center gap-1.5 cursor-pointer"
           >
             <Plus size={14} />
-            <span>Tambah 150 Langkah / Poin</span>
+            <span>+ Catat Sesi Aktivitas</span>
           </button>
-          <span className="text-[10px] text-brown-700 text-center">
-            Tekan untuk memperbarui progress aktivitasmu
+          <span className="text-[10px] text-brown-700/80 text-center">
+            Pilih durasi (menit) aktivitas fisikmu
           </span>
         </div>
       </div>

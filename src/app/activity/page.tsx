@@ -15,6 +15,9 @@ import DailyPlan, {
 import ZybaRecommendations, {
   type Recommendation,
 } from "./components/ZybaRecommendations";
+import LogSessionModal, {
+  type LoggedSessionData,
+} from "./components/LogSessionModal";
 
 const PLAN_STORAGE_KEY = "zyba_daily_plan_v2";
 
@@ -121,12 +124,17 @@ export default function SmartActivityPlannerPage() {
   >("WALKING");
 
   const [activityProgress, setActivityProgress] = useState(850);
-
   const targetProgress = 1200;
 
   const [isCompleted, setIsCompleted] = useState(false);
   const [conditionData, setConditionData] = useState<any>(null);
   const [activityToast, setActivityToast] = useState<string | null>(null);
+
+  // Active Session Metrics
+  const [isLogModalOpen, setIsLogModalOpen] = useState(false);
+  const [activeCalories, setActiveCalories] = useState(320);
+  const [activeDurationMin, setActiveDurationMin] = useState(42);
+  const [activeDistanceKm, setActiveDistanceKm] = useState(3.4);
 
   // =========================
   // Daily Planner State & Persistence
@@ -253,15 +261,27 @@ export default function SmartActivityPlannerPage() {
   };
 
   // =========================
-  // Activity Progress & DB Persistence
+  // Activity Session Logging & DB Persistence
   // =========================
-  const handleAddProgress = async () => {
+  const handleSaveSession = async (sessionData: LoggedSessionData) => {
     const nextProgress = Math.min(
-      activityProgress + 150,
+      activityProgress + sessionData.points,
       targetProgress,
     );
 
     setActivityProgress(nextProgress);
+    setActiveDurationMin((prev) => prev + sessionData.durationMin);
+    setActiveCalories((prev) => prev + sessionData.calories);
+    setActiveDistanceKm((prev) =>
+      parseFloat((prev + sessionData.distanceKm).toFixed(2))
+    );
+
+    const typeLabel =
+      sessionData.type === "WALKING"
+        ? "Jalan Kaki"
+        : sessionData.type === "RUNNING"
+        ? "Lari Santai"
+        : "Olahraga";
 
     // Save to real database
     try {
@@ -269,18 +289,21 @@ export default function SmartActivityPlannerPage() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          type: activeTab,
-          durationMin: activeTab === "RUNNING" ? 20 : 15,
-          distanceMeter: activeTab === "RUNNING" ? 2500 : 1000,
-          points: 150,
+          type: sessionData.type,
+          durationMin: sessionData.durationMin,
+          distanceMeter: Math.round(sessionData.distanceKm * 1000),
+          points: sessionData.points,
           completed: true,
-          title: `Sesi ${activeTab.toLowerCase()}`,
+          title: `Sesi ${typeLabel} (${sessionData.durationMin} mnt)`,
         }),
       });
-      setActivityToast(`✓ Sesi ${activeTab.toLowerCase()} tersimpan ke database & terhubung ke Wellness Journey!`);
-      setTimeout(() => setActivityToast(null), 3500);
+
+      setActivityToast(
+        `✓ Sesi ${typeLabel} ${sessionData.durationMin} menit berhasil dicatat! (+${sessionData.points} poin, ~${sessionData.calories} kcal)`
+      );
+      setTimeout(() => setActivityToast(null), 4000);
     } catch (e) {
-      console.warn("Save progress error:", e);
+      console.warn("Save session error:", e);
     }
 
     if (
@@ -488,7 +511,10 @@ export default function SmartActivityPlannerPage() {
         setActiveTab={setActiveTab}
         activityProgress={activityProgress}
         targetProgress={targetProgress}
-        onAddProgress={handleAddProgress}
+        onOpenLogModal={() => setIsLogModalOpen(true)}
+        activeCalories={activeCalories}
+        activeDurationMin={activeDurationMin}
+        activeDistanceKm={activeDistanceKm}
       />
 
       {/* =========================
@@ -578,6 +604,13 @@ export default function SmartActivityPlannerPage() {
       <CompletionModal
         isOpen={isCompleted}
         onClose={() => setIsCompleted(false)}
+      />
+
+      <LogSessionModal
+        isOpen={isLogModalOpen}
+        onClose={() => setIsLogModalOpen(false)}
+        initialType={activeTab}
+        onSaveSession={handleSaveSession}
       />
     </div>
   );

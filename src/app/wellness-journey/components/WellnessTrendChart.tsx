@@ -139,6 +139,9 @@ export default function WellnessTrendChart({ points }: TrendChartProps) {
       : "";
 
   const activePoint = hoveredIndex !== null && coords[hoveredIndex] ? coords[hoveredIndex] : null;
+  const isTopHalf = activePoint ? (activePoint.y / svgHeight) < 0.35 : false;
+  const isNearRightEdge = activePoint ? (activePoint.x / svgWidth) > 0.78 : false;
+  const isNearLeftEdge = activePoint ? (activePoint.x / svgWidth) < 0.22 : false;
 
   return (
     <div className="rounded-3xl border border-brown-900/10 bg-white/80 p-4 sm:p-6 shadow-xs flex flex-col gap-4">
@@ -196,18 +199,26 @@ export default function WellnessTrendChart({ points }: TrendChartProps) {
           </p>
         </div>
       ) : (
-        <div className="relative w-full overflow-hidden">
+        <div className="relative w-full overflow-visible">
           {/* Active tooltip popover */}
           {activePoint && (
             <div
-              className="absolute z-20 pointer-events-none transform -translate-x-1/2 -translate-y-full transition-all duration-150"
+              className={`absolute z-30 pointer-events-none transform transition-all duration-150 ${
+                isTopHalf ? "translate-y-0" : "-translate-y-full"
+              } ${
+                isNearRightEdge
+                  ? "-translate-x-[90%]"
+                  : isNearLeftEdge
+                  ? "-translate-x-[10%]"
+                  : "-translate-x-1/2"
+              }`}
               style={{
                 left: `${(activePoint.x / svgWidth) * 100}%`,
                 top: `${(activePoint.y / svgHeight) * 100}%`,
-                marginTop: "-10px",
+                marginTop: isTopHalf ? "14px" : "-14px",
               }}
             >
-              <div className="bg-brown-900 text-cream px-3 py-2 rounded-xl text-xs shadow-lg border border-white/10 flex flex-col gap-0.5 whitespace-nowrap">
+              <div className="bg-brown-900 text-cream px-3.5 py-2 rounded-xl text-xs shadow-xl border border-white/10 flex flex-col gap-0.5 whitespace-nowrap">
                 <span className="text-[10px] text-cream/70 font-medium">
                   {activePoint.point.date}
                 </span>
