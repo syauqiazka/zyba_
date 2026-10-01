@@ -1,7 +1,13 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft, BookOpen, Clock, Headphones, Music } from "lucide-react";
+import {
+  ArrowLeft,
+  BookOpen,
+  Clock,
+  Headphones,
+  Music,
+} from "lucide-react";
 import { accountDb } from "@/backend/db/accountClient";
 import {
   getResourceSlug,
@@ -57,6 +63,7 @@ export async function generateMetadata({
   return {
     title: resource.title,
     description,
+
     robots: resource.isPro
       ? {
           index: false,
@@ -66,9 +73,11 @@ export async function generateMetadata({
           index: true,
           follow: true,
         },
+
     alternates: {
       canonical: `/resources/${slug}`,
     },
+
     openGraph: {
       type: resource.type === "ARTICLE" ? "article" : "website",
       title: resource.title,
@@ -76,6 +85,7 @@ export async function generateMetadata({
       url: `/resources/${slug}`,
       siteName: "ZYBA",
     },
+
     twitter: {
       card: "summary",
       title: resource.title,
@@ -130,42 +140,69 @@ export default async function ResourceDetailPage({
     : [];
 
   const slug = getResourceSlug(resource.title);
+
   const resourceUrl = `https://jhic.zyba.my.id/resources/${slug}`;
 
-  const jsonLd =
-    resource.type === "ARTICLE"
-      ? {
-          "@context": "https://schema.org",
-          "@type": "Article",
-          headline: resource.title,
-          description,
-          author: resource.author
-            ? {
-                "@type": "Person",
-                name: resource.author,
-              }
-            : {
-                "@type": "Organization",
-                name: "ZYBA",
-              },
-          publisher: {
-            "@type": "Organization",
-            name: "ZYBA",
-            url: "https://jhic.zyba.my.id",
-          },
-          datePublished: resource.createdAt.toISOString(),
-          mainEntityOfPage: {
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@graph": [
+      resource.type === "ARTICLE"
+        ? {
+            "@type": "Article",
+            headline: resource.title,
+            description,
+            author: resource.author
+              ? {
+                  "@type": "Person",
+                  name: resource.author,
+                }
+              : {
+                  "@type": "Organization",
+                  name: "ZYBA",
+                },
+            publisher: {
+              "@type": "Organization",
+              name: "ZYBA",
+              url: "https://jhic.zyba.my.id",
+            },
+            datePublished: resource.createdAt.toISOString(),
+            mainEntityOfPage: {
+              "@type": "WebPage",
+              "@id": resourceUrl,
+            },
+          }
+        : {
             "@type": "WebPage",
-            "@id": resourceUrl,
+            name: resource.title,
+            description,
+            url: resourceUrl,
           },
-        }
-      : {
-          "@context": "https://schema.org",
-          "@type": "WebPage",
-          name: resource.title,
-          description,
-          url: resourceUrl,
-        };
+
+      {
+        "@type": "BreadcrumbList",
+        itemListElement: [
+          {
+            "@type": "ListItem",
+            position: 1,
+            name: "ZYBA",
+            item: "https://jhic.zyba.my.id",
+          },
+          {
+            "@type": "ListItem",
+            position: 2,
+            name: "Sumber Daya",
+            item: "https://jhic.zyba.my.id/resources",
+          },
+          {
+            "@type": "ListItem",
+            position: 3,
+            name: resource.title,
+            item: resourceUrl,
+          },
+        ],
+      },
+    ],
+  };
 
   return (
     <>
