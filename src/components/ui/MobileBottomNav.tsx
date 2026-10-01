@@ -7,7 +7,7 @@ import {
   Home,
   CalendarCheck,
   Bot,
-  Activity,
+  Zap,
   Users,
 } from "lucide-react";
 
@@ -15,16 +15,24 @@ const NAV_TABS = [
   { href: "/dashboard", label: "Home", icon: Home },
   { href: "/daily-assessment", label: "Check-In", icon: CalendarCheck },
   { href: "/companion", label: "Companion", icon: Bot },
-  { href: "/activity", label: "Planner", icon: Activity },
+  { href: "/activity", label: "Planner", icon: Zap },
   { href: "/community", label: "Komunitas", icon: Users },
 ];
 
-export default function MobileBottomNav() {
+export default function MobileBottomNav({
+  hiddenWhenSidebarOpen = false,
+}: {
+  hiddenWhenSidebarOpen?: boolean;
+}) {
   const pathname = usePathname();
 
   return (
     <nav
-      className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-lg border-t border-brown-900/10 px-2 py-1.5 flex items-center justify-around shadow-[0_-4px_24px_rgba(0,0,0,0.06)] pb-[max(0.375rem,env(safe-area-inset-bottom))]"
+      className={`md:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-lg border-t border-brown-900/10 px-2 py-1.5 flex items-center justify-around shadow-[0_-4px_24px_rgba(0,0,0,0.06)] pb-[max(0.375rem,env(safe-area-inset-bottom))] transition-all duration-300 ${
+        hiddenWhenSidebarOpen
+          ? "translate-y-full opacity-0 pointer-events-none"
+          : "translate-y-0 opacity-100"
+      }`}
       aria-label="Navigasi Utama Mobile"
     >
       {NAV_TABS.map((tab) => {

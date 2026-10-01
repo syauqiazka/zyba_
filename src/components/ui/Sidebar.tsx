@@ -9,7 +9,7 @@ import UserAvatar from "./UserAvatar";
 import {
   Home,
   CalendarCheck,
-  MessageCircle,
+  Bot,
   Zap,
   Heart,
   Users,
@@ -20,7 +20,7 @@ import {
 const NAV_ITEMS = [
   { href: "/dashboard", label: "Dashboard", icon: Home },
   { href: "/daily-assessment", label: "Assessment Harian", icon: CalendarCheck },
-  { href: "/companion", label: "Zyba Companion", icon: MessageCircle },
+  { href: "/companion", label: "Zyba Companion", icon: Bot },
   { href: "/activity", label: "Smart Activity Planner", icon: Zap },
   { href: "/wellness-journey", label: "Wellness Journey", icon: Heart },
   { href: "/community", label: "Zyba Community", icon: Users },
@@ -116,7 +116,7 @@ export default function Sidebar({ onClose }: { onClose?: () => void }) {
   };
 
   return (
-    <aside className="w-[82vw] max-w-[290px] md:w-20 lg:w-64 shrink-0 border-r border-brown-900/10 bg-cream p-3 md:p-3 lg:p-5 flex flex-col sticky top-0 h-screen z-30 shadow-[12px_0_36px_-28px_rgba(59,42,32,0.5)] transition-all duration-300 overflow-y-auto scrollbar-none">
+    <aside className="w-[82vw] max-w-[290px] md:w-20 lg:w-64 shrink-0 border-r border-brown-900/10 bg-cream p-3 md:p-3 lg:p-5 flex flex-col sticky top-0 h-[100dvh] md:h-screen shadow-[12px_0_36px_-28px_rgba(59,42,32,0.5)] transition-all duration-300 overflow-y-auto scrollbar-none pb-6 md:pb-5">
       {/* Top section: Logo + Nav */}
       <div className="flex flex-col gap-5 flex-1">
         {/* Brand Logo & Close button row */}

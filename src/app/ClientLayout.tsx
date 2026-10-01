@@ -184,18 +184,18 @@ export default function ClientLayout({
         </button>
       </header>
 
-      {/* Mobile: backdrop overlay */}
+      {/* Mobile: backdrop overlay — z-50 so it covers bottom nav */}
       {mobileSidebarOpen && (
         <div
-          className="md:hidden fixed inset-0 z-40 bg-black/60 backdrop-blur-xs transition-opacity duration-300"
+          className="md:hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-xs transition-opacity duration-300"
           onClick={() => setMobileSidebarOpen(false)}
         />
       )}
 
       <div className="flex items-start min-h-screen">
-        {/* Sidebar (Desktop sticky, Mobile sliding drawer) */}
+        {/* Sidebar (Desktop sticky, Mobile sliding drawer — z-[55] to appear above overlay+bottom nav) */}
         <div
-          className={`fixed md:sticky top-0 left-0 z-40 h-screen transition-transform duration-300 md:translate-x-0 ${
+          className={`fixed md:sticky top-0 left-0 z-[55] h-screen transition-transform duration-300 md:translate-x-0 ${
             mobileSidebarOpen
               ? "translate-x-0 shadow-2xl"
               : "-translate-x-full md:translate-x-0"
@@ -216,8 +216,8 @@ export default function ClientLayout({
         </main>
       </div>
 
-      {/* Mobile Bottom Navigation Bar */}
-      <MobileBottomNav />
+      {/* Mobile Bottom Navigation Bar — hidden when sidebar drawer is open */}
+      <MobileBottomNav hiddenWhenSidebarOpen={mobileSidebarOpen} />
     </>
   );
 }
