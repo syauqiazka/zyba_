@@ -116,9 +116,9 @@ export default function Sidebar({ onClose }: { onClose?: () => void }) {
   };
 
   return (
-    <aside className="w-[82vw] max-w-[290px] md:w-20 lg:w-64 shrink-0 border-r border-brown-900/10 bg-cream p-3 md:p-3 lg:p-5 flex flex-col sticky top-0 h-screen z-30 shadow-[12px_0_36px_-28px_rgba(59,42,32,0.5)] transition-all duration-300 overflow-hidden">
-      {/* Top section: Logo + Nav — scrollable on small screens */}
-      <div className="flex flex-col gap-5 flex-1 overflow-y-auto min-h-0 scrollbar-none">
+    <aside className="w-[82vw] max-w-[290px] md:w-20 lg:w-64 shrink-0 border-r border-brown-900/10 bg-cream p-3 md:p-3 lg:p-5 flex flex-col sticky top-0 h-screen z-30 shadow-[12px_0_36px_-28px_rgba(59,42,32,0.5)] transition-all duration-300 overflow-y-auto scrollbar-none">
+      {/* Top section: Logo + Nav */}
+      <div className="flex flex-col gap-5 flex-1">
         {/* Brand Logo & Close button row */}
         <div className="flex items-center justify-between px-1 pt-1 pb-1 shrink-0">
           <Link href="/dashboard" className="flex items-center gap-3 group justify-start md:justify-center lg:justify-start" title="ZYBA Wellness">
