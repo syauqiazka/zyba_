@@ -242,12 +242,12 @@ export default function DashboardPage() {
             }
           ),
 
-          fetch(
-            "/api/daily-assessment?limit=14&page=1",
-            {
-              method: "GET",
-            }
-          ),
+fetch(
+  "/api/daily-assessment?limit=14&page=1&includeTotal=false",
+  {
+    method: "GET",
+  }
+),
         ]);
 
         if (

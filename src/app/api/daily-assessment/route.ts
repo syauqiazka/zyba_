@@ -155,39 +155,46 @@ export async function GET(req: NextRequest) {
 
     const skip = (page - 1) * limit;
 
-    const [todayRecord, history, total] =
-      await Promise.all([
-        accountDb.dailyAssessment.findUnique({
-          where: {
-            userId_date: {
-              userId,
-              date: checkDate,
-            },
-          },
-        }),
+const includeTotal =
+  searchParams.get("includeTotal") === "true";
 
-        accountDb.dailyAssessment.findMany({
-          where: {
-            userId,
-          },
-          orderBy: [
-            {
-              date: "desc",
-            },
-            {
-              createdAt: "desc",
-            },
-          ],
-          skip,
-          take: limit,
-        }),
+const [todayRecord, history] =
+  await Promise.all([
+    accountDb.dailyAssessment.findUnique({
+      where: {
+        userId_date: {
+          userId,
+          date: checkDate,
+        },
+      },
+    }),
 
-        accountDb.dailyAssessment.count({
-          where: {
-            userId,
-          },
-        }),
-      ]);
+    accountDb.dailyAssessment.findMany({
+      where: {
+        userId,
+      },
+      orderBy: [
+        {
+          date: "desc",
+        },
+        {
+          createdAt: "desc",
+        },
+      ],
+      skip,
+      take: limit,
+    }),
+  ]);
+
+let total = 0;
+
+if (includeTotal) {
+  total = await accountDb.dailyAssessment.count({
+    where: {
+      userId,
+    },
+  });
+}
 
     const responseData = {
       today: todayRecord || null,
