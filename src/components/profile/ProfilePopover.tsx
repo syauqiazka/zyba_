@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
+import { createPortal } from "react-dom";
 import {
   Pencil,
   Settings,
@@ -51,11 +52,16 @@ export default function ProfilePopover({
   onLogout,
 }: ProfilePopoverProps) {
   const popoverRef = useRef<HTMLDivElement>(null);
+  const [mounted, setMounted] = useState(false);
   const [onlineStatus, setOnlineStatus] = useState<"online" | "idle" | "dnd" | "invisible">("online");
   const [customStatus, setCustomStatus] = useState(user.customStatus || user.statusText || "");
   const [isEditingCustomStatus, setIsEditingCustomStatus] = useState(false);
   const [customStatusInput, setCustomStatusInput] = useState(customStatus);
   const [showStatusMenu, setShowStatusMenu] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   // Discord-style personal note (persisted locally)
   const [note, setNote] = useState("");
@@ -100,7 +106,7 @@ export default function ProfilePopover({
     };
   }, [isOpen, onClose]);
 
-  if (!isOpen) return null;
+  if (!isOpen || !mounted) return null;
 
   const handleStatusSelect = (status: "online" | "idle" | "dnd" | "invisible") => {
     setOnlineStatus(status);
@@ -146,16 +152,24 @@ export default function ProfilePopover({
   const handle = user.username || user.handle || (user.email ? user.email.split("@")[0] : "schatz_232");
   const isPro = user.plan === "PLUS";
 
-  return (
-    <div
-      ref={popoverRef}
-      className="absolute bottom-16 left-0 sm:left-2 z-50 w-80 sm:w-84 rounded-3xl bg-[#FAF7F2] text-brown-900 shadow-2xl border border-brown-900/15 overflow-hidden animate-in fade-in slide-in-from-bottom-3 duration-200 select-none font-body"
-      style={{
-        boxShadow: "0 20px 40px -15px rgba(59, 42, 32, 0.25), 0 0 0 1px rgba(59, 42, 32, 0.08)",
-      }}
-    >
-      {/* ── 1. Top Banner (Discord Style with ZYBA Palette) ───────── */}
-      <div className="h-24 w-full bg-gradient-to-tr from-[#E67E22] via-[#F2884B] to-[#8FAE5D] relative overflow-hidden">
+  return createPortal(
+    <div className="fixed inset-0 z-70 pointer-events-none flex items-end sm:items-end justify-center sm:justify-start">
+      {/* Dimmed backdrop for outside click / mobile touch */}
+      <div
+        className="fixed inset-0 bg-black/35 sm:bg-black/10 backdrop-blur-[1px] pointer-events-auto transition-opacity duration-200"
+        onClick={onClose}
+      />
+
+      {/* Popover Card */}
+      <div
+        ref={popoverRef}
+        className="pointer-events-auto relative sm:fixed bottom-3 sm:bottom-16 left-auto sm:left-4 md:left-24 lg:left-64 z-70 w-[calc(100vw-24px)] max-w-sm sm:w-84 rounded-3xl bg-[#FAF7F2] text-brown-900 shadow-2xl border border-brown-900/15 overflow-hidden animate-in fade-in slide-in-from-bottom-3 duration-200 select-none font-body max-h-[88vh] overflow-y-auto"
+        style={{
+          boxShadow: "0 20px 40px -15px rgba(59, 42, 32, 0.35), 0 0 0 1px rgba(59, 42, 32, 0.08)",
+        }}
+      >
+        {/* ── 1. Top Banner (Discord Style with ZYBA Palette) ───────── */}
+        <div className="h-24 w-full bg-gradient-to-tr from-[#E67E22] via-[#F2884B] to-[#8FAE5D] relative overflow-hidden">
         {/* Subtle decorative background pattern */}
         <div className="absolute inset-0 opacity-15 bg-[radial-gradient(#FAF7F2_1px,transparent_1px)] [background-size:12px_12px]" />
         
@@ -470,5 +484,7 @@ export default function ProfilePopover({
         </div>
       </div>
     </div>
-  );
+  </div>,
+  document.body
+);
 }

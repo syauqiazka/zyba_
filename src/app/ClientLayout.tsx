@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, useState } from "react";
+import { Suspense, useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
 import Sidebar from "@/components/ui/Sidebar";
 import NavigationProgress from "@/components/ui/NavigationProgress";
@@ -66,6 +66,17 @@ export default function ClientLayout({
 }) {
   const pathname = usePathname();
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
+  const [headerAvatar, setHeaderAvatar] = useState<string>("🦊");
+
+  useEffect(() => {
+    try {
+      const cached = localStorage.getItem("zyba_user_cache");
+      if (cached) {
+        const parsed = JSON.parse(cached);
+        if (parsed?.avatarUrl) setHeaderAvatar(parsed.avatarUrl);
+      }
+    } catch {}
+  }, []);
 
   // Public pages + assessment + feature explainer pages
   if (
@@ -146,7 +157,24 @@ export default function ClientLayout({
           </Link>
         </div>
 
-
+        {/* Right side: Mobile Profile Avatar Button */}
+        <button
+          type="button"
+          onClick={() => {
+            window.dispatchEvent(new CustomEvent("zyba_open_profile"));
+          }}
+          className="flex items-center gap-1.5 p-1 rounded-full hover:bg-cream border border-brown-900/10 active:scale-95 transition-all shadow-2xs cursor-pointer"
+          title="Buka profil ZYBA"
+          aria-label="Profil Saya"
+        >
+          <div className="w-8 h-8 rounded-full bg-cream border border-orange-400 flex items-center justify-center text-sm shadow-2xs overflow-hidden">
+            {headerAvatar.startsWith("http") || headerAvatar.startsWith("/") || headerAvatar.startsWith("data:") ? (
+              <img src={headerAvatar} alt="Profil" className="w-full h-full object-cover" />
+            ) : (
+              <span>{headerAvatar}</span>
+            )}
+          </div>
+        </button>
       </header>
 
       {/* Mobile: backdrop overlay */}

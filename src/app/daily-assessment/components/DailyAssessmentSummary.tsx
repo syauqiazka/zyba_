@@ -1,26 +1,82 @@
 "use client";
 
 import React from "react";
+import {
+  CheckCircle2,
+  Smile,
+  Sparkles,
+  Minus,
+  Cloud,
+  CloudRain,
+  ShieldCheck,
+  Activity,
+  AlertCircle,
+  Flame,
+  Moon,
+  Bed,
+  BedDouble,
+  MoonStar,
+  Sunrise,
+  Tag,
+  Quote,
+} from "lucide-react";
 import { DailyRecord, MOODS, SLEEP_OPTIONS } from "./DailyAssessmentForm";
 
 interface SummaryProps {
   record: DailyRecord;
-  onEdit: () => void;
+  onEdit?: () => void;
 }
 
-const MOOD_MAP: Record<string, { emoji: string; label: string; bg: string }> = {
-  DEPRESSED: { emoji: "😞", label: "Depressed", bg: "#A99BE0" },
-  SAD: { emoji: "🙁", label: "Sad", bg: "#EE8A5E" },
-  NEUTRAL: { emoji: "😐", label: "Neutral", bg: "#6B5645" },
-  HAPPY: { emoji: "🙂", label: "Happy", bg: "#E8C24A" },
-  OVERJOYED: { emoji: "😄", label: "Overjoyed", bg: "#8FAE5D" },
+const MOOD_META: Record<
+  string,
+  { label: string; icon: React.ElementType; tint: string }
+> = {
+  DEPRESSED: { label: "Depressed", icon: CloudRain, tint: "#A99BE0" },
+  SAD: { label: "Sedih", icon: Cloud, tint: "#EE8A5E" },
+  NEUTRAL: { label: "Netral", icon: Minus, tint: "#6B5645" },
+  HAPPY: { label: "Bahagia", icon: Smile, tint: "#E8C24A" },
+  OVERJOYED: { label: "Berenergi", icon: Sparkles, tint: "#8FAE5D" },
 };
 
-const STRESS_LABELS = ["", "Sangat Rendah", "Rendah", "Sedang", "Tinggi", "Sangat Tinggi"];
+const STRESS_LABELS = ["", "Tenang", "Rendah", "Sedang", "Tinggi", "Intens"];
 
-export default function DailyAssessmentSummary({ record, onEdit }: SummaryProps) {
-  const mood = MOOD_MAP[record.mood] || { emoji: "😐", label: record.mood, bg: "#6B5645" };
-  const sleep = SLEEP_OPTIONS.find((o) => o.rating === record.sleepRating);
+export default function DailyAssessmentSummary({ record }: SummaryProps) {
+  const moodData = MOOD_META[record.mood] || {
+    label: record.mood,
+    icon: Smile,
+    tint: "#6B5645",
+  };
+  const MoodIcon = moodData.icon;
+
+  const sleepOption = SLEEP_OPTIONS.find((o) => o.rating === record.sleepRating);
+  const sleepText = record.sleepHours || sleepOption?.label || "6-7 jam";
+
+  const getSleepIcon = (rating: number | null) => {
+    switch (rating) {
+      case 1:
+        return Moon;
+      case 2:
+        return Bed;
+      case 3:
+        return BedDouble;
+      case 4:
+        return MoonStar;
+      case 5:
+        return Sunrise;
+      default:
+        return BedDouble;
+    }
+  };
+  const SleepIcon = getSleepIcon(record.sleepRating);
+
+  const getStressIcon = (lvl: number | null) => {
+    if (!lvl || lvl <= 1) return ShieldCheck;
+    if (lvl === 2) return Smile;
+    if (lvl === 3) return Activity;
+    if (lvl === 4) return AlertCircle;
+    return Flame;
+  };
+  const StressIcon = getStressIcon(record.stressLevel);
 
   const updatedTime = new Date(record.updatedAt).toLocaleTimeString("id-ID", {
     hour: "2-digit",
@@ -28,108 +84,107 @@ export default function DailyAssessmentSummary({ record, onEdit }: SummaryProps)
   });
 
   return (
-    <div className="flex flex-col gap-6">
-      {/* Header: Selesai hari ini */}
-      <div className="flex items-center gap-3 p-4 bg-green-100/60 rounded-2xl border border-green-500/30">
-        <span className="text-2xl">✅</span>
-        <div>
-          <p className="text-sm font-bold text-brown-900">Assessment Harian Selesai!</p>
-          <p className="text-xs text-brown-700">Tercatat pukul {updatedTime}. Evaluasi harian hanya dapat diisi 1 kali sehari.</p>
+    <div className="flex flex-col gap-3 sm:gap-4 select-none">
+      {/* ── 1. Compact Completion Notice ───────────────────────────── */}
+      <div className="flex items-center justify-between p-3 sm:p-3.5 bg-green-100/60 rounded-2xl border border-green-500/25">
+        <div className="flex items-center gap-2.5 min-w-0">
+          <CheckCircle2 size={18} className="text-green-600 shrink-0" />
+          <div className="min-w-0">
+            <p className="text-xs sm:text-sm font-bold text-brown-900 leading-tight">
+              Assessment Harian Selesai
+            </p>
+            <p className="text-[10px] sm:text-xs text-brown-700/80 truncate">
+              Tercatat pukul {updatedTime} WIB · 1 evaluasi per hari
+            </p>
+          </div>
         </div>
-        <span className="ml-auto text-[11px] font-bold text-green-700 bg-green-200/60 px-3 py-1.5 rounded-full whitespace-nowrap">
-          Tersimpan ✓
+        <span className="text-[10px] sm:text-[11px] font-bold text-green-700 bg-white/70 border border-green-500/20 px-2.5 py-1 rounded-full whitespace-nowrap shrink-0">
+          Tersimpan
         </span>
       </div>
 
-      {/* Summary cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {/* Mood */}
-        <div className="glass-card rounded-2xl p-4 border border-brown-900/10 flex flex-col gap-2">
-          <span className="text-xs font-bold uppercase tracking-wider text-brown-700">Mood</span>
-          <div className="flex items-center gap-2">
-            <span className="text-3xl">{mood.emoji}</span>
-            <span className="font-display font-bold text-brown-900">{mood.label}</span>
-          </div>
-          <div
-            className="h-1.5 rounded-full mt-1"
-            style={{ backgroundColor: mood.bg, opacity: 0.7 }}
-          />
-        </div>
-
-        {/* Stress */}
-        <div className="glass-card rounded-2xl p-4 border border-brown-900/10 flex flex-col gap-2">
-          <span className="text-xs font-bold uppercase tracking-wider text-brown-700">Level Stres</span>
-          {record.stressLevel !== null ? (
-            <>
-              <span className="font-display text-2xl font-extrabold text-brown-900">
-                {record.stressLevel}
-                <span className="text-sm font-normal text-brown-700">/5</span>
+      {/* ── 2. Compact Horizontal Condition Row (Mood | Stress | Sleep) ─ */}
+      <div className="bg-white rounded-2xl p-3 sm:p-4 border border-brown-900/10 shadow-2xs">
+        <div className="grid grid-cols-3 divide-x divide-brown-900/10 text-center">
+          {/* Item 1: Mood */}
+          <div className="flex flex-col items-center justify-center px-1 sm:px-2">
+            <span className="text-[10px] sm:text-[11px] font-extrabold uppercase tracking-wider text-brown-700/60 mb-1">
+              Mood
+            </span>
+            <div className="flex items-center gap-1.5">
+              <MoodIcon
+                size={18}
+                className="shrink-0"
+                style={{ color: moodData.tint }}
+              />
+              <span className="font-display font-bold text-xs sm:text-sm text-brown-900 truncate">
+                {moodData.label}
               </span>
-              <span className="text-xs text-brown-700">{STRESS_LABELS[record.stressLevel] || "-"}</span>
-            </>
-          ) : (
-            <span className="text-xs text-brown-700 italic">Tidak diisi</span>
-          )}
-        </div>
-
-        {/* Sleep */}
-        <div className="glass-card rounded-2xl p-4 border border-brown-900/10 flex flex-col gap-2">
-          <span className="text-xs font-bold uppercase tracking-wider text-brown-700">Tidur</span>
-          {sleep ? (
-            <>
-              <div className="flex items-center gap-2">
-                <span className="text-2xl">{sleep.icon}</span>
-                <span className="font-display font-bold text-brown-900">{sleep.label}</span>
-              </div>
-              <span className="text-xs text-brown-700">{sleep.desc}</span>
-            </>
-          ) : (
-            <span className="text-xs text-brown-700 italic">Tidak diisi</span>
-          )}
-        </div>
-
-        {/* Energy Tags */}
-        <div className="glass-card rounded-2xl p-4 border border-brown-900/10 flex flex-col gap-2">
-          <span className="text-xs font-bold uppercase tracking-wider text-brown-700">Kondisi</span>
-          {record.energyTags.length > 0 ? (
-            <div className="flex flex-wrap gap-1.5">
-              {record.energyTags.slice(0, 3).map((tag) => (
-                <span
-                  key={tag}
-                  className="px-2 py-0.5 bg-cream border border-brown-900/10 rounded-full text-[10px] font-semibold text-brown-700"
-                >
-                  {tag}
-                </span>
-              ))}
-              {record.energyTags.length > 3 && (
-                <span className="text-[10px] text-brown-700">+{record.energyTags.length - 3}</span>
-              )}
             </div>
-          ) : (
-            <span className="text-xs text-brown-700 italic">Tidak diisi</span>
-          )}
+          </div>
+
+          {/* Item 2: Stress */}
+          <div className="flex flex-col items-center justify-center px-1 sm:px-2">
+            <span className="text-[10px] sm:text-[11px] font-extrabold uppercase tracking-wider text-brown-700/60 mb-1">
+              Level Stres
+            </span>
+            <div className="flex items-center gap-1.5">
+              <StressIcon size={16} className="text-orange-600 shrink-0" />
+              <span className="font-display font-bold text-xs sm:text-sm text-brown-900">
+                {record.stressLevel ?? 2}
+                <span className="text-[10px] font-normal text-brown-700/60">/5</span>
+              </span>
+              <span className="text-[10px] text-brown-700/70 hidden sm:inline truncate">
+                ({STRESS_LABELS[record.stressLevel ?? 2] || "Terkontrol"})
+              </span>
+            </div>
+          </div>
+
+          {/* Item 3: Sleep */}
+          <div className="flex flex-col items-center justify-center px-1 sm:px-2">
+            <span className="text-[10px] sm:text-[11px] font-extrabold uppercase tracking-wider text-brown-700/60 mb-1">
+              Tidur
+            </span>
+            <div className="flex items-center gap-1.5">
+              <SleepIcon size={16} className="text-indigo-600 shrink-0" />
+              <span className="font-display font-bold text-xs sm:text-sm text-brown-900 truncate">
+                {sleepText}
+              </span>
+            </div>
+          </div>
         </div>
       </div>
 
-      {/* Reflection */}
-      {record.reflection && (
-        <div className="glass-card rounded-2xl p-5 border border-brown-900/10 bg-gradient-to-r from-cream to-white">
-          <p className="text-xs font-bold uppercase tracking-wider text-brown-700 mb-2">Refleksi Harian</p>
-          <p className="text-sm text-brown-900 leading-relaxed whitespace-pre-wrap">{record.reflection}</p>
+      {/* ── 3. Energy Tags (Compact Horizontal) ────────────────────── */}
+      {record.energyTags && record.energyTags.length > 0 && (
+        <div className="bg-white rounded-2xl p-3 sm:p-3.5 border border-brown-900/10 shadow-2xs flex items-center gap-2 flex-wrap">
+          <div className="flex items-center gap-1 text-[11px] font-bold text-brown-700/70 mr-1 shrink-0">
+            <Tag size={13} />
+            <span>Kondisi:</span>
+          </div>
+          <div className="flex flex-wrap gap-1.5">
+            {record.energyTags.map((tag) => (
+              <span
+                key={tag}
+                className="px-2.5 py-0.5 bg-cream/80 border border-brown-900/10 rounded-full text-[11px] font-semibold text-brown-900"
+              >
+                {tag}
+              </span>
+            ))}
+          </div>
         </div>
       )}
 
-      {/* Crisis warning jika flagged */}
-      {record.flaggedForRisk && (
-        <div className="rounded-2xl p-4 bg-orange-50 border border-orange-500/30 flex items-start gap-3">
-          <span className="text-lg">💛</span>
-          <div>
-            <p className="text-sm font-bold text-brown-900">Kami peduli dengan kondisimu</p>
-            <p className="text-xs text-brown-700 mt-0.5">
-              Jika kamu sedang dalam situasi sulit, jangan ragu menghubungi Into The Light Indonesia di{" "}
-              <strong>119 ext 8</strong> (Hotline Kemenkes).
-            </p>
+      {/* ── 4. Reflection (Compact quote box) ──────────────────────── */}
+      {record.reflection && (
+        <div className="bg-white rounded-2xl p-3.5 sm:p-4 border border-brown-900/10 shadow-2xs">
+          <div className="flex items-center gap-1.5 mb-1.5 text-xs font-bold text-brown-700">
+            <Quote size={13} className="text-orange-500" />
+            <span>Refleksi Hari Ini</span>
           </div>
+          <p className="text-xs sm:text-sm text-brown-900/90 leading-relaxed italic pl-2 border-l-2 border-orange-400">
+            &ldquo;{record.reflection}&rdquo;
+          </p>
         </div>
       )}
     </div>

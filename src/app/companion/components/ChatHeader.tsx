@@ -57,7 +57,7 @@ export default function ChatHeader({
   };
 
   return (
-    <header className="px-3 sm:px-6 py-2.5 sm:py-3 border-b border-brown-900/10 flex items-center gap-2 justify-between bg-white/95 sticky top-0 z-10">
+    <header className="px-2.5 sm:px-6 py-2 sm:py-3 border-b border-brown-900/10 flex items-center gap-1.5 sm:gap-2 justify-between bg-white/95 sticky top-0 z-10 w-full max-w-full overflow-hidden box-border">
       {/* Mobile Hamburger */}
       <button
         type="button"
@@ -77,7 +77,7 @@ export default function ChatHeader({
           title={`Ganti karakter Zyba (Saat ini: ${persona.name})`}
         >
           {/* ZYBA Mascot Character Avatar */}
-          <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-2xl bg-cream border-2 border-orange-500/20 group-hover:border-orange-500 flex items-center justify-center shadow-xs text-lg sm:text-xl transition-all">
+          <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-2xl bg-cream border-2 border-orange-500/20 group-hover:border-orange-500 flex items-center justify-center shadow-xs text-base sm:text-xl transition-all">
             <span>{persona.emoji}</span>
           </div>
           {/* Online Indicator */}
@@ -88,14 +88,14 @@ export default function ChatHeader({
         </button>
 
         <div className="flex flex-col min-w-0 flex-1">
-          <div className="flex items-center gap-1.5 sm:gap-2 min-w-0">
+          <div className="flex items-center gap-1 sm:gap-2 min-w-0">
             <h2 className="font-display font-bold text-xs sm:text-sm text-brown-900 truncate">
               Zyba • {persona.name}
             </h2>
             <button
               type="button"
               onClick={openPersonaModal}
-              className="shrink-0 text-[10px] font-bold px-1.5 sm:px-2 py-0.5 rounded-full bg-orange-100 text-orange-600 hover:bg-orange-200 transition-colors flex items-center gap-1 shadow-2xs"
+              className="shrink-0 text-[10px] font-bold px-1.5 sm:px-2 py-0.5 rounded-full bg-orange-100 text-orange-600 hover:bg-orange-200 transition-colors flex items-center gap-0.5 sm:gap-1 shadow-2xs"
               title="Ganti karakter Zyba"
             >
               <span>{persona.emoji}</span>
@@ -135,12 +135,12 @@ export default function ChatHeader({
           <button
             type="button"
             onClick={() => setShowProModal(true)}
-            className="px-2 sm:px-3 py-1 sm:py-1.5 rounded-full bg-orange-500 text-white hover:opacity-90 text-[11px] sm:text-xs font-bold transition-all shadow-xs flex items-center gap-1 shrink-0"
+            className="px-2 sm:px-3 py-1 sm:py-1.5 rounded-full bg-orange-500 text-white hover:opacity-90 text-[10px] sm:text-xs font-bold transition-all shadow-xs flex items-center gap-1 shrink-0"
             aria-label="Upgrade ke Zyba Plus"
           >
             <Zap size={12} aria-hidden />
-            <span className="hidden xs:inline">Zyba </span>
-            <span>Plus</span>
+            <span className="hidden md:inline">Zyba </span>
+            <span className="hidden xs:inline">Plus</span>
           </button>
         )}
 

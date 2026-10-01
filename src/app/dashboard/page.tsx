@@ -688,18 +688,25 @@ export default function DashboardPage() {
         <div className="flex items-center gap-4">
           {/* Avatar with Crop & Cooldown Trigger */}
           <div className="relative group shrink-0">
-            <UserAvatar
-              src={userData.avatarUrl}
-              name={userData.name}
-              size="lg"
-              className="w-16 h-16 rounded-full border-2 border-orange-300 shadow-md cursor-pointer transition-transform group-hover:scale-105"
-              showStatus={false}
-            />
+            <button
+              type="button"
+              onClick={() => window.dispatchEvent(new CustomEvent("zyba_open_profile"))}
+              className="rounded-full focus:outline-none focus:ring-2 focus:ring-orange-400 block transition-transform group-hover:scale-105 active:scale-95"
+              title="Buka profil lengkap"
+            >
+              <UserAvatar
+                src={userData.avatarUrl}
+                name={userData.name}
+                size="lg"
+                className="w-16 h-16 rounded-full border-2 border-orange-300 shadow-md cursor-pointer"
+                showStatus={false}
+              />
+            </button>
             <button
               type="button"
               onClick={handleAvatarClick}
               disabled={isUploadingAvatar}
-              className="absolute inset-0 bg-black/50 rounded-full flex flex-col items-center justify-center text-white opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer shadow-inner"
+              className="absolute inset-0 bg-black/45 rounded-full flex flex-col items-center justify-center text-white opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer shadow-inner pointer-events-none group-hover:pointer-events-auto"
               title={
                 cooldownInfo && !cooldownInfo.canChange
                   ? `Cooldown: ${cooldownInfo.remainingText}`
@@ -708,11 +715,11 @@ export default function DashboardPage() {
             >
               <span className="text-[10px] font-bold">📷 Ubah</span>
             </button>
-            {/* Mobile camera badge */}
+            {/* Mobile/Quick camera badge */}
             <button
               type="button"
               onClick={handleAvatarClick}
-              className="md:hidden absolute -bottom-1 -right-1 w-6 h-6 rounded-full bg-orange-500 text-white flex items-center justify-center text-xs shadow-md border-2 border-white cursor-pointer"
+              className="absolute -bottom-1 -right-1 w-6 h-6 rounded-full bg-orange-500 text-white flex items-center justify-center text-xs shadow-md border-2 border-white cursor-pointer hover:bg-orange-600 active:scale-95 transition-transform"
               title="Ubah foto profil"
             >
               📷
@@ -743,8 +750,11 @@ export default function DashboardPage() {
               )}
             </div>
 
-            <h1 className="font-display text-2xl md:text-3xl font-extrabold text-brown-900">
-              Hai, {userData.name}! 👋
+            <h1 className="font-display text-xl sm:text-2xl md:text-3xl font-extrabold text-brown-900 leading-tight">
+              <span className="inline-flex items-center gap-1.5 whitespace-nowrap">
+                Hai <span className="animate-wave">👋</span>,
+              </span>{" "}
+              <span className="break-words">{userData.name}!</span>
             </h1>
 
             {!userData.hasAssessment && (

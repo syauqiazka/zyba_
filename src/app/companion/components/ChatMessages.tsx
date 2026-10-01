@@ -74,14 +74,14 @@ export default function ChatMessages({
   // 1. EXACT CLAUDE.AI EMPTY STATE (Image 1)
   if (messages.length === 0) {
     return (
-      <div className="flex-1 overflow-y-auto p-3 sm:p-6 md:p-8 flex flex-col items-center justify-center text-center min-h-0">
+      <div className="flex-1 overflow-y-auto overflow-x-hidden p-3 sm:p-6 md:p-8 flex flex-col items-center justify-center text-center min-h-0 w-full max-w-full">
         {/* Emblem + Greeting */}
-        <div className="flex flex-col items-center justify-center gap-2 mb-5 sm:mb-7">
+        <div className="flex flex-col items-center justify-center gap-2 mb-4 sm:mb-7">
           {/* Zyba Character Avatar */}
           <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-3xl bg-cream border-2 border-orange-500/20 flex items-center justify-center text-2xl sm:text-3xl shadow-sm select-none">
             {persona.emoji}
           </div>
-          <h1 className="font-display font-extrabold text-xl sm:text-2xl md:text-3xl text-brown-900 tracking-tight">
+          <h1 className="font-display font-extrabold text-lg sm:text-2xl md:text-3xl text-brown-900 tracking-tight">
             Halo! Aku {persona.name} (｡•̀ᴗ-)✧
           </h1>
           <p className="text-xs text-brown-700 max-w-xs sm:max-w-md px-2">
@@ -90,7 +90,7 @@ export default function ChatMessages({
         </div>
 
         {/* Floating Center Input Box — Exact Claude.ai card */}
-        <div className="w-full max-w-2xl bg-white rounded-3xl border border-brown-900/12 shadow-sm p-4 text-left transition-all focus-within:shadow-md focus-within:border-brown-900/25">
+        <div className="w-full max-w-2xl bg-white rounded-3xl border border-brown-900/12 shadow-sm p-3.5 sm:p-4 text-left transition-all focus-within:shadow-md focus-within:border-brown-900/25 box-border overflow-hidden">
           <textarea
             value={centerInput}
             onChange={(e) => setCenterInput(e.target.value)}
@@ -102,27 +102,27 @@ export default function ChatMessages({
             }}
             placeholder="Ketik pesan ke Zyba..."
             rows={2}
-            className="w-full bg-transparent text-sm text-brown-900 placeholder:text-brown-700/50 resize-none focus:outline-none leading-relaxed"
+            className="w-full bg-transparent text-xs sm:text-sm text-brown-900 placeholder:text-brown-700/50 resize-none focus:outline-none leading-relaxed"
           />
 
           {/* Bottom attached controls row */}
-          <div className="flex items-center justify-between pt-2.5 mt-2 border-t border-brown-900/6 text-xs text-brown-700">
+          <div className="flex flex-wrap items-center justify-between gap-2 pt-2.5 mt-2 border-t border-brown-900/6 text-xs text-brown-700 w-full">
             {/* Left: "+" button & Mode Toggle [Curhat | Solusi] */}
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
               <button
                 type="button"
-                className="w-7 h-7 rounded-lg border border-brown-900/10 flex items-center justify-center text-brown-700/70 hover:text-brown-900 hover:bg-brown-900/5 transition-colors"
+                className="w-7 h-7 rounded-lg border border-brown-900/10 flex items-center justify-center text-brown-700/70 hover:text-brown-900 hover:bg-brown-900/5 transition-colors shrink-0"
                 title="Tambahkan dokumen atau lampiran"
               >
                 <Plus size={14} />
               </button>
 
               {setChatMode && (
-                <div className="flex bg-[#F5EFEB] rounded-full p-0.5 border border-brown-900/8">
+                <div className="flex bg-[#F5EFEB] rounded-full p-0.5 border border-brown-900/8 shrink-0">
                   <button
                     type="button"
                     onClick={() => setChatMode("curhat")}
-                    className={`px-3 py-1 rounded-full text-[11px] font-bold transition-all ${
+                    className={`px-2.5 sm:px-3 py-1 rounded-full text-[11px] font-bold transition-all ${
                       chatMode === "curhat"
                         ? "bg-white text-brown-900 shadow-2xs"
                         : "text-brown-700/70 hover:text-brown-900"
@@ -133,7 +133,7 @@ export default function ChatMessages({
                   <button
                     type="button"
                     onClick={() => setChatMode("solusi")}
-                    className={`px-3 py-1 rounded-full text-[11px] font-bold transition-all ${
+                    className={`px-2.5 sm:px-3 py-1 rounded-full text-[11px] font-bold transition-all ${
                       chatMode === "solusi"
                         ? "bg-white text-brown-900 shadow-2xs"
                         : "text-brown-700/70 hover:text-brown-900"
@@ -146,7 +146,7 @@ export default function ChatMessages({
             </div>
 
             {/* Right: Model Selector + Mic + Soundwave + Send Button */}
-            <div className="flex items-center gap-1.5">
+            <div className="flex items-center gap-1.5 sm:gap-2 ml-auto shrink-0">
               {setSelectedModel ? (
                 <ModelSelector
                   selectedModel={selectedModel}
@@ -161,7 +161,7 @@ export default function ChatMessages({
               <button
                 type="button"
                 onClick={() => setIsMicActive(!isMicActive)}
-                className={`p-1.5 rounded-lg text-sm transition-colors ${
+                className={`p-1.5 rounded-lg text-sm transition-colors shrink-0 ${
                   isMicActive ? "bg-orange-100 text-orange-600" : "text-brown-700/60 hover:text-brown-900"
                 }`}
                 title="Voice input"
@@ -173,7 +173,7 @@ export default function ChatMessages({
                 type="button"
                 onClick={handleCenterSubmit}
                 disabled={!centerInput.trim() || isSending}
-                className="w-7 h-7 rounded-lg bg-orange-500 text-white flex items-center justify-center font-bold text-xs hover:bg-orange-600 disabled:opacity-30 transition-all shadow-2xs"
+                className="w-7 h-7 rounded-lg bg-orange-500 text-white flex items-center justify-center font-bold text-xs hover:bg-orange-600 disabled:opacity-30 transition-all shadow-2xs shrink-0"
                 title="Kirim pesan"
               >
                 <ArrowRight size={13} />
@@ -183,7 +183,7 @@ export default function ChatMessages({
         </div>
 
         {/* 5 Prompt Starter Chips (Claude.ai: Write, Learn, Code, Life stuff, Claude's choice) */}
-        <div className="mt-5 flex flex-wrap items-center justify-center gap-2 max-w-2xl">
+        <div className="mt-4 sm:mt-5 flex flex-wrap items-center justify-center gap-1.5 sm:gap-2 max-w-2xl px-1">
           {CLAUDE_PROMPTS.map((item, idx) => (
             <button
               key={idx}
@@ -192,7 +192,7 @@ export default function ChatMessages({
                 if (onSelectPromptStarter) onSelectPromptStarter(item.prompt);
                 else if (onSendMessage) onSendMessage(item.prompt);
               }}
-              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-white border border-brown-900/10 text-xs font-semibold text-brown-900 hover:bg-cream hover:border-brown-900/25 transition-all shadow-2xs active:scale-95"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white border border-brown-900/10 text-[11px] sm:text-xs font-semibold text-brown-900 hover:bg-cream hover:border-brown-900/25 transition-all shadow-2xs active:scale-95"
             >
               <span>{item.icon}</span>
               <span>{item.label}</span>

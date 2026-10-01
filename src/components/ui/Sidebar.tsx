@@ -98,6 +98,14 @@ export default function Sidebar({ onClose }: { onClose?: () => void }) {
     loadUser();
   }, []);
 
+  useEffect(() => {
+    const handleOpenProfile = () => {
+      setIsProfilePopoverOpen(true);
+    };
+    window.addEventListener("zyba_open_profile", handleOpenProfile);
+    return () => window.removeEventListener("zyba_open_profile", handleOpenProfile);
+  }, []);
+
   const handleLogout = async () => {
     // Hapus cookie auth-token via API lalu redirect ke halaman login
     await fetch("/api/auth", { method: "DELETE" });

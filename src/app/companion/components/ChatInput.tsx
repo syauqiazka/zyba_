@@ -99,7 +99,7 @@ export default function ChatInput({
           onKeyDown={handleKeyDown}
           placeholder="Ketik pesan ke Zyba..."
           disabled={isSending}
-          className="flex-1 bg-transparent px-3 py-2 text-xs md:text-sm text-brown-900 placeholder:text-brown-700/60 focus:outline-none"
+          className="flex-1 min-w-0 bg-transparent px-2 sm:px-3 py-2 text-xs md:text-sm text-brown-900 placeholder:text-brown-700/60 focus:outline-none"
         />
 
         {/* Circular Send Button (10.4: lingkaran orange-500, ikon panah putih, disabled abu-abu) */}
@@ -119,8 +119,8 @@ export default function ChatInput({
       </div>
 
       {/* Kontrol Model & Gaya menempel ke input chat (Claude.ai style — AGENTS.md Bagian 10.8) */}
-      <div className="flex items-center justify-between mt-2 pt-1 px-1 text-xs text-brown-700">
-        <div className="flex items-center gap-2">
+      <div className="flex flex-wrap items-center justify-between gap-1.5 mt-2 pt-1 px-1 text-xs text-brown-700">
+        <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
           {setSelectedModel && (
             <ModelSelector
               selectedModel={selectedModel}
@@ -129,13 +129,13 @@ export default function ChatInput({
           )}
 
           {setCommStyle && (
-            <div className="flex bg-cream/80 rounded-full border border-brown-900/10 p-0.5" title="Gaya Komunikasi AI">
+            <div className="flex bg-cream/80 rounded-full border border-brown-900/10 p-0.5 shrink-0" title="Gaya Komunikasi AI">
               {(["CASUAL", "FORMAL", "FUN"] as const).map((style) => (
                 <button
                   key={style}
                   type="button"
                   onClick={() => setCommStyle(style)}
-                  className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold transition-all ${
+                  className={`px-2 sm:px-2.5 py-0.5 rounded-full text-[10px] font-bold transition-all ${
                     commStyle === style
                       ? "bg-brown-900 text-white shadow-2xs"
                       : "text-brown-700 hover:text-brown-900"

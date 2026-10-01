@@ -1,58 +1,73 @@
 "use client";
 
 import React, { useState, useEffect, useCallback } from "react";
-import { DailyRecord, Pagination, DailyAssessmentForm } from "./components/DailyAssessmentForm";
+import {
+  DailyRecord,
+  Pagination,
+  DailyAssessmentForm,
+} from "./components/DailyAssessmentForm";
 import DailyAssessmentSummary from "./components/DailyAssessmentSummary";
 import DailyAssessmentHistory from "./components/DailyAssessmentHistory";
-import MoodBanner from "./components/MoodBanner";
 import CalendarWidget from "./components/CalendarWidget";
 import JournalHistory from "./components/JournalHistory";
 import HistoryTabs from "./components/HistoryTabs";
 import { useMoodOverview } from "./useMoodOverview";
-import { MOODS } from "@/lib/moods";
+import {
+  Flame,
+  CheckCircle2,
+  Calendar,
+  AlertCircle,
+  X,
+} from "lucide-react";
 
-type PageState = "loading" | "empty" | "form" | "summary";
+type PageState = "loading" | "form" | "summary";
 
 export default function DailyAssessmentPage() {
-  const { selectedMood, streak, calendarData, journalList, reload } = useMoodOverview();
-  const [previewMood, setPreviewMood] = useState<(typeof MOODS)[number] | null>(null);
+  const { streak, calendarData, journalList, reload } = useMoodOverview();
   const [pageState, setPageState] = useState<PageState>("loading");
   const [todayRecord, setTodayRecord] = useState<DailyRecord | null>(null);
   const [history, setHistory] = useState<DailyRecord[]>([]);
-  const [pagination, setPagination] = useState<Pagination>({ page: 1, limit: 10, total: 0, totalPages: 0 });
+  const [pagination, setPagination] = useState<Pagination>({
+    page: 1,
+    limit: 10,
+    total: 0,
+    totalPages: 0,
+  });
   const [isHistoryLoading, setIsHistoryLoading] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [crisisAlert, setCrisisAlert] = useState(false);
   const [savedSuccess, setSavedSuccess] = useState(false);
 
-  // Saat mengisi form, banner mengikuti mood yang sedang dipilih.
-  // Setelah tersimpan, banner memakai mood dari record hari ini.
-  const bannerMood = pageState === "summary" ? selectedMood : previewMood ?? selectedMood;
-
-  const handleMoodChange = (value: string) => {
-    setPreviewMood(MOODS.find((m) => m.value === String(value).toUpperCase()) ?? null);
-  };
+  const displayDate = new Intl.DateTimeFormat("id-ID", {
+    weekday: "long",
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  }).format(new Date());
 
   const loadData = useCallback(async (page = 1) => {
     try {
       setIsHistoryLoading(true);
       const clientDate = new Intl.DateTimeFormat("en-CA").format(new Date());
-      const res = await fetch(`/api/daily-assessment?page=${page}&limit=10&date=${clientDate}`);
+      const res = await fetch(
+        `/api/daily-assessment?page=${page}&limit=10&date=${clientDate}`
+      );
       if (!res.ok) throw new Error("Failed to fetch");
       const data = await res.json();
 
       setTodayRecord(data.today);
       setHistory(data.history || []);
-      setPagination(data.pagination || { page: 1, limit: 10, total: 0, totalPages: 0 });
+      setPagination(
+        data.pagination || { page: 1, limit: 10, total: 0, totalPages: 0 }
+      );
 
-      // Tentukan state halaman
       if (data.hasCompletedToday) {
         setPageState("summary");
       } else {
-        setPageState("empty");
+        setPageState("form");
       }
-    } catch (err) {
-      setPageState("empty");
+    } catch {
+      setPageState("form");
     } finally {
       setIsHistoryLoading(false);
     }
@@ -76,11 +91,10 @@ export default function DailyAssessmentPage() {
 
       if (data.isRisk) setCrisisAlert(true);
 
-      // Reload data setelah submit
+      // Reload data after submit
       await Promise.all([loadData(1), reload()]);
-      setPreviewMood(null);
       setSavedSuccess(true);
-      setTimeout(() => setSavedSuccess(false), 4000);
+      setTimeout(() => setSavedSuccess(false), 4500);
     } catch (err: any) {
       console.error("Daily assessment submit error:", err);
       alert(err.message || "Gagal menyimpan assessment harian");
@@ -94,117 +108,119 @@ export default function DailyAssessmentPage() {
   };
 
   return (
-    <div className="flex flex-col gap-8 pb-12">
-      {/* Banner gabungan: header + mood, warnanya ikut mood yang dipilih */}
-      <MoodBanner
-        selectedMood={bannerMood}
-        streak={streak}
-        status={pageState === "loading" ? undefined : { done: pageState === "summary" }}
-      />
-
-      {/* Success toast */}
-      {savedSuccess && (
-        <div className="flex items-center gap-3 p-4 bg-green-100/70 border border-green-500/30 rounded-2xl animate-in fade-in duration-300">
-          <span className="text-xl">✅</span>
-          <p className="text-sm font-bold text-brown-900">Assessment Harian berhasil disimpan dan skor ZYBA diperbarui!</p>
+    <div className="flex flex-col gap-4 sm:gap-6 pb-12 max-w-[1240px] mx-auto select-none">
+      {/* ── 1. Page Header (Calm, Focused, Minimal) ─────────────────── */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-brown-900/10">
+        <div>
+          <div className="flex items-center gap-2 mb-1">
+            <span className="text-[10px] sm:text-[11px] font-extrabold uppercase tracking-widest text-orange-600 bg-orange-100/80 px-2.5 py-0.5 rounded-full">
+              Ritual Harian
+            </span>
+            <span className="text-xs text-brown-700/70" suppressHydrationWarning>
+              · {displayDate}
+            </span>
+          </div>
+          <h1 className="font-display text-xl sm:text-2xl md:text-3xl font-extrabold text-brown-900 tracking-tight">
+            Daily Assessment
+          </h1>
         </div>
-      )}
 
-      {/* Crisis alert */}
-      {crisisAlert && (
-        <div className="rounded-2xl p-5 bg-orange-50 border border-orange-500/30 flex items-start gap-4">
-          <span className="text-2xl shrink-0">💛</span>
-          <div className="flex-1">
-            <p className="text-sm font-bold text-brown-900 mb-1">Kami mendengarmu</p>
-            <p className="text-xs text-brown-700 leading-relaxed">
-              Sepertinya kamu sedang mengalami hal yang berat. Kamu tidak sendirian. Jika kamu butuh bantuan segera,
-              hubungi <strong>Into The Light Indonesia di 119 ext 8</strong> (Hotline Kemenkes, 24 jam).
+        {/* Streak & Status Badges */}
+        <div className="flex items-center gap-2 self-start sm:self-center">
+          <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white border border-brown-900/10 shadow-2xs">
+            <Flame size={15} className="text-orange-500 fill-orange-500 shrink-0" />
+            <span className="text-xs font-bold text-brown-900">
+              {streak} Hari Aktif
+            </span>
+          </div>
+
+          {pageState === "summary" ? (
+            <div className="flex items-center gap-1 px-3 py-1.5 rounded-full bg-green-100 text-green-700 border border-green-500/20 text-xs font-bold shadow-2xs">
+              <CheckCircle2 size={13} className="shrink-0" />
+              <span>Selesai</span>
+            </div>
+          ) : (
+            <div className="flex items-center gap-1 px-3 py-1.5 rounded-full bg-amber-100/80 text-amber-800 border border-amber-300/40 text-xs font-bold shadow-2xs">
+              <Calendar size={13} className="shrink-0" />
+              <span>Hari Ini</span>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* ── 2. Success Toast ────────────────────────────────────────── */}
+      {savedSuccess && (
+        <div className="flex items-center justify-between gap-3 p-3.5 bg-green-100/70 border border-green-500/30 rounded-2xl animate-in fade-in duration-300">
+          <div className="flex items-center gap-2">
+            <CheckCircle2 size={16} className="text-green-600 shrink-0" />
+            <p className="text-xs sm:text-sm font-bold text-brown-900">
+              Assessment Harian berhasil disimpan dan skor ZYBA diperbarui!
             </p>
           </div>
           <button
             type="button"
-            onClick={() => setCrisisAlert(false)}
-            className="text-brown-700 hover:text-brown-900 text-lg cursor-pointer shrink-0"
-            aria-label="Tutup"
+            onClick={() => setSavedSuccess(false)}
+            className="text-brown-700/60 hover:text-brown-900 text-xs p-1"
           >
             ✕
           </button>
         </div>
       )}
 
-      {/* Main Content */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-        {/* Left: Form or Summary */}
-        <div className="lg:col-span-7">
-          <div className="glass-card rounded-3xl p-4 sm:p-6 md:p-7 border border-brown-900/10 bg-white">
-            {pageState === "loading" && (
-              <div className="flex flex-col gap-4 animate-pulse">
-                <div className="h-6 w-48 bg-cream rounded" />
-                <div className="grid grid-cols-5 gap-3">
-                  {[1, 2, 3, 4, 5].map((i) => <div key={i} className="h-24 bg-cream rounded-2xl" />)}
-                </div>
-              </div>
-            )}
-
-            {pageState === "empty" && (
-              <div className="flex flex-col items-center justify-center py-8 text-center gap-4">
-                <div className="text-5xl">📋</div>
-                <div>
-                  <h2 className="font-display text-lg font-bold text-brown-900">Belum Ada Assessment Hari Ini</h2>
-                  <p className="text-sm text-brown-700 mt-1">Mulai evaluasi harian lengkapmu sekarang.</p>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => setPageState("form")}
-                  className="bg-orange-500 hover:bg-brown-900 text-white font-bold text-sm px-8 py-3 rounded-full transition-colors shadow-md cursor-pointer"
-                >
-                  Mulai Assessment Harian →
-                </button>
-              </div>
-            )}
-
-            {pageState === "form" && (
-              <div>
-                <div className="flex items-center justify-between mb-6">
-                  <h2 className="font-display text-lg font-bold text-brown-900">
-                    Assessment Harian Hari Ini
-                  </h2>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setPreviewMood(null);
-                      setPageState("empty");
-                    }}
-                    className="text-xs text-brown-700 hover:text-brown-900 cursor-pointer"
-                  >
-                    ← Batal
-                  </button>
-                </div>
-                <DailyAssessmentForm
-                  onSubmit={handleSubmit}
-                  isSubmitting={isSubmitting}
-                  onMoodChange={handleMoodChange}
-                />
-              </div>
-            )}
-
-            {pageState === "summary" && todayRecord && (
-              <div>
-                <h2 className="font-display text-lg font-bold text-brown-900 mb-5">Ringkasan Hari Ini</h2>
-                <DailyAssessmentSummary
-                  record={todayRecord}
-                  onEdit={() => { }}
-                />
-              </div>
-            )}
+      {/* ── 3. Crisis Alert ─────────────────────────────────────────── */}
+      {crisisAlert && (
+        <div className="rounded-2xl p-4 bg-orange-50 border border-orange-500/30 flex items-start gap-3 animate-in fade-in duration-300">
+          <AlertCircle size={20} className="text-orange-600 shrink-0 mt-0.5" />
+          <div className="flex-1">
+            <p className="text-xs sm:text-sm font-bold text-brown-900 mb-0.5">
+              Kami mendengarmu
+            </p>
+            <p className="text-xs text-brown-700 leading-relaxed">
+              Kamu tidak sendirian. Jika kamu butuh teman bicara darurat, hubungi{" "}
+              <strong>Into The Light Indonesia di 119 ext 8</strong> (Hotline Kemenkes, 24 jam).
+            </p>
           </div>
+          <button
+            type="button"
+            onClick={() => setCrisisAlert(false)}
+            className="text-brown-700/60 hover:text-brown-900 p-1"
+            aria-label="Tutup"
+          >
+            <X size={15} />
+          </button>
+        </div>
+      )}
+
+      {/* ── 4. Main Two-Column Layout ───────────────────────────────── */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 sm:gap-6 lg:gap-8 items-start">
+        {/* Left Column (Ritual / Form or Summary) */}
+        <div className="lg:col-span-7 flex flex-col gap-4">
+          {pageState === "loading" && (
+            <div className="bg-white rounded-2xl p-4 sm:p-6 border border-brown-900/10 animate-pulse flex flex-col gap-4">
+              <div className="h-5 w-40 bg-cream rounded" />
+              <div className="grid grid-cols-5 gap-2">
+                {[1, 2, 3, 4, 5].map((i) => (
+                  <div key={i} className="h-16 bg-cream rounded-xl" />
+                ))}
+              </div>
+            </div>
+          )}
+
+          {pageState === "form" && (
+            <DailyAssessmentForm
+              onSubmit={handleSubmit}
+              isSubmitting={isSubmitting}
+            />
+          )}
+
+          {pageState === "summary" && todayRecord && (
+            <DailyAssessmentSummary record={todayRecord} />
+          )}
         </div>
 
-        {/* Right: Calendar + History */}
-        <div className="lg:col-span-5 flex flex-col gap-6">
+        {/* Right Column: Calendar & History */}
+        <div className="lg:col-span-5 flex flex-col gap-4 sm:gap-5">
           <CalendarWidget moodEntries={calendarData} />
-
-          {/* Riwayat Tabs (Assessment Harian & Health Journal) */}
           <HistoryTabs
             assessment={
               <DailyAssessmentHistory
@@ -214,9 +230,7 @@ export default function DailyAssessmentPage() {
                 isLoading={isHistoryLoading}
               />
             }
-            journal={
-              <JournalHistory embedded journalList={journalList} />
-            }
+            journal={<JournalHistory embedded journalList={journalList} />}
           />
         </div>
       </div>

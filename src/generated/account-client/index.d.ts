@@ -2296,6 +2296,10 @@ export namespace Prisma {
     companionPersona: $Enums.CompanionPersona | null
     plan: $Enums.Plan | null
     onboardingCompleted: boolean | null
+    termsAcceptedAt: Date | null
+    termsVersion: string | null
+    communityGuidelinesAcceptedAt: Date | null
+    communityGuidelinesVersion: string | null
     zybaScore: number | null
     stressLevel: number | null
     streak: number | null
@@ -2319,6 +2323,10 @@ export namespace Prisma {
     companionPersona: $Enums.CompanionPersona | null
     plan: $Enums.Plan | null
     onboardingCompleted: boolean | null
+    termsAcceptedAt: Date | null
+    termsVersion: string | null
+    communityGuidelinesAcceptedAt: Date | null
+    communityGuidelinesVersion: string | null
     zybaScore: number | null
     stressLevel: number | null
     streak: number | null
@@ -2342,6 +2350,10 @@ export namespace Prisma {
     companionPersona: number
     plan: number
     onboardingCompleted: number
+    termsAcceptedAt: number
+    termsVersion: number
+    communityGuidelinesAcceptedAt: number
+    communityGuidelinesVersion: number
     zybaScore: number
     stressLevel: number
     streak: number
@@ -2381,6 +2393,10 @@ export namespace Prisma {
     companionPersona?: true
     plan?: true
     onboardingCompleted?: true
+    termsAcceptedAt?: true
+    termsVersion?: true
+    communityGuidelinesAcceptedAt?: true
+    communityGuidelinesVersion?: true
     zybaScore?: true
     stressLevel?: true
     streak?: true
@@ -2404,6 +2420,10 @@ export namespace Prisma {
     companionPersona?: true
     plan?: true
     onboardingCompleted?: true
+    termsAcceptedAt?: true
+    termsVersion?: true
+    communityGuidelinesAcceptedAt?: true
+    communityGuidelinesVersion?: true
     zybaScore?: true
     stressLevel?: true
     streak?: true
@@ -2427,6 +2447,10 @@ export namespace Prisma {
     companionPersona?: true
     plan?: true
     onboardingCompleted?: true
+    termsAcceptedAt?: true
+    termsVersion?: true
+    communityGuidelinesAcceptedAt?: true
+    communityGuidelinesVersion?: true
     zybaScore?: true
     stressLevel?: true
     streak?: true
@@ -2537,6 +2561,10 @@ export namespace Prisma {
     companionPersona: $Enums.CompanionPersona
     plan: $Enums.Plan
     onboardingCompleted: boolean
+    termsAcceptedAt: Date | null
+    termsVersion: string | null
+    communityGuidelinesAcceptedAt: Date | null
+    communityGuidelinesVersion: string | null
     zybaScore: number | null
     stressLevel: number | null
     streak: number | null
@@ -2579,6 +2607,10 @@ export namespace Prisma {
     companionPersona?: boolean
     plan?: boolean
     onboardingCompleted?: boolean
+    termsAcceptedAt?: boolean
+    termsVersion?: boolean
+    communityGuidelinesAcceptedAt?: boolean
+    communityGuidelinesVersion?: boolean
     zybaScore?: boolean
     stressLevel?: boolean
     streak?: boolean
@@ -2612,6 +2644,10 @@ export namespace Prisma {
     companionPersona?: boolean
     plan?: boolean
     onboardingCompleted?: boolean
+    termsAcceptedAt?: boolean
+    termsVersion?: boolean
+    communityGuidelinesAcceptedAt?: boolean
+    communityGuidelinesVersion?: boolean
     zybaScore?: boolean
     stressLevel?: boolean
     streak?: boolean
@@ -2635,6 +2671,10 @@ export namespace Prisma {
     companionPersona?: boolean
     plan?: boolean
     onboardingCompleted?: boolean
+    termsAcceptedAt?: boolean
+    termsVersion?: boolean
+    communityGuidelinesAcceptedAt?: boolean
+    communityGuidelinesVersion?: boolean
     zybaScore?: boolean
     stressLevel?: boolean
     streak?: boolean
@@ -2685,6 +2725,10 @@ export namespace Prisma {
       companionPersona: $Enums.CompanionPersona
       plan: $Enums.Plan
       onboardingCompleted: boolean
+      termsAcceptedAt: Date | null
+      termsVersion: string | null
+      communityGuidelinesAcceptedAt: Date | null
+      communityGuidelinesVersion: string | null
       zybaScore: number | null
       stressLevel: number | null
       streak: number | null
@@ -3107,6 +3151,10 @@ export namespace Prisma {
     readonly companionPersona: FieldRef<"User", 'CompanionPersona'>
     readonly plan: FieldRef<"User", 'Plan'>
     readonly onboardingCompleted: FieldRef<"User", 'Boolean'>
+    readonly termsAcceptedAt: FieldRef<"User", 'DateTime'>
+    readonly termsVersion: FieldRef<"User", 'String'>
+    readonly communityGuidelinesAcceptedAt: FieldRef<"User", 'DateTime'>
+    readonly communityGuidelinesVersion: FieldRef<"User", 'String'>
     readonly zybaScore: FieldRef<"User", 'Int'>
     readonly stressLevel: FieldRef<"User", 'Int'>
     readonly streak: FieldRef<"User", 'Int'>
@@ -16644,6 +16692,10 @@ export namespace Prisma {
     companionPersona: 'companionPersona',
     plan: 'plan',
     onboardingCompleted: 'onboardingCompleted',
+    termsAcceptedAt: 'termsAcceptedAt',
+    termsVersion: 'termsVersion',
+    communityGuidelinesAcceptedAt: 'communityGuidelinesAcceptedAt',
+    communityGuidelinesVersion: 'communityGuidelinesVersion',
     zybaScore: 'zybaScore',
     stressLevel: 'stressLevel',
     streak: 'streak',
@@ -16941,20 +16993,6 @@ export namespace Prisma {
 
 
   /**
-   * Reference to a field of type 'Int'
-   */
-  export type IntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int'>
-    
-
-
-  /**
-   * Reference to a field of type 'Int[]'
-   */
-  export type ListIntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int[]'>
-    
-
-
-  /**
    * Reference to a field of type 'DateTime'
    */
   export type DateTimeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DateTime'>
@@ -16965,6 +17003,20 @@ export namespace Prisma {
    * Reference to a field of type 'DateTime[]'
    */
   export type ListDateTimeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DateTime[]'>
+    
+
+
+  /**
+   * Reference to a field of type 'Int'
+   */
+  export type IntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int'>
+    
+
+
+  /**
+   * Reference to a field of type 'Int[]'
+   */
+  export type ListIntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int[]'>
     
 
 
@@ -17092,6 +17144,10 @@ export namespace Prisma {
     companionPersona?: EnumCompanionPersonaFilter<"User"> | $Enums.CompanionPersona
     plan?: EnumPlanFilter<"User"> | $Enums.Plan
     onboardingCompleted?: BoolFilter<"User"> | boolean
+    termsAcceptedAt?: DateTimeNullableFilter<"User"> | Date | string | null
+    termsVersion?: StringNullableFilter<"User"> | string | null
+    communityGuidelinesAcceptedAt?: DateTimeNullableFilter<"User"> | Date | string | null
+    communityGuidelinesVersion?: StringNullableFilter<"User"> | string | null
     zybaScore?: IntNullableFilter<"User"> | number | null
     stressLevel?: IntNullableFilter<"User"> | number | null
     streak?: IntNullableFilter<"User"> | number | null
@@ -17124,6 +17180,10 @@ export namespace Prisma {
     companionPersona?: SortOrder
     plan?: SortOrder
     onboardingCompleted?: SortOrder
+    termsAcceptedAt?: SortOrderInput | SortOrder
+    termsVersion?: SortOrderInput | SortOrder
+    communityGuidelinesAcceptedAt?: SortOrderInput | SortOrder
+    communityGuidelinesVersion?: SortOrderInput | SortOrder
     zybaScore?: SortOrderInput | SortOrder
     stressLevel?: SortOrderInput | SortOrder
     streak?: SortOrderInput | SortOrder
@@ -17159,6 +17219,10 @@ export namespace Prisma {
     companionPersona?: EnumCompanionPersonaFilter<"User"> | $Enums.CompanionPersona
     plan?: EnumPlanFilter<"User"> | $Enums.Plan
     onboardingCompleted?: BoolFilter<"User"> | boolean
+    termsAcceptedAt?: DateTimeNullableFilter<"User"> | Date | string | null
+    termsVersion?: StringNullableFilter<"User"> | string | null
+    communityGuidelinesAcceptedAt?: DateTimeNullableFilter<"User"> | Date | string | null
+    communityGuidelinesVersion?: StringNullableFilter<"User"> | string | null
     zybaScore?: IntNullableFilter<"User"> | number | null
     stressLevel?: IntNullableFilter<"User"> | number | null
     streak?: IntNullableFilter<"User"> | number | null
@@ -17191,6 +17255,10 @@ export namespace Prisma {
     companionPersona?: SortOrder
     plan?: SortOrder
     onboardingCompleted?: SortOrder
+    termsAcceptedAt?: SortOrderInput | SortOrder
+    termsVersion?: SortOrderInput | SortOrder
+    communityGuidelinesAcceptedAt?: SortOrderInput | SortOrder
+    communityGuidelinesVersion?: SortOrderInput | SortOrder
     zybaScore?: SortOrderInput | SortOrder
     stressLevel?: SortOrderInput | SortOrder
     streak?: SortOrderInput | SortOrder
@@ -17222,6 +17290,10 @@ export namespace Prisma {
     companionPersona?: EnumCompanionPersonaWithAggregatesFilter<"User"> | $Enums.CompanionPersona
     plan?: EnumPlanWithAggregatesFilter<"User"> | $Enums.Plan
     onboardingCompleted?: BoolWithAggregatesFilter<"User"> | boolean
+    termsAcceptedAt?: DateTimeNullableWithAggregatesFilter<"User"> | Date | string | null
+    termsVersion?: StringNullableWithAggregatesFilter<"User"> | string | null
+    communityGuidelinesAcceptedAt?: DateTimeNullableWithAggregatesFilter<"User"> | Date | string | null
+    communityGuidelinesVersion?: StringNullableWithAggregatesFilter<"User"> | string | null
     zybaScore?: IntNullableWithAggregatesFilter<"User"> | number | null
     stressLevel?: IntNullableWithAggregatesFilter<"User"> | number | null
     streak?: IntNullableWithAggregatesFilter<"User"> | number | null
@@ -18212,6 +18284,10 @@ export namespace Prisma {
     companionPersona?: $Enums.CompanionPersona
     plan?: $Enums.Plan
     onboardingCompleted?: boolean
+    termsAcceptedAt?: Date | string | null
+    termsVersion?: string | null
+    communityGuidelinesAcceptedAt?: Date | string | null
+    communityGuidelinesVersion?: string | null
     zybaScore?: number | null
     stressLevel?: number | null
     streak?: number | null
@@ -18244,6 +18320,10 @@ export namespace Prisma {
     companionPersona?: $Enums.CompanionPersona
     plan?: $Enums.Plan
     onboardingCompleted?: boolean
+    termsAcceptedAt?: Date | string | null
+    termsVersion?: string | null
+    communityGuidelinesAcceptedAt?: Date | string | null
+    communityGuidelinesVersion?: string | null
     zybaScore?: number | null
     stressLevel?: number | null
     streak?: number | null
@@ -18276,6 +18356,10 @@ export namespace Prisma {
     companionPersona?: EnumCompanionPersonaFieldUpdateOperationsInput | $Enums.CompanionPersona
     plan?: EnumPlanFieldUpdateOperationsInput | $Enums.Plan
     onboardingCompleted?: BoolFieldUpdateOperationsInput | boolean
+    termsAcceptedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    termsVersion?: NullableStringFieldUpdateOperationsInput | string | null
+    communityGuidelinesAcceptedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    communityGuidelinesVersion?: NullableStringFieldUpdateOperationsInput | string | null
     zybaScore?: NullableIntFieldUpdateOperationsInput | number | null
     stressLevel?: NullableIntFieldUpdateOperationsInput | number | null
     streak?: NullableIntFieldUpdateOperationsInput | number | null
@@ -18308,6 +18392,10 @@ export namespace Prisma {
     companionPersona?: EnumCompanionPersonaFieldUpdateOperationsInput | $Enums.CompanionPersona
     plan?: EnumPlanFieldUpdateOperationsInput | $Enums.Plan
     onboardingCompleted?: BoolFieldUpdateOperationsInput | boolean
+    termsAcceptedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    termsVersion?: NullableStringFieldUpdateOperationsInput | string | null
+    communityGuidelinesAcceptedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    communityGuidelinesVersion?: NullableStringFieldUpdateOperationsInput | string | null
     zybaScore?: NullableIntFieldUpdateOperationsInput | number | null
     stressLevel?: NullableIntFieldUpdateOperationsInput | number | null
     streak?: NullableIntFieldUpdateOperationsInput | number | null
@@ -18340,6 +18428,10 @@ export namespace Prisma {
     companionPersona?: $Enums.CompanionPersona
     plan?: $Enums.Plan
     onboardingCompleted?: boolean
+    termsAcceptedAt?: Date | string | null
+    termsVersion?: string | null
+    communityGuidelinesAcceptedAt?: Date | string | null
+    communityGuidelinesVersion?: string | null
     zybaScore?: number | null
     stressLevel?: number | null
     streak?: number | null
@@ -18363,6 +18455,10 @@ export namespace Prisma {
     companionPersona?: EnumCompanionPersonaFieldUpdateOperationsInput | $Enums.CompanionPersona
     plan?: EnumPlanFieldUpdateOperationsInput | $Enums.Plan
     onboardingCompleted?: BoolFieldUpdateOperationsInput | boolean
+    termsAcceptedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    termsVersion?: NullableStringFieldUpdateOperationsInput | string | null
+    communityGuidelinesAcceptedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    communityGuidelinesVersion?: NullableStringFieldUpdateOperationsInput | string | null
     zybaScore?: NullableIntFieldUpdateOperationsInput | number | null
     stressLevel?: NullableIntFieldUpdateOperationsInput | number | null
     streak?: NullableIntFieldUpdateOperationsInput | number | null
@@ -18386,6 +18482,10 @@ export namespace Prisma {
     companionPersona?: EnumCompanionPersonaFieldUpdateOperationsInput | $Enums.CompanionPersona
     plan?: EnumPlanFieldUpdateOperationsInput | $Enums.Plan
     onboardingCompleted?: BoolFieldUpdateOperationsInput | boolean
+    termsAcceptedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    termsVersion?: NullableStringFieldUpdateOperationsInput | string | null
+    communityGuidelinesAcceptedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    communityGuidelinesVersion?: NullableStringFieldUpdateOperationsInput | string | null
     zybaScore?: NullableIntFieldUpdateOperationsInput | number | null
     stressLevel?: NullableIntFieldUpdateOperationsInput | number | null
     streak?: NullableIntFieldUpdateOperationsInput | number | null
@@ -19488,6 +19588,17 @@ export namespace Prisma {
     not?: NestedBoolFilter<$PrismaModel> | boolean
   }
 
+  export type DateTimeNullableFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
+    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
+  }
+
   export type IntNullableFilter<$PrismaModel = never> = {
     equals?: number | IntFieldRefInput<$PrismaModel> | null
     in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
@@ -19508,17 +19619,6 @@ export namespace Prisma {
     gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     not?: NestedDateTimeFilter<$PrismaModel> | Date | string
-  }
-
-  export type DateTimeNullableFilter<$PrismaModel = never> = {
-    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
-    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
-    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
-    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    not?: NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
   }
 
   export type AssessmentNullableRelationFilter = {
@@ -19619,6 +19719,10 @@ export namespace Prisma {
     companionPersona?: SortOrder
     plan?: SortOrder
     onboardingCompleted?: SortOrder
+    termsAcceptedAt?: SortOrder
+    termsVersion?: SortOrder
+    communityGuidelinesAcceptedAt?: SortOrder
+    communityGuidelinesVersion?: SortOrder
     zybaScore?: SortOrder
     stressLevel?: SortOrder
     streak?: SortOrder
@@ -19649,6 +19753,10 @@ export namespace Prisma {
     companionPersona?: SortOrder
     plan?: SortOrder
     onboardingCompleted?: SortOrder
+    termsAcceptedAt?: SortOrder
+    termsVersion?: SortOrder
+    communityGuidelinesAcceptedAt?: SortOrder
+    communityGuidelinesVersion?: SortOrder
     zybaScore?: SortOrder
     stressLevel?: SortOrder
     streak?: SortOrder
@@ -19672,6 +19780,10 @@ export namespace Prisma {
     companionPersona?: SortOrder
     plan?: SortOrder
     onboardingCompleted?: SortOrder
+    termsAcceptedAt?: SortOrder
+    termsVersion?: SortOrder
+    communityGuidelinesAcceptedAt?: SortOrder
+    communityGuidelinesVersion?: SortOrder
     zybaScore?: SortOrder
     stressLevel?: SortOrder
     streak?: SortOrder
@@ -19753,6 +19865,20 @@ export namespace Prisma {
     _max?: NestedBoolFilter<$PrismaModel>
   }
 
+  export type DateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
+    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeNullableWithAggregatesFilter<$PrismaModel> | Date | string | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedDateTimeNullableFilter<$PrismaModel>
+    _max?: NestedDateTimeNullableFilter<$PrismaModel>
+  }
+
   export type IntNullableWithAggregatesFilter<$PrismaModel = never> = {
     equals?: number | IntFieldRefInput<$PrismaModel> | null
     in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
@@ -19781,20 +19907,6 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedDateTimeFilter<$PrismaModel>
     _max?: NestedDateTimeFilter<$PrismaModel>
-  }
-
-  export type DateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
-    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
-    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
-    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    not?: NestedDateTimeNullableWithAggregatesFilter<$PrismaModel> | Date | string | null
-    _count?: NestedIntNullableFilter<$PrismaModel>
-    _min?: NestedDateTimeNullableFilter<$PrismaModel>
-    _max?: NestedDateTimeNullableFilter<$PrismaModel>
   }
 
   export type UserRelationFilter = {
@@ -20752,6 +20864,10 @@ export namespace Prisma {
     set?: boolean
   }
 
+  export type NullableDateTimeFieldUpdateOperationsInput = {
+    set?: Date | string | null
+  }
+
   export type NullableIntFieldUpdateOperationsInput = {
     set?: number | null
     increment?: number
@@ -20762,10 +20878,6 @@ export namespace Prisma {
 
   export type DateTimeFieldUpdateOperationsInput = {
     set?: Date | string
-  }
-
-  export type NullableDateTimeFieldUpdateOperationsInput = {
-    set?: Date | string | null
   }
 
   export type AssessmentUpdateOneWithoutUserNestedInput = {
@@ -21420,6 +21532,17 @@ export namespace Prisma {
     not?: NestedBoolFilter<$PrismaModel> | boolean
   }
 
+  export type NestedDateTimeNullableFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
+    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
+  }
+
   export type NestedIntNullableFilter<$PrismaModel = never> = {
     equals?: number | IntFieldRefInput<$PrismaModel> | null
     in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
@@ -21440,17 +21563,6 @@ export namespace Prisma {
     gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     not?: NestedDateTimeFilter<$PrismaModel> | Date | string
-  }
-
-  export type NestedDateTimeNullableFilter<$PrismaModel = never> = {
-    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
-    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
-    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
-    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    not?: NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
   }
 
   export type NestedStringWithAggregatesFilter<$PrismaModel = never> = {
@@ -21526,6 +21638,20 @@ export namespace Prisma {
     _max?: NestedBoolFilter<$PrismaModel>
   }
 
+  export type NestedDateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
+    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeNullableWithAggregatesFilter<$PrismaModel> | Date | string | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedDateTimeNullableFilter<$PrismaModel>
+    _max?: NestedDateTimeNullableFilter<$PrismaModel>
+  }
+
   export type NestedIntNullableWithAggregatesFilter<$PrismaModel = never> = {
     equals?: number | IntFieldRefInput<$PrismaModel> | null
     in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
@@ -21565,20 +21691,6 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedDateTimeFilter<$PrismaModel>
     _max?: NestedDateTimeFilter<$PrismaModel>
-  }
-
-  export type NestedDateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
-    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
-    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
-    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    not?: NestedDateTimeNullableWithAggregatesFilter<$PrismaModel> | Date | string | null
-    _count?: NestedIntNullableFilter<$PrismaModel>
-    _min?: NestedDateTimeNullableFilter<$PrismaModel>
-    _max?: NestedDateTimeNullableFilter<$PrismaModel>
   }
 
   export type NestedEnumMoodLevelNullableFilter<$PrismaModel = never> = {
@@ -22330,6 +22442,10 @@ export namespace Prisma {
     companionPersona?: $Enums.CompanionPersona
     plan?: $Enums.Plan
     onboardingCompleted?: boolean
+    termsAcceptedAt?: Date | string | null
+    termsVersion?: string | null
+    communityGuidelinesAcceptedAt?: Date | string | null
+    communityGuidelinesVersion?: string | null
     zybaScore?: number | null
     stressLevel?: number | null
     streak?: number | null
@@ -22361,6 +22477,10 @@ export namespace Prisma {
     companionPersona?: $Enums.CompanionPersona
     plan?: $Enums.Plan
     onboardingCompleted?: boolean
+    termsAcceptedAt?: Date | string | null
+    termsVersion?: string | null
+    communityGuidelinesAcceptedAt?: Date | string | null
+    communityGuidelinesVersion?: string | null
     zybaScore?: number | null
     stressLevel?: number | null
     streak?: number | null
@@ -22408,6 +22528,10 @@ export namespace Prisma {
     companionPersona?: EnumCompanionPersonaFieldUpdateOperationsInput | $Enums.CompanionPersona
     plan?: EnumPlanFieldUpdateOperationsInput | $Enums.Plan
     onboardingCompleted?: BoolFieldUpdateOperationsInput | boolean
+    termsAcceptedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    termsVersion?: NullableStringFieldUpdateOperationsInput | string | null
+    communityGuidelinesAcceptedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    communityGuidelinesVersion?: NullableStringFieldUpdateOperationsInput | string | null
     zybaScore?: NullableIntFieldUpdateOperationsInput | number | null
     stressLevel?: NullableIntFieldUpdateOperationsInput | number | null
     streak?: NullableIntFieldUpdateOperationsInput | number | null
@@ -22439,6 +22563,10 @@ export namespace Prisma {
     companionPersona?: EnumCompanionPersonaFieldUpdateOperationsInput | $Enums.CompanionPersona
     plan?: EnumPlanFieldUpdateOperationsInput | $Enums.Plan
     onboardingCompleted?: BoolFieldUpdateOperationsInput | boolean
+    termsAcceptedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    termsVersion?: NullableStringFieldUpdateOperationsInput | string | null
+    communityGuidelinesAcceptedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    communityGuidelinesVersion?: NullableStringFieldUpdateOperationsInput | string | null
     zybaScore?: NullableIntFieldUpdateOperationsInput | number | null
     stressLevel?: NullableIntFieldUpdateOperationsInput | number | null
     streak?: NullableIntFieldUpdateOperationsInput | number | null
@@ -22470,6 +22598,10 @@ export namespace Prisma {
     companionPersona?: $Enums.CompanionPersona
     plan?: $Enums.Plan
     onboardingCompleted?: boolean
+    termsAcceptedAt?: Date | string | null
+    termsVersion?: string | null
+    communityGuidelinesAcceptedAt?: Date | string | null
+    communityGuidelinesVersion?: string | null
     zybaScore?: number | null
     stressLevel?: number | null
     streak?: number | null
@@ -22501,6 +22633,10 @@ export namespace Prisma {
     companionPersona?: $Enums.CompanionPersona
     plan?: $Enums.Plan
     onboardingCompleted?: boolean
+    termsAcceptedAt?: Date | string | null
+    termsVersion?: string | null
+    communityGuidelinesAcceptedAt?: Date | string | null
+    communityGuidelinesVersion?: string | null
     zybaScore?: number | null
     stressLevel?: number | null
     streak?: number | null
@@ -22548,6 +22684,10 @@ export namespace Prisma {
     companionPersona?: EnumCompanionPersonaFieldUpdateOperationsInput | $Enums.CompanionPersona
     plan?: EnumPlanFieldUpdateOperationsInput | $Enums.Plan
     onboardingCompleted?: BoolFieldUpdateOperationsInput | boolean
+    termsAcceptedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    termsVersion?: NullableStringFieldUpdateOperationsInput | string | null
+    communityGuidelinesAcceptedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    communityGuidelinesVersion?: NullableStringFieldUpdateOperationsInput | string | null
     zybaScore?: NullableIntFieldUpdateOperationsInput | number | null
     stressLevel?: NullableIntFieldUpdateOperationsInput | number | null
     streak?: NullableIntFieldUpdateOperationsInput | number | null
@@ -22579,6 +22719,10 @@ export namespace Prisma {
     companionPersona?: EnumCompanionPersonaFieldUpdateOperationsInput | $Enums.CompanionPersona
     plan?: EnumPlanFieldUpdateOperationsInput | $Enums.Plan
     onboardingCompleted?: BoolFieldUpdateOperationsInput | boolean
+    termsAcceptedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    termsVersion?: NullableStringFieldUpdateOperationsInput | string | null
+    communityGuidelinesAcceptedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    communityGuidelinesVersion?: NullableStringFieldUpdateOperationsInput | string | null
     zybaScore?: NullableIntFieldUpdateOperationsInput | number | null
     stressLevel?: NullableIntFieldUpdateOperationsInput | number | null
     streak?: NullableIntFieldUpdateOperationsInput | number | null
@@ -22610,6 +22754,10 @@ export namespace Prisma {
     companionPersona?: $Enums.CompanionPersona
     plan?: $Enums.Plan
     onboardingCompleted?: boolean
+    termsAcceptedAt?: Date | string | null
+    termsVersion?: string | null
+    communityGuidelinesAcceptedAt?: Date | string | null
+    communityGuidelinesVersion?: string | null
     zybaScore?: number | null
     stressLevel?: number | null
     streak?: number | null
@@ -22641,6 +22789,10 @@ export namespace Prisma {
     companionPersona?: $Enums.CompanionPersona
     plan?: $Enums.Plan
     onboardingCompleted?: boolean
+    termsAcceptedAt?: Date | string | null
+    termsVersion?: string | null
+    communityGuidelinesAcceptedAt?: Date | string | null
+    communityGuidelinesVersion?: string | null
     zybaScore?: number | null
     stressLevel?: number | null
     streak?: number | null
@@ -22688,6 +22840,10 @@ export namespace Prisma {
     companionPersona?: EnumCompanionPersonaFieldUpdateOperationsInput | $Enums.CompanionPersona
     plan?: EnumPlanFieldUpdateOperationsInput | $Enums.Plan
     onboardingCompleted?: BoolFieldUpdateOperationsInput | boolean
+    termsAcceptedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    termsVersion?: NullableStringFieldUpdateOperationsInput | string | null
+    communityGuidelinesAcceptedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    communityGuidelinesVersion?: NullableStringFieldUpdateOperationsInput | string | null
     zybaScore?: NullableIntFieldUpdateOperationsInput | number | null
     stressLevel?: NullableIntFieldUpdateOperationsInput | number | null
     streak?: NullableIntFieldUpdateOperationsInput | number | null
@@ -22719,6 +22875,10 @@ export namespace Prisma {
     companionPersona?: EnumCompanionPersonaFieldUpdateOperationsInput | $Enums.CompanionPersona
     plan?: EnumPlanFieldUpdateOperationsInput | $Enums.Plan
     onboardingCompleted?: BoolFieldUpdateOperationsInput | boolean
+    termsAcceptedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    termsVersion?: NullableStringFieldUpdateOperationsInput | string | null
+    communityGuidelinesAcceptedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    communityGuidelinesVersion?: NullableStringFieldUpdateOperationsInput | string | null
     zybaScore?: NullableIntFieldUpdateOperationsInput | number | null
     stressLevel?: NullableIntFieldUpdateOperationsInput | number | null
     streak?: NullableIntFieldUpdateOperationsInput | number | null
@@ -22750,6 +22910,10 @@ export namespace Prisma {
     companionPersona?: $Enums.CompanionPersona
     plan?: $Enums.Plan
     onboardingCompleted?: boolean
+    termsAcceptedAt?: Date | string | null
+    termsVersion?: string | null
+    communityGuidelinesAcceptedAt?: Date | string | null
+    communityGuidelinesVersion?: string | null
     zybaScore?: number | null
     stressLevel?: number | null
     streak?: number | null
@@ -22781,6 +22945,10 @@ export namespace Prisma {
     companionPersona?: $Enums.CompanionPersona
     plan?: $Enums.Plan
     onboardingCompleted?: boolean
+    termsAcceptedAt?: Date | string | null
+    termsVersion?: string | null
+    communityGuidelinesAcceptedAt?: Date | string | null
+    communityGuidelinesVersion?: string | null
     zybaScore?: number | null
     stressLevel?: number | null
     streak?: number | null
@@ -22828,6 +22996,10 @@ export namespace Prisma {
     companionPersona?: EnumCompanionPersonaFieldUpdateOperationsInput | $Enums.CompanionPersona
     plan?: EnumPlanFieldUpdateOperationsInput | $Enums.Plan
     onboardingCompleted?: BoolFieldUpdateOperationsInput | boolean
+    termsAcceptedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    termsVersion?: NullableStringFieldUpdateOperationsInput | string | null
+    communityGuidelinesAcceptedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    communityGuidelinesVersion?: NullableStringFieldUpdateOperationsInput | string | null
     zybaScore?: NullableIntFieldUpdateOperationsInput | number | null
     stressLevel?: NullableIntFieldUpdateOperationsInput | number | null
     streak?: NullableIntFieldUpdateOperationsInput | number | null
@@ -22859,6 +23031,10 @@ export namespace Prisma {
     companionPersona?: EnumCompanionPersonaFieldUpdateOperationsInput | $Enums.CompanionPersona
     plan?: EnumPlanFieldUpdateOperationsInput | $Enums.Plan
     onboardingCompleted?: BoolFieldUpdateOperationsInput | boolean
+    termsAcceptedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    termsVersion?: NullableStringFieldUpdateOperationsInput | string | null
+    communityGuidelinesAcceptedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    communityGuidelinesVersion?: NullableStringFieldUpdateOperationsInput | string | null
     zybaScore?: NullableIntFieldUpdateOperationsInput | number | null
     stressLevel?: NullableIntFieldUpdateOperationsInput | number | null
     streak?: NullableIntFieldUpdateOperationsInput | number | null
@@ -22890,6 +23066,10 @@ export namespace Prisma {
     companionPersona?: $Enums.CompanionPersona
     plan?: $Enums.Plan
     onboardingCompleted?: boolean
+    termsAcceptedAt?: Date | string | null
+    termsVersion?: string | null
+    communityGuidelinesAcceptedAt?: Date | string | null
+    communityGuidelinesVersion?: string | null
     zybaScore?: number | null
     stressLevel?: number | null
     streak?: number | null
@@ -22921,6 +23101,10 @@ export namespace Prisma {
     companionPersona?: $Enums.CompanionPersona
     plan?: $Enums.Plan
     onboardingCompleted?: boolean
+    termsAcceptedAt?: Date | string | null
+    termsVersion?: string | null
+    communityGuidelinesAcceptedAt?: Date | string | null
+    communityGuidelinesVersion?: string | null
     zybaScore?: number | null
     stressLevel?: number | null
     streak?: number | null
@@ -22968,6 +23152,10 @@ export namespace Prisma {
     companionPersona?: EnumCompanionPersonaFieldUpdateOperationsInput | $Enums.CompanionPersona
     plan?: EnumPlanFieldUpdateOperationsInput | $Enums.Plan
     onboardingCompleted?: BoolFieldUpdateOperationsInput | boolean
+    termsAcceptedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    termsVersion?: NullableStringFieldUpdateOperationsInput | string | null
+    communityGuidelinesAcceptedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    communityGuidelinesVersion?: NullableStringFieldUpdateOperationsInput | string | null
     zybaScore?: NullableIntFieldUpdateOperationsInput | number | null
     stressLevel?: NullableIntFieldUpdateOperationsInput | number | null
     streak?: NullableIntFieldUpdateOperationsInput | number | null
@@ -22999,6 +23187,10 @@ export namespace Prisma {
     companionPersona?: EnumCompanionPersonaFieldUpdateOperationsInput | $Enums.CompanionPersona
     plan?: EnumPlanFieldUpdateOperationsInput | $Enums.Plan
     onboardingCompleted?: BoolFieldUpdateOperationsInput | boolean
+    termsAcceptedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    termsVersion?: NullableStringFieldUpdateOperationsInput | string | null
+    communityGuidelinesAcceptedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    communityGuidelinesVersion?: NullableStringFieldUpdateOperationsInput | string | null
     zybaScore?: NullableIntFieldUpdateOperationsInput | number | null
     stressLevel?: NullableIntFieldUpdateOperationsInput | number | null
     streak?: NullableIntFieldUpdateOperationsInput | number | null
@@ -23030,6 +23222,10 @@ export namespace Prisma {
     companionPersona?: $Enums.CompanionPersona
     plan?: $Enums.Plan
     onboardingCompleted?: boolean
+    termsAcceptedAt?: Date | string | null
+    termsVersion?: string | null
+    communityGuidelinesAcceptedAt?: Date | string | null
+    communityGuidelinesVersion?: string | null
     zybaScore?: number | null
     stressLevel?: number | null
     streak?: number | null
@@ -23061,6 +23257,10 @@ export namespace Prisma {
     companionPersona?: $Enums.CompanionPersona
     plan?: $Enums.Plan
     onboardingCompleted?: boolean
+    termsAcceptedAt?: Date | string | null
+    termsVersion?: string | null
+    communityGuidelinesAcceptedAt?: Date | string | null
+    communityGuidelinesVersion?: string | null
     zybaScore?: number | null
     stressLevel?: number | null
     streak?: number | null
@@ -23108,6 +23308,10 @@ export namespace Prisma {
     companionPersona?: EnumCompanionPersonaFieldUpdateOperationsInput | $Enums.CompanionPersona
     plan?: EnumPlanFieldUpdateOperationsInput | $Enums.Plan
     onboardingCompleted?: BoolFieldUpdateOperationsInput | boolean
+    termsAcceptedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    termsVersion?: NullableStringFieldUpdateOperationsInput | string | null
+    communityGuidelinesAcceptedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    communityGuidelinesVersion?: NullableStringFieldUpdateOperationsInput | string | null
     zybaScore?: NullableIntFieldUpdateOperationsInput | number | null
     stressLevel?: NullableIntFieldUpdateOperationsInput | number | null
     streak?: NullableIntFieldUpdateOperationsInput | number | null
@@ -23139,6 +23343,10 @@ export namespace Prisma {
     companionPersona?: EnumCompanionPersonaFieldUpdateOperationsInput | $Enums.CompanionPersona
     plan?: EnumPlanFieldUpdateOperationsInput | $Enums.Plan
     onboardingCompleted?: BoolFieldUpdateOperationsInput | boolean
+    termsAcceptedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    termsVersion?: NullableStringFieldUpdateOperationsInput | string | null
+    communityGuidelinesAcceptedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    communityGuidelinesVersion?: NullableStringFieldUpdateOperationsInput | string | null
     zybaScore?: NullableIntFieldUpdateOperationsInput | number | null
     stressLevel?: NullableIntFieldUpdateOperationsInput | number | null
     streak?: NullableIntFieldUpdateOperationsInput | number | null
@@ -23170,6 +23378,10 @@ export namespace Prisma {
     companionPersona?: $Enums.CompanionPersona
     plan?: $Enums.Plan
     onboardingCompleted?: boolean
+    termsAcceptedAt?: Date | string | null
+    termsVersion?: string | null
+    communityGuidelinesAcceptedAt?: Date | string | null
+    communityGuidelinesVersion?: string | null
     zybaScore?: number | null
     stressLevel?: number | null
     streak?: number | null
@@ -23201,6 +23413,10 @@ export namespace Prisma {
     companionPersona?: $Enums.CompanionPersona
     plan?: $Enums.Plan
     onboardingCompleted?: boolean
+    termsAcceptedAt?: Date | string | null
+    termsVersion?: string | null
+    communityGuidelinesAcceptedAt?: Date | string | null
+    communityGuidelinesVersion?: string | null
     zybaScore?: number | null
     stressLevel?: number | null
     streak?: number | null
@@ -23286,6 +23502,10 @@ export namespace Prisma {
     companionPersona?: EnumCompanionPersonaFieldUpdateOperationsInput | $Enums.CompanionPersona
     plan?: EnumPlanFieldUpdateOperationsInput | $Enums.Plan
     onboardingCompleted?: BoolFieldUpdateOperationsInput | boolean
+    termsAcceptedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    termsVersion?: NullableStringFieldUpdateOperationsInput | string | null
+    communityGuidelinesAcceptedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    communityGuidelinesVersion?: NullableStringFieldUpdateOperationsInput | string | null
     zybaScore?: NullableIntFieldUpdateOperationsInput | number | null
     stressLevel?: NullableIntFieldUpdateOperationsInput | number | null
     streak?: NullableIntFieldUpdateOperationsInput | number | null
@@ -23317,6 +23537,10 @@ export namespace Prisma {
     companionPersona?: EnumCompanionPersonaFieldUpdateOperationsInput | $Enums.CompanionPersona
     plan?: EnumPlanFieldUpdateOperationsInput | $Enums.Plan
     onboardingCompleted?: BoolFieldUpdateOperationsInput | boolean
+    termsAcceptedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    termsVersion?: NullableStringFieldUpdateOperationsInput | string | null
+    communityGuidelinesAcceptedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    communityGuidelinesVersion?: NullableStringFieldUpdateOperationsInput | string | null
     zybaScore?: NullableIntFieldUpdateOperationsInput | number | null
     stressLevel?: NullableIntFieldUpdateOperationsInput | number | null
     streak?: NullableIntFieldUpdateOperationsInput | number | null
@@ -23478,6 +23702,10 @@ export namespace Prisma {
     companionPersona?: $Enums.CompanionPersona
     plan?: $Enums.Plan
     onboardingCompleted?: boolean
+    termsAcceptedAt?: Date | string | null
+    termsVersion?: string | null
+    communityGuidelinesAcceptedAt?: Date | string | null
+    communityGuidelinesVersion?: string | null
     zybaScore?: number | null
     stressLevel?: number | null
     streak?: number | null
@@ -23509,6 +23737,10 @@ export namespace Prisma {
     companionPersona?: $Enums.CompanionPersona
     plan?: $Enums.Plan
     onboardingCompleted?: boolean
+    termsAcceptedAt?: Date | string | null
+    termsVersion?: string | null
+    communityGuidelinesAcceptedAt?: Date | string | null
+    communityGuidelinesVersion?: string | null
     zybaScore?: number | null
     stressLevel?: number | null
     streak?: number | null
@@ -23585,6 +23817,10 @@ export namespace Prisma {
     companionPersona?: EnumCompanionPersonaFieldUpdateOperationsInput | $Enums.CompanionPersona
     plan?: EnumPlanFieldUpdateOperationsInput | $Enums.Plan
     onboardingCompleted?: BoolFieldUpdateOperationsInput | boolean
+    termsAcceptedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    termsVersion?: NullableStringFieldUpdateOperationsInput | string | null
+    communityGuidelinesAcceptedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    communityGuidelinesVersion?: NullableStringFieldUpdateOperationsInput | string | null
     zybaScore?: NullableIntFieldUpdateOperationsInput | number | null
     stressLevel?: NullableIntFieldUpdateOperationsInput | number | null
     streak?: NullableIntFieldUpdateOperationsInput | number | null
@@ -23616,6 +23852,10 @@ export namespace Prisma {
     companionPersona?: EnumCompanionPersonaFieldUpdateOperationsInput | $Enums.CompanionPersona
     plan?: EnumPlanFieldUpdateOperationsInput | $Enums.Plan
     onboardingCompleted?: BoolFieldUpdateOperationsInput | boolean
+    termsAcceptedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    termsVersion?: NullableStringFieldUpdateOperationsInput | string | null
+    communityGuidelinesAcceptedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    communityGuidelinesVersion?: NullableStringFieldUpdateOperationsInput | string | null
     zybaScore?: NullableIntFieldUpdateOperationsInput | number | null
     stressLevel?: NullableIntFieldUpdateOperationsInput | number | null
     streak?: NullableIntFieldUpdateOperationsInput | number | null
@@ -23726,6 +23966,10 @@ export namespace Prisma {
     companionPersona?: $Enums.CompanionPersona
     plan?: $Enums.Plan
     onboardingCompleted?: boolean
+    termsAcceptedAt?: Date | string | null
+    termsVersion?: string | null
+    communityGuidelinesAcceptedAt?: Date | string | null
+    communityGuidelinesVersion?: string | null
     zybaScore?: number | null
     stressLevel?: number | null
     streak?: number | null
@@ -23757,6 +24001,10 @@ export namespace Prisma {
     companionPersona?: $Enums.CompanionPersona
     plan?: $Enums.Plan
     onboardingCompleted?: boolean
+    termsAcceptedAt?: Date | string | null
+    termsVersion?: string | null
+    communityGuidelinesAcceptedAt?: Date | string | null
+    communityGuidelinesVersion?: string | null
     zybaScore?: number | null
     stressLevel?: number | null
     streak?: number | null
@@ -23829,6 +24077,10 @@ export namespace Prisma {
     companionPersona?: EnumCompanionPersonaFieldUpdateOperationsInput | $Enums.CompanionPersona
     plan?: EnumPlanFieldUpdateOperationsInput | $Enums.Plan
     onboardingCompleted?: BoolFieldUpdateOperationsInput | boolean
+    termsAcceptedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    termsVersion?: NullableStringFieldUpdateOperationsInput | string | null
+    communityGuidelinesAcceptedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    communityGuidelinesVersion?: NullableStringFieldUpdateOperationsInput | string | null
     zybaScore?: NullableIntFieldUpdateOperationsInput | number | null
     stressLevel?: NullableIntFieldUpdateOperationsInput | number | null
     streak?: NullableIntFieldUpdateOperationsInput | number | null
@@ -23860,6 +24112,10 @@ export namespace Prisma {
     companionPersona?: EnumCompanionPersonaFieldUpdateOperationsInput | $Enums.CompanionPersona
     plan?: EnumPlanFieldUpdateOperationsInput | $Enums.Plan
     onboardingCompleted?: BoolFieldUpdateOperationsInput | boolean
+    termsAcceptedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    termsVersion?: NullableStringFieldUpdateOperationsInput | string | null
+    communityGuidelinesAcceptedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    communityGuidelinesVersion?: NullableStringFieldUpdateOperationsInput | string | null
     zybaScore?: NullableIntFieldUpdateOperationsInput | number | null
     stressLevel?: NullableIntFieldUpdateOperationsInput | number | null
     streak?: NullableIntFieldUpdateOperationsInput | number | null

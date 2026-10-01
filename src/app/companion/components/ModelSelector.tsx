@@ -114,13 +114,13 @@ export default function ModelSelector({
           setIsOpen(!isOpen);
           setSearchQuery("");
         }}
-        className="bg-cream/50 border border-brown-900/15 rounded-full px-3 py-1.5 text-xs text-brown-900 focus:outline-none focus:ring-2 focus:ring-orange-500 font-medium flex items-center justify-between gap-1.5 cursor-pointer hover:bg-cream/80 transition-colors shadow-2xs"
+        className="bg-cream/50 border border-brown-900/15 rounded-full px-2.5 sm:px-3 py-1.5 text-xs text-brown-900 focus:outline-none focus:ring-2 focus:ring-orange-500 font-medium flex items-center justify-between gap-1.5 cursor-pointer hover:bg-cream/80 transition-colors shadow-2xs shrink-0"
         title="Pilih Model AI"
         aria-haspopup="listbox"
         aria-expanded={isOpen}
       >
-        <span className="text-xs">{currentOption.icon}</span>
-        <span className="truncate max-w-[85px] sm:max-w-[130px] font-bold text-brown-900">
+        <span className="text-xs shrink-0">{currentOption.icon}</span>
+        <span className="truncate max-w-[70px] xs:max-w-[95px] sm:max-w-[130px] font-bold text-brown-900">
           {currentOption.name}
         </span>
         <span className="text-[9px] text-brown-700/60 shrink-0">
@@ -128,12 +128,12 @@ export default function ModelSelector({
         </span>
       </button>
 
-      {/* Popover Dropdown (Membuka ke atas atau bawah sesuai posisi) */}
+      {/* Popover Dropdown (Membuka ke atas atau bawah sesuai posisi, selalu aman di dalam layar) */}
       {isOpen && (
         <div
           className={`absolute ${
             dropDirection === "up" ? "bottom-full mb-2" : "top-full mt-2"
-          } left-0 w-72 sm:w-80 bg-white border-2 border-brown-900/15 rounded-2xl shadow-2xl z-50 p-2.5 flex flex-col gap-1.5 animate-in fade-in ${
+          } right-0 sm:right-auto sm:left-0 w-[calc(100vw-36px)] max-w-[290px] sm:w-80 bg-white border-2 border-brown-900/15 rounded-2xl shadow-2xl z-50 p-2.5 flex flex-col gap-1.5 animate-in fade-in ${
             dropDirection === "up"
               ? "slide-in-from-bottom-2"
               : "slide-in-from-top-2"
