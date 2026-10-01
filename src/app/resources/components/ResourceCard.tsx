@@ -91,18 +91,25 @@ export function ResourceIcon({
   switch (name) {
     case "headphones":
       return <Headphones className={className} />;
+
     case "book":
       return <BookOpen className={className} />;
+
     case "moon":
       return <Moon className={className} />;
+
     case "graduation":
       return <GraduationCap className={className} />;
+
     case "brain":
       return <Brain className={className} />;
+
     case "heart":
       return <Heart className={className} />;
+
     case "music":
       return <Headphones className={className} />;
+
     default:
       return <BookOpen className={className} />;
   }
@@ -122,7 +129,8 @@ export default function ResourceCard({
     >
       {item.isPro && (
         <span className="absolute top-4 right-4 text-[10px] font-extrabold px-2.5 py-0.5 rounded-full bg-orange-500 text-white shadow-sm flex items-center gap-1">
-          <Zap size={11} className="fill-white" /> PRO
+          <Zap size={11} className="fill-white" />
+          PRO
         </span>
       )}
 
@@ -147,15 +155,19 @@ export default function ResourceCard({
         </div>
 
         <h3 className="font-display font-bold text-base text-brown-900 leading-snug">
-          <Link
-            href={`/resources/${resourceSlug}`}
-            onClick={(event) => {
-              event.stopPropagation();
-            }}
-            className="hover:text-orange-500 transition-colors"
-          >
-            {item.title}
-          </Link>
+          {item.isPro ? (
+            <span>{item.title}</span>
+          ) : (
+            <Link
+              href={`/resources/${resourceSlug}`}
+              onClick={(event) => {
+                event.stopPropagation();
+              }}
+              className="hover:text-orange-500 transition-colors"
+            >
+              {item.title}
+            </Link>
+          )}
         </h3>
 
         <p className="text-xs text-brown-700 mt-2 leading-relaxed">
@@ -169,18 +181,23 @@ export default function ResourceCard({
         </span>
 
         <div className="flex items-center gap-3">
-          <Link
-            href={`/resources/${resourceSlug}`}
-            onClick={(event) => {
-              event.stopPropagation();
-            }}
-            className="text-brown-700/80 hover:text-brown-900 transition-colors"
-          >
-            Detail
-          </Link>
+          {!item.isPro && (
+            <Link
+              href={`/resources/${resourceSlug}`}
+              onClick={(event) => {
+                event.stopPropagation();
+              }}
+              className="text-brown-700/80 hover:text-brown-900 transition-colors"
+            >
+              Detail
+            </Link>
+          )}
 
           <span className="text-orange-500 group-hover:translate-x-1 transition-transform flex items-center gap-1">
-            {item.type === "COURSE" ? "Mulai Audio" : "Baca Artikel"}
+            {item.type === "COURSE"
+              ? "Mulai Audio"
+              : "Baca Artikel"}
+
             <ArrowRight size={13} />
           </span>
         </div>
