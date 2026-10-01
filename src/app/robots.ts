@@ -18,7 +18,6 @@ export default function robots(): MetadataRoute.Robots {
         "/achievements",
         "/companion",
         "/community",
-        "/resources",
         "/login",
         "/welcome",
         "/api",
