@@ -10,6 +10,8 @@ import {
   calculateZybaScore,
   scoreToCondition,
 } from "@/backend/scoring/zybaScore";
+import { invalidateUserPlanCache } from "@/backend/billing/entitlements";
+import { invalidateUserMeCache } from "@/lib/server/userMeCache";
 
 export async function GET(req: NextRequest) {
   try {
@@ -349,6 +351,9 @@ export async function GET(req: NextRequest) {
             plan: "FREE",
           },
         });
+
+        invalidateUserPlanCache(user.id);
+        invalidateUserMeCache(user.id);
       }
     }
 

@@ -148,16 +148,17 @@ if (expiredSubscription) {      // Background async update, tidak perlu membloki
 
       if (!activeSubscription) {
         accountDb.user
-  .update({
-    where: { id: user.id },
-    data: { plan: "FREE" },
-  })
-  .then(() => {
-    invalidateUserPlanCache(user.id);
-  })
-  .catch((e) =>
-    console.error("Update user plan error:", e)
-  );
+          .update({
+            where: { id: user.id },
+            data: { plan: "FREE" },
+          })
+          .then(() => {
+            invalidateUserPlanCache(user.id);
+            invalidateUserMeCache(user.id);
+          })
+          .catch((e) =>
+            console.error("Update user plan error:", e)
+          );
       }
     }
 

@@ -53,3 +53,56 @@ fs.readdir = function (p, opts, cb) {
     cb(err, files);
   });
 };
+
+// Patch symlinks for Windows standalone trace copying
+if (process.platform === "win32") {
+  const origPromisesSymlink = fs.promises.symlink ? fs.promises.symlink.bind(fs.promises) : null;
+  if (origPromisesSymlink) {
+    fs.promises.symlink = async function (target, dest, type) {
+      try {
+        const stats = await fs.promises.stat(target).catch(() => null);
+        const resolvedType = stats && stats.isDirectory() ? "junction" : type;
+        return await origPromisesSymlink(target, dest, resolvedType);
+      } catch (err) {
+        if (err.code === "EPERM" || err.code === "EACCES") {
+          try {
+            const stats = await fs.promises.stat(target).catch(() => null);
+            if (stats && stats.isDirectory()) {
+              return await origPromisesSymlink(target, dest, "junction");
+            } else {
+              return await fs.promises.copyFile(target, dest);
+            }
+          } catch {
+            return;
+          }
+        }
+        throw err;
+      }
+    };
+  }
+
+  const origSymlinkSync = fs.symlinkSync ? fs.symlinkSync.bind(fs) : null;
+  if (origSymlinkSync) {
+    fs.symlinkSync = function (target, dest, type) {
+      try {
+        const stats = fs.statSync(target, { throwIfNoEntry: false });
+        const resolvedType = stats && stats.isDirectory() ? "junction" : type;
+        return origSymlinkSync(target, dest, resolvedType);
+      } catch (err) {
+        if (err.code === "EPERM" || err.code === "EACCES") {
+          try {
+            const stats = fs.statSync(target, { throwIfNoEntry: false });
+            if (stats && stats.isDirectory()) {
+              return origSymlinkSync(target, dest, "junction");
+            } else {
+              return fs.copyFileSync(target, dest);
+            }
+          } catch {
+            return;
+          }
+        }
+        throw err;
+      }
+    };
+  }
+}

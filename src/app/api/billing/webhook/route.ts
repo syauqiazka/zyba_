@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { accountDb } from "@/backend/db/accountClient";
 import crypto from "crypto";
 import { invalidateUserPlanCache } from "@/backend/billing/entitlements";
+import { invalidateUserMeCache } from "@/lib/server/userMeCache";
 
 const MIDTRANS_SERVER_KEY = process.env.MIDTRANS_SERVER_KEY;
 
@@ -110,14 +111,13 @@ export async function POST(req: NextRequest) {
         },
       });
 
-await accountDb.user.update({
-  where: { id: payment.userId },
-  data: { plan: "PLUS" },
-});
+      await accountDb.user.update({
+        where: { id: payment.userId },
+        data: { plan: "PLUS" },
+      });
 
-invalidateUserPlanCache(payment.userId);
-
-console.log("[Webhook] Subscription activated for user:", payment.userId);
+      invalidateUserPlanCache(payment.userId);
+      invalidateUserMeCache(payment.userId);
 
       console.log("[Webhook] Subscription activated for user:", payment.userId);
     } else {
@@ -126,6 +126,26 @@ console.log("[Webhook] Subscription activated for user:", payment.userId);
         where: { id: payment.subscriptionId },
         data: { status: subscriptionStatus },
       });
+
+      if (subscriptionStatus === "CANCELLED" || subscriptionStatus === "EXPIRED") {
+        const remainingActive = await accountDb.subscription.findFirst({
+          where: {
+            userId: payment.userId,
+            status: "ACTIVE",
+            endDate: { gt: new Date() },
+          },
+        });
+
+        if (!remainingActive) {
+          await accountDb.user.update({
+            where: { id: payment.userId },
+            data: { plan: "FREE" },
+          });
+
+          invalidateUserPlanCache(payment.userId);
+          invalidateUserMeCache(payment.userId);
+        }
+      }
     }
 
     return NextResponse.json({ message: "Webhook processed" }, { status: 200 });

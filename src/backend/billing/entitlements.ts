@@ -10,13 +10,29 @@ export const FREE_DAILY_MESSAGE_LIMIT = 20;
 // Mengurangi query Account DB berulang saat user chat.
 // =====================================================
 
-const userPlanCache = new Map<
-  string,
-  {
-    plan: "FREE" | "PLUS";
-    timestamp: number;
-  }
->();
+type ZYBAGlobal = typeof globalThis & {
+  __zybaUserPlanCache?: Map<
+    string,
+    {
+      plan: "FREE" | "PLUS";
+      timestamp: number;
+    }
+  >;
+};
+
+const globalForPlanCache = globalThis as ZYBAGlobal;
+
+const userPlanCache =
+  globalForPlanCache.__zybaUserPlanCache ??
+  new Map<
+    string,
+    {
+      plan: "FREE" | "PLUS";
+      timestamp: number;
+    }
+  >();
+
+globalForPlanCache.__zybaUserPlanCache = userPlanCache;
 
 const USER_PLAN_CACHE_TTL_MS = 10_000;
 
