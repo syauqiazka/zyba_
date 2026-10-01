@@ -41,8 +41,12 @@ export async function GET(req: NextRequest) {
     const todayStart = new Date();
     todayStart.setHours(0, 0, 0, 0);
 
+    const { searchParams } = new URL(req.url);
+    const days = Math.min(180, Math.max(0, parseInt(searchParams.get("days") || "0", 10)));
+    const historySince = days > 0 ? new Date(Date.now() - days * 24 * 60 * 60 * 1000) : null;
+
     // Fetch related wellness data from DB
-    const [dailyAssessment, onboardingAssessment, latestMood, todayActivities] = await Promise.all([
+    const [dailyAssessment, onboardingAssessment, latestMood, todayActivities, periodActivities] = await Promise.all([
       accountDb.dailyAssessment.findUnique({
         where: { userId_date: { userId: user.userId, date: todayDate } },
       }),
@@ -60,6 +64,15 @@ export async function GET(req: NextRequest) {
         },
         orderBy: { createdAt: "desc" },
       }),
+      historySince
+        ? accountDb.activityLog.findMany({
+            where: {
+              userId: user.userId,
+              createdAt: { gte: historySince },
+            },
+            orderBy: { createdAt: "desc" },
+          })
+        : Promise.resolve([]),
     ]);
 
     // Resolved metrics
@@ -122,6 +135,19 @@ export async function GET(req: NextRequest) {
         return sum + pts;
       }, 0);
 
+    const habitStats = {
+      days,
+      walkingCount: periodActivities.filter((a) => a.type === "WALKING" && a.completed).length,
+      runningCount: periodActivities.filter((a) => a.type === "RUNNING" && a.completed).length,
+      workoutCount: periodActivities.filter((a) => a.type === "WORKOUT" && a.completed).length,
+      breathingCount: periodActivities.filter((a) => a.type === "BREATHING" && a.completed).length,
+      sleepCount: periodActivities.filter((a) => a.type === "SLEEP" && a.completed).length,
+      totalCompleted: periodActivities.filter((a) => a.completed).length,
+      totalDurationMin: periodActivities
+        .filter((a) => a.completed)
+        .reduce((acc, a) => acc + (a.durationMin || 0), 0),
+    };
+
     return NextResponse.json({
       success: true,
       condition: {
@@ -139,6 +165,7 @@ export async function GET(req: NextRequest) {
       todayActivities,
       totalPointsEarned,
       completedCount: todayActivities.filter((a) => a.completed).length,
+      habitStats,
     });
   } catch (error: any) {
     console.error("[Activity API GET] Error:", error);
