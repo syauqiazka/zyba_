@@ -60,7 +60,12 @@ export async function POST(req: NextRequest) {
       },
     });
 
-    const orderId = `zyba-${planId}-${subscription.id}-${Date.now()}`;
+    // order_id Midtrans max 50 karakter
+    // Format: zyba-{plan}-{sub6}-{ts36}
+    // Contoh: zyba-yearly-fy8100-lq7k2a  (≤ 30 chars)
+    const subShort = subscription.id.slice(-6);
+    const tsBase36 = Date.now().toString(36);
+    const orderId = `zyba-${planId}-${subShort}-${tsBase36}`;
 
     // ── Buat Payment record (PENDING) ────────────────────────────────────────
     await accountDb.payment.create({
