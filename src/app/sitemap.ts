@@ -12,11 +12,16 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     select: {
       title: true,
       createdAt: true,
+      isPro: true,
     },
     orderBy: {
       createdAt: "desc",
     },
   });
+
+  const publicResources = resources.filter(
+    (resource) => !resource.isPro
+  );
 
   return [
     {
@@ -29,7 +34,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: "weekly",
       priority: 0.9,
     },
-    ...resources.map((resource) => ({
+    ...publicResources.map((resource) => ({
       url: `${siteUrl}/resources/${getResourceSlug(resource.title)}`,
       lastModified: resource.createdAt,
       changeFrequency: "monthly" as const,
