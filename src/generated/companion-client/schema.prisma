@@ -28,20 +28,21 @@ model Message {
   id               String       @id @default(cuid())
   conversationId   String
   conversation     Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
-  role             String // "USER" | "ASSISTANT"
-  content          String? // opsional kalau isinya cuma media
-  modelUsed        String? // AI model yang dipakai (gemini-3.8-flash, llama-3.3-70b, dll)
-  attachmentType   String? // "image" | "audio" | "sticker" | null
-  attachmentUrl    String? // URL object storage, BUKAN base64
+  role             String
+  content          String?
+  modelUsed        String?
+  attachmentType   String?
+  attachmentUrl    String?
   audioDurationSec Int?
   stickerId        String?
   flaggedForRisk   Boolean      @default(false)
-  ttsAudioUrl      String? // Cached TTS audio dari ElevenLabs/Edge
-  ttsProvider      String? // "elevenlabs" | "edge" | "browser"
-  ttsModel         String? // Model yang digunakan (eleven_flash_v2_5)
-  ttsGeneratedAt   DateTime? // Kapan audio di-generate
+  ttsAudioUrl      String?
+  ttsProvider      String?
+  ttsModel         String?
+  ttsGeneratedAt   DateTime?
   createdAt        DateTime     @default(now())
 
   @@index([conversationId, createdAt])
+  @@index([role, createdAt, conversationId])
   @@map("messages")
 }

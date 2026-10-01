@@ -372,24 +372,27 @@ commentsCount: p._count.comments,
       return [];
     }
 
-const posts = await communityDb.communityPost.findMany({
-  where: { isHidden: false },
-  take,
-  ...(cursor && { skip: 1, cursor: { id: cursor } }),
-  orderBy: { createdAt: "desc" },
-  include: {
-    comments: {
-      take: 10,
-      orderBy: { createdAt: "asc" },
-    },
-    _count: {
-      select: {
-        comments: true,
-        likes: true,
+    const posts = await communityDb.communityPost.findMany({
+      where: {
+        userId: { in: followingIds },
+        isHidden: false,
       },
-    },
-  },
-});
+      take,
+      ...(cursor && { skip: 1, cursor: { id: cursor } }),
+      orderBy: { createdAt: "desc" },
+      include: {
+        comments: {
+          take: 10,
+          orderBy: { createdAt: "asc" },
+        },
+        _count: {
+          select: {
+            comments: true,
+            likes: true,
+          },
+        },
+      },
+    });
 
     const userIds = [...new Set(posts.flatMap(p => [p.userId, ...p.comments.map(c => c.userId)]))];
     const users = await accountDb.user.findMany({
