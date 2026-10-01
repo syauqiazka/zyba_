@@ -39,15 +39,11 @@ if (cached) {
 }
 
     // Pastikan user ada di DB atau auto-restore dari session jika DB baru di-switch/reset
-    await userRepository.ensureUserExistsInNeon(
-      session.userId,
-      session.email,
-      session.name || undefined
-    );
-
-    const user =
-      (await userRepository.findById(session.userId)) ||
-      (session.email ? await userRepository.findByEmail(session.email) : null);
+const user = await userRepository.resolveUserForSession(
+  session.userId,
+  session.email,
+  session.name || undefined
+);
 
     if (!user) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });

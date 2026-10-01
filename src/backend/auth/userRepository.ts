@@ -294,12 +294,14 @@ export const userRepository = {
     emailHint?: string,
     nameHint?: string
   ): Promise<{ neonId: string } | null> {
+
     // 1. Check if user already exists in DB by ID
     try {
       const existing = await accountDb.user.findUnique({
         where: { id: userId },
         select: { id: true, email: true },
       });
+
       if (existing) {
         return { neonId: existing.id };
       }
@@ -307,9 +309,10 @@ export const userRepository = {
       console.warn("[userRepo] DB check by id failed:", e.message);
     }
 
-    // 2. Not found in DB by ID. Check if we have an email from hint or local fallback
+    // 2. Not found in DB by ID...
     const localUser = await this.findById(userId);
-    const candidateEmail = (emailHint || localUser?.email || "").toLowerCase().trim();
+    const candidateEmail =
+      (emailHint || localUser?.email || "").toLowerCase().trim();
 
     if (candidateEmail) {
       try {
@@ -319,29 +322,40 @@ export const userRepository = {
         });
 
         if (existingByEmail) {
-          // Found by email in DB! Sync local record to this DB id if present
           try {
             const users = readLocalUsers();
             const idx = users.findIndex(
-              (u) => u.id === userId || u.email.toLowerCase() === candidateEmail
+              (u) =>
+                u.id === userId ||
+                u.email.toLowerCase() === candidateEmail
             );
+
             if (idx !== -1) {
               users[idx].id = existingByEmail.id;
               writeLocalUsers(users);
             }
-          } catch { }
+          } catch {}
+
           return { neonId: existingByEmail.id };
         }
       } catch (e: any) {
-        console.warn("[userRepo] DB check by email failed:", e.message);
+        console.warn(
+          "[userRepo] DB check by email failed:",
+          e.message
+        );
       }
     }
 
-    // 3. User does NOT exist in DB at all (fresh DB, reset, or local fallback).
-    // Auto-create user in DB now so foreign key constraints never fail!
-    const effectiveEmail = candidateEmail || `${userId}@zyba.app`;
-    const effectiveName = nameHint || localUser?.name || "Pengguna ZYBA";
-    const effectivePass = localUser?.passwordHash || bcrypt.hashSync("zyba_session_fallback", 10);
+    // 3. User does NOT exist in DB...
+    const effectiveEmail =
+      candidateEmail || `${userId}@zyba.app`;
+
+    const effectiveName =
+      nameHint || localUser?.name || "Pengguna ZYBA";
+
+    const effectivePass =
+      localUser?.passwordHash ||
+      bcrypt.hashSync("zyba_session_fallback", 10);
 
     try {
       const created = await accountDb.user.create({
@@ -354,45 +368,112 @@ export const userRepository = {
           bio: localUser?.bio || undefined,
           phone: localUser?.phone || undefined,
           username: localUser?.username || undefined,
-          onboardingCompleted: localUser?.onboardingCompleted ?? true,
+          onboardingCompleted:
+            localUser?.onboardingCompleted ?? true,
           zybaScore: localUser?.zybaScore || 80,
           stressLevel: localUser?.stressLevel || 2,
         },
       });
-      console.log(`[userRepo] Auto-created user in DB: ${created.id} (${created.email})`);
+
+      console.log(
+        `[userRepo] Auto-created user in DB: ${created.id} (${created.email})`
+      );
 
       try {
         const users = readLocalUsers();
         const idx = users.findIndex((u) => u.id === userId);
+
         if (idx !== -1) {
           users[idx].id = created.id;
           writeLocalUsers(users);
         }
-      } catch { }
+      } catch {}
 
       return { neonId: created.id };
     } catch (createErr: any) {
-      console.error("[userRepo] DB user auto-creation failed:", createErr.message);
+      console.error(
+        "[userRepo] DB user auto-creation failed:",
+        createErr.message
+      );
 
-      // If race condition or duplicate email/id conflict, retry lookup
       try {
         if (effectiveEmail) {
-          const userByEmail = await accountDb.user.findUnique({
-            where: { email: effectiveEmail },
+          const userByEmail =
+            await accountDb.user.findUnique({
+              where: { email: effectiveEmail },
+              select: { id: true },
+            });
+
+          if (userByEmail) {
+            return { neonId: userByEmail.id };
+          }
+        }
+
+        const userById =
+          await accountDb.user.findUnique({
+            where: { id: userId },
             select: { id: true },
           });
-          if (userByEmail) return { neonId: userByEmail.id };
+
+        if (userById) {
+          return { neonId: userById.id };
         }
-        const userById = await accountDb.user.findUnique({
-          where: { id: userId },
-          select: { id: true },
-        });
-        if (userById) return { neonId: userById.id };
-      } catch { }
+      } catch {}
 
       return null;
     }
+  }, // ← INI PENUTUP ensureUserExistsInNeon
+
+
+  // =====================================================
+  // RESOLVE USER UNTUK SESSION
+  // =====================================================
+
+  async resolveUserForSession(
+    userId: string,
+    emailHint?: string,
+    nameHint?: string
+  ): Promise<StoredUser | null> {
+    try {
+      const existing = await accountDb.user.findUnique({
+        where: { id: userId },
+      });
+
+      if (existing) {
+        return dbToStored(existing);
+      }
+    } catch (e: any) {
+      console.warn(
+        "[userRepo] resolveUserForSession by id failed:",
+        e.message
+      );
+    }
+
+    const migrated = await this.ensureUserExistsInNeon(
+      userId,
+      emailHint,
+      nameHint
+    );
+
+    if (!migrated?.neonId) {
+      return null;
+    }
+
+    try {
+      const resolved = await accountDb.user.findUnique({
+        where: { id: migrated.neonId },
+      });
+
+      return resolved ? dbToStored(resolved) : null;
+    } catch (e: any) {
+      console.warn(
+        "[userRepo] resolveUserForSession final lookup failed:",
+        e.message
+      );
+      return null;
+    }
   },
+
 
   async update(
     idOrEmail: string,
