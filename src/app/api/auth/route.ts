@@ -4,6 +4,7 @@ import { generateOTP, verifyOTP, sendOTPEmail } from "@/lib/emailService";
 import bcrypt from "bcryptjs";
 import { createSessionToken } from "@/lib/auth";
 import { checkRateLimit, getClientIp, rateLimitResponse } from "@/lib/server/rateLimit";
+import { invalidateUserMeCache, invalidateDailyAssessmentCache } from "@/lib/server/userMeCache";
 
 export async function POST(request: NextRequest) {
   try {
@@ -312,6 +313,10 @@ export async function POST(request: NextRequest) {
         onboardingCompleted: user.onboardingCompleted ?? false,
       });
 
+      // Invalidate server cache on fresh login so newly logged in user stats are 100% fresh
+      invalidateUserMeCache(user.id);
+      invalidateDailyAssessmentCache(user.id);
+
       const response = NextResponse.json({
         user: {
           id: user.id,
@@ -346,8 +351,11 @@ export async function POST(request: NextRequest) {
   }
 }
 
-// Logout: hapus cookie auth-token
+// Logout: hapus cookie auth-token dan bersihkan cache
 export async function DELETE() {
+  invalidateUserMeCache();
+  invalidateDailyAssessmentCache();
+
   const response = NextResponse.json({ ok: true });
   response.cookies.set("auth-token", "", {
     httpOnly: true,

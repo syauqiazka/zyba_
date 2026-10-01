@@ -91,10 +91,30 @@ function getAssessmentTime(
 }
 
 export default function DashboardPage() {
-  const [userData, setUserData] =
-    useState<UserData>(
-      EMPTY_USER
-    );
+  const [userData, setUserData] = useState<UserData>(() => {
+    if (typeof window !== "undefined") {
+      try {
+        const cached = localStorage.getItem("zyba_user_cache");
+        if (cached) {
+          const parsed = JSON.parse(cached);
+          if (parsed?.name) {
+            return {
+              name: parsed.name || "Pengguna ZYBA",
+              avatarUrl: parsed.avatarUrl || "🦊",
+              zybaScore: parsed.stats?.zybaScore ?? parsed.zybaScore ?? null,
+              condition: parsed.stats?.condition ?? parsed.condition ?? "Belum Dinilai",
+              stressLevel: parsed.stats?.stressLevel ?? parsed.stressLevel ?? null,
+              stressLabel: parsed.stats?.stressLabel ?? parsed.stressLabel ?? "Belum Ada Data",
+              streak: parsed.stats?.streak ?? parsed.streak ?? 0,
+              hasAssessment: parsed.stats?.hasAssessment ?? parsed.hasAssessment ?? false,
+              conversationCount: parsed.stats?.conversationCount ?? parsed.conversationCount ?? 0,
+            };
+          }
+        }
+      } catch {}
+    }
+    return EMPTY_USER;
+  });
 
   const [trackerState, setTrackerState] =
     useState<
@@ -242,39 +262,27 @@ export default function DashboardPage() {
             }
           ),
 
-fetch(
-  "/api/daily-assessment?limit=14&page=1&includeTotal=false",
-  {
-    method: "GET",
-  }
-),
+          fetch(
+            "/api/daily-assessment?limit=14&page=1&includeTotal=false",
+            {
+              method: "GET",
+              cache: "no-store",
+            }
+          ),
         ]);
 
-        if (
-          !userResponse.ok
-        ) {
+        if (!userResponse.ok) {
           throw new Error(
             `User API gagal: ${userResponse.status}`
           );
         }
 
-        if (
-          !assessmentResponse.ok
-        ) {
-          throw new Error(
-            `Daily Assessment API gagal: ${assessmentResponse.status}`
-          );
-        }
+        const userData = await userResponse.json();
+        const assessmentData = assessmentResponse.ok
+          ? await assessmentResponse.json()
+          : { history: [] };
 
-        const userData =
-          await userResponse.json();
-
-        const assessmentData =
-          await assessmentResponse.json();
-
-        if (
-          !userData.success
-        ) {
+        if (!userData.success && !userData.user) {
           throw new Error(
             userData.error ||
             "Gagal mengambil data user"

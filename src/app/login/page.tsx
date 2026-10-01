@@ -204,6 +204,10 @@ function LoginContent({
       ? getSafeRedirect()
       : "/assessment";
 
+    try {
+      localStorage.removeItem("zyba_user_cache");
+    } catch {}
+
     window.location.href = redirect;
   };
 

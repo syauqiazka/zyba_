@@ -42,8 +42,9 @@ const MOOD_META: Record<
 };
 
 export default function DailyAssessmentSummary({ record }: SummaryProps) {
-  const moodData = MOOD_META[record.mood] || {
-    label: record.mood,
+  const moodKey = String(record?.mood || "HAPPY").toUpperCase();
+  const moodData = MOOD_META[moodKey] || {
+    label: record?.mood || "Senang",
     icon: Smile,
     tint: "#6B5645",
   };
@@ -105,7 +106,13 @@ export default function DailyAssessmentSummary({ record }: SummaryProps) {
     return "Kamu berhasil melalui hari ini dengan cukup seimbang. Terus beri apresiasi pada diri sendiri atas setiap langkah kecil yang kamu jalani.";
   };
 
-  const updatedTime = new Date(record.updatedAt).toLocaleTimeString("id-ID", {
+  const updatedDate = record?.updatedAt
+    ? new Date(record.updatedAt)
+    : record?.createdAt
+    ? new Date(record.createdAt)
+    : new Date();
+  const validDate = isNaN(updatedDate.getTime()) ? new Date() : updatedDate;
+  const updatedTime = validDate.toLocaleTimeString("id-ID", {
     hour: "2-digit",
     minute: "2-digit",
   });

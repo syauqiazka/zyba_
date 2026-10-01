@@ -3,7 +3,13 @@ import { accountDb } from "@/backend/db/accountClient";
 import { detectRisk, CRISIS_RESOURCES } from "@/lib/crisisDetection";
 import { verifySessionToken } from "@/lib/auth";
 import { checkAndUnlock } from "@/lib/achievements/engine";
-import { invalidateUserMeCache } from "@/lib/server/userMeCache";
+import {
+  getDailyAssessmentCache,
+  setDailyAssessmentCache,
+  invalidateDailyAssessmentCache,
+  invalidateUserMeCache,
+} from "@/lib/server/userMeCache";
+
 // =====================================================
 // USER ID
 // =====================================================
@@ -46,23 +52,6 @@ function getTodayDateString(
     month: "2-digit",
     day: "2-digit",
   }).format(new Date());
-}
-
-// =====================================================
-// FAST IN-MEMORY CACHE (TTL 8s)
-// Mengeliminasi query Neon DB berulang saat render Dashboard / Mood
-// =====================================================
-const dailyAssessmentCache = new Map<string, { data: any; timestamp: number }>();
-const CACHE_TTL_MS = 8000;
-
-function invalidateDailyAssessmentCache(userId?: string) {
-  if (userId) {
-    for (const key of dailyAssessmentCache.keys()) {
-      if (key.startsWith(userId)) dailyAssessmentCache.delete(key);
-    }
-  } else {
-    dailyAssessmentCache.clear();
-  }
 }
 
 // =====================================================
@@ -127,11 +116,11 @@ export async function GET(req: NextRequest) {
 
     // Cek cache
     const cacheKey = `${userId}:${page}:${limit}:${checkDate}`;
-    const cached = dailyAssessmentCache.get(cacheKey);
-    if (cached && Date.now() - cached.timestamp < CACHE_TTL_MS) {
-      return NextResponse.json(cached.data, {
+    const cached = getDailyAssessmentCache(cacheKey);
+    if (cached) {
+      return NextResponse.json(cached, {
         headers: {
-          "Cache-Control": "private, max-age=5, stale-while-revalidate=15",
+          "Cache-Control": "private, no-cache, no-store, max-age=0, must-revalidate",
         },
       });
     }
@@ -192,10 +181,7 @@ if (includeTotal) {
       },
     };
 
-    dailyAssessmentCache.set(cacheKey, {
-      data: responseData,
-      timestamp: Date.now(),
-    });
+    setDailyAssessmentCache(cacheKey, responseData);
 
     return NextResponse.json(responseData, {
       headers: {
@@ -316,34 +302,8 @@ export async function POST(req: NextRequest) {
       );
 
     // =================================================
-    // CEK 1X PER HARI
+    // CEK / UPSERT PER HARI (Update jika sudah ada hari ini)
     // =================================================
-
-    const existing =
-      await accountDb.dailyAssessment.findUnique({
-        where: {
-          userId_date: {
-            userId: neonUserId,
-            date: todayDate,
-          },
-        },
-      });
-
-    if (existing) {
-      return NextResponse.json(
-        {
-          error:
-            "Kamu sudah menyelesaikan Assessment Harian hari ini. Evaluasi hanya dapat dilakukan 1 kali per hari.",
-
-          hasCompletedToday: true,
-
-          record: existing,
-        },
-        {
-          status: 400,
-        }
-      );
-    }
 
     // =================================================
     // REFLEKSI
@@ -460,41 +420,36 @@ export async function POST(req: NextRequest) {
     // =================================================
 
     const record =
-      await accountDb.dailyAssessment.create({
-        data: {
+      await accountDb.dailyAssessment.upsert({
+        where: {
+          userId_date: {
+            userId: neonUserId,
+            date: todayDate,
+          },
+        },
+        create: {
           userId: neonUserId,
-
-          date:
-            todayDate,
-
-          mood:
-            mood as any,
-
-          stressLevel:
-            finalStress,
-
-          sleepRating:
-            finalSleep,
-
-          energyTags:
-            Array.isArray(
-              energyTags
-            )
-              ? energyTags
-              : [],
-
-          reflection:
-            gratitude
-              ? `[Hal Positif]: ${gratitude}\n[Refleksi]: ${freeText}`
-              : freeText || null,
-
-          flaggedForRisk:
-            isRisk,
-
-          // ⭐ PENTING
-          // SCORE ASSESSMENT INI DISIMPAN
-          calculatedScore:
-            scores.zybaScore,
+          date: todayDate,
+          mood: mood as any,
+          stressLevel: finalStress,
+          sleepRating: finalSleep,
+          energyTags: Array.isArray(energyTags) ? energyTags : [],
+          reflection: gratitude
+            ? `[Hal Positif]: ${gratitude}\n[Refleksi]: ${freeText}`
+            : freeText || null,
+          flaggedForRisk: isRisk,
+          calculatedScore: scores.zybaScore,
+        },
+        update: {
+          mood: mood as any,
+          stressLevel: finalStress,
+          sleepRating: finalSleep,
+          energyTags: Array.isArray(energyTags) ? energyTags : [],
+          reflection: gratitude
+            ? `[Hal Positif]: ${gratitude}\n[Refleksi]: ${freeText}`
+            : freeText || null,
+          flaggedForRisk: isRisk,
+          calculatedScore: scores.zybaScore,
         },
       });
 
@@ -600,8 +555,10 @@ export async function POST(req: NextRequest) {
     }
 
     // Invalidate caches immediately so dashboard & assessment update instantly
-invalidateDailyAssessmentCache(neonUserId);
-invalidateUserMeCache(neonUserId);
+    invalidateDailyAssessmentCache(neonUserId);
+    invalidateDailyAssessmentCache(userSession.userId);
+    invalidateUserMeCache(neonUserId);
+    invalidateUserMeCache(userSession.userId);
 
     // Achievement & Badge check (fire-and-forget)
     checkAndUnlock(neonUserId, { type: "mood_checkin" }).catch(() => {});

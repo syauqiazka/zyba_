@@ -33,11 +33,15 @@ export async function GET(req: NextRequest) {
     }
 
     // Cek cache terlebih dahulu
-const cached = getUserMeCache(session.userId);
+    const cached = getUserMeCache(session.userId);
 
-if (cached) {
-  return NextResponse.json(cached);
-}
+    if (cached) {
+      return NextResponse.json(cached, {
+        headers: {
+          "Cache-Control": "private, no-cache, no-store, max-age=0, must-revalidate",
+        },
+      });
+    }
 
     // Pastikan user ada di DB atau auto-restore dari session jika DB baru di-switch/reset
 const user = await userRepository.resolveUserForSession(
@@ -204,7 +208,7 @@ setUserMeCache(
 
     return NextResponse.json(responseData, {
       headers: {
-        "Cache-Control": "private, max-age=5, stale-while-revalidate=15",
+        "Cache-Control": "private, no-cache, no-store, max-age=0, must-revalidate",
       },
     });
   } catch (error) {

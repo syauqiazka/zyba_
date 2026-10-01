@@ -90,8 +90,8 @@ export default function DailyAssessmentPage() {
       const data = await res.json();
 
       if (!res.ok) {
-        // Jika sudah menyelesaikan assessment hari ini, langsung tutup form dan tampilkan summary
-        if (data.hasCompletedToday && data.record) {
+        // Jika response mengembalikan record (misal sudah tersimpan), langsung tampilkan summary
+        if (data.record) {
           setTodayRecord(data.record);
           setPageState("summary");
           setSavedSuccess(true);
@@ -104,19 +104,32 @@ export default function DailyAssessmentPage() {
       if (data.isRisk) setCrisisAlert(true);
 
       // LANGSUNG tutup form putih (0ms delay) dan tampilkan summary
-      if (data.record) {
-        setTodayRecord(data.record);
-        setPageState("summary");
+      const resolvedRecord: DailyRecord = data.record || {
+        id: "rec-" + Date.now(),
+        date: clientDate,
+        mood: formData.mood,
+        stressLevel: formData.stressLevel,
+        sleepRating: formData.sleepRating,
+        sleepHours: formData.sleepHours,
+        energyLevel: formData.energyLevel,
+        energyTags: formData.energyTags || [],
+        reflection: formData.reflection,
+        calculatedScore: data.zybaScore || 78,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      };
 
-        // Optimistic update history (menghemat 1 network request berulang)
-        setHistory((prev) => {
-          const exists = prev.some((h) => h.id === data.record.id || h.date === data.record.date);
-          if (exists) {
-            return prev.map((h) => (h.id === data.record.id || h.date === data.record.date ? data.record : h));
-          }
-          return [data.record, ...prev];
-        });
-      }
+      setTodayRecord(resolvedRecord);
+      setPageState("summary");
+
+      // Optimistic update history (menghemat 1 network request berulang)
+      setHistory((prev) => {
+        const exists = prev.some((h) => h.id === resolvedRecord.id || h.date === resolvedRecord.date);
+        if (exists) {
+          return prev.map((h) => (h.id === resolvedRecord.id || h.date === resolvedRecord.date ? resolvedRecord : h));
+        }
+        return [resolvedRecord, ...prev];
+      });
 
       setSavedSuccess(true);
       setTimeout(() => setSavedSuccess(false), 4500);

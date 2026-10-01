@@ -200,6 +200,7 @@ export default function StressLevelChart({ initialHistory }: StressLevelChartPro
           "/api/daily-assessment?limit=7&page=1",
           {
             method: "GET",
+            cache: "no-store",
           },
         );
 

@@ -68,7 +68,7 @@ export default function Sidebar({ onClose }: { onClose?: () => void }) {
   useEffect(() => {
     async function loadUser() {
       try {
-        const res = await fetch("/api/user/me");
+        const res = await fetch("/api/user/me", { cache: "no-store" });
         if (res.ok) {
           const data = await res.json();
           if (data.user) {
