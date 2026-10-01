@@ -36,9 +36,22 @@ export default function ResourcePlayerModal({
   const isAudioType = resource.type === "COURSE" || resource.type === "AUDIO";
   const audioSrc = resource.audioUrl || "/audio/relaxation-breathe.ogg";
 
+  // Parse "5:55 Menit" / "12:00 Menit" / "4 Menit Baca" → seconds
+  const parseDurationToSecs = (dur: string): number => {
+    // Match "M:SS" pattern
+    const mmss = dur.match(/(\d+):(\d{2})/);
+    if (mmss) return parseInt(mmss[1]) * 60 + parseInt(mmss[2]);
+    // Match plain minutes like "5 Menit"
+    const mins = dur.match(/(\d+)/);
+    if (mins) return parseInt(mins[1]) * 60;
+    return 300; // 5-min default
+  };
+
+  const resourceDurationSecs = parseDurationToSecs(resource.duration);
+
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const [currentTime, setCurrentTime] = useState(0);
-  const [duration, setDuration] = useState(180);
+  const [duration, setDuration] = useState(resourceDurationSecs);
   const [volume, setVolume] = useState(0.7);
   const [isMuted, setIsMuted] = useState(false);
 
@@ -90,8 +103,16 @@ export default function ResourcePlayerModal({
             src={audioSrc}
             onTimeUpdate={handleTimeUpdate}
             onLoadedMetadata={() => {
-              if (audioRef.current && audioRef.current.duration) {
-                setDuration(audioRef.current.duration);
+              if (audioRef.current && audioRef.current.duration && !isNaN(audioRef.current.duration)) {
+                // Only use audio file's actual duration if it's reasonable (> 60s)
+                // Otherwise keep the resource.duration metadata so card & player stay in sync
+                const audioDur = audioRef.current.duration;
+                if (audioDur > 60) {
+                  setDuration(audioDur);
+                } else {
+                  // Audio file is a short demo clip — keep resource metadata duration
+                  setDuration(resourceDurationSecs);
+                }
               }
             }}
             onEnded={() => {
