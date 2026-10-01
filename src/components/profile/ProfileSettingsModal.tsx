@@ -1025,7 +1025,64 @@ const PLUS_FEATURES = [
 ];
 
 function ZybaPlusTab({ onSuccess }: { onSuccess: (msg: string) => void }) {
-  const [selected, setSelected] = useState<string>("yearly");
+  const [selected, setSelected] = useState<"monthly" | "yearly" | "lifetime">("yearly");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const handleCheckout = async () => {
+    setLoading(true);
+    setError(null);
+
+    try {
+      const res = await fetch("/api/billing/checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ plan: selected }),
+      });
+
+      if (!res.ok) {
+        const errData = await res.json().catch(() => ({}));
+        throw new Error(errData.error || "Gagal membuat sesi pembayaran.");
+      }
+
+      const { snapToken, orderId, snapUrl, clientKey } = await res.json();
+
+      // Load Midtrans Snap.js if not already present
+      if (!window.snap) {
+        await new Promise<void>((resolve, reject) => {
+          const script = document.createElement("script");
+          script.src = snapUrl || "https://app.sandbox.midtrans.com/snap/snap.js";
+          script.setAttribute("data-client-key", clientKey || "");
+          script.onload = () => resolve();
+          script.onerror = () => reject(new Error("Gagal memuat gateway Midtrans"));
+          document.body.appendChild(script);
+        });
+      }
+
+      window.snap?.pay(snapToken, {
+        onSuccess: (result) => {
+          console.log("[Payment] Success:", result);
+          window.location.href = `/settings/zyba-plus/success?order_id=${orderId}`;
+        },
+        onPending: (result) => {
+          console.log("[Payment] Pending:", result);
+          window.location.href = `/settings/zyba-plus/success?order_id=${orderId}&status=pending`;
+        },
+        onError: (result) => {
+          console.error("[Payment] Error:", result);
+          setError("Pembayaran gagal atau dibatalkan. Silakan coba lagi.");
+          setLoading(false);
+        },
+        onClose: () => {
+          setLoading(false);
+        },
+      });
+    } catch (err: any) {
+      console.error("[Checkout] Error:", err);
+      setError(err?.message || "Terjadi kesalahan saat memproses checkout.");
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="flex flex-col gap-5">
@@ -1047,7 +1104,7 @@ function ZybaPlusTab({ onSuccess }: { onSuccess: (msg: string) => void }) {
           <button
             key={plan.id}
             type="button"
-            onClick={() => setSelected(plan.id)}
+            onClick={() => setSelected(plan.id as any)}
             className={`relative flex flex-col gap-1.5 p-4 rounded-2xl border-2 text-left transition-all ${
               selected === plan.id
                 ? "border-orange-500 bg-orange-50 shadow-md"
@@ -1074,13 +1131,27 @@ function ZybaPlusTab({ onSuccess }: { onSuccess: (msg: string) => void }) {
         ))}
       </div>
 
+      {error && (
+        <div className="p-3 bg-red-50 border border-red-200 text-red-700 text-xs rounded-xl font-medium">
+          ⚠ {error}
+        </div>
+      )}
+
       {/* CTA */}
       <button
         type="button"
-        onClick={() => onSuccess(`Berhasil memilih paket ${PLANS.find(p => p.id === selected)?.label}! Fitur pembayaran segera hadir.`)}
-        className="w-full py-3 rounded-full bg-orange-500 text-white text-sm font-extrabold hover:bg-orange-600 transition-colors shadow-md"
+        disabled={loading}
+        onClick={handleCheckout}
+        className="w-full py-3.5 rounded-full bg-orange-500 text-white text-sm font-extrabold hover:bg-orange-600 transition-colors shadow-md flex items-center justify-center gap-2 disabled:opacity-50 cursor-pointer"
       >
-        Mulai dengan paket {PLANS.find(p => p.id === selected)?.label} →
+        {loading ? (
+          <>
+            <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+            <span>Menghubungkan ke Midtrans...</span>
+          </>
+        ) : (
+          <span>Mulai dengan paket {PLANS.find(p => p.id === selected)?.label} →</span>
+        )}
       </button>
 
       {/* Features */}
@@ -1097,7 +1168,7 @@ function ZybaPlusTab({ onSuccess }: { onSuccess: (msg: string) => void }) {
       </div>
 
       <p className="text-[10px] text-brown-700/60 text-center">
-        Pembayaran aman. Batalkan kapan saja (paket bulanan/tahunan). Tidak ada biaya tersembunyi.
+        Pembayaran aman via Midtrans (GoPay, QRIS, Transfer Bank, Kartu Kredit). Batalkan kapan saja.
       </p>
     </div>
   );

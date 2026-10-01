@@ -137,7 +137,10 @@ export default function CompanionSlugPage() {
             </div>
             <button
               type="button"
-              onClick={() => { alert("Fitur Zyba Plus segera hadir!"); setShowProModal(false); }}
+              onClick={() => {
+                setShowProModal(false);
+                window.location.href = "/settings/zyba-plus";
+              }}
               className="w-full py-3.5 rounded-full bg-orange-500 text-white text-xs font-bold shadow-md hover:opacity-95 transition-opacity"
             >
               Upgrade ke Zyba Plus →
