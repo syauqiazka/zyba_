@@ -199,7 +199,7 @@ if (includeTotal) {
 
     return NextResponse.json(responseData, {
       headers: {
-        "Cache-Control": "private, max-age=5, stale-while-revalidate=15",
+        "Cache-Control": "private, no-cache, no-store, max-age=0, must-revalidate",
       },
     });
   } catch (error: any) {

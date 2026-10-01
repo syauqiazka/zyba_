@@ -50,7 +50,8 @@ export default function DailyAssessmentPage() {
       setIsHistoryLoading(true);
       const clientDate = new Intl.DateTimeFormat("en-CA").format(new Date());
       const res = await fetch(
-        `/api/daily-assessment?page=${page}&limit=10&date=${clientDate}`
+        `/api/daily-assessment?page=${page}&limit=10&date=${clientDate}&_t=${Date.now()}`,
+        { cache: "no-store" }
       );
       if (!res.ok) throw new Error("Failed to fetch");
       const data = await res.json();
@@ -61,7 +62,7 @@ export default function DailyAssessmentPage() {
         data.pagination || { page: 1, limit: 10, total: 0, totalPages: 0 }
       );
 
-      if (data.hasCompletedToday) {
+      if (data.hasCompletedToday && data.today) {
         setPageState("summary");
       } else {
         setPageState("form");
@@ -87,14 +88,41 @@ export default function DailyAssessmentPage() {
         body: JSON.stringify({ ...formData, clientDate }),
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Gagal menyimpan");
+
+      if (!res.ok) {
+        // Jika sudah menyelesaikan assessment hari ini, langsung tutup form dan tampilkan summary
+        if (data.hasCompletedToday && data.record) {
+          setTodayRecord(data.record);
+          setPageState("summary");
+          setSavedSuccess(true);
+          setTimeout(() => setSavedSuccess(false), 4500);
+          return;
+        }
+        throw new Error(data.error || "Gagal menyimpan assessment");
+      }
 
       if (data.isRisk) setCrisisAlert(true);
 
-      // Reload data after submit
-      await Promise.all([loadData(1), reload()]);
+      // LANGSUNG tutup form putih (0ms delay) dan tampilkan summary
+      if (data.record) {
+        setTodayRecord(data.record);
+        setPageState("summary");
+
+        // Optimistic update history (menghemat 1 network request berulang)
+        setHistory((prev) => {
+          const exists = prev.some((h) => h.id === data.record.id || h.date === data.record.date);
+          if (exists) {
+            return prev.map((h) => (h.id === data.record.id || h.date === data.record.date ? data.record : h));
+          }
+          return [data.record, ...prev];
+        });
+      }
+
       setSavedSuccess(true);
       setTimeout(() => setSavedSuccess(false), 4500);
+
+      // Sinkronisasi kalender & streak di latar belakang tanpa menghambat UI
+      reload().catch(() => {});
     } catch (err: any) {
       console.error("Daily assessment submit error:", err);
       alert(err.message || "Gagal menyimpan assessment harian");

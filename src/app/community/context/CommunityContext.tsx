@@ -16,7 +16,8 @@ export type CommunityView =
   | "SAVED"
   | "LIKED"
   | "GHOST_POSTS"
-  | "ARCHIVE";
+  | "ARCHIVE"
+  | "PRIVACY";
 
 export interface CommunityNotification {
   id: string;
@@ -61,6 +62,7 @@ const SLUG_TO_VIEW: Record<string, CommunityView> = {
   liked: "LIKED",
   "ghost-posts": "GHOST_POSTS",
   archive: "ARCHIVE",
+  privacy: "PRIVACY",
 };
 
 export const VIEW_TO_SLUG: Record<CommunityView, string> = {
@@ -75,6 +77,7 @@ export const VIEW_TO_SLUG: Record<CommunityView, string> = {
   LIKED: "liked",
   GHOST_POSTS: "ghost-posts",
   ARCHIVE: "archive",
+  PRIVACY: "privacy",
 };
 
 interface CommunityContextType {

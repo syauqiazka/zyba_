@@ -8,6 +8,7 @@ import CommunityMessagesView from "../components/CommunityMessagesView";
 import CommunityActivityView from "../components/CommunityActivityView";
 import CommunityProfileView from "../components/CommunityProfileView";
 import CommunityInsightsView from "../components/CommunityInsightsView";
+import PrivacyManagementView from "../components/PrivacyManagementView";
 import ComposeBox from "../components/ComposeBox";
 import PostCard from "../components/PostCard";
 import CreatePostModal from "../components/CreatePostModal";
@@ -96,6 +97,14 @@ export default function CommunitySlugPage() {
     return (
       <div className="flex-1 min-w-0 h-full overflow-y-auto">
         <CommunityInsightsView />
+      </div>
+    );
+  }
+
+  if (currentView === "PRIVACY") {
+    return (
+      <div className="flex-1 min-w-0 h-full overflow-y-auto">
+        <PrivacyManagementView />
       </div>
     );
   }
