@@ -22,10 +22,13 @@ const nextConfig = {
     cpus: 1,
 
     outputFileTracingRoot: path.resolve(__dirname),
+
+    // Tree-shake lucide-react & ably — eliminasi ~250kB dari client bundle
+    optimizePackageImports: ["lucide-react", "ably"],
   },
 
-  // Compression response
-  compress: true,
+  // Apache menangani kompresi (gzip/brotli) — hindari double-compress
+  compress: false,
 
   // Jangan tampilkan X-Powered-By
   poweredByHeader: false,
@@ -35,7 +38,7 @@ const nextConfig = {
 
   // Optimisasi gambar
   images: {
-    formats: ["image/webp"],
+    formats: ["image/avif", "image/webp"],
 
     deviceSizes: [
       640,
@@ -122,4 +125,9 @@ const nextConfig = {
   },
 };
 
-module.exports = nextConfig;
+const withBundleAnalyzer = require("@next/bundle-analyzer")({
+  enabled: process.env.ANALYZE === "true",
+  openAnalyzer: false,
+});
+
+module.exports = withBundleAnalyzer(nextConfig);

@@ -15,16 +15,28 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: "Invalid session" }, { status: 401 });
     }
 
+    const { searchParams } = new URL(req.url);
+    const limit = Math.min(50, Math.max(1, parseInt(searchParams.get("limit") || "30", 10)));
+
     const conversations = await companionDb.conversation.findMany({
       where: { userId: session.userId },
       orderBy: { updatedAt: "desc" },
+      take: limit,
       include: {
         messages: {
           orderBy: { createdAt: "asc" },
-          take: 50, // last 50 messages per conversation
+          take: 50,
+          select: {
+            id: true,
+            role: true,
+            content: true,
+            createdAt: true,
+            modelUsed: true,
+          },
         },
       },
     });
+
 
     return NextResponse.json({ conversations });
   } catch (err: any) {

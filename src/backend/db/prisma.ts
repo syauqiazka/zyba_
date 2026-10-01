@@ -1,20 +1,8 @@
-// Backward-compat: re-export accountDb as `prisma` so existing imports keep working.
-// New code: import directly from accountClient / companionClient / communityClient.
-import { PrismaClient } from "@/generated/account-client";
+import { accountDb } from "./accountClient";
 
-const globalForPrisma = globalThis as unknown as {
-  accountDb: PrismaClient | undefined;
-};
-
-export const accountDb =
-  globalForPrisma.accountDb ??
-  new PrismaClient({
-    log: ["error"],
-  });
-
-globalForPrisma.accountDb = accountDb;
-
+export { accountDb };
 export const prisma = accountDb;
+
 
 export async function runWithPrisma<T>(queryFn: () => Promise<T>, timeoutMs = 3000): Promise<T | null> {
   let timer: NodeJS.Timeout | null = null;

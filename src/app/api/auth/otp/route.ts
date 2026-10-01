@@ -1,8 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { generateOTP, verifyOTP, sendOTPEmail } from "@/lib/emailService";
+import { checkRateLimit, getClientIp, rateLimitResponse } from "@/lib/server/rateLimit";
 
 export async function POST(req: NextRequest) {
   try {
+    const clientIp = getClientIp(req);
     const body = await req.json();
     const { action, email, otp, provider = "EMAIL" } = body as {
       action: "REQUEST" | "VERIFY";
@@ -19,8 +21,14 @@ export async function POST(req: NextRequest) {
     }
 
     if (action === "REQUEST") {
+      const limit = checkRateLimit(`otp_req:${clientIp}`, 5, 300);
+      if (!limit.allowed) {
+        return rateLimitResponse(limit.retryAfterSec, "Terlalu banyak permintaan OTP.");
+      }
+
       const generatedCode = generateOTP(email);
       await sendOTPEmail(email, generatedCode);
+
 
       // Security: Sesuai AGENTS.md Bagian 8.3, demoCode dihapus dari response API
       return NextResponse.json({

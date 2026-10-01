@@ -6,6 +6,7 @@ import { verifySessionToken } from "@/lib/auth";
 import { checkMessageQuota } from "@/backend/billing/entitlements";
 import { companionDb } from "@/backend/db/companionClient";
 import { checkAndUnlock } from "@/lib/achievements/engine";
+import { checkRateLimit, rateLimitResponse } from "@/lib/server/rateLimit";
 
 export async function POST(req: NextRequest) {
   try {
@@ -20,8 +21,14 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Invalid session" }, { status: 401 });
     }
 
+    const chatLimit = checkRateLimit(`chat:${session.userId}`, 20, 60);
+    if (!chatLimit.allowed) {
+      return rateLimitResponse(chatLimit.retryAfterSec, "Kamu mengirim pesan terlalu cepat.");
+    }
+
     // Quota check (Bagian 27.4)
     const quotaCheck = await checkMessageQuota(session.userId);
+
     if (!quotaCheck.allowed) {
       return NextResponse.json(
         {

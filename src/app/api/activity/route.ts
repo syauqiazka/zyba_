@@ -15,19 +15,10 @@ function getJakartaDateStr(): string {
 
 async function getCurrentUser(req: NextRequest) {
   const token = req.cookies.get("auth-token")?.value;
-  if (token) {
-    const session = await verifySessionToken(token);
-    if (session?.userId) {
-      return { userId: session.userId, email: session.email, name: session.name };
-    }
-  }
-
-  // Fallback to first user for dev/demo
-  const user = await accountDb.user.findFirst({
-    select: { id: true, email: true, name: true },
-  });
-
-  return user ? { userId: user.id, email: user.email, name: user.name } : null;
+  if (!token) return null;
+  const session = await verifySessionToken(token);
+  if (!session?.userId) return null;
+  return { userId: session.userId, email: session.email, name: session.name };
 }
 
 export async function GET(req: NextRequest) {

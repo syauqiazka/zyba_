@@ -3,6 +3,7 @@ import { userRepository } from "@/backend/auth/userRepository";
 import { generateOTP, verifyOTP, sendOTPEmail } from "@/lib/emailService";
 import bcrypt from "bcryptjs";
 import { createSessionToken } from "@/lib/auth";
+import { checkRateLimit, getClientIp, rateLimitResponse } from "@/lib/server/rateLimit";
 
 export async function POST(request: NextRequest) {
   try {
@@ -142,6 +143,12 @@ export async function POST(request: NextRequest) {
     }
 
     if (action === "SIGNUP") {
+      const clientIp = getClientIp(request);
+      const limitCheck = checkRateLimit(`signup:${clientIp}`, 10, 60);
+      if (!limitCheck.allowed) {
+        return rateLimitResponse(limitCheck.retryAfterSec, "Terlalu banyak permintaan pendaftaran akun.");
+      }
+
       if (!email) {
         return NextResponse.json({ error: "Email wajib diisi." }, { status: 400 });
       }
@@ -180,6 +187,12 @@ export async function POST(request: NextRequest) {
     }
 
     if (action === "VERIFY_OTP") {
+      const clientIp = getClientIp(request);
+      const limitCheck = checkRateLimit(`verify_otp:${clientIp}`, 15, 60);
+      if (!limitCheck.allowed) {
+        return rateLimitResponse(limitCheck.retryAfterSec, "Terlalu banyak percobaan kode OTP.");
+      }
+
       if (!email || !otp) {
         return NextResponse.json({ error: "Email dan OTP wajib diisi." }, { status: 400 });
       }
@@ -239,6 +252,12 @@ export async function POST(request: NextRequest) {
     }
 
     if (action === "LOGIN") {
+      const clientIp = getClientIp(request);
+      const limitCheck = checkRateLimit(`login:${clientIp}`, 10, 60);
+      if (!limitCheck.allowed) {
+        return rateLimitResponse(limitCheck.retryAfterSec, "Terlalu banyak percobaan masuk yang gagal.");
+      }
+
       if (!email) {
         return NextResponse.json({ error: "Email wajib diisi." }, { status: 400 });
       }

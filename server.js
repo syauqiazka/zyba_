@@ -46,8 +46,45 @@ app.prepare()
     server.listen(port, () => {
       console.log(`ZYBA Next.js running on http://${hostname}:${port} in ${dir}`);
     });
+
+    // ─── Graceful Shutdown ──────────────────────────────────────────────────
+    // Docker/systemd kirim SIGTERM saat container stop — kita tutup server
+    // dan pool DB dengan bersih supaya tidak ada koneksi bocor.
+    async function gracefulShutdown(signal) {
+      console.log(`[server.js] Received ${signal}, shutting down gracefully...`);
+
+      server.close(async () => {
+        console.log("[server.js] HTTP server closed.");
+
+        try {
+          // Disconnect semua Prisma clients
+          const { accountDb } = require("./src/backend/db/accountClient");
+          const { companionDb } = require("./src/backend/db/companionClient");
+          const { communityDb } = require("./src/backend/db/communityClient");
+          await Promise.allSettled([
+            accountDb.$disconnect(),
+            companionDb.$disconnect(),
+            communityDb.$disconnect(),
+          ]);
+          console.log("[server.js] Database connections closed.");
+        } catch (e) {
+          console.warn("[server.js] DB disconnect error:", e.message);
+        }
+
+        process.exit(0);
+      });
+
+      // Force-kill jika tidak selesai dalam 15 detik
+      setTimeout(() => {
+        console.error("[server.js] Graceful shutdown timeout, forcing exit.");
+        process.exit(1);
+      }, 15000).unref();
+    }
+
+    process.on("SIGTERM", () => gracefulShutdown("SIGTERM"));
+    process.on("SIGINT",  () => gracefulShutdown("SIGINT"));
   })
   .catch((err) => {
     console.error("Failed to start Next.js:", err);
     process.exit(1);
-  });
+  });

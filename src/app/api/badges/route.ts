@@ -15,13 +15,16 @@ async function getUserId(req: NextRequest): Promise<string | null> {
   return session?.userId ?? null;
 }
 
+import { getCachedBadges } from "@/lib/badges/badgeCache";
+
 export async function GET(request: NextRequest) {
   try {
     const userId = await getUserId(request);
     if (!userId) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
     const [allBadges, userBadges, user] = await Promise.all([
-      accountDb.badge.findMany({ orderBy: { xpReward: "asc" } }),
+      getCachedBadges(),
+
       accountDb.userBadge.findMany({
         where: { userId },
         include: { badge: true },

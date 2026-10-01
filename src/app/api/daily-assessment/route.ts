@@ -23,24 +23,7 @@ async function getCurrentUserSession(req: NextRequest): Promise<{ userId: string
     }
   }
 
-  // Fallback development.
-  const user = await accountDb.user.findFirst({
-    select: {
-      id: true,
-      email: true,
-      name: true,
-    },
-  });
-
-  if (!user) {
-    throw new Error("No authenticated user found.");
-  }
-
-  return {
-    userId: user.id,
-    email: user.email,
-    name: user.name,
-  };
+  throw new Error("No authenticated user found.");
 }
 
 // =====================================================

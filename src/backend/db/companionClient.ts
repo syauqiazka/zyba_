@@ -14,12 +14,18 @@ if (!dbUrl) {
   );
 }
 
+function withPoolConfig(url: string, limit = 5): string {
+  if (url.includes("connection_limit=")) return url;
+  const sep = url.includes("?") ? "&" : "?";
+  return `${url}${sep}connection_limit=${limit}&pool_timeout=10`;
+}
+
 export const companionDb =
   globalForCompanionDb.companionDb ??
   new PrismaClient({
     datasources: {
       db: {
-        url: dbUrl,
+        url: withPoolConfig(dbUrl, 5),
       },
     },
     log:
@@ -28,6 +34,4 @@ export const companionDb =
         : ["error"],
   });
 
-if (process.env.NODE_ENV !== "production") {
-  globalForCompanionDb.companionDb = companionDb;
-}
+globalForCompanionDb.companionDb = companionDb;

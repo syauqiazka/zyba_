@@ -24,6 +24,8 @@ const CATEGORY_COLORS: Record<string, { bg: string; text: string }> = {
   Spesial: { bg: "bg-purple-100", text: "text-purple-700" },
 };
 
+import { getCachedBadges } from "@/lib/badges/badgeCache";
+
 export async function GET(request: NextRequest) {
   try {
     const userId = await getUserId(request);
@@ -31,19 +33,9 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-const [allBadges, userBadges, user] = await Promise.all([
-  accountDb.badge.findMany({
-    orderBy: { xpReward: "asc" },
-    select: {
-      id: true,
-      key: true,
-      name: true,
-      description: true,
-      icon: true,
-      category: true,
-      xpReward: true,
-    },
-  }),
+    const [allBadges, userBadges, user] = await Promise.all([
+      getCachedBadges(),
+
 
   accountDb.userBadge.findMany({
     where: { userId },

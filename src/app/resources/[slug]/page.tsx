@@ -14,7 +14,10 @@ import {
   getResourceDescription,
 } from "@/lib/resourceSlug";
 
-export const dynamic = "force-dynamic";
+import { cache } from "react";
+import { unstable_cache } from "next/cache";
+
+export const revalidate = 3600;
 
 type ResourcePageProps = {
   params: {
@@ -22,19 +25,27 @@ type ResourcePageProps = {
   };
 };
 
-async function getResource(slug: string) {
-  const resources = await accountDb.resource.findMany({
-    orderBy: {
-      createdAt: "desc",
-    },
-  });
+const getCachedAllResources = unstable_cache(
+  async () => {
+    return accountDb.resource.findMany({
+      orderBy: {
+        createdAt: "desc",
+      },
+    });
+  },
+  ["all-resources-slug-lookup"],
+  { revalidate: 3600, tags: ["resources"] }
+);
 
+const getResource = cache(async (slug: string) => {
+  const resources = await getCachedAllResources();
   return (
     resources.find(
       (resource) => getResourceSlug(resource.title) === slug
     ) ?? null
   );
-}
+});
+
 
 export async function generateMetadata({
   params,
