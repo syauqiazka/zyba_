@@ -54,23 +54,23 @@ fs.readdir = function (p, opts, cb) {
   });
 };
 
-// Patch symlinks for Windows standalone trace copying
+// Safe symlink handling on Windows without dangerous directory junctions
 if (process.platform === "win32") {
   const origPromisesSymlink = fs.promises.symlink ? fs.promises.symlink.bind(fs.promises) : null;
   if (origPromisesSymlink) {
     fs.promises.symlink = async function (target, dest, type) {
       try {
-        const stats = await fs.promises.stat(target).catch(() => null);
-        const resolvedType = stats && stats.isDirectory() ? "junction" : type;
-        return await origPromisesSymlink(target, dest, resolvedType);
+        return await origPromisesSymlink(target, dest, type);
       } catch (err) {
         if (err.code === "EPERM" || err.code === "EACCES") {
           try {
             const stats = await fs.promises.stat(target).catch(() => null);
             if (stats && stats.isDirectory()) {
-              return await origPromisesSymlink(target, dest, "junction");
+              await fs.promises.mkdir(dest, { recursive: true });
+              return;
             } else {
-              return await fs.promises.copyFile(target, dest);
+              await fs.promises.copyFile(target, dest);
+              return;
             }
           } catch {
             return;
@@ -85,17 +85,17 @@ if (process.platform === "win32") {
   if (origSymlinkSync) {
     fs.symlinkSync = function (target, dest, type) {
       try {
-        const stats = fs.statSync(target, { throwIfNoEntry: false });
-        const resolvedType = stats && stats.isDirectory() ? "junction" : type;
-        return origSymlinkSync(target, dest, resolvedType);
+        return origSymlinkSync(target, dest, type);
       } catch (err) {
         if (err.code === "EPERM" || err.code === "EACCES") {
           try {
             const stats = fs.statSync(target, { throwIfNoEntry: false });
             if (stats && stats.isDirectory()) {
-              return origSymlinkSync(target, dest, "junction");
+              fs.mkdirSync(dest, { recursive: true });
+              return;
             } else {
-              return fs.copyFileSync(target, dest);
+              fs.copyFileSync(target, dest);
+              return;
             }
           } catch {
             return;

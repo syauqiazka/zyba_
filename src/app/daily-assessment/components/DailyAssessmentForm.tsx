@@ -7,17 +7,17 @@ import {
   Minus,
   Smile,
   Sparkles,
-  ShieldCheck,
-  Activity,
-  AlertCircle,
-  Flame,
+  ArrowRight,
+  ArrowLeft,
+  Check,
   Moon,
   Bed,
   BedDouble,
   MoonStar,
   Sunrise,
-  Check,
-  ArrowRight,
+  Sparkle,
+  Heart,
+  MessageCircle,
 } from "lucide-react";
 import { MOODS } from "@/lib/moods";
 
@@ -68,50 +68,6 @@ export interface Pagination {
   totalPages: number;
 }
 
-export const SLEEP_OPTIONS = [
-  { rating: 1, label: "< 4 jam", desc: "Insomnia", icon: "😴" },
-  { rating: 2, label: "4-5 jam", desc: "Kurang Nyenyak", icon: "🥱" },
-  { rating: 3, label: "6-7 jam", desc: "Cukup", icon: "🛌" },
-  { rating: 4, label: "7-8 jam", desc: "Pulas & Optimal", icon: "🌙" },
-  { rating: 5, label: "> 8 jam", desc: "Sangat Segar", icon: "🌟" },
-];
-
-export const PHYSICAL_SYMPTOMS_LIST = [
-  "Pusing / Sakit Kepala",
-  "Sulit Tidur / Insomnia",
-  "Jantung Berdebar Kencang",
-  "Sesak Napas Ringan",
-  "Tubuh Terasa Lemah",
-  "Nyeri Otot / Leher Kaku",
-];
-
-export const MENTAL_SYMPTOMS_LIST = [
-  "Kecemasan Berlebih (Anxiety)",
-  "Perubahan Mood Mendadak",
-  "Sulit Berfokus saat Belajar/Kerja",
-  "Rasa Lelah Mental Berkelanjutan",
-];
-
-export const ENERGY_TAGS = [
-  "Berenergi",
-  "Tenang & Fokus",
-  "Butuh Kafein",
-  "Mengantuk",
-  "Overthinking",
-  "Termotivasi",
-  "Sehat & Bugar",
-  "Butuh Me-Time",
-  "Bersosialisasi",
-  "Jalan Santai",
-];
-
-export const GOALS_LIST = [
-  "Stress Relief & Relaxation",
-  "Memperbaiki Kualitas Tidur",
-  "Meningkatkan Fokus & Produktivitas",
-  "Curhat & Konseling AI 24/7",
-];
-
 export interface DailyAssessmentSubmitData {
   mood: string;
   stressLevel: number;
@@ -120,214 +76,190 @@ export interface DailyAssessmentSubmitData {
   productivityLevel: number;
   meTimeLevel: number;
   sleepRating: number;
-  sleepHours: number | string;
+  sleepHours: string;
   energyLevel: number;
   eatingHabit: number;
   physicalActivity: number;
   socialConnection: number;
   socialSupport: number;
   communityInteraction: number;
-  gratitude: string;
-  reflection: string;
-  goal: string;
-  gender: string;
-  age: string;
-  weight: string;
-  soughtHelp: boolean | null;
-  physicalSymptoms: string[];
-  mentalSymptoms: string[];
-  medications: string;
-  energyTags: string[];
-  calculatedScore?: number;
+  gratitude?: string;
+  reflection?: string;
+  goal?: string;
+  gender?: string;
+  age?: string;
+  weight?: string;
+  soughtHelp?: boolean;
+  physicalSymptoms?: string[];
+  mentalSymptoms?: string[];
+  medications?: string;
+  energyTags?: string[];
 }
 
 interface FormProps {
-  isEdit?: boolean;
-  initialValues?: Partial<DailyRecord>;
-  onSubmit: (formData: any) => Promise<void> | void;
+  onSubmit: (data: DailyAssessmentSubmitData) => Promise<void>;
   isSubmitting?: boolean;
   onMoodChange?: (mood: string) => void;
+  initialValues?: Partial<DailyAssessmentSubmitData>;
 }
 
-// ── Progressive Color System ──────────────────────────────────────────────
-// Rule: negative/stressful/depriving states → cool/purple/red
-//       neutral states → amber/brown
-//       positive/restful/energised states → green
+export const SLEEP_OPTIONS = [
+  { rating: 1, label: "< 4 jam", desc: "Insomnia", icon: "😴" },
+  { rating: 2, label: "4-5 jam", desc: "Kurang Nyenyak", icon: "🥱" },
+  { rating: 3, label: "6-7 jam", desc: "Cukup", icon: "🛌" },
+  { rating: 4, label: "7-8 jam", desc: "Pulas & Optimal", icon: "🌙" },
+  { rating: 5, label: "> 8 jam", desc: "Sangat Segar", icon: "🌟" },
+];
 
-// Mood: DEPRESSED(purple) → SAD(orange) → NEUTRAL(brown) → HAPPY(yellow) → OVERJOYED(green)
-const MOOD_COLORS: Record<string, {
-  selBg: string;
-  selRing: string;
-  iconHex: string;
-  badgeCls: string;
-}> = {
-  DEPRESSED: {
-    selBg:   "bg-[#A99BE0] border-[#A99BE0]",
-    selRing: "ring-[#A99BE0]/40",
-    iconHex: "#A99BE0",
-    badgeCls:"bg-[#EDE9FB] text-[#6B55C4] border-[#A99BE0]/30",
-  },
-  SAD: {
-    selBg:   "bg-[#EE8A5E] border-[#EE8A5E]",
-    selRing: "ring-[#EE8A5E]/40",
-    iconHex: "#EE8A5E",
-    badgeCls:"bg-[#FDE8DE] text-[#B85A2A] border-[#EE8A5E]/30",
-  },
-  NEUTRAL: {
-    selBg:   "bg-[#8C7565] border-[#8C7565]",
-    selRing: "ring-[#8C7565]/40",
-    iconHex: "#8C7565",
-    badgeCls:"bg-[#EDE5DD] text-[#5A4636] border-[#8C7565]/30",
-  },
-  HAPPY: {
-    selBg:   "bg-[#E8C24A] border-[#E8C24A]",
-    selRing: "ring-[#E8C24A]/40",
-    iconHex: "#D4A800",
-    badgeCls:"bg-[#FDF5CC] text-[#8A6A00] border-[#E8C24A]/30",
-  },
-  OVERJOYED: {
-    selBg:   "bg-[#8FAE5D] border-[#8FAE5D]",
-    selRing: "ring-[#8FAE5D]/40",
-    iconHex: "#8FAE5D",
-    badgeCls:"bg-[#E4EED2] text-[#4D6B1E] border-[#8FAE5D]/30",
-  },
-};
+export const ENERGY_TAGS = [
+  "Berenergi",
+  "Tenang & Fokus",
+  "Butuh Kafein",
+  "Mengantuk",
+  "Overthinking",
+  "Santai",
+  "Termotivasi",
+  "Kewalahan",
+  "Lemas",
+  "Produktif",
+];
 
-// Stress: 1(green/calm) → 5(red/intense)
-const STRESS_COLORS: Record<number, {
-  selBg: string;
-  selRing: string;
-  iconHex: string;
-  badgeCls: string;
-}> = {
-  1: { selBg: "bg-[#8FAE5D] border-[#8FAE5D]", selRing: "ring-[#8FAE5D]/40", iconHex: "#8FAE5D", badgeCls: "bg-[#E4EED2] text-[#4D6B1E] border-[#8FAE5D]/30" },
-  2: { selBg: "bg-[#E8C24A] border-[#E8C24A]", selRing: "ring-[#E8C24A]/40", iconHex: "#D4A800", badgeCls: "bg-[#FDF5CC] text-[#8A6A00] border-[#E8C24A]/30" },
-  3: { selBg: "bg-[#F2A55A] border-[#F2A55A]", selRing: "ring-[#F2A55A]/40", iconHex: "#E07020", badgeCls: "bg-[#FDE8CC] text-[#954A00] border-[#F2A55A]/30" },
-  4: { selBg: "bg-[#E8714A] border-[#E8714A]", selRing: "ring-[#E8714A]/40", iconHex: "#C44A20", badgeCls: "bg-[#FDD8CC] text-[#8A2A00] border-[#E8714A]/30" },
-  5: { selBg: "bg-[#C0392B] border-[#C0392B]", selRing: "ring-[#C0392B]/40", iconHex: "#8B0000", badgeCls: "bg-[#FADBD8] text-[#7B241C] border-[#C0392B]/30" },
-};
-
-// Sleep: 1(purple/insomnia) → 5(teal-green/refreshed)
-const SLEEP_COLORS: Record<number, {
-  selBg: string;
-  selRing: string;
-  iconHex: string;
-  badgeCls: string;
-}> = {
-  1: { selBg: "bg-[#9B59B6] border-[#9B59B6]", selRing: "ring-[#9B59B6]/40", iconHex: "#9B59B6", badgeCls: "bg-[#EADAF5] text-[#5B2C7E] border-[#9B59B6]/30" },
-  2: { selBg: "bg-[#A99BE0] border-[#A99BE0]", selRing: "ring-[#A99BE0]/40", iconHex: "#A99BE0", badgeCls: "bg-[#EDE9FB] text-[#6B55C4] border-[#A99BE0]/30" },
-  3: { selBg: "bg-[#E8C24A] border-[#E8C24A]", selRing: "ring-[#E8C24A]/40", iconHex: "#D4A800", badgeCls: "bg-[#FDF5CC] text-[#8A6A00] border-[#E8C24A]/30" },
-  4: { selBg: "bg-[#8FAE5D] border-[#8FAE5D]", selRing: "ring-[#8FAE5D]/40", iconHex: "#8FAE5D", badgeCls: "bg-[#E4EED2] text-[#4D6B1E] border-[#8FAE5D]/30" },
-  5: { selBg: "bg-[#5DAE8F] border-[#5DAE8F]", selRing: "ring-[#5DAE8F]/40", iconHex: "#1E6B4D", badgeCls: "bg-[#D2EEE4] text-[#1E6B4D] border-[#5DAE8F]/30" },
-};
-
-// Energy tags: each has individual semantic color
-const ENERGY_TAG_COLORS: Record<string, { sel: string; unsel: string }> = {
-  "Berenergi":      { sel: "bg-[#8FAE5D] border-[#8FAE5D] text-white",           unsel: "bg-white/80 text-[#4D6B1E] border-[#8FAE5D]/40 hover:bg-[#E4EED2]" },
-  "Tenang & Fokus": { sel: "bg-[#5DAE8F] border-[#5DAE8F] text-white",           unsel: "bg-white/80 text-[#1E6B4D] border-[#5DAE8F]/40 hover:bg-[#D2EEE4]" },
-  "Termotivasi":    { sel: "bg-[#E8C24A] border-[#E8C24A] text-[#5A3A00]",       unsel: "bg-white/80 text-[#8A6A00] border-[#E8C24A]/40 hover:bg-[#FDF5CC]" },
-  "Sehat & Bugar":  { sel: "bg-[#8FAE5D] border-[#8FAE5D] text-white",           unsel: "bg-white/80 text-[#4D6B1E] border-[#8FAE5D]/40 hover:bg-[#E4EED2]" },
-  "Bersosialisasi": { sel: "bg-[#5DAE8F] border-[#5DAE8F] text-white",           unsel: "bg-white/80 text-[#1E6B4D] border-[#5DAE8F]/40 hover:bg-[#D2EEE4]" },
-  "Jalan Santai":   { sel: "bg-[#A99BE0] border-[#A99BE0] text-white",           unsel: "bg-white/80 text-[#6B55C4] border-[#A99BE0]/40 hover:bg-[#EDE9FB]" },
-  "Butuh Kafein":   { sel: "bg-[#F2A55A] border-[#F2A55A] text-white",           unsel: "bg-white/80 text-[#954A00] border-[#F2A55A]/40 hover:bg-[#FDE8CC]" },
-  "Mengantuk":      { sel: "bg-[#9B59B6] border-[#9B59B6] text-white",           unsel: "bg-white/80 text-[#5B2C7E] border-[#9B59B6]/40 hover:bg-[#EADAF5]" },
-  "Overthinking":   { sel: "bg-[#E8714A] border-[#E8714A] text-white",           unsel: "bg-white/80 text-[#8A2A00] border-[#E8714A]/40 hover:bg-[#FDD8CC]" },
-  "Butuh Me-Time":  { sel: "bg-[#EE8A5E] border-[#EE8A5E] text-white",           unsel: "bg-white/80 text-[#B85A2A] border-[#EE8A5E]/40 hover:bg-[#FDE8DE]" },
-};
-
-const FALLBACK_TAG = {
-  sel: "bg-brown-900 border-brown-900 text-white",
-  unsel: "bg-white/80 text-brown-700 border-brown-900/12 hover:border-brown-900/25 hover:bg-white",
-};
-
-// ── Icon & data definitions ─────────────────────────────────────────────────
+// ---------- Mood Ritual Options ----------
 const RITUAL_MOODS = [
-  { value: "DEPRESSED", label: "Depressed",  sub: "Terpuruk",    icon: CloudRain },
-  { value: "SAD",       label: "Sedih",      sub: "Kurang Baik", icon: Cloud },
-  { value: "NEUTRAL",   label: "Netral",     sub: "Biasa Saja",  icon: Minus },
-  { value: "HAPPY",     label: "Bahagia",    sub: "Cukup Baik",  icon: Smile },
-  { value: "OVERJOYED", label: "Berenergi",  sub: "Sangat Baik", icon: Sparkles },
+  {
+    value: "DEPRESSED",
+    label: "Tertekan",
+    sub: "Sangat lelah & berat",
+    icon: CloudRain,
+    color: "#8B5CF6", // purple
+    bg: "bg-purple-50",
+    border: "border-purple-300",
+    text: "text-purple-700",
+  },
+  {
+    value: "SAD",
+    label: "Sedih",
+    sub: "Murung atau resah",
+    icon: Cloud,
+    color: "#F97316", // orange
+    bg: "bg-orange-50",
+    border: "border-orange-300",
+    text: "text-orange-700",
+  },
+  {
+    value: "NEUTRAL",
+    label: "Biasa",
+    sub: "Tenang & datar",
+    icon: Minus,
+    color: "#6B5645", // brown/amber
+    bg: "bg-amber-50/60",
+    border: "border-amber-300",
+    text: "text-amber-800",
+  },
+  {
+    value: "HAPPY",
+    label: "Senang",
+    sub: "Nyaman & bersemangat",
+    icon: Smile,
+    color: "#EAB308", // warm yellow
+    bg: "bg-yellow-50",
+    border: "border-yellow-400",
+    text: "text-yellow-800",
+  },
+  {
+    value: "OVERJOYED",
+    label: "Berenergi",
+    sub: "Sangat antusias",
+    icon: Sparkles,
+    color: "#8FAE5D", // zyba green
+    bg: "bg-green-50",
+    border: "border-green-400",
+    text: "text-green-800",
+  },
 ];
 
-const RITUAL_STRESS = [
-  { value: 1, label: "Tenang",  sub: "Sangat Rendah", icon: ShieldCheck },
-  { value: 2, label: "Rendah",  sub: "Terkontrol",    icon: Smile },
-  { value: 3, label: "Sedang",  sub: "Mulai Terasa",  icon: Activity },
-  { value: 4, label: "Tinggi",  sub: "Berat",         icon: AlertCircle },
-  { value: 5, label: "Intens",  sub: "Sangat Tinggi", icon: Flame },
+// ---------- Sleep Options with Icons ----------
+const RITUAL_SLEEP_OPTIONS = [
+  { rating: 1, label: "< 4 jam", sub: "Kurang lelap / insomnia", icon: Moon },
+  { rating: 2, label: "4-5 jam", sub: "Kurang nyenyak", icon: Bed },
+  { rating: 3, label: "6-7 jam", sub: "Cukup terlelap", icon: BedDouble },
+  { rating: 4, label: "7-8 jam", sub: "Pulas & optimal", icon: MoonStar },
+  { rating: 5, label: "> 8 jam", sub: "Sangat segar", icon: Sunrise },
 ];
 
-const RITUAL_SLEEP = [
-  { rating: 1, label: "< 4 jam", sub: "Insomnia", icon: Moon },
-  { rating: 2, label: "4-5 jam", sub: "Kurang",   icon: Bed },
-  { rating: 3, label: "6-7 jam", sub: "Cukup",    icon: BedDouble },
-  { rating: 4, label: "7-8 jam", sub: "Optimal",  icon: MoonStar },
-  { rating: 5, label: "> 8 jam", sub: "Segar",    icon: Sunrise },
-];
-
-// ── Shared section shell ──────────────────────────────────────────────────
-const sectionCls = (active: boolean) =>
-  `rounded-2xl p-3.5 sm:p-4 md:p-5 transition-all duration-200 border cursor-pointer ${
-    active
-      ? "bg-white border-brown-900/15 shadow-xs ring-1 ring-orange-500/15"
-      : "bg-[#FAF7F2]/60 hover:bg-[#FAF7F2] border-brown-900/10 opacity-75"
-  }`;
-
-// ── Main component ────────────────────────────────────────────────────────
 export function DailyAssessmentForm({
   onSubmit,
   isSubmitting = false,
   onMoodChange,
   initialValues,
 }: FormProps) {
-  const [mood,        setMood]        = useState<string>(initialValues?.mood || "HAPPY");
+  // Step tracker: 1 to 10 + step 11 (Reflection optional before finish)
+  const [currentStep, setCurrentStep] = useState<number>(1);
+
+  // Form State
+  const [mood, setMood] = useState<string>(initialValues?.mood || "HAPPY");
   const [stressLevel, setStressLevel] = useState<number>(initialValues?.stressLevel ?? 2);
+  const [anxietyLevel, setAnxietyLevel] = useState<number>(initialValues?.anxietyLevel ?? 2);
+  const [satisfactionLevel, setSatisfactionLevel] = useState<number>(initialValues?.satisfactionLevel ?? 4);
+  const [productivityLevel, setProductivityLevel] = useState<number>(initialValues?.productivityLevel ?? 3);
   const [sleepRating, setSleepRating] = useState<number>(initialValues?.sleepRating ?? 3);
-  const [sleepHours,  setSleepHours]  = useState<string>(String(initialValues?.sleepHours || "6-7 jam"));
-  const [energyTags,  setEnergyTags]  = useState<string[]>(
-    Array.isArray(initialValues?.energyTags) ? initialValues.energyTags : ["Tenang & Fokus"]
-  );
-  const [reflection, setReflection]   = useState<string>(initialValues?.reflection || "");
-  const [activeStep, setActiveStep]   = useState<number>(1);
+  const [sleepHours, setSleepHours] = useState<string>(String(initialValues?.sleepHours || "6-7 jam"));
+  const [energyLevel, setEnergyLevel] = useState<number>(initialValues?.energyLevel ?? 3);
+  const [meTimeLevel, setMeTimeLevel] = useState<number>(initialValues?.meTimeLevel ?? 3);
+  const [socialConnection, setSocialConnection] = useState<number>(initialValues?.socialConnection ?? 4);
+  const [communityInteraction, setCommunityInteraction] = useState<number>(initialValues?.communityInteraction ?? 3);
+  const [reflection, setReflection] = useState<string>(initialValues?.reflection || "");
+
+  const handleNext = () => {
+    if (currentStep < 11) {
+      setCurrentStep((prev) => prev + 1);
+    }
+  };
+
+  const handleBack = () => {
+    if (currentStep > 1) {
+      setCurrentStep((prev) => prev - 1);
+    }
+  };
 
   const handleSelectMood = (val: string) => {
     setMood(val);
     if (onMoodChange) onMoodChange(val);
-    if (activeStep === 1) setActiveStep(2);
   };
 
-  const handleSelectStress = (val: number) => {
-    setStressLevel(val);
-    if (activeStep === 2) setActiveStep(3);
-  };
-
-  const handleSelectSleep = (rating: number, hours: string) => {
+  const handleSelectSleep = (rating: number, label: string) => {
     setSleepRating(rating);
-    setSleepHours(hours);
-    if (activeStep === 3) setActiveStep(4);
+    setSleepHours(label);
   };
 
-  const toggleTag = (tag: string) =>
-    setEnergyTags((prev) => prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag]);
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = async (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
     if (isSubmitting) return;
+
+    // Determine derived energy tag based on answers
+    const derivedTags: string[] = [];
+    if (energyLevel >= 4) derivedTags.push("Berenergi");
+    if (stressLevel <= 2) derivedTags.push("Tenang & Fokus");
+    if (stressLevel >= 4) derivedTags.push("Kewalahan");
+    if (productivityLevel >= 4) derivedTags.push("Produktif");
+    if (sleepRating <= 2) derivedTags.push("Mengantuk");
+    if (derivedTags.length === 0) derivedTags.push("Tenang & Fokus");
+
     await onSubmit({
       mood,
       stressLevel,
-      anxietyLevel: stressLevel,
-      satisfactionLevel: mood === "OVERJOYED" ? 5 : mood === "HAPPY" ? 4 : mood === "NEUTRAL" ? 3 : 2,
-      productivityLevel: 3,
-      meTimeLevel: 3,
+      anxietyLevel,
+      satisfactionLevel,
+      productivityLevel,
+      meTimeLevel,
       sleepRating,
       sleepHours,
-      energyLevel: mood === "OVERJOYED" ? 5 : mood === "HAPPY" ? 4 : mood === "NEUTRAL" ? 3 : 2,
+      energyLevel,
       eatingHabit: 3,
       physicalActivity: 3,
-      socialConnection: 3,
-      socialSupport: 3,
-      communityInteraction: 3,
+      socialConnection,
+      socialSupport: socialConnection,
+      communityInteraction,
       gratitude: "",
       reflection: reflection.trim(),
       goal: "Daily Wellness Check",
@@ -338,295 +270,415 @@ export function DailyAssessmentForm({
       physicalSymptoms: [],
       mentalSymptoms: [],
       medications: "",
-      energyTags,
-    } satisfies DailyAssessmentSubmitData);
+      energyTags: derivedTags,
+    });
   };
 
-  const moodObj    = RITUAL_MOODS.find((m) => m.value === mood);
-  const stressObj  = RITUAL_STRESS.find((s) => s.value === stressLevel);
-  const sleepObj   = RITUAL_SLEEP.find((sl) => sl.rating === sleepRating);
-  const moodCol    = MOOD_COLORS[mood];
-  const stressCol  = STRESS_COLORS[stressLevel];
-  const sleepCol   = SLEEP_COLORS[sleepRating];
+  // Render Likert 1-5 Component with 40-44px touch targets
+  const renderLikertScale = (
+    currentValue: number,
+    onChange: (val: number) => void,
+    lowLabel: string,
+    highLabel: string
+  ) => {
+    return (
+      <div className="flex flex-col gap-3 w-full max-w-[420px] mx-auto">
+        <div className="grid grid-cols-5 gap-2 sm:gap-2.5">
+          {[1, 2, 3, 4, 5].map((val) => {
+            const isSelected = currentValue === val;
+            return (
+              <button
+                key={val}
+                type="button"
+                onClick={() => onChange(val)}
+                className={`h-11 sm:h-12 rounded-xl flex items-center justify-center font-display text-sm sm:text-base font-bold transition-all duration-200 border cursor-pointer ${
+                  isSelected
+                    ? "bg-[#1B3C53] text-white border-[#1B3C53] shadow-sm scale-102"
+                    : "bg-white text-brown-900/80 border-brown-900/15 hover:border-brown-900/30 hover:bg-cream/40"
+                }`}
+              >
+                {val}
+              </button>
+            );
+          })}
+        </div>
+        <div className="flex items-center justify-between text-[11px] sm:text-xs text-brown-700/70 font-medium px-1">
+          <span>{lowLabel}</span>
+          <span>{highLabel}</span>
+        </div>
+      </div>
+    );
+  };
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col gap-3 sm:gap-4 select-none">
-
-      {/* ── Q1: Mood ─────────────────────────────────────────────────── */}
-      <section onClick={() => setActiveStep(1)} className={sectionCls(activeStep === 1)}>
-        <div className="flex items-center justify-between mb-2.5">
-          <span className="text-[11px] font-extrabold uppercase tracking-wider text-brown-700/70">
-            Pertanyaan 1 dari 5
-          </span>
-          {activeStep !== 1 && moodObj && moodCol && (
-            <span className={`text-xs font-bold flex items-center gap-1 px-2.5 py-0.5 rounded-full border ${moodCol.badgeCls}`}>
-              <Check size={12} />{moodObj.label}
+    <div className="w-full max-w-[680px] mx-auto bg-white rounded-2xl border border-brown-900/10 p-4 sm:p-6 md:p-8 shadow-xs select-none">
+      {/* ── 1. Ritual Header & Progress ─────────────────────────────── */}
+      <div className="flex flex-col gap-3 pb-4 mb-5 border-b border-brown-900/10">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <span className="text-[10px] sm:text-[11px] font-extrabold uppercase tracking-widest text-[#1B3C53] bg-[#1B3C53]/10 px-2.5 py-0.5 rounded-full">
+              Ritual Harian
             </span>
-          )}
-        </div>
-        <h3 className="font-display text-base sm:text-lg font-bold text-brown-900 mb-3">
-          Bagaimana perasaanmu hari ini?
-        </h3>
-        {activeStep === 1 && (
-          <div className="flex flex-col gap-3 animate-in fade-in duration-200">
-            <div className="grid grid-cols-5 gap-1.5 sm:gap-2.5">
-              {RITUAL_MOODS.map(({ value, label, sub, icon: Icon }) => {
-                const isSel = mood === value;
-                const col = MOOD_COLORS[value];
-                return (
-                  <button
-                    key={value} type="button"
-                    onClick={(e) => { e.stopPropagation(); handleSelectMood(value); }}
-                    className={`p-2 sm:p-3 rounded-2xl border text-center transition-all flex flex-col items-center justify-center gap-1 sm:gap-1.5 ${
-                      isSel
-                        ? `${col.selBg} text-white shadow-sm scale-[1.04] ring-2 ${col.selRing}`
-                        : "bg-white/80 hover:bg-white border-brown-900/10 hover:border-brown-900/20 hover:scale-[1.02]"
-                    }`}
-                  >
-                    <Icon size={20} strokeWidth={isSel ? 2.5 : 2}
-                      style={{ color: isSel ? "white" : col.iconHex }} />
-                    <span className="text-[11px] sm:text-xs font-bold truncate max-w-full"
-                      style={{ color: isSel ? "white" : undefined }}>
-                      {label}
-                    </span>
-                    <span className="text-[9px] hidden sm:block truncate"
-                      style={{ color: isSel ? "rgba(255,255,255,0.75)" : col.iconHex + "99" }}>
-                      {sub}
-                    </span>
-                  </button>
-                );
-              })}
-            </div>
-            <div className="flex justify-end pt-1">
-              <button type="button" onClick={(e) => { e.stopPropagation(); setActiveStep(2); }}
-                className="text-xs font-bold text-orange-600 hover:text-brown-900 flex items-center gap-1 transition-colors px-2 py-1">
-                Lanjut ke Pertanyaan 2 →
-              </button>
-            </div>
-          </div>
-        )}
-      </section>
-
-      {/* ── Q2: Stress ───────────────────────────────────────────────── */}
-      <section onClick={() => setActiveStep(2)} className={sectionCls(activeStep === 2)}>
-        <div className="flex items-center justify-between mb-2.5">
-          <span className="text-[11px] font-extrabold uppercase tracking-wider text-brown-700/70">
-            Pertanyaan 2 dari 5
-          </span>
-          {activeStep !== 2 && stressObj && stressCol && (
-            <span className={`text-xs font-bold flex items-center gap-1 px-2.5 py-0.5 rounded-full border ${stressCol.badgeCls}`}>
-              <Check size={12} />Tingkat {stressLevel}/5 ({stressObj.label})
+            <span className="text-xs text-brown-700/70">
+              Hari ini · 1–2 menit
             </span>
-          )}
-        </div>
-        <h3 className="font-display text-base sm:text-lg font-bold text-brown-900 mb-3">
-          Seberapa besar tingkat stres yang kamu rasakan?
-        </h3>
-        {activeStep === 2 && (
-          <div className="flex flex-col gap-3 animate-in fade-in duration-200">
-            <div className="grid grid-cols-5 gap-1.5 sm:gap-2">
-              {RITUAL_STRESS.map(({ value, label, sub, icon: Icon }) => {
-                const isSel = stressLevel === value;
-                const col = STRESS_COLORS[value];
-                return (
-                  <button
-                    key={value} type="button"
-                    onClick={(e) => { e.stopPropagation(); handleSelectStress(value); }}
-                    className={`p-2 sm:p-3 rounded-2xl border text-center transition-all flex flex-col items-center justify-center gap-1 sm:gap-1.5 ${
-                      isSel
-                        ? `${col.selBg} text-white shadow-sm scale-[1.04] ring-2 ${col.selRing}`
-                        : "bg-white/80 hover:bg-white border-brown-900/10 hover:border-brown-900/20 hover:scale-[1.02]"
-                    }`}
-                  >
-                    <Icon size={18} strokeWidth={isSel ? 2.5 : 2}
-                      style={{ color: isSel ? "white" : col.iconHex }} />
-                    <span className="font-display text-xs sm:text-sm font-black"
-                      style={{ color: isSel ? "white" : undefined }}>{value}</span>
-                    <span className="text-[10px] sm:text-[11px] font-bold truncate"
-                      style={{ color: isSel ? "rgba(255,255,255,0.85)" : col.iconHex + "BB" }}>
-                      {label}
-                    </span>
-                  </button>
-                );
-              })}
-            </div>
-            {/* Gradient legend */}
-            <div className="flex items-center gap-1.5">
-              <span className="text-[10px] text-brown-700/60 shrink-0">Tenang</span>
-              <div className="flex-1 h-1.5 rounded-full bg-gradient-to-r from-[#8FAE5D] via-[#F2A55A] to-[#C0392B] opacity-60" />
-              <span className="text-[10px] text-brown-700/60 shrink-0">Intens</span>
-            </div>
-            <div className="flex justify-between items-center text-xs text-brown-700">
-              <span className="text-[11px] text-brown-700/70">1 = Paling tenang, 5 = Paling berat</span>
-              <button type="button" onClick={(e) => { e.stopPropagation(); setActiveStep(3); }}
-                className="font-bold text-orange-600 hover:text-brown-900 flex items-center gap-1 transition-colors px-2 py-1">
-                Lanjut ke Pertanyaan 3 →
-              </button>
-            </div>
           </div>
-        )}
-      </section>
-
-      {/* ── Q3: Sleep ────────────────────────────────────────────────── */}
-      <section onClick={() => setActiveStep(3)} className={sectionCls(activeStep === 3)}>
-        <div className="flex items-center justify-between mb-2.5">
-          <span className="text-[11px] font-extrabold uppercase tracking-wider text-brown-700/70">
-            Pertanyaan 3 dari 5
+          <span className="text-xs font-bold text-[#1B3C53]">
+            {currentStep <= 10 ? `${currentStep} dari 10` : "Refleksi"}
           </span>
-          {activeStep !== 3 && sleepObj && sleepCol && (
-            <span className={`text-xs font-bold flex items-center gap-1 px-2.5 py-0.5 rounded-full border ${sleepCol.badgeCls}`}>
-              <Check size={12} />{sleepObj.label} ({sleepObj.sub})
-            </span>
-          )}
         </div>
-        <h3 className="font-display text-base sm:text-lg font-bold text-brown-900 mb-3">
-          Bagaimana kualitas tidurmu semalam?
-        </h3>
-        {activeStep === 3 && (
-          <div className="flex flex-col gap-3 animate-in fade-in duration-200">
-            <div className="grid grid-cols-2 sm:grid-cols-5 gap-1.5 sm:gap-2">
-              {RITUAL_SLEEP.map(({ rating, label, sub, icon: Icon }) => {
-                const isSel = sleepRating === rating;
-                const col = SLEEP_COLORS[rating];
-                return (
-                  <button
-                    key={rating} type="button"
-                    onClick={(e) => { e.stopPropagation(); handleSelectSleep(rating, label); }}
-                    className={`p-2.5 sm:p-3 rounded-2xl border text-center transition-all flex flex-col items-center justify-center gap-1 ${
-                      isSel
-                        ? `${col.selBg} text-white shadow-sm scale-[1.04] ring-2 ${col.selRing}`
-                        : "bg-white/80 hover:bg-white border-brown-900/10 hover:border-brown-900/20 hover:scale-[1.02]"
-                    }`}
-                  >
-                    <Icon size={18} strokeWidth={isSel ? 2.5 : 2}
-                      style={{ color: isSel ? "white" : col.iconHex }} />
-                    <span className="text-xs font-bold"
-                      style={{ color: isSel ? "white" : undefined }}>{label}</span>
-                    <span className="text-[10px]"
-                      style={{ color: isSel ? "rgba(255,255,255,0.75)" : col.iconHex + "99" }}>
-                      {sub}
-                    </span>
-                  </button>
-                );
-              })}
-            </div>
-            {/* Gradient legend */}
-            <div className="flex items-center gap-1.5">
-              <span className="text-[10px] text-brown-700/60 shrink-0">Insomnia</span>
-              <div className="flex-1 h-1.5 rounded-full bg-gradient-to-r from-[#9B59B6] via-[#E8C24A] to-[#5DAE8F] opacity-60" />
-              <span className="text-[10px] text-brown-700/60 shrink-0">Segar</span>
-            </div>
-            <div className="flex justify-end">
-              <button type="button" onClick={(e) => { e.stopPropagation(); setActiveStep(4); }}
-                className="text-xs font-bold text-orange-600 hover:text-brown-900 flex items-center gap-1 transition-colors px-2 py-1">
-                Lanjut ke Pertanyaan 4 →
-              </button>
-            </div>
-          </div>
-        )}
-      </section>
 
-      {/* ── Q4: Energy Tags ──────────────────────────────────────────── */}
-      <section onClick={() => setActiveStep(4)} className={sectionCls(activeStep === 4)}>
-        <div className="flex items-center justify-between mb-2.5">
-          <span className="text-[11px] font-extrabold uppercase tracking-wider text-brown-700/70">
-            Pertanyaan 4 dari 5
-          </span>
-          {activeStep !== 4 && energyTags.length > 0 && (
-            <span className="text-xs font-bold text-brown-900 flex items-center gap-1 bg-white/80 border border-brown-900/10 px-2 py-0.5 rounded-full">
-              <Check size={12} className="text-green-600" />{energyTags.length} tag terpilih
-            </span>
-          )}
+        {/* Small Dot Progress Indicators */}
+        <div className="flex items-center justify-center gap-1.5 sm:gap-2 pt-1">
+          {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((step) => {
+            const isCompleted = step < currentStep;
+            const isCurrent = step === currentStep;
+            return (
+              <div
+                key={step}
+                className={`transition-all duration-300 rounded-full ${
+                  isCurrent
+                    ? "w-5 h-2 bg-[#1B3C53]"
+                    : isCompleted
+                    ? "w-2 h-2 bg-[#8FAE5D]"
+                    : "w-2 h-2 bg-brown-900/15"
+                }`}
+              />
+            );
+          })}
         </div>
-        <h3 className="font-display text-base sm:text-lg font-bold text-brown-900 mb-2">
-          Apa yang memberikan atau mempengaruhi energimu hari ini?
-        </h3>
-        <p className="text-xs text-brown-700/80 mb-3">
-          Pilih satu atau beberapa kondisi yang paling menggambarkan dirimu.
-        </p>
-        {activeStep === 4 && (
-          <div className="flex flex-col gap-3 animate-in fade-in duration-200">
-            <div className="flex flex-wrap gap-1.5 sm:gap-2">
-              {ENERGY_TAGS.map((tag) => {
-                const isSel = energyTags.includes(tag);
-                const col = ENERGY_TAG_COLORS[tag] ?? FALLBACK_TAG;
-                return (
-                  <button key={tag} type="button"
-                    onClick={(e) => { e.stopPropagation(); toggleTag(tag); }}
-                    className={`px-3 py-1.5 rounded-full text-xs font-semibold transition-all border flex items-center gap-1.5 ${
-                      isSel ? `${col.sel} shadow-2xs font-bold scale-[1.03]` : col.unsel
-                    }`}
-                  >
-                    {isSel && <Check size={11} />}
-                    <span>{tag}</span>
-                  </button>
-                );
-              })}
-            </div>
-            <div className="flex justify-end pt-1">
-              <button type="button" onClick={(e) => { e.stopPropagation(); setActiveStep(5); }}
-                className="text-xs font-bold text-orange-600 hover:text-brown-900 flex items-center gap-1 transition-colors px-2 py-1">
-                Lanjut ke Refleksi (Terakhir) →
-              </button>
-            </div>
-          </div>
-        )}
-      </section>
-
-      {/* ── Q5: Reflection ───────────────────────────────────────────── */}
-      <section onClick={() => setActiveStep(5)} className={sectionCls(activeStep === 5)}>
-        <div className="flex items-center justify-between mb-2.5">
-          <span className="text-[11px] font-extrabold uppercase tracking-wider text-brown-700/70">
-            Pertanyaan 5 dari 5
-          </span>
-          {activeStep !== 5 && reflection && (
-            <span className="text-xs font-bold text-brown-900 flex items-center gap-1 bg-white/80 border border-brown-900/10 px-2 py-0.5 rounded-full">
-              <Check size={12} className="text-green-600" />Tercatat
-            </span>
-          )}
-        </div>
-        <h3 className="font-display text-base sm:text-lg font-bold text-brown-900 mb-1.5">
-          Ada yang ingin kamu refleksikan hari ini?
-        </h3>
-        <p className="text-xs text-brown-700/80 mb-3">
-          Tuliskan apa pun yang mengganjal atau kamu syukuri. Privat dan aman. (Opsional)
-        </p>
-        {activeStep === 5 && (
-          <div className="flex flex-col gap-3 animate-in fade-in duration-200">
-            <textarea
-              value={reflection}
-              onChange={(e) => setReflection(e.target.value)}
-              onClick={(e) => e.stopPropagation()}
-              rows={3}
-              placeholder="Ceritakan pikiran atau perasaanmu dengan jujur..."
-              className="w-full bg-[#FAF7F2]/60 focus:bg-white rounded-xl border border-brown-900/15 p-3 text-xs sm:text-sm text-brown-900 placeholder:text-brown-700/40 focus:outline-none focus:ring-1 focus:ring-orange-500 transition-colors resize-none leading-relaxed"
-            />
-          </div>
-        )}
-      </section>
-
-      {/* ── Submit ───────────────────────────────────────────────────── */}
-      <div className="pt-2 flex items-center justify-between gap-3">
-        <div className="text-[11px] text-brown-700/70">
-          Semua jawaban tersimpan aman &amp; privat.
-        </div>
-        <button
-          type="submit"
-          disabled={isSubmitting || !mood}
-          className="px-6 sm:px-8 py-2.5 sm:py-3 rounded-full bg-orange-500 hover:bg-brown-900 disabled:opacity-50 text-white font-bold text-xs sm:text-sm transition-all shadow-sm active:scale-95 flex items-center gap-2 cursor-pointer shrink-0"
-        >
-          {isSubmitting ? (
-            <span>Menyimpan...</span>
-          ) : (
-            <>
-              <span>Selesaikan Assessment</span>
-              <ArrowRight size={14} />
-            </>
-          )}
-        </button>
       </div>
-    </form>
+
+      {/* ── 2. Single Question Per Screen ──────────────────────────── */}
+      <div className="min-h-[260px] sm:min-h-[290px] flex flex-col justify-center py-2 sm:py-4">
+        {/* QUESTION 1: Mood */}
+        {currentStep === 1 && (
+          <div className="flex flex-col items-center text-center gap-4 sm:gap-5 animate-in fade-in duration-200">
+            <div>
+              <span className="text-[11px] sm:text-xs font-extrabold tracking-wider uppercase text-[#456882]">
+                MENTAL WELLBEING
+              </span>
+              <h2 className="font-display text-lg sm:text-xl md:text-2xl font-bold text-brown-900 mt-1 max-w-[480px]">
+                Bagaimana perasaanmu hari ini?
+              </h2>
+            </div>
+
+            <div className="grid grid-cols-5 gap-1.5 sm:gap-2.5 w-full max-w-[480px]">
+              {RITUAL_MOODS.map((m) => {
+                const Icon = m.icon;
+                const isSelected = mood === m.value;
+                return (
+                  <button
+                    key={m.value}
+                    type="button"
+                    onClick={() => handleSelectMood(m.value)}
+                    className={`flex flex-col items-center justify-center p-2 sm:p-3 rounded-2xl border transition-all duration-200 cursor-pointer ${
+                      isSelected
+                        ? "bg-[#1B3C53] text-white border-[#1B3C53] shadow-xs scale-103"
+                        : "bg-white text-brown-900/80 border-brown-900/15 hover:border-brown-900/30 hover:bg-cream/40"
+                    }`}
+                  >
+                    <Icon
+                      size={24}
+                      className="mb-1 shrink-0"
+                      style={{ color: isSelected ? "#FFFFFF" : m.color }}
+                    />
+                    <span className="text-[11px] sm:text-xs font-bold leading-tight">
+                      {m.label}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+            <p className="text-xs text-brown-700/70 italic">
+              Pilih satu yang paling menggambarkan keadaan hatimu hari ini
+            </p>
+          </div>
+        )}
+
+        {/* QUESTION 2: Stress Level */}
+        {currentStep === 2 && (
+          <div className="flex flex-col items-center text-center gap-4 sm:gap-5 animate-in fade-in duration-200">
+            <div>
+              <span className="text-[11px] sm:text-xs font-extrabold tracking-wider uppercase text-[#456882]">
+                STRESS REGULATION
+              </span>
+              <h2 className="font-display text-lg sm:text-xl md:text-2xl font-bold text-brown-900 mt-1 max-w-[480px]">
+                Hari ini saya merasa banyak hal yang harus saya pikirkan secara bersamaan.
+              </h2>
+            </div>
+
+            {renderLikertScale(
+              stressLevel,
+              setStressLevel,
+              "Sangat tidak sesuai",
+              "Sangat sesuai"
+            )}
+          </div>
+        )}
+
+        {/* QUESTION 3: Anxiety Level */}
+        {currentStep === 3 && (
+          <div className="flex flex-col items-center text-center gap-4 sm:gap-5 animate-in fade-in duration-200">
+            <div>
+              <span className="text-[11px] sm:text-xs font-extrabold tracking-wider uppercase text-[#456882]">
+                STRESS REGULATION
+              </span>
+              <h2 className="font-display text-lg sm:text-xl md:text-2xl font-bold text-brown-900 mt-1 max-w-[480px]">
+                Seberapa sulit kamu menenangkan rasa cemas atau gelisah hari ini?
+              </h2>
+            </div>
+
+            {renderLikertScale(
+              anxietyLevel,
+              setAnxietyLevel,
+              "Sangat mudah ditenangkan",
+              "Sangat sulit ditenangkan"
+            )}
+          </div>
+        )}
+
+        {/* QUESTION 4: Satisfaction Level */}
+        {currentStep === 4 && (
+          <div className="flex flex-col items-center text-center gap-4 sm:gap-5 animate-in fade-in duration-200">
+            <div>
+              <span className="text-[11px] sm:text-xs font-extrabold tracking-wider uppercase text-[#456882]">
+                MEANING & PURPOSE
+              </span>
+              <h2 className="font-display text-lg sm:text-xl md:text-2xl font-bold text-brown-900 mt-1 max-w-[480px]">
+                Seberapa puas kamu dengan apa yang berhasil kamu jalani hari ini?
+              </h2>
+            </div>
+
+            {renderLikertScale(
+              satisfactionLevel,
+              setSatisfactionLevel,
+              "Sangat tidak puas",
+              "Sangat puas"
+            )}
+          </div>
+        )}
+
+        {/* QUESTION 5: Productivity & Focus */}
+        {currentStep === 5 && (
+          <div className="flex flex-col items-center text-center gap-4 sm:gap-5 animate-in fade-in duration-200">
+            <div>
+              <span className="text-[11px] sm:text-xs font-extrabold tracking-wider uppercase text-[#456882]">
+                FUTURE READINESS
+              </span>
+              <h2 className="font-display text-lg sm:text-xl md:text-2xl font-bold text-brown-900 mt-1 max-w-[480px]">
+                Seberapa fokus dan produktif kamu menjalani aktivitas hari ini?
+              </h2>
+            </div>
+
+            {renderLikertScale(
+              productivityLevel,
+              setProductivityLevel,
+              "Sulit fokus",
+              "Sangat fokus & produktif"
+            )}
+          </div>
+        )}
+
+        {/* QUESTION 6: Sleep Quality & Hours */}
+        {currentStep === 6 && (
+          <div className="flex flex-col items-center text-center gap-4 sm:gap-5 animate-in fade-in duration-200">
+            <div>
+              <span className="text-[11px] sm:text-xs font-extrabold tracking-wider uppercase text-[#456882]">
+                LIFE BALANCE & RECOVERY
+              </span>
+              <h2 className="font-display text-lg sm:text-xl md:text-2xl font-bold text-brown-900 mt-1 max-w-[480px]">
+                Bagaimana kualitas dan durasi tidurmu semalam?
+              </h2>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-5 gap-2 w-full max-w-[520px]">
+              {RITUAL_SLEEP_OPTIONS.map((item) => {
+                const Icon = item.icon;
+                const isSelected = sleepRating === item.rating;
+                return (
+                  <button
+                    key={item.rating}
+                    type="button"
+                    onClick={() => handleSelectSleep(item.rating, item.label)}
+                    className={`flex sm:flex-col items-center justify-between sm:justify-center p-2.5 sm:p-3 rounded-xl border transition-all duration-200 cursor-pointer ${
+                      isSelected
+                        ? "bg-[#1B3C53] text-white border-[#1B3C53] shadow-xs"
+                        : "bg-white text-brown-900 border-brown-900/15 hover:bg-cream/40"
+                    }`}
+                  >
+                    <div className="flex items-center sm:flex-col gap-2 sm:gap-1">
+                      <Icon size={18} className="shrink-0" />
+                      <span className="text-xs font-bold">{item.label}</span>
+                    </div>
+                    <span className="text-[10px] text-brown-700/70 sm:mt-1 truncate">
+                      {item.sub}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
+        {/* QUESTION 7: Energy Level */}
+        {currentStep === 7 && (
+          <div className="flex flex-col items-center text-center gap-4 sm:gap-5 animate-in fade-in duration-200">
+            <div>
+              <span className="text-[11px] sm:text-xs font-extrabold tracking-wider uppercase text-[#456882]">
+                LIFE BALANCE & RECOVERY
+              </span>
+              <h2 className="font-display text-lg sm:text-xl md:text-2xl font-bold text-brown-900 mt-1 max-w-[480px]">
+                Seberapa berenergi dan bertenaga tubuhmu hari ini?
+              </h2>
+            </div>
+
+            {renderLikertScale(
+              energyLevel,
+              setEnergyLevel,
+              "Sangat lemas",
+              "Sangat berenergi"
+            )}
+          </div>
+        )}
+
+        {/* QUESTION 8: Me Time Level */}
+        {currentStep === 8 && (
+          <div className="flex flex-col items-center text-center gap-4 sm:gap-5 animate-in fade-in duration-200">
+            <div>
+              <span className="text-[11px] sm:text-xs font-extrabold tracking-wider uppercase text-[#456882]">
+                SELF-UNDERSTANDING
+              </span>
+              <h2 className="font-display text-lg sm:text-xl md:text-2xl font-bold text-brown-900 mt-1 max-w-[480px]">
+                Seberapa cukup waktu yang kamu berikan untuk dirimu sendiri hari ini?
+              </h2>
+            </div>
+
+            {renderLikertScale(
+              meTimeLevel,
+              setMeTimeLevel,
+              "Sangat kurang",
+              "Sangat cukup & tenang"
+            )}
+          </div>
+        )}
+
+        {/* QUESTION 9: Social Connection */}
+        {currentStep === 9 && (
+          <div className="flex flex-col items-center text-center gap-4 sm:gap-5 animate-in fade-in duration-200">
+            <div>
+              <span className="text-[11px] sm:text-xs font-extrabold tracking-wider uppercase text-[#456882]">
+                SOCIAL CONNECTION
+              </span>
+              <h2 className="font-display text-lg sm:text-xl md:text-2xl font-bold text-brown-900 mt-1 max-w-[480px]">
+                Seberapa terhubung dan didukung kamu oleh orang-orang di sekitarmu hari ini?
+              </h2>
+            </div>
+
+            {renderLikertScale(
+              socialConnection,
+              setSocialConnection,
+              "Merasa terisolasi",
+              "Sangat terhubung & didukung"
+            )}
+          </div>
+        )}
+
+        {/* QUESTION 10: Community Interaction */}
+        {currentStep === 10 && (
+          <div className="flex flex-col items-center text-center gap-4 sm:gap-5 animate-in fade-in duration-200">
+            <div>
+              <span className="text-[11px] sm:text-xs font-extrabold tracking-wider uppercase text-[#456882]">
+                COMMUNITY INTERACTION
+              </span>
+              <h2 className="font-display text-lg sm:text-xl md:text-2xl font-bold text-brown-900 mt-1 max-w-[480px]">
+                Seberapa aktif kamu berinteraksi secara positif dengan lingkungan atau komunitasmu?
+              </h2>
+            </div>
+
+            {renderLikertScale(
+              communityInteraction,
+              setCommunityInteraction,
+              "Tidak berinteraksi",
+              "Sangat aktif berinteraksi"
+            )}
+          </div>
+        )}
+
+        {/* STEP 11: Reflection (Optional compact step before finish) */}
+        {currentStep === 11 && (
+          <div className="flex flex-col items-center text-center gap-3 sm:gap-4 animate-in fade-in duration-200">
+            <div>
+              <span className="text-[11px] sm:text-xs font-extrabold tracking-wider uppercase text-[#D4AF37]">
+                REFLEKSI SINGKAT
+              </span>
+              <h2 className="font-display text-lg sm:text-xl md:text-2xl font-bold text-brown-900 mt-1 max-w-[480px]">
+                Bagaimana harimu hari ini?
+              </h2>
+              <p className="text-xs text-brown-700/70 mt-1">
+                Opsional · Tuliskan sepatah dua patah kata untuk catatan harianmu
+              </p>
+            </div>
+
+            <div className="w-full max-w-[480px]">
+              <textarea
+                value={reflection}
+                onChange={(e) => setReflection(e.target.value)}
+                rows={3}
+                placeholder="Tuliskan apa yang kamu syukuri atau hal yang ingin kamu luapkan hari ini..."
+                className="w-full rounded-xl border border-brown-900/15 p-3 text-xs sm:text-sm text-brown-900 placeholder:text-brown-700/40 focus:outline-hidden focus:ring-1 focus:ring-[#1B3C53] resize-none"
+              />
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* ── 3. Bottom Navigation (Easy tap 40-44px, no overflow on 360px) ─ */}
+      <div className="flex items-center justify-between gap-3 pt-4 border-t border-brown-900/10">
+        {currentStep > 1 ? (
+          <button
+            type="button"
+            onClick={handleBack}
+            disabled={isSubmitting}
+            className="h-10 sm:h-11 px-4 sm:px-5 rounded-full border border-brown-900/20 text-xs sm:text-sm font-semibold text-brown-900 hover:bg-cream/50 transition-colors flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
+          >
+            <ArrowLeft size={14} />
+            <span>Kembali</span>
+          </button>
+        ) : (
+          <div className="w-16" />
+        )}
+
+        {currentStep < 11 ? (
+          <button
+            type="button"
+            onClick={handleNext}
+            className="h-10 sm:h-11 px-5 sm:px-6 rounded-full bg-[#1B3C53] text-white text-xs sm:text-sm font-semibold hover:bg-[#1B3C53]/90 transition-all flex items-center gap-1.5 cursor-pointer shadow-xs"
+          >
+            <span>{currentStep === 10 ? "Lanjut ke Refleksi" : "Lanjut"}</span>
+            <ArrowRight size={14} />
+          </button>
+        ) : (
+          <button
+            type="button"
+            onClick={() => handleSubmit()}
+            disabled={isSubmitting}
+            className="h-10 sm:h-11 px-6 sm:px-7 rounded-full bg-[#1B3C53] text-white text-xs sm:text-sm font-semibold hover:bg-[#1B3C53]/90 transition-all flex items-center gap-2 cursor-pointer shadow-xs disabled:opacity-50"
+          >
+            {isSubmitting ? (
+              <span className="flex items-center gap-2">
+                <span className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                <span>Menyimpan...</span>
+              </span>
+            ) : (
+              <>
+                <Check size={15} />
+                <span>Simpan Assessment</span>
+              </>
+            )}
+          </button>
+        )}
+      </div>
+    </div>
   );
 }
-
-export default DailyAssessmentForm;

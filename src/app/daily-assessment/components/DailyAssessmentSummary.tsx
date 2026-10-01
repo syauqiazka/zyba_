@@ -19,6 +19,9 @@ import {
   Sunrise,
   Tag,
   Quote,
+  Heart,
+  Compass,
+  Lightbulb,
 } from "lucide-react";
 import { DailyRecord, MOODS, SLEEP_OPTIONS } from "./DailyAssessmentForm";
 
@@ -31,14 +34,12 @@ const MOOD_META: Record<
   string,
   { label: string; icon: React.ElementType; tint: string }
 > = {
-  DEPRESSED: { label: "Depressed", icon: CloudRain, tint: "#A99BE0" },
-  SAD: { label: "Sedih", icon: Cloud, tint: "#EE8A5E" },
+  DEPRESSED: { label: "Depressed", icon: CloudRain, tint: "#8B5CF6" },
+  SAD: { label: "Sedih", icon: Cloud, tint: "#F97316" },
   NEUTRAL: { label: "Netral", icon: Minus, tint: "#6B5645" },
-  HAPPY: { label: "Bahagia", icon: Smile, tint: "#E8C24A" },
+  HAPPY: { label: "Bahagia", icon: Smile, tint: "#EAB308" },
   OVERJOYED: { label: "Berenergi", icon: Sparkles, tint: "#8FAE5D" },
 };
-
-const STRESS_LABELS = ["", "Tenang", "Rendah", "Sedang", "Tinggi", "Intens"];
 
 export default function DailyAssessmentSummary({ record }: SummaryProps) {
   const moodData = MOOD_META[record.mood] || {
@@ -48,35 +49,61 @@ export default function DailyAssessmentSummary({ record }: SummaryProps) {
   };
   const MoodIcon = moodData.icon;
 
-  const sleepOption = SLEEP_OPTIONS.find((o) => o.rating === record.sleepRating);
-  const sleepText = record.sleepHours || sleepOption?.label || "6-7 jam";
+  const finalZybaScore =
+    record.zybaScore ?? record.calculatedScore ?? record.score ?? 78;
 
-  const getSleepIcon = (rating: number | null) => {
-    switch (rating) {
-      case 1:
-        return Moon;
-      case 2:
-        return Bed;
-      case 3:
-        return BedDouble;
-      case 4:
-        return MoonStar;
-      case 5:
-        return Sunrise;
-      default:
-        return BedDouble;
+  // Calculate 6 domain indicators (0 to 100%) for presentation
+  const moodScoreMap: Record<string, number> = {
+    DEPRESSED: 25,
+    SAD: 45,
+    NEUTRAL: 65,
+    HAPPY: 85,
+    OVERJOYED: 98,
+  };
+  const mentalScore = moodScoreMap[record.mood] || 75;
+
+  const stressVal = record.stressLevel ?? 2;
+  const anxietyVal = record.anxietyLevel ?? stressVal;
+  // Lower stress/anxiety means better regulation
+  const stressRegulationScore = Math.round(
+    (((6 - stressVal) + (6 - anxietyVal)) / 10) * 100
+  );
+
+  const satisfactionVal = record.satisfactionLevel ?? 4;
+  const meaningScore = Math.round((satisfactionVal / 5) * 100);
+
+  const sleepVal = record.sleepRating ?? 3;
+  const energyVal = record.energyLevel ?? 3;
+  const recoveryScore = Math.round(((sleepVal + energyVal) / 10) * 100);
+
+  const meTimeVal = record.meTimeLevel ?? 3;
+  const selfUnderstandingScore = Math.round((meTimeVal / 5) * 100);
+
+  const productivityVal = record.productivityLevel ?? 3;
+  const futureReadinessScore = Math.round((productivityVal / 5) * 100);
+
+  const indicators = [
+    { label: "Mental Wellbeing", val: mentalScore, color: "bg-[#8FAE5D]" },
+    { label: "Stress Regulation", val: stressRegulationScore, color: "bg-[#456882]" },
+    { label: "Meaning & Purpose", val: meaningScore, color: "bg-[#D4AF37]" },
+    { label: "Life Balance & Recovery", val: recoveryScore, color: "bg-[#1B3C53]" },
+    { label: "Self-Understanding", val: selfUnderstandingScore, color: "bg-[#8B5CF6]" },
+    { label: "Future Readiness", val: futureReadinessScore, color: "bg-[#F97316]" },
+  ];
+
+  // Warm, supportive, non-clinical insight generator
+  const getInsightText = () => {
+    if (finalZybaScore >= 80) {
+      return "Keseimbangan harimu terjaga dengan baik. Energi dan fokusmu berada di titik yang positif. Nikmati pencapaian kecil ini dan pertahankan ritme yang nyaman untuk dirimu.";
     }
+    if (stressVal >= 4 || anxietyVal >= 4) {
+      return "Pikiranmu sedang memikul banyak hal hari ini. Ingat bahwa kamu tidak harus menyelesaikan semuanya sekaligus. Luangkan beberapa menit untuk rehat sejenak dan bernapas perlahan.";
+    }
+    if (sleepVal <= 2 || energyVal <= 2) {
+      return "Tubuhmu sedang memberi isyarat perlunya pemulihan. Luangkan waktu malam ini untuk beristirahat lebih awal tanpa distraksi gawai agar energimu pulih.";
+    }
+    return "Kamu berhasil melalui hari ini dengan cukup seimbang. Terus beri apresiasi pada diri sendiri atas setiap langkah kecil yang kamu jalani.";
   };
-  const SleepIcon = getSleepIcon(record.sleepRating);
-
-  const getStressIcon = (lvl: number | null) => {
-    if (!lvl || lvl <= 1) return ShieldCheck;
-    if (lvl === 2) return Smile;
-    if (lvl === 3) return Activity;
-    if (lvl === 4) return AlertCircle;
-    return Flame;
-  };
-  const StressIcon = getStressIcon(record.stressLevel);
 
   const updatedTime = new Date(record.updatedAt).toLocaleTimeString("id-ID", {
     hour: "2-digit",
@@ -84,107 +111,101 @@ export default function DailyAssessmentSummary({ record }: SummaryProps) {
   });
 
   return (
-    <div className="flex flex-col gap-3 sm:gap-4 select-none">
-      {/* ── 1. Compact Completion Notice ───────────────────────────── */}
-      <div className="flex items-center justify-between p-3 sm:p-3.5 bg-green-100/60 rounded-2xl border border-green-500/25">
-        <div className="flex items-center gap-2.5 min-w-0">
-          <CheckCircle2 size={18} className="text-green-600 shrink-0" />
-          <div className="min-w-0">
-            <p className="text-xs sm:text-sm font-bold text-brown-900 leading-tight">
-              Assessment Harian Selesai
-            </p>
-            <p className="text-[10px] sm:text-xs text-brown-700/80 truncate">
-              Tercatat pukul {updatedTime} WIB · 1 evaluasi per hari
-            </p>
+    <div className="w-full max-w-[680px] mx-auto flex flex-col gap-4 select-none animate-in fade-in duration-200">
+      {/* ── 1. Header Card: Today's Check-in & Overall Score ────────── */}
+      <div className="bg-white rounded-2xl p-4 sm:p-6 border border-brown-900/10 shadow-xs">
+        <div className="flex items-center justify-between pb-3 border-b border-brown-900/10 mb-4">
+          <div className="flex items-center gap-2">
+            <span className="text-[10px] sm:text-[11px] font-extrabold uppercase tracking-widest text-[#1B3C53] bg-[#1B3C53]/10 px-2.5 py-0.5 rounded-full">
+              Assessment Selesai
+            </span>
+            <span className="text-xs text-brown-700/70">
+              Pukul {updatedTime} WIB
+            </span>
           </div>
+          <span className="text-xs font-bold text-green-700 bg-green-50 px-2.5 py-0.5 rounded-full border border-green-200">
+            Tercatat
+          </span>
         </div>
-        <span className="text-[10px] sm:text-[11px] font-bold text-green-700 bg-white/70 border border-green-500/20 px-2.5 py-1 rounded-full whitespace-nowrap shrink-0">
-          Tersimpan
-        </span>
-      </div>
 
-      {/* ── 2. Compact Horizontal Condition Row (Mood | Stress | Sleep) ─ */}
-      <div className="bg-white rounded-2xl p-3 sm:p-4 border border-brown-900/10 shadow-2xs">
-        <div className="grid grid-cols-3 divide-x divide-brown-900/10 text-center">
-          {/* Item 1: Mood */}
-          <div className="flex flex-col items-center justify-center px-1 sm:px-2">
-            <span className="text-[10px] sm:text-[11px] font-extrabold uppercase tracking-wider text-brown-700/60 mb-1">
-              Mood
-            </span>
-            <div className="flex items-center gap-1.5">
-              <MoodIcon
-                size={18}
-                className="shrink-0"
-                style={{ color: moodData.tint }}
-              />
-              <span className="font-display font-bold text-xs sm:text-sm text-brown-900 truncate">
-                {moodData.label}
-              </span>
-            </div>
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <h2 className="font-display text-xl sm:text-2xl font-bold text-brown-900">
+              Today&apos;s Check-in
+            </h2>
+            <p className="text-xs sm:text-sm text-brown-700/80 mt-0.5">
+              Gambaran keseimbangan mental, fisik, dan sosialmu hari ini.
+            </p>
           </div>
 
-          {/* Item 2: Stress */}
-          <div className="flex flex-col items-center justify-center px-1 sm:px-2">
-            <span className="text-[10px] sm:text-[11px] font-extrabold uppercase tracking-wider text-brown-700/60 mb-1">
-              Level Stres
-            </span>
-            <div className="flex items-center gap-1.5">
-              <StressIcon size={16} className="text-orange-600 shrink-0" />
-              <span className="font-display font-bold text-xs sm:text-sm text-brown-900">
-                {record.stressLevel ?? 2}
-                <span className="text-[10px] font-normal text-brown-700/60">/5</span>
+          <div className="flex items-center gap-3 bg-[#FAF7F2] p-3 rounded-2xl border border-brown-900/10 self-start sm:self-center shrink-0">
+            <div className="text-right">
+              <span className="text-[10px] font-bold uppercase tracking-wider text-brown-700/60 block">
+                Zyba Score
               </span>
-              <span className="text-[10px] text-brown-700/70 hidden sm:inline truncate">
-                ({STRESS_LABELS[record.stressLevel ?? 2] || "Terkontrol"})
+              <span className="font-display text-2xl sm:text-3xl font-extrabold text-[#1B3C53] leading-none">
+                {finalZybaScore}
               </span>
             </div>
-          </div>
-
-          {/* Item 3: Sleep */}
-          <div className="flex flex-col items-center justify-center px-1 sm:px-2">
-            <span className="text-[10px] sm:text-[11px] font-extrabold uppercase tracking-wider text-brown-700/60 mb-1">
-              Tidur
-            </span>
-            <div className="flex items-center gap-1.5">
-              <SleepIcon size={16} className="text-indigo-600 shrink-0" />
-              <span className="font-display font-bold text-xs sm:text-sm text-brown-900 truncate">
-                {sleepText}
-              </span>
+            <div className="w-9 h-9 rounded-xl bg-[#1B3C53] text-white flex items-center justify-center shrink-0">
+              <MoodIcon size={20} />
             </div>
           </div>
         </div>
       </div>
 
-      {/* ── 3. Energy Tags (Compact Horizontal) ────────────────────── */}
-      {record.energyTags && record.energyTags.length > 0 && (
-        <div className="bg-white rounded-2xl p-3 sm:p-3.5 border border-brown-900/10 shadow-2xs flex items-center gap-2 flex-wrap">
-          <div className="flex items-center gap-1 text-[11px] font-bold text-brown-700/70 mr-1 shrink-0">
-            <Tag size={13} />
-            <span>Kondisi:</span>
-          </div>
-          <div className="flex flex-wrap gap-1.5">
-            {record.energyTags.map((tag) => (
-              <span
-                key={tag}
-                className="px-2.5 py-0.5 bg-cream/80 border border-brown-900/10 rounded-full text-[11px] font-semibold text-brown-900"
-              >
-                {tag}
-              </span>
-            ))}
-          </div>
-        </div>
-      )}
+      {/* ── 2. Compact Horizontal Bars: 6 Domains ──────────────────── */}
+      <div className="bg-white rounded-2xl p-4 sm:p-5 border border-brown-900/10 shadow-xs">
+        <h3 className="font-display text-xs sm:text-sm font-bold text-brown-900 mb-3 flex items-center gap-1.5">
+          <Compass size={14} className="text-[#456882]" />
+          <span>Indikator Kesejahteraan Harian</span>
+        </h3>
 
-      {/* ── 4. Reflection (Compact quote box) ──────────────────────── */}
-      {record.reflection && (
-        <div className="bg-white rounded-2xl p-3.5 sm:p-4 border border-brown-900/10 shadow-2xs">
-          <div className="flex items-center gap-1.5 mb-1.5 text-xs font-bold text-brown-700">
-            <Quote size={13} className="text-orange-500" />
-            <span>Refleksi Hari Ini</span>
-          </div>
-          <p className="text-xs sm:text-sm text-brown-900/90 leading-relaxed italic pl-2 border-l-2 border-orange-400">
-            &ldquo;{record.reflection}&rdquo;
+        <div className="flex flex-col gap-2.5">
+          {indicators.map((ind) => (
+            <div key={ind.label} className="flex flex-col gap-1">
+              <div className="flex items-center justify-between text-[11px] sm:text-xs">
+                <span className="font-medium text-brown-900/90">{ind.label}</span>
+                <span className="font-bold text-brown-700">{ind.val}%</span>
+              </div>
+              <div className="h-2 w-full bg-cream rounded-full overflow-hidden">
+                <div
+                  className={`h-full rounded-full transition-all duration-500 ${ind.color}`}
+                  style={{ width: `${ind.val}%` }}
+                />
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* ── 3. Today's Insight (Warm, Human, Supportive) ────────────── */}
+      <div className="bg-white rounded-2xl p-4 sm:p-5 border border-brown-900/10 shadow-xs flex items-start gap-3">
+        <div className="w-8 h-8 rounded-xl bg-[#D4AF37]/15 text-[#927318] flex items-center justify-center shrink-0 mt-0.5">
+          <Lightbulb size={18} />
+        </div>
+        <div className="flex-1">
+          <h3 className="font-display text-xs sm:text-sm font-bold text-brown-900 mb-1">
+            Today&apos;s Insight
+          </h3>
+          <p className="text-xs sm:text-sm text-brown-700/90 leading-relaxed">
+            {getInsightText()}
           </p>
+        </div>
+      </div>
+
+      {/* ── 4. Reflection Quote Box ─────────────────────────────────── */}
+      {record.reflection && (
+        <div className="bg-white rounded-2xl p-4 border border-brown-900/10 shadow-xs flex items-start gap-3">
+          <Quote size={16} className="text-[#1B3C53] shrink-0 mt-0.5" />
+          <div className="flex-1">
+            <span className="text-[10px] font-extrabold uppercase tracking-wider text-brown-700/60 block mb-1">
+              Refleksi Hari Ini
+            </span>
+            <p className="text-xs sm:text-sm text-brown-900 italic leading-relaxed">
+              &ldquo;{record.reflection}&rdquo;
+            </p>
+          </div>
         </div>
       )}
     </div>
