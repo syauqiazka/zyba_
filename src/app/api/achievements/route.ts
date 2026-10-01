@@ -31,22 +31,42 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    // 1. Fetch all badges from DB
-    const allBadges = await accountDb.badge.findMany({
-      orderBy: { xpReward: "asc" },
-    });
+const [allBadges, userBadges, user] = await Promise.all([
+  accountDb.badge.findMany({
+    orderBy: { xpReward: "asc" },
+    select: {
+      id: true,
+      key: true,
+      name: true,
+      description: true,
+      icon: true,
+      category: true,
+      xpReward: true,
+    },
+  }),
 
-    // 2. Fetch all userBadges earned by this user
-    const userBadges = await accountDb.userBadge.findMany({
-      where: { userId },
-      include: { badge: true },
-      orderBy: { earnedAt: "desc" },
-    });
+  accountDb.userBadge.findMany({
+    where: { userId },
+    orderBy: { earnedAt: "desc" },
+    select: {
+      earnedAt: true,
+      badge: {
+        select: {
+          key: true,
+          xpReward: true,
+        },
+      },
+    },
+  }),
 
-    const user = await accountDb.user.findUnique({
-      where: { id: userId },
-      select: { streakDays: true, streak: true },
-    });
+  accountDb.user.findUnique({
+    where: { id: userId },
+    select: {
+      streakDays: true,
+      streak: true,
+    },
+  }),
+]);
 
     const unlockedMap = new Map(
       userBadges.map((ub) => [ub.badge.key, ub.earnedAt.toISOString()])

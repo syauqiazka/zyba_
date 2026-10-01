@@ -169,7 +169,18 @@ export const communityRepository = {
       take,
       ...(cursor && { skip: 1, cursor: { id: cursor } }),
       orderBy: { createdAt: "desc" },
-      include: { comments: { take: 10, orderBy: { createdAt: "asc" } }, likes: true },
+include: {
+  comments: {
+    take: 10,
+    orderBy: { createdAt: "asc" },
+  },
+  _count: {
+    select: {
+      comments: true,
+      likes: true,
+    },
+  },
+},
     });
 
     // Auto-clean test junk posts from database in background
@@ -201,8 +212,8 @@ export const communityRepository = {
         tag: "Sharing",
         content: p.content ?? "",
         imageUrl: p.imageUrl,
-        likes: p.likes.length,
-        commentsCount: p.comments.length,
+likes: p._count.likes,
+commentsCount: p._count.comments,
         repostsCount: 0,
         userLiked: false,
         userReposted: false,
@@ -361,13 +372,24 @@ export const communityRepository = {
       return [];
     }
 
-    const posts = await communityDb.communityPost.findMany({
-      where: { userId: { in: followingIds }, isHidden: false },
-      take,
-      ...(cursor && { skip: 1, cursor: { id: cursor } }),
-      orderBy: { createdAt: "desc" },
-      include: { comments: { take: 10, orderBy: { createdAt: "asc" } }, likes: true },
-    });
+const posts = await communityDb.communityPost.findMany({
+  where: { isHidden: false },
+  take,
+  ...(cursor && { skip: 1, cursor: { id: cursor } }),
+  orderBy: { createdAt: "desc" },
+  include: {
+    comments: {
+      take: 10,
+      orderBy: { createdAt: "asc" },
+    },
+    _count: {
+      select: {
+        comments: true,
+        likes: true,
+      },
+    },
+  },
+});
 
     const userIds = [...new Set(posts.flatMap(p => [p.userId, ...p.comments.map(c => c.userId)]))];
     const users = await accountDb.user.findMany({
@@ -387,7 +409,8 @@ export const communityRepository = {
         tag: "Sharing",
         content: p.content ?? "",
         imageUrl: p.imageUrl,
-        likes: p.likes.length, commentsCount: p.comments.length,
+        likes: p._count.likes,
+        commentsCount: p._count.comments,
         repostsCount: 0, userLiked: false, userReposted: false,
         comments: p.comments.map(c => {
           const cu = umap.get(c.userId);
