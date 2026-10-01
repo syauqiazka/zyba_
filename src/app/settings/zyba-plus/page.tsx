@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { X, Zap, Check } from "lucide-react";
 
 declare global {
   interface Window {
@@ -19,42 +20,95 @@ declare global {
   }
 }
 
+type PlanId = "monthly" | "yearly" | "lifetime";
+
+interface Plan {
+  id: PlanId;
+  label: string;
+  price: number;
+  period: string;
+  sub?: string;
+  badge?: { text: string; color: string };
+}
+
+const PLANS: Plan[] = [
+  {
+    id: "monthly",
+    label: "Bulanan",
+    price: 49000,
+    period: "/ bulan",
+    sub: "Fleksibel, batalkan kapan saja",
+  },
+  {
+    id: "yearly",
+    label: "Tahunan",
+    price: 399000,
+    period: "/ tahun",
+    sub: "Setara Rp 33.250 / bulan",
+    badge: { text: "HEMAT 32%", color: "bg-orange-500 text-white" },
+  },
+  {
+    id: "lifetime",
+    label: "Seumur Hidup",
+    price: 999000,
+    period: "sekali bayar",
+    sub: "Akses permanen, tidak perlu perpanjang",
+    badge: { text: "BEST VALUE", color: "bg-green-500 text-white" },
+  },
+];
+
+const FEATURES = [
+  "Semua model AI premium (Gemini Pro, GPT-4o, Claude)",
+  "Analitik wellness mendalam",
+  "Prioritas respons AI",
+  "Chat tanpa batas per hari",
+  "Ekspor laporan PDF bulanan",
+  "Akses fitur beta lebih awal",
+];
+
+const formatPrice = (price: number) =>
+  new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", maximumFractionDigits: 0 })
+    .format(price)
+    .replace("IDR", "Rp");
+
 export default function ZybaPlusPage() {
   const router = useRouter();
+  const [selected, setSelected] = useState<PlanId>("yearly");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const selectedPlan = PLANS.find((p) => p.id === selected)!;
 
   const handleUpgrade = async () => {
     setLoading(true);
     setError(null);
 
     try {
-      // 1. Request checkout dari server
       const res = await fetch("/api/billing/checkout", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ plan: selected }),
       });
 
       if (!res.ok) {
         const errData = await res.json();
-        throw new Error(errData.error || "Checkout failed");
+        throw new Error(errData.error || "Checkout gagal");
       }
 
       const { snapToken, orderId, snapUrl, clientKey } = await res.json();
 
-      // 2. Load Midtrans Snap.js kalau belum
+      // Load Midtrans Snap.js
       if (!window.snap) {
-        const script = document.createElement("script");
-        script.src = snapUrl || "https://app.midtrans.com/snap/snap.js";
-        script.setAttribute("data-client-key", clientKey || "");
-        document.body.appendChild(script);
-
-        await new Promise((resolve) => {
-          script.onload = resolve;
+        await new Promise<void>((resolve, reject) => {
+          const script = document.createElement("script");
+          script.src = snapUrl || "https://app.sandbox.midtrans.com/snap/snap.js";
+          script.setAttribute("data-client-key", clientKey || "");
+          script.onload = () => resolve();
+          script.onerror = () => reject(new Error("Gagal memuat payment gateway"));
+          document.body.appendChild(script);
         });
       }
 
-      // 3. Tampilkan Midtrans popup
       window.snap?.pay(snapToken, {
         onSuccess: (result) => {
           console.log("[Payment] Success:", result);
@@ -70,7 +124,6 @@ export default function ZybaPlusPage() {
           setLoading(false);
         },
         onClose: () => {
-          console.log("[Payment] Popup closed");
           setLoading(false);
         },
       });
@@ -82,89 +135,94 @@ export default function ZybaPlusPage() {
   };
 
   return (
-    <div className="min-h-screen bg-cream px-6 py-8">
-      <div className="max-w-4xl mx-auto">
-        <h1 className="font-display text-3xl font-extrabold text-brown-900 mb-2">
-          Pilih Paket ZYBA
-        </h1>
-        <p className="text-brown-700 mb-8">
-          Upgrade ke Zyba Plus untuk fitur AI unlimited, rekomendasi personal, dan insight mendalam.
+    <div className="min-h-screen bg-cream py-8 px-4">
+      <div className="max-w-2xl mx-auto">
+        {/* Header */}
+        <div className="text-center mb-6">
+          <div className="flex items-center justify-center gap-2 mb-3">
+            <div className="w-10 h-10 rounded-xl bg-orange-500 flex items-center justify-center shadow-lg">
+              <Zap size={20} className="text-white fill-white" />
+            </div>
+          </div>
+          <h1 className="font-display text-2xl font-extrabold text-brown-900">Zyba Plus</h1>
+          <p className="text-sm text-brown-700 mt-1 max-w-sm mx-auto">
+            Akses penuh ke semua AI model, percakapan tanpa batas, dan analitik wellness mendalam.
+          </p>
+          <span className="inline-block mt-3 text-xs font-bold bg-green-100 text-green-700 px-4 py-1.5 rounded-full">
+            🎁 1 BULAN FREE untuk pengguna baru
+          </span>
+        </div>
+
+        {/* Plan Cards */}
+        <div className="grid grid-cols-3 gap-2 sm:gap-3 mb-5">
+          {PLANS.map((plan) => {
+            const isSelected = selected === plan.id;
+            return (
+              <button
+                key={plan.id}
+                type="button"
+                onClick={() => setSelected(plan.id)}
+                className={`relative flex flex-col items-center text-center p-3 sm:p-4 rounded-2xl border-2 transition-all duration-200 ${
+                  isSelected
+                    ? "border-orange-500 bg-orange-50 shadow-md"
+                    : "border-brown-900/10 bg-white hover:border-orange-300"
+                }`}
+              >
+                {plan.badge && (
+                  <span className={`absolute -top-2.5 left-1/2 -translate-x-1/2 text-[9px] sm:text-[10px] font-extrabold px-2 py-0.5 rounded-full whitespace-nowrap ${plan.badge.color}`}>
+                    {plan.badge.text}
+                  </span>
+                )}
+                {isSelected && (
+                  <span className="absolute top-2 right-2 text-orange-500">
+                    <Check size={14} strokeWidth={3} />
+                  </span>
+                )}
+                <p className="text-xs font-bold text-brown-900 mt-1">{plan.label}</p>
+                <p className="font-display text-lg sm:text-xl font-extrabold text-brown-900 leading-tight mt-1">
+                  {formatPrice(plan.price)}
+                </p>
+                <p className="text-[10px] text-brown-700 mt-0.5">{plan.period}</p>
+                {plan.sub && (
+                  <p className="text-[9px] sm:text-[10px] text-brown-700/60 mt-1 leading-tight">{plan.sub}</p>
+                )}
+              </button>
+            );
+          })}
+        </div>
+
+        {/* CTA Button */}
+        <button
+          type="button"
+          onClick={handleUpgrade}
+          disabled={loading}
+          className="w-full py-4 rounded-full bg-orange-500 hover:bg-orange-600 disabled:bg-orange-300 text-white font-bold text-sm transition-colors shadow-lg mb-2"
+        >
+          {loading
+            ? "Memproses..."
+            : `Mulai dengan paket ${selectedPlan.label} →`}
+        </button>
+
+        {error && (
+          <p className="text-center text-sm text-red-600 mb-3">{error}</p>
+        )}
+
+        <p className="text-center text-[10px] text-brown-700/50 mb-6">
+          Pembayaran aman melalui Midtrans. Dibatalkan kapan saja.
         </p>
 
-        <div className="grid md:grid-cols-2 gap-6">
-          {/* Free Plan */}
-          <div className="bg-white rounded-3xl p-6 border border-brown-900/10 shadow-sm">
-            <div className="flex items-center gap-2 mb-3">
-              <h2 className="font-display text-xl font-bold text-brown-900">Zyba Free</h2>
-              <span className="px-2 py-1 bg-green-100 text-green-600 text-xs font-bold rounded-full">
-                Paket Saat Ini
-              </span>
-            </div>
-            <p className="text-3xl font-extrabold text-brown-900 mb-4">Rp 0</p>
-            <ul className="space-y-2 text-sm text-brown-700 mb-6">
-              <li className="flex items-start gap-2">
-                <span className="text-green-500">✓</span>
-                <span>20 pesan AI per hari</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="text-green-500">✓</span>
-                <span>Mood tracking dasar</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="text-green-500">✓</span>
-                <span>Akses community feed</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="text-green-500">✓</span>
-                <span>Resources gratis</span>
-              </li>
-            </ul>
-          </div>
-
-          {/* Plus Plan */}
-          <div className="bg-gradient-to-br from-orange-50 to-orange-100 rounded-3xl p-6 border-2 border-orange-500 shadow-lg relative">
-            <div className="absolute top-4 right-4">
-              <span className="px-3 py-1 bg-orange-500 text-white text-xs font-bold rounded-full">
-                REKOMENDASI
-              </span>
-            </div>
-            <div className="flex items-center gap-2 mb-3">
-              <h2 className="font-display text-xl font-bold text-brown-900">Zyba Plus</h2>
-            </div>
-            <p className="text-3xl font-extrabold text-brown-900 mb-1">Rp 49.000</p>
-            <p className="text-sm text-brown-700 mb-4">per bulan</p>
-            <ul className="space-y-2 text-sm text-brown-900 mb-6">
-              <li className="flex items-start gap-2">
-                <span className="text-orange-500 font-bold">✓</span>
-                <span className="font-semibold">Unlimited AI chat</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="text-orange-500 font-bold">✓</span>
-                <span className="font-semibold">Rekomendasi personal AI</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="text-orange-500 font-bold">✓</span>
-                <span className="font-semibold">Program komunitas eksklusif</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="text-orange-500 font-bold">✓</span>
-                <span className="font-semibold">Insight kebiasaan mendalam</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="text-orange-500 font-bold">✓</span>
-                <span className="font-semibold">Laporan perkembangan bulanan</span>
-              </li>
-            </ul>
-            <button
-              onClick={handleUpgrade}
-              disabled={loading}
-              className="w-full py-3 bg-orange-500 hover:bg-orange-600 disabled:bg-orange-300 text-white font-bold rounded-full transition-colors"
-            >
-              {loading ? "Memproses..." : "Upgrade ke Zyba Plus →"}
-            </button>
-            {error && (
-              <p className="mt-3 text-sm text-red-600 text-center">{error}</p>
-            )}
+        {/* Feature list */}
+        <div className="bg-white rounded-2xl border border-brown-900/10 p-5">
+          <p className="text-[10px] font-extrabold uppercase tracking-widest text-brown-700/60 mb-3">
+            Semua yang kamu dapat
+          </p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+            {FEATURES.map((f) => (
+              <div key={f} className="flex items-start gap-2">
+                <Check size={14} className="text-green-500 mt-0.5 shrink-0" strokeWidth={3} />
+                <span className="text-xs text-brown-700">{f}</span>
+              </div>
+            ))}
           </div>
         </div>
       </div>

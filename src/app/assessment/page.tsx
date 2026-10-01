@@ -82,7 +82,19 @@ export default function AssessmentPage() {
     loadUser();
   }, [router]);
 
+  const [ageError, setAgeError] = useState("");
+
   const handleNext = async () => {
+    // ── Validasi Step 1: Usia wajib diisi ──────────────────────────
+    if (currentStep === 1) {
+      const ageNum = parseInt(age, 10);
+      if (!age.trim() || isNaN(ageNum) || ageNum < 5 || ageNum > 120) {
+        setAgeError("Umur wajib diisi (5–120 tahun).");
+        return;
+      }
+      setAgeError("");
+    }
+
     if (currentStep === 9) {
       if (expressionText.trim()) {
         const isRisk = detectRisk(expressionText);
@@ -145,6 +157,7 @@ export default function AssessmentPage() {
       setTimeout(scrollToTop, 50);
     }
   };
+
 
   const handlePrev = () => {
     if (currentStep > 0) {
@@ -253,7 +266,8 @@ export default function AssessmentPage() {
                 gender={gender}
                 setGender={setGender}
                 age={age}
-                setAge={setAge}
+                setAge={(v) => { setAge(v); setAgeError(""); }}
+                ageError={ageError}
                 weight={weight}
                 setWeight={setWeight}
                 mood={mood}

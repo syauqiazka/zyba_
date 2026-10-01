@@ -16,6 +16,7 @@ interface QuestionStepProps {
   setGender: React.Dispatch<React.SetStateAction<string>>;
   age: string;
   setAge: React.Dispatch<React.SetStateAction<string>>;
+  ageError?: string;
   weight: string;
   setWeight: React.Dispatch<React.SetStateAction<string>>;
   mood: string;
@@ -51,6 +52,7 @@ export default function QuestionStep({
   setGender,
   age,
   setAge,
+  ageError,
   weight,
   setWeight,
   mood,
@@ -153,9 +155,15 @@ export default function QuestionStep({
                     placeholder="Contoh: 21"
                     className="w-full mt-1.5 rounded-2xl border border-brown-900/12 bg-[#fbf9f5] px-4 py-3.5 text-xs text-brown-900 font-medium placeholder:text-brown-700/35 outline-none transition-all focus:border-orange-500/60 focus:bg-white focus:ring-4 focus:ring-orange-500/10"
                   />
-                  <span className="text-[10px] text-brown-700/60 mt-1 block">
-                    Masukkan umurmu saat ini (dalam tahun)
-                  </span>
+                  {ageError ? (
+                    <span className="text-[11px] font-semibold text-red-500 mt-1 block">
+                      ⚠ {ageError}
+                    </span>
+                  ) : (
+                    <span className="text-[10px] text-brown-700/60 mt-1 block">
+                      Masukkan umurmu saat ini (dalam tahun)
+                    </span>
+                  )}
                 </div>
                 <div>
                   <label className="text-xs font-bold text-brown-900 block">Berat Badan (kg):</label>

@@ -38,10 +38,10 @@ export default function CommunityGuidelinesModal({
             <div className="absolute inset-0 bg-brown-900/55 backdrop-blur-sm" />
 
             {/* Modal */}
-            <div className="relative z-10 w-full max-w-lg overflow-hidden rounded-[28px] bg-[#F7F2E7] border border-brown-900/10 shadow-2xl">
+            <div className="relative z-10 w-full max-w-lg flex flex-col max-h-[92svh] max-h-[92vh] overflow-hidden rounded-[28px] bg-[#F7F2E7] border border-brown-900/10 shadow-2xl">
 
                 {/* Header */}
-                <div className="px-6 pt-6 pb-4 sm:px-8 sm:pt-8">
+                <div className="px-6 pt-6 pb-4 sm:px-8 sm:pt-8 shrink-0">
                     <div className="flex items-start gap-4">
                         <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-[#E2EBD2] text-green-700">
                             <ShieldCheck size={22} strokeWidth={2} />
@@ -64,8 +64,8 @@ export default function CommunityGuidelinesModal({
                     </div>
                 </div>
 
-                {/* Content */}
-                <div className="mx-6 min-h-0 flex-1 overflow-y-auto rounded-2xl border border-brown-900/10 bg-white/60 p-5 sm:mx-8 sm:p-6">
+                {/* Content — flex-1 agar bisa scroll di HP tanpa overflow modal */}
+                <div className="mx-4 sm:mx-8 flex-1 min-h-0 overflow-y-auto rounded-2xl border border-brown-900/10 bg-white/60 p-4 sm:p-6">
                     <div className="space-y-6">
 
                         {/* Respect */}
@@ -330,8 +330,8 @@ export default function CommunityGuidelinesModal({
                     </div>
                 </div>
 
-                {/* Agreement */}
-                <div className="px-6 pt-5 sm:px-8">
+                {/* Agreement — shrink-0 agar selalu terlihat di bawah */}
+                <div className="px-4 sm:px-8 pt-4 shrink-0">
                     <label className="flex cursor-pointer items-start gap-3">
                         <button
                             type="button"
@@ -365,7 +365,7 @@ export default function CommunityGuidelinesModal({
                 </div>
 
                 {/* Footer */}
-                <div className="px-6 pb-6 pt-5 sm:px-8 sm:pb-8">
+                <div className="px-4 sm:px-8 pb-5 sm:pb-8 pt-3 shrink-0">
                     <button
                         type="button"
                         disabled={!accepted || loading}
