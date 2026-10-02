@@ -127,7 +127,7 @@ export default function DailyConditionCard({ initialCondition }: DailyConditionC
           {condition.hasCheckedInToday ? "✓ Terhubung dengan Check-In Harian" : "Belum check-in hari ini"}
         </span>
         <Link
-          href="/mood-check-in"
+          href="/daily-assessment"
           className="text-orange-500 hover:text-brown-900 font-bold transition-colors inline-flex items-center gap-1 text-[11px] shrink-0 self-start sm:self-auto"
         >
           <span>{condition.hasCheckedInToday ? "Lihat Mood" : "Check-in Sekarang"}</span>
