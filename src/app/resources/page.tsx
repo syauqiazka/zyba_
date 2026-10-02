@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { BookOpen, Headphones, Sparkles, Filter } from "lucide-react";
 import ResourceCard, { ResourceItem } from "./components/ResourceCard";
+import { useFreshDataSignal } from "@/hooks/useFreshData";
 import ResourcePlayerModal from "./components/ResourcePlayerModal";
 import PaywallModal from "./components/PaywallModal";
 
@@ -91,6 +92,7 @@ const RESOURCES_DATA: ResourceItem[] = [
 ];
 
 export default function ResourcesPage() {
+  const dataRefreshSignal = useFreshDataSignal();
   const [activeFilter, setActiveFilter] = useState<"ALL" | "ARTICLE" | "COURSE" | "AUDIO">("ALL");
   const [resources, setResources] = useState<ResourceItem[]>(RESOURCES_DATA);
   const [loading, setLoading] = useState(false);
@@ -103,7 +105,7 @@ export default function ResourcesPage() {
     async function loadResources() {
       try {
         setLoading(true);
-        const res = await fetch("/api/resources");
+        const res = await fetch("/api/resources", { cache: "no-store" });
         if (res.ok) {
           const data = await res.json();
           if (data.resources && data.resources.length > 0) {
@@ -151,7 +153,7 @@ export default function ResourcesPage() {
       }
     }
     loadResources();
-  }, []);
+  }, [dataRefreshSignal]);
 
   const filteredResources = resources.filter(
     (r) => activeFilter === "ALL" || r.type === activeFilter

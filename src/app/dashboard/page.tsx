@@ -1,4 +1,6 @@
 "use client";
+import { useFreshDataSignal } from "@/hooks/useFreshData";
+
 import { useEffect, useState, useRef, useCallback } from "react";
 import Link from "next/link";
 
@@ -138,6 +140,7 @@ export default function DashboardPage() {
   const [cropImageSrc, setCropImageSrc] = useState<string | null>(null);
   const [isCropModalOpen, setIsCropModalOpen] = useState(false);
   const [isUploadingAvatar, setIsUploadingAvatar] = useState(false);
+  const dataRefreshSignal = useFreshDataSignal();
   const [avatarToast, setAvatarToast] = useState<string | null>(null);
   const [cooldownInfo, setCooldownInfo] = useState<{
     canChange: boolean;
@@ -572,7 +575,7 @@ export default function DashboardPage() {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [dataRefreshSignal]);
 
   /*
    * =====================================================

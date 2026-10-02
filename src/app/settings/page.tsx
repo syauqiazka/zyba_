@@ -4,8 +4,10 @@ import React, { useState, useEffect } from "react";
 import ProfileSettingsModal from "@/components/profile/ProfileSettingsModal";
 import { SettingsBanner, ProfileSection, SettingsToggles } from "./components";
 import { PersonaId } from "@/backend/ai/personas";
+import { useFreshDataSignal } from "@/hooks/useFreshData";
 
 export default function SettingsPage() {
+  const dataRefreshSignal = useFreshDataSignal();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
@@ -51,8 +53,8 @@ export default function SettingsPage() {
     async function loadFromDB() {
       try {
         const [userRes, notifRes] = await Promise.all([
-          fetch("/api/user/me"),
-          fetch("/api/settings/notifications"),
+          fetch("/api/user/me", { cache: "no-store" }),
+          fetch("/api/settings/notifications", { cache: "no-store" }),
         ]);
 
         if (userRes.ok) {
@@ -96,8 +98,8 @@ export default function SettingsPage() {
         setIsLoading(false);
       }
     }
-    loadFromDB();
-  }, []);
+    void loadFromDB();
+  }, [dataRefreshSignal]);
 
   const handleSave = async () => {
     setIsSaved(false);

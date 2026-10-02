@@ -31,6 +31,7 @@ import {
 } from "./components/JourneySkeleton";
 
 import { calculateDailyZybaScore } from "@/lib/assessmentMetrics";
+import { useFreshData } from "@/hooks/useFreshData";
 
 type TimeRangeDays = 7 | 30 | 90;
 
@@ -90,9 +91,9 @@ export default function WellnessJourneyPage() {
     try {
       const [userRes, assessmentRes, activityRes, journalRes] = await Promise.all([
         fetch("/api/user/me", { cache: "no-store" }).catch(() => null),
-        fetch("/api/daily-assessment?limit=90&page=1&includeTotal=false", { credentials: "include" }).catch(() => null),
-        fetch("/api/activity?days=90", { credentials: "include" }).catch(() => null),
-        fetch("/api/journal", { credentials: "include" }).catch(() => null),
+        fetch("/api/daily-assessment?limit=90&page=1&includeTotal=false", { cache: "no-store", credentials: "include" }).catch(() => null),
+        fetch("/api/activity?days=90", { cache: "no-store", credentials: "include" }).catch(() => null),
+        fetch("/api/journal", { cache: "no-store", credentials: "include" }).catch(() => null),
       ]);
 
       if (userRes && userRes.ok) {
@@ -123,8 +124,10 @@ export default function WellnessJourneyPage() {
   }, []);
 
   useEffect(() => {
-    fetchJourneyData();
+    void fetchJourneyData();
   }, [fetchJourneyData]);
+
+  useFreshData(fetchJourneyData);
 
   // =========================================================================
   // PERIOD PROCESSING: Current period vs Previous period
@@ -139,20 +142,6 @@ export default function WellnessJourneyPage() {
     observations,
     habits,
   } = useMemo(() => {
-    const totalRecords = assessmentHistory.length;
-    if (totalRecords === 0) {
-      return {
-        currentRecords: [],
-        previousRecords: [],
-        hasAnyData: false,
-        trendPoints: [],
-        progressData: null,
-        domains: [],
-        observations: [],
-        habits: [],
-      };
-    }
-
     const now = new Date();
     const currentCutoff = new Date(now.getTime() - timeRange * 24 * 60 * 60 * 1000);
     const previousCutoff = new Date(now.getTime() - timeRange * 2 * 24 * 60 * 60 * 1000);
@@ -528,7 +517,14 @@ export default function WellnessJourneyPage() {
     return {
       currentRecords: current,
       previousRecords: previous,
-      hasAnyData: true,
+      hasAnyData:
+        current.length > 0 ||
+        previous.length > 0 ||
+        Boolean(
+          activityData?.habitStats?.totalCompleted > 0 ||
+          currentJournalCount > 0
+        ) ||
+        Boolean(userData?.stats?.hasAssessment),
       trendPoints: points,
       progressData: progress,
       domains: domainList,

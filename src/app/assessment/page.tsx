@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useState, useEffect, useRef } from "react";
 import { detectRisk } from "@/lib/crisisDetection";
+import { useFreshDataSignal } from "@/hooks/useFreshData";
 import AssessmentNav from "./components/AssessmentNav";
 import QuestionStep from "./components/QuestionStep";
 import CompilingState from "./components/CompilingState";
@@ -24,6 +25,7 @@ const STEPS = [
 ];
 
 export default function AssessmentPage() {
+  const dataRefreshSignal = useFreshDataSignal();
   const router = useRouter();
   const [currentStep, setCurrentStep] = useState(0);
   const contentRef = useRef<HTMLDivElement>(null);
@@ -64,7 +66,7 @@ export default function AssessmentPage() {
   useEffect(() => {
     async function loadUser() {
       try {
-        const res = await fetch("/api/user/me");
+        const res = await fetch("/api/user/me", { cache: "no-store" });
         if (res.ok) {
           const data = await res.json();
           if (data.user?.onboardingCompleted) {
@@ -80,7 +82,7 @@ export default function AssessmentPage() {
       }
     }
     loadUser();
-  }, [router]);
+  }, [router, dataRefreshSignal]);
 
   const [ageError, setAgeError] = useState("");
 

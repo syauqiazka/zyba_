@@ -1,15 +1,17 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useFreshDataSignal } from "@/hooks/useFreshData";
 import { useRouter } from "next/navigation";
 
 export default function CommunityProfileIndexPage() {
+  const dataRefreshSignal = useFreshDataSignal();
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     let isMounted = true;
-    fetch("/api/user/me")
+    fetch("/api/user/me", { cache: "no-store" })
       .then((res) => {
         if (!res.ok) throw new Error("Gagal mengambil data pengguna");
         return res.json();
@@ -30,7 +32,7 @@ export default function CommunityProfileIndexPage() {
     return () => {
       isMounted = false;
     };
-  }, [router]);
+  }, [router, dataRefreshSignal]);
 
   return (
     <div className="flex-1 w-full h-full min-h-[400px] flex flex-col items-center justify-center p-8 bg-cream/30">

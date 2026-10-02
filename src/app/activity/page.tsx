@@ -11,11 +11,25 @@ import DailyConditionCard from "./components/DailyConditionCard";
 import DailyPlan, {
   type PlannedActivity,
 } from "./components/DailyPlan";
+import { notifyZybaDataChanged } from "@/hooks/useFreshData";
 import ZybaRecommendations, {
   type Recommendation,
 } from "./components/ZybaRecommendations";
 
-const PLAN_STORAGE_KEY = "zyba_daily_plan_v2";
+const PLAN_STORAGE_VERSION = "zyba_daily_plan_v3";
+
+function getJakartaDateKey(date = new Date()) {
+  return new Intl.DateTimeFormat("en-CA", {
+    timeZone: "Asia/Jakarta",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).format(date);
+}
+
+function getPlanStorageKey(date = new Date()) {
+  return `${PLAN_STORAGE_VERSION}_${getJakartaDateKey(date)}`;
+}
 
 const INITIAL_PLAN: PlannedActivity[] = [
   {
@@ -26,7 +40,7 @@ const INITIAL_PLAN: PlannedActivity[] = [
     icon: "🚶",
     category: "Aktivitas Ringan",
     points: 60,
-    completed: true,
+    completed: false,
   },
   {
     id: "walk-13",
@@ -115,7 +129,6 @@ export default function SmartActivityPlannerPage() {
   // =========================
   // Activity
   // =========================
-  const [activityProgress, setActivityProgress] = useState(850);
   const targetProgress = 1200;
 
   const [isCompleted, setIsCompleted] = useState(false);
@@ -128,31 +141,10 @@ export default function SmartActivityPlannerPage() {
   const [plan, setPlan] = useState<PlannedActivity[]>(INITIAL_PLAN);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
 
-  // Fetch real condition & activity logs from DB on mount
-  useEffect(() => {
-    async function loadData() {
-      try {
-        const res = await fetch("/api/activity");
-        if (res.ok) {
-          const data = await res.json();
-          if (data.condition) {
-            setConditionData(data.condition);
-          }
-          if (typeof data.totalPointsEarned === "number" && data.totalPointsEarned > 0) {
-            setActivityProgress((prev) => Math.max(prev, data.totalPointsEarned));
-          }
-        }
-      } catch (err) {
-        console.warn("[ActivityPage] Failed to fetch activity data:", err);
-      }
-    }
-    loadData();
-  }, []);
-
   // Load plan from localStorage on mount
   useEffect(() => {
     try {
-      const saved = localStorage.getItem(PLAN_STORAGE_KEY);
+      const saved = localStorage.getItem(getPlanStorageKey());
       if (saved) {
         const parsed = JSON.parse(saved);
         if (Array.isArray(parsed)) {
@@ -167,7 +159,7 @@ export default function SmartActivityPlannerPage() {
   const updateAndSavePlan = (newPlan: PlannedActivity[]) => {
     setPlan(newPlan);
     try {
-      localStorage.setItem(PLAN_STORAGE_KEY, JSON.stringify(newPlan));
+      localStorage.setItem(getPlanStorageKey(), JSON.stringify(newPlan));
     } catch (e) {
       console.error("Failed to save activity plan:", e);
     }
@@ -202,7 +194,7 @@ export default function SmartActivityPlannerPage() {
 
   const handleCompleteBreathing = async () => {
     try {
-      await fetch("/api/activity", {
+      const response = await fetch("/api/activity", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -213,6 +205,7 @@ export default function SmartActivityPlannerPage() {
           title: "Zyba Hours (Breathing)",
         }),
       });
+      if (!response.ok) throw new Error("Gagal menyimpan sesi pernapasan.");
 
       // Update dashboard tracker cache
       const dateKey = new Intl.DateTimeFormat("en-CA", {
@@ -228,7 +221,18 @@ export default function SmartActivityPlannerPage() {
         localStorage.setItem(trackerKey, JSON.stringify(current));
       } catch {}
 
-      setActivityProgress((prev) => Math.min(prev + 30, targetProgress));
+      setPlan((prev) => {
+        const updated = prev.map((activity) =>
+          activity.title.toLowerCase().includes("zyba hours")
+            ? { ...activity, completed: true }
+            : activity
+        );
+        try {
+          localStorage.setItem(getPlanStorageKey(), JSON.stringify(updated));
+        } catch {}
+        return updated;
+      });
+      notifyZybaDataChanged();
       setActivityToast("Sesi Zyba Hours selesai! +30 Zyba Points tersimpan!");
       setTimeout(() => setActivityToast(null), 4000);
     } catch (err) {
@@ -269,18 +273,8 @@ export default function SmartActivityPlannerPage() {
 
     updateAndSavePlan(updated);
 
-    setActivityProgress((current) =>
-      Math.min(
-        Math.max(
-          current +
-            (nextCompleted
-              ? selectedActivity.points
-              : -selectedActivity.points),
-          0,
-        ),
-        targetProgress,
-      ),
-    );
+    // Target progress is derived from the plan itself, so UI and refresh state
+    // stay consistent with the user's chosen schedule.
 
     // Save to database when checked
     if (nextCompleted) {
@@ -291,7 +285,7 @@ export default function SmartActivityPlannerPage() {
         if (lower.includes("napas") || lower.includes("hours") || lower.includes("breath")) actType = "BREATHING";
         if (lower.includes("stretch") || lower.includes("workout")) actType = "WORKOUT";
 
-        await fetch("/api/activity", {
+        const response = await fetch("/api/activity", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -302,17 +296,21 @@ export default function SmartActivityPlannerPage() {
             title: selectedActivity.title,
           }),
         });
+        if (!response.ok) throw new Error("Gagal menyimpan aktivitas.");
+        notifyZybaDataChanged();
         setActivityToast(`✓ Aktivitas "${selectedActivity.title}" selesai & tersimpan!`);
+        notifyZybaDataChanged();
         setTimeout(() => setActivityToast(null), 3000);
       } catch (e) {
         console.warn("Save toggle activity error:", e);
       }
     }
 
-    if (
-      nextCompleted &&
-      activityProgress + selectedActivity.points >= targetProgress
-    ) {
+    const nextPlanPoints = updated
+      .filter((activity) => activity.completed)
+      .reduce((total, activity) => total + activity.points, 0);
+
+    if (nextCompleted && nextPlanPoints >= targetProgress) {
       setIsCompleted(true);
     }
   };
@@ -339,15 +337,6 @@ export default function SmartActivityPlannerPage() {
   // Delete Activity
   // =========================
   const deletePlanActivity = (id: string) => {
-    const activityToRemove = plan.find((a) => a.id === id);
-    if (!activityToRemove) return;
-
-    if (activityToRemove.completed) {
-      setActivityProgress((current) =>
-        Math.max(current - activityToRemove.points, 0)
-      );
-    }
-
     const updated = plan.filter((a) => a.id !== id);
     updateAndSavePlan(updated);
   };
@@ -404,6 +393,8 @@ export default function SmartActivityPlannerPage() {
   const completedPlanPoints = plan
     .filter((activity) => activity.completed)
     .reduce((total, activity) => total + activity.points, 0);
+
+  const activityProgress = completedPlanPoints;
 
   return (
     <div className="flex flex-col gap-8 pb-12">

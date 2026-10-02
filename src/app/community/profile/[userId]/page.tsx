@@ -1,5 +1,6 @@
 "use client";
 
+import { useFreshDataSignal } from "@/hooks/useFreshData";
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { ArrowLeft, MessageCircle, Pencil, X, EyeOff, Eye, Camera, Loader2 } from "lucide-react";
@@ -346,6 +347,7 @@ function EditProfileModal({
 
 // ── Main ProfilePage ─────────────────────────────────────────────
 export default function ProfilePage() {
+  const dataRefreshSignal = useFreshDataSignal();
   const params = useParams();
   const router = useRouter();
   const { handleToggleLike, handleToggleRepost, handleAddComment, handleTagFilter, currentUserId } = useCommunity();
@@ -364,7 +366,7 @@ export default function ProfilePage() {
     try {
       setLoading(true);
 
-      const userRes = await fetch("/api/user/profile/" + userId);
+      const userRes = await fetch("/api/user/profile/" + userId, { cache: "no-store" });
       if (!userRes.ok) {
         console.error("Failed to load user");
         return;
@@ -372,12 +374,12 @@ export default function ProfilePage() {
 
       const userData = await userRes.json();
 
-      const followRes = await fetch("/api/community/follows/" + userId);
+      const followRes = await fetch("/api/community/follows/" + userId, { cache: "no-store" });
       const followData = followRes.ok
         ? await followRes.json()
         : { isFollowing: false, isFollower: false, isSelf: false };
 
-      const postsRes = await fetch("/api/community/users/" + userId + "/posts?includeHidden=true");
+      const postsRes = await fetch("/api/community/users/" + userId + "/posts?includeHidden=true", { cache: "no-store" });
       const postsData = postsRes.ok ? await postsRes.json() : { posts: [] };
 
       setProfile({
@@ -404,7 +406,7 @@ export default function ProfilePage() {
 
   useEffect(() => {
     if (userId) loadProfile();
-  }, [userId, loadProfile]);
+  }, [userId, loadProfile, dataRefreshSignal]);
 
   const handleFollowToggle = async () => {
     if (!profile || followLoading) return;
