@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { BookOpen, Headphones, Sparkles, Filter } from "lucide-react";
 import ResourceCard, { ResourceItem } from "./components/ResourceCard";
+import { useFreshDataSignal } from "@/hooks/useFreshData";
 import ResourcePlayerModal from "./components/ResourcePlayerModal";
 import PaywallModal from "./components/PaywallModal";
 
