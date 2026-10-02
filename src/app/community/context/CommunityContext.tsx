@@ -355,9 +355,7 @@ export function CommunityProvider({ children }: { children: React.ReactNode }) {
 
   const handleMuteUser = (userId: string, authorName?: string) => {
     setMutedUserIds((prev) => {
-      const identifiers = [userId];
-      if (authorName && authorName !== userId) identifiers.push(authorName);
-      const next = Array.from(new Set([...prev, ...identifiers]));
+      const next = Array.from(new Set([...prev, userId]));
       try {
         localStorage.setItem("zyba_muted_users", JSON.stringify(next));
       } catch {}
@@ -379,9 +377,7 @@ export function CommunityProvider({ children }: { children: React.ReactNode }) {
 
   const handleBlockUser = async (userId: string, authorName?: string) => {
     setBlockedUserIds((prev) => {
-      const identifiers = [userId];
-      if (authorName && authorName !== userId) identifiers.push(authorName);
-      const next = Array.from(new Set([...prev, ...identifiers]));
+      const next = Array.from(new Set([...prev, userId]));
       try {
         localStorage.setItem("zyba_blocked_users", JSON.stringify(next));
       } catch {}
