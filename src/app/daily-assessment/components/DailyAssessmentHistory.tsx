@@ -142,7 +142,13 @@ export default function DailyAssessmentHistory({
         </span>
       </h3>
 
-      <div className="flex flex-col gap-3">
+      <div
+        className="rounded-2xl border border-brown-900/10 bg-cream/25 p-2 sm:p-3"
+      >
+        <div
+          className="flex flex-col gap-3 max-h-[360px] sm:max-h-[440px] overflow-y-scroll overflow-x-hidden overscroll-contain pr-1 sm:pr-2"
+          style={{ scrollbarGutter: "stable" }}
+        >
         {history.map((record) => {
           const mood =
             MOOD_MAP[record.mood] ?? {
@@ -313,6 +319,7 @@ export default function DailyAssessmentHistory({
             </div>
           );
         })}
+        </div>
       </div>
 
       {/* PAGINATION */}
