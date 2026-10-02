@@ -1,7 +1,7 @@
 "use client";
 
 import React, { createContext, useContext, useState, useRef, useEffect, useCallback } from "react";
-import { useFreshDataSignal, notifyZybaDataChanged } from "@/hooks/useFreshData";
+import { useFreshDataSignal } from "@/hooks/useFreshData";
 
 import { usePathname, useRouter } from "next/navigation";
 import { AIModelType } from "@/backend/ai/aiModelManager";
@@ -393,7 +393,6 @@ export function CompanionProvider({ children }: { children: React.ReactNode }) {
 
       // Auto-play TTS for AI reply
       setLatestAIMessageId(newAiMsg.id);
-      notifyZybaDataChanged();
 
       setConversations((prev) =>
         prev.map((c) => {
