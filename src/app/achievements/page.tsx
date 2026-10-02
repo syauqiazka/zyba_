@@ -72,8 +72,8 @@ export default function AchievementsPage() {
     setApiError(null);
     try {
       const [achRes, badgeRes] = await Promise.all([
-        fetch("/api/achievements"),
-        fetch("/api/badges"),
+        fetch("/api/achievements", { cache: "no-store" }),
+        fetch("/api/badges", { cache: "no-store" }),
       ]);
       const achData = await achRes.json();
       const badgeData = await badgeRes.json();
@@ -104,8 +104,10 @@ export default function AchievementsPage() {
   }, []);
 
   useEffect(() => {
-    fetchData();
+    void fetchData();
   }, [fetchData]);
+
+  useFreshData(fetchData);
 
   const handlePinBadge = async (slot: number, badgeKey: string, customLabel?: string) => {
     try {
