@@ -6,6 +6,7 @@ import { SettingsBanner, ProfileSection, SettingsToggles } from "./components";
 import { PersonaId } from "@/backend/ai/personas";
 
 export default function SettingsPage() {
+  const dataRefreshSignal = useFreshDataSignal();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
@@ -51,8 +52,8 @@ export default function SettingsPage() {
     async function loadFromDB() {
       try {
         const [userRes, notifRes] = await Promise.all([
-          fetch("/api/user/me"),
-          fetch("/api/settings/notifications"),
+          fetch("/api/user/me", { cache: "no-store" }),
+          fetch("/api/settings/notifications", { cache: "no-store" }),
         ]);
 
         if (userRes.ok) {
@@ -96,8 +97,8 @@ export default function SettingsPage() {
         setIsLoading(false);
       }
     }
-    loadFromDB();
-  }, []);
+    void loadFromDB();
+  }, [dataRefreshSignal]);
 
   const handleSave = async () => {
     setIsSaved(false);
@@ -137,6 +138,7 @@ export default function SettingsPage() {
       } catch {}
       try { localStorage.setItem("zyba_companion_persona", selectedPersona); } catch {}
 
+      notifyZybaDataChanged();
       setIsSaved(true);
       setTimeout(() => setIsSaved(false), 3000);
     } catch (err) {
