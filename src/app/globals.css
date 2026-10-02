@@ -2991,4 +2991,30 @@ html {
   display: inline-block;
   transform-origin: 70% 70%;
   animation: wave 2.2s infinite ease-in-out;
-}
+}
+
+/* Bounded history/list surfaces: keep the scroll affordance visible on desktop
+   without affecting global page scrolling. */
+.zyba-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(109, 98, 91, 0.45) rgba(251, 248, 241, 0.85);
+}
+
+.zyba-scrollbar::-webkit-scrollbar {
+  width: 8px;
+}
+
+.zyba-scrollbar::-webkit-scrollbar-track {
+  background: rgba(251, 248, 241, 0.85);
+  border-radius: 999px;
+}
+
+.zyba-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(109, 98, 91, 0.45);
+  border-radius: 999px;
+  border: 2px solid rgba(251, 248, 241, 0.85);
+}
+
+.zyba-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(109, 98, 91, 0.65);
+}
