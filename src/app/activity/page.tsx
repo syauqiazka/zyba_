@@ -395,10 +395,12 @@ export default function SmartActivityPlannerPage() {
     (activity) => activity.completed,
   ).length;
 
-  const nextActivity = plan
-    .filter((activity) => !activity.completed)
-    .sort((a, b) => a.time.localeCompare(b.time))[0];
-
+  const totalActivities = plan.length;
+  const remainingActivities = Math.max(totalActivities - completedActivities, 0);
+  const planCompletionPercent =
+    totalActivities > 0
+      ? Math.round((completedActivities / totalActivities) * 100)
+      : 0;
   const completedPlanPoints = plan
     .filter((activity) => activity.completed)
     .reduce((total, activity) => total + activity.points, 0);
@@ -444,7 +446,7 @@ export default function SmartActivityPlannerPage() {
       />
 
       {/* =========================
-          BREATHING + NEXT ACTIVITY
+          BREATHING + DAILY PROGRESS
       ========================== */}
       <div className="grid grid-cols-1 xl:grid-cols-12 gap-6">
         <div className="xl:col-span-8">
@@ -464,52 +466,51 @@ export default function SmartActivityPlannerPage() {
           />
         </div>
 
-        <div className="xl:col-span-4 glass-card rounded-3xl p-6 border border-brown-900/10 bg-white flex flex-col justify-between">
-          <div>
-            <span className="text-xs font-bold uppercase tracking-wider text-green-500">
-              Aktivitas Berikutnya
+        <div className="xl:col-span-4 glass-card rounded-3xl p-6 border border-brown-900/10 bg-white">
+          <div className="flex items-center justify-between gap-3">
+            <div>
+              <span className="text-xs font-bold uppercase tracking-wider text-green-500">
+                Progress Hari Ini
+              </span>
+              <h2 className="font-display text-2xl font-extrabold text-brown-900 mt-2">
+                {completedActivities} / {totalActivities} aktivitas
+              </h2>
+            </div>
+            <span className="text-lg font-extrabold text-brown-900">
+              {planCompletionPercent}%
             </span>
-
-            {nextActivity ? (
-              <>
-                <div className="flex items-center gap-3 mt-4">
-                  <div className="w-12 h-12 rounded-2xl bg-cream flex items-center justify-center text-2xl shrink-0">
-                    {nextActivity.icon}
-                  </div>
-                  <div className="min-w-0">
-                    <h2 className="font-display text-xl font-extrabold text-brown-900">
-                      {nextActivity.title}
-                    </h2>
-                    <p className="text-xs text-brown-700 mt-1">
-                      {nextActivity.time} · {nextActivity.duration}
-                    </p>
-                  </div>
-                </div>
-                <p className="text-xs text-brown-700 mt-4 leading-relaxed">
-                  {nextActivity.category} · +{nextActivity.points} Zyba Points
-                </p>
-              </>
-            ) : (
-              <>
-                <h2 className="font-display text-2xl font-extrabold text-brown-900 mt-3">
-                  Selesai untuk Hari Ini
-                </h2>
-                <p className="text-xs text-brown-700 mt-2 leading-relaxed">
-                  Kamu telah menyelesaikan {completedActivities} aktivitas dengan total {completedPlanPoints} Zyba Points dari rencanamu.
-                </p>
-              </>
-            )}
           </div>
 
-          {nextActivity && (
-            <button
-              type="button"
-              onClick={() => togglePlanActivity(nextActivity.id)}
-              className="mt-6 w-full rounded-full bg-brown-900 text-white py-3 text-xs font-bold hover:bg-green-500 transition-colors"
-            >
-              Mulai Aktivitas
-            </button>
-          )}
+          <div
+            className="mt-5 h-3 rounded-full bg-cream overflow-hidden"
+            role="progressbar"
+            aria-valuenow={planCompletionPercent}
+            aria-valuemin={0}
+            aria-valuemax={100}
+            aria-label="Progress aktivitas hari ini"
+          >
+            <div
+              className="h-full rounded-full bg-green-500 transition-all duration-300"
+              style={{ width: `${planCompletionPercent}%` }}
+            />
+          </div>
+
+          <div className="grid grid-cols-2 gap-3 mt-5">
+            <div className="rounded-2xl bg-cream/60 p-3">
+              <p className="text-[11px] text-brown-700/60">Selesai</p>
+              <p className="text-lg font-extrabold text-brown-900 mt-1">
+                {completedPlanPoints}
+              </p>
+              <p className="text-[10px] text-brown-700/60">Zyba Points</p>
+            </div>
+            <div className="rounded-2xl bg-cream/60 p-3">
+              <p className="text-[11px] text-brown-700/60">Tersisa</p>
+              <p className="text-lg font-extrabold text-brown-900 mt-1">
+                {remainingActivities}
+              </p>
+              <p className="text-[10px] text-brown-700/60">aktivitas</p>
+            </div>
+          </div>
         </div>
       </div>
 
