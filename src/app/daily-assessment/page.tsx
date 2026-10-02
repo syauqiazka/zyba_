@@ -1,5 +1,6 @@
 "use client";
 
+import { useFreshDataSignal, notifyZybaDataChanged } from "@/hooks/useFreshData";
 import React, { useState, useEffect, useCallback } from "react";
 import {
   DailyRecord,
@@ -23,6 +24,7 @@ import {
 type PageState = "loading" | "form" | "summary";
 
 export default function DailyAssessmentPage() {
+  const dataRefreshSignal = useFreshDataSignal();
   const { streak, calendarData, journalList, reload } = useMoodOverview();
   const [pageState, setPageState] = useState<PageState>("loading");
   const [todayRecord, setTodayRecord] = useState<DailyRecord | null>(null);
@@ -75,8 +77,8 @@ export default function DailyAssessmentPage() {
   }, []);
 
   useEffect(() => {
-    loadData(1);
-  }, [loadData]);
+    void loadData(1);
+  }, [loadData, dataRefreshSignal]);
 
   const handleSubmit = async (formData: any) => {
     setIsSubmitting(true);
@@ -130,6 +132,8 @@ export default function DailyAssessmentPage() {
         }
         return [resolvedRecord, ...prev];
       });
+
+      notifyZybaDataChanged();
 
       setSavedSuccess(true);
       setTimeout(() => setSavedSuccess(false), 4500);
