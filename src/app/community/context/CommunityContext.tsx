@@ -1,6 +1,7 @@
 "use client";
 
 import React, { createContext, useContext, useState, useEffect, useCallback, useRef } from "react";
+import { useFreshDataSignal } from "@/hooks/useFreshData";
 import { usePathname, useRouter } from "next/navigation";
 import { Post } from "../components/PostCard";
 import { detectRisk } from "@/lib/crisisDetection";
@@ -174,6 +175,8 @@ export function CommunityProvider({ children }: { children: React.ReactNode }) {
   const [selectedTag, setSelectedTag] = useState("Semua");
   const [isPostModalOpen, setIsPostModalOpen] = useState(false);
   const [newPostContent, setNewPostContent] = useState("");
+  const dataRefreshSignal = useFreshDataSignal();
+
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   const [currentUserName, setCurrentUserName] = useState<string | null>(null);
   const [currentUserAvatar, setCurrentUserAvatar] = useState<string | null>(null);
@@ -195,7 +198,7 @@ export function CommunityProvider({ children }: { children: React.ReactNode }) {
     } catch {}
 
     // Background fetch saved bookmarks from API
-    fetch("/api/community/bookmarks")
+    fetch("/api/community/bookmarks", { cache: "no-store" })
       .then((r) => (r.ok ? r.json() : null))
       .then((data) => {
         if (data?.bookmarks) {
@@ -207,7 +210,7 @@ export function CommunityProvider({ children }: { children: React.ReactNode }) {
         }
       })
       .catch(() => {});
-  }, []);
+  }, [dataRefreshSignal]);
 
   useEffect(() => {
     // First try from localStorage cache (instant hydration)
@@ -222,7 +225,7 @@ export function CommunityProvider({ children }: { children: React.ReactNode }) {
       }
     } catch {}
 
-    fetch("/api/user/me")
+    fetch("/api/user/me", { cache: "no-store" })
       .then((r) => r.json())
       .then((d) => {
         // API returns { user: { id, name, avatarUrl, ... }, stats: {...} }
@@ -233,12 +236,12 @@ export function CommunityProvider({ children }: { children: React.ReactNode }) {
         }
       })
       .catch(() => {});
-  }, []);
+  }, [dataRefreshSignal]);
 
   useEffect(() => {
     async function loadPosts() {
       try {
-        const res = await fetch("/api/community");
+        const res = await fetch("/api/community", { cache: "no-store" });
         if (res.ok) {
           const data = await res.json();
           if (data.posts && data.posts.length > 0) {
@@ -297,7 +300,7 @@ export function CommunityProvider({ children }: { children: React.ReactNode }) {
       }
     }
     loadPosts();
-  }, []);
+  }, [dataRefreshSignal]);
 
   // Load following feed when switching to FOLLOWING view
   useEffect(() => {
@@ -305,7 +308,7 @@ export function CommunityProvider({ children }: { children: React.ReactNode }) {
       if (currentView !== "FOLLOWING") return;
       
       try {
-        const res = await fetch("/api/community/feed/following");
+        const res = await fetch("/api/community/feed/following", { cache: "no-store" });
         if (res.ok) {
           const data = await res.json();
           if (data.posts) {
@@ -321,13 +324,13 @@ export function CommunityProvider({ children }: { children: React.ReactNode }) {
       }
     }
     loadFollowingFeed();
-  }, [currentView]);
+  }, [currentView, dataRefreshSignal]);
 
   // Load real notifications from API
   useEffect(() => {
     async function loadNotifications() {
       try {
-        const res = await fetch("/api/community/notifications");
+        const res = await fetch("/api/community/notifications", { cache: "no-store" });
         if (res.ok) {
           const data = await res.json();
           if (data.notifications) {
@@ -339,7 +342,7 @@ export function CommunityProvider({ children }: { children: React.ReactNode }) {
       }
     }
     loadNotifications();
-  }, [currentView]);
+  }, [currentView, dataRefreshSignal]);
 
   const handleTagFilter = (tag: string) => {
     setSelectedTag(tag);
