@@ -194,7 +194,7 @@ export default function SmartActivityPlannerPage() {
 
   const handleCompleteBreathing = async () => {
     try {
-      await fetch("/api/activity", {
+      const response = await fetch("/api/activity", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -205,6 +205,7 @@ export default function SmartActivityPlannerPage() {
           title: "Zyba Hours (Breathing)",
         }),
       });
+      if (!response.ok) throw new Error("Gagal menyimpan sesi pernapasan.");
 
       // Update dashboard tracker cache
       const dateKey = new Intl.DateTimeFormat("en-CA", {
@@ -231,6 +232,7 @@ export default function SmartActivityPlannerPage() {
         } catch {}
         return updated;
       });
+      notifyZybaDataChanged();
       setActivityToast("Sesi Zyba Hours selesai! +30 Zyba Points tersimpan!");
       setTimeout(() => setActivityToast(null), 4000);
     } catch (err) {
@@ -283,7 +285,7 @@ export default function SmartActivityPlannerPage() {
         if (lower.includes("napas") || lower.includes("hours") || lower.includes("breath")) actType = "BREATHING";
         if (lower.includes("stretch") || lower.includes("workout")) actType = "WORKOUT";
 
-        await fetch("/api/activity", {
+        const response = await fetch("/api/activity", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -294,6 +296,8 @@ export default function SmartActivityPlannerPage() {
             title: selectedActivity.title,
           }),
         });
+        if (!response.ok) throw new Error("Gagal menyimpan aktivitas.");
+        notifyZybaDataChanged();
         setActivityToast(`✓ Aktivitas "${selectedActivity.title}" selesai & tersimpan!`);
         notifyZybaDataChanged();
         setTimeout(() => setActivityToast(null), 3000);
