@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 import BadgePickerModal from "./BadgePickerModal";
 import BadgeLucideIcon from "./BadgeLucideIcon";
+import { useFreshData } from "@/hooks/useFreshData";
 
 type AchievementCategory = "ALL" | "STREAK" | "WELLNESS" | "SOSIAL" | "COMPANION" | "AKTIVITAS" | "SPESIAL";
 
