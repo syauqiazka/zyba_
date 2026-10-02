@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useState, useEffect, useRef } from "react";
 import { detectRisk } from "@/lib/crisisDetection";
+import { useFreshDataSignal } from "@/hooks/useFreshData";
 import AssessmentNav from "./components/AssessmentNav";
 import QuestionStep from "./components/QuestionStep";
 import CompilingState from "./components/CompilingState";
