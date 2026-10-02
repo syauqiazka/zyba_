@@ -1,7 +1,8 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
+import { useFreshData } from "@/hooks/useFreshData";
 
 export interface DailyConditionData {
   energyTitle: string;
@@ -33,35 +34,34 @@ export default function DailyConditionCard({ initialCondition }: DailyConditionC
   );
   const [isLoading, setIsLoading] = useState(!initialCondition);
 
+  const fetchCondition = useCallback(async () => {
+    try {
+      setIsLoading(true);
+      const res = await fetch("/api/activity", {
+        cache: "no-store",
+        credentials: "include",
+      });
+      if (res.ok) {
+        const data = await res.json();
+        if (data.condition) setCondition(data.condition);
+      }
+    } catch (err) {
+      console.warn("[DailyConditionCard] Fetch error:", err);
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
   useEffect(() => {
     if (initialCondition) {
       setCondition(initialCondition);
       setIsLoading(false);
-      return;
+    } else {
+      void fetchCondition();
     }
+  }, [initialCondition, fetchCondition]);
 
-    let isCancelled = false;
-    async function fetchCondition() {
-      try {
-        const res = await fetch("/api/activity");
-        if (res.ok) {
-          const data = await res.json();
-          if (data.condition && !isCancelled) {
-            setCondition(data.condition);
-          }
-        }
-      } catch (err) {
-        console.warn("[DailyConditionCard] Fetch error:", err);
-      } finally {
-        if (!isCancelled) setIsLoading(false);
-      }
-    }
-
-    fetchCondition();
-    return () => {
-      isCancelled = true;
-    };
-  }, [initialCondition]);
+  useFreshData(fetchCondition);
 
   const badgeBg =
     condition.badgeColor === "orange"
