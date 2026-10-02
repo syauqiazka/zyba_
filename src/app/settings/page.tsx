@@ -4,7 +4,7 @@ import React, { useState, useEffect } from "react";
 import ProfileSettingsModal from "@/components/profile/ProfileSettingsModal";
 import { SettingsBanner, ProfileSection, SettingsToggles } from "./components";
 import { PersonaId } from "@/backend/ai/personas";
-import { useFreshDataSignal, notifyZybaDataChanged } from "@/hooks/useFreshData";
+import { useFreshDataSignal } from "@/hooks/useFreshData";
 
 export default function SettingsPage() {
   const dataRefreshSignal = useFreshDataSignal();
@@ -139,7 +139,6 @@ export default function SettingsPage() {
       } catch {}
       try { localStorage.setItem("zyba_companion_persona", selectedPersona); } catch {}
 
-      notifyZybaDataChanged();
       setIsSaved(true);
       setTimeout(() => setIsSaved(false), 3000);
     } catch (err) {
