@@ -21,7 +21,7 @@ function CompanionLayoutInner({ children }: { children: React.ReactNode }) {
   const [sidebarVisible, setSidebarVisible] = useState(true);
 
   return (
-    <div className="flex bg-cream relative w-full max-w-full overflow-hidden" style={{ height: '100dvh' }}>
+    <div className="flex h-[100dvh] min-h-0 bg-cream relative w-full max-w-full overflow-hidden overscroll-none">
       {/* Backdrop overlay for mobile */}
       {mobileSidebarOpen && (
         <div
@@ -32,7 +32,7 @@ function CompanionLayoutInner({ children }: { children: React.ReactNode }) {
 
       {/* Sidebar — hidden by default on mobile, slides in when open */}
       <div
-        className={`fixed md:relative top-0 left-0 z-50 h-full transition-transform duration-300 ease-in-out shrink-0
+        className={`fixed md:relative top-0 left-0 z-50 h-[100dvh] transition-transform duration-300 ease-in-out shrink-0
           ${mobileSidebarOpen ? "translate-x-0 shadow-2xl" : "-translate-x-full"}
           md:translate-x-0`}
       >
@@ -48,7 +48,7 @@ function CompanionLayoutInner({ children }: { children: React.ReactNode }) {
       </div>
 
       {/* Main content — full screen on mobile, comfortable card container on desktop */}
-      <main className="flex-1 min-w-0 w-full h-full overflow-hidden flex flex-col p-0 md:p-3 lg:p-6 transition-all duration-300">
+      <main className="flex-1 min-w-0 w-full h-full min-h-0 overflow-hidden flex flex-col p-0 md:p-3 lg:p-6 transition-all duration-300">
         {children}
       </main>
     </div>
