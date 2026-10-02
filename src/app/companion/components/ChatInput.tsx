@@ -45,7 +45,7 @@ export default function ChatInput({
   };
 
   return (
-    <div className="p-4 border-t border-brown-900/10 bg-white sticky bottom-0 z-10">
+    <div className="p-3 sm:p-4 border-t border-brown-900/10 bg-white sticky bottom-0 z-20" style={{ paddingBottom: "max(0.75rem, env(safe-area-inset-bottom))" }}>
       {/* Voice input active feedback */}
       {isVoiceActive && (
         <div className="mb-2 flex items-center justify-between bg-orange-100 text-orange-500 px-4 py-2 rounded-pill text-xs animate-pulse">
