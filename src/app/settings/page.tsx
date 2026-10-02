@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import ProfileSettingsModal from "@/components/profile/ProfileSettingsModal";
 import { SettingsBanner, ProfileSection, SettingsToggles } from "./components";
 import { PersonaId } from "@/backend/ai/personas";
+import { useFreshDataSignal, notifyZybaDataChanged } from "@/hooks/useFreshData";
 
 export default function SettingsPage() {
   const dataRefreshSignal = useFreshDataSignal();
