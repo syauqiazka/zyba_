@@ -11,12 +11,25 @@ import DailyConditionCard from "./components/DailyConditionCard";
 import DailyPlan, {
   type PlannedActivity,
 } from "./components/DailyPlan";
-import { useFreshData } from "@/hooks/useFreshData";
+import { notifyZybaDataChanged } from "@/hooks/useFreshData";
 import ZybaRecommendations, {
   type Recommendation,
 } from "./components/ZybaRecommendations";
 
-const PLAN_STORAGE_KEY = "zyba_daily_plan_v2";
+const PLAN_STORAGE_VERSION = "zyba_daily_plan_v3";
+
+function getJakartaDateKey(date = new Date()) {
+  return new Intl.DateTimeFormat("en-CA", {
+    timeZone: "Asia/Jakarta",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).format(date);
+}
+
+function getPlanStorageKey(date = new Date()) {
+  return `${PLAN_STORAGE_VERSION}_${getJakartaDateKey(date)}`;
+}
 
 const INITIAL_PLAN: PlannedActivity[] = [
   {
@@ -128,33 +141,10 @@ export default function SmartActivityPlannerPage() {
   const [plan, setPlan] = useState<PlannedActivity[]>(INITIAL_PLAN);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
 
-  // Fetch real condition & activity logs. The daily target is derived from the
-  // persisted plan below, so the target always starts at 0 and survives refreshes.
-  const loadData = useCallback(async () => {
-    try {
-      const res = await fetch("/api/activity", {
-        cache: "no-store",
-        credentials: "include",
-      });
-      if (res.ok) {
-        const data = await res.json();
-        if (data.condition) setConditionData(data.condition);
-      }
-    } catch (err) {
-      console.warn("[ActivityPage] Failed to fetch activity data:", err);
-    }
-  }, []);
-
-  useEffect(() => {
-    void loadData();
-  }, [loadData]);
-
-  useFreshData(loadData);
-
   // Load plan from localStorage on mount
   useEffect(() => {
     try {
-      const saved = localStorage.getItem(PLAN_STORAGE_KEY);
+      const saved = localStorage.getItem(getPlanStorageKey());
       if (saved) {
         const parsed = JSON.parse(saved);
         if (Array.isArray(parsed)) {
@@ -169,7 +159,7 @@ export default function SmartActivityPlannerPage() {
   const updateAndSavePlan = (newPlan: PlannedActivity[]) => {
     setPlan(newPlan);
     try {
-      localStorage.setItem(PLAN_STORAGE_KEY, JSON.stringify(newPlan));
+      localStorage.setItem(getPlanStorageKey(), JSON.stringify(newPlan));
     } catch (e) {
       console.error("Failed to save activity plan:", e);
     }
@@ -237,7 +227,7 @@ export default function SmartActivityPlannerPage() {
             : activity
         );
         try {
-          localStorage.setItem(PLAN_STORAGE_KEY, JSON.stringify(updated));
+          localStorage.setItem(getPlanStorageKey(), JSON.stringify(updated));
         } catch {}
         return updated;
       });
@@ -305,6 +295,7 @@ export default function SmartActivityPlannerPage() {
           }),
         });
         setActivityToast(`✓ Aktivitas "${selectedActivity.title}" selesai & tersimpan!`);
+        notifyZybaDataChanged();
         setTimeout(() => setActivityToast(null), 3000);
       } catch (e) {
         console.warn("Save toggle activity error:", e);
