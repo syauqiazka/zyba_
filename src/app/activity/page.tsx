@@ -11,7 +11,7 @@ import DailyConditionCard from "./components/DailyConditionCard";
 import DailyPlan, {
   type PlannedActivity,
 } from "./components/DailyPlan";
-import { useFreshData, notifyZybaDataChanged } from "@/hooks/useFreshData";
+import { useFreshData } from "@/hooks/useFreshData";
 import ZybaRecommendations, {
   type Recommendation,
 } from "./components/ZybaRecommendations";
@@ -305,7 +305,6 @@ export default function SmartActivityPlannerPage() {
           }),
         });
         setActivityToast(`✓ Aktivitas "${selectedActivity.title}" selesai & tersimpan!`);
-        notifyZybaDataChanged();
         setTimeout(() => setActivityToast(null), 3000);
       } catch (e) {
         console.warn("Save toggle activity error:", e);
