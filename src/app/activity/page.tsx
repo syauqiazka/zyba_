@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import ActivityBanner from "./components/ActivityBanner";
 import AddActivityModal, {
   type NewActivity,
@@ -11,6 +11,7 @@ import DailyConditionCard from "./components/DailyConditionCard";
 import DailyPlan, {
   type PlannedActivity,
 } from "./components/DailyPlan";
+import { useFreshData, notifyZybaDataChanged } from "@/hooks/useFreshData";
 import ZybaRecommendations, {
   type Recommendation,
 } from "./components/ZybaRecommendations";
@@ -26,7 +27,7 @@ const INITIAL_PLAN: PlannedActivity[] = [
     icon: "🚶",
     category: "Aktivitas Ringan",
     points: 60,
-    completed: true,
+    completed: false,
   },
   {
     id: "walk-13",
@@ -115,7 +116,6 @@ export default function SmartActivityPlannerPage() {
   // =========================
   // Activity
   // =========================
-  const [activityProgress, setActivityProgress] = useState(850);
   const targetProgress = 1200;
 
   const [isCompleted, setIsCompleted] = useState(false);
@@ -128,26 +128,28 @@ export default function SmartActivityPlannerPage() {
   const [plan, setPlan] = useState<PlannedActivity[]>(INITIAL_PLAN);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
 
-  // Fetch real condition & activity logs from DB on mount
-  useEffect(() => {
-    async function loadData() {
-      try {
-        const res = await fetch("/api/activity");
-        if (res.ok) {
-          const data = await res.json();
-          if (data.condition) {
-            setConditionData(data.condition);
-          }
-          if (typeof data.totalPointsEarned === "number" && data.totalPointsEarned > 0) {
-            setActivityProgress((prev) => Math.max(prev, data.totalPointsEarned));
-          }
-        }
-      } catch (err) {
-        console.warn("[ActivityPage] Failed to fetch activity data:", err);
+  // Fetch real condition & activity logs. The daily target is derived from the
+  // persisted plan below, so the target always starts at 0 and survives refreshes.
+  const loadData = useCallback(async () => {
+    try {
+      const res = await fetch("/api/activity", {
+        cache: "no-store",
+        credentials: "include",
+      });
+      if (res.ok) {
+        const data = await res.json();
+        if (data.condition) setConditionData(data.condition);
       }
+    } catch (err) {
+      console.warn("[ActivityPage] Failed to fetch activity data:", err);
     }
-    loadData();
   }, []);
+
+  useEffect(() => {
+    void loadData();
+  }, [loadData]);
+
+  useFreshData(loadData);
 
   // Load plan from localStorage on mount
   useEffect(() => {
@@ -228,7 +230,17 @@ export default function SmartActivityPlannerPage() {
         localStorage.setItem(trackerKey, JSON.stringify(current));
       } catch {}
 
-      setActivityProgress((prev) => Math.min(prev + 30, targetProgress));
+      setPlan((prev) => {
+        const updated = prev.map((activity) =>
+          activity.title.toLowerCase().includes("zyba hours")
+            ? { ...activity, completed: true }
+            : activity
+        );
+        try {
+          localStorage.setItem(PLAN_STORAGE_KEY, JSON.stringify(updated));
+        } catch {}
+        return updated;
+      });
       setActivityToast("Sesi Zyba Hours selesai! +30 Zyba Points tersimpan!");
       setTimeout(() => setActivityToast(null), 4000);
     } catch (err) {
@@ -269,18 +281,8 @@ export default function SmartActivityPlannerPage() {
 
     updateAndSavePlan(updated);
 
-    setActivityProgress((current) =>
-      Math.min(
-        Math.max(
-          current +
-            (nextCompleted
-              ? selectedActivity.points
-              : -selectedActivity.points),
-          0,
-        ),
-        targetProgress,
-      ),
-    );
+    // Target progress is derived from the plan itself, so UI and refresh state
+    // stay consistent with the user's chosen schedule.
 
     // Save to database when checked
     if (nextCompleted) {
@@ -303,16 +305,18 @@ export default function SmartActivityPlannerPage() {
           }),
         });
         setActivityToast(`✓ Aktivitas "${selectedActivity.title}" selesai & tersimpan!`);
+        notifyZybaDataChanged();
         setTimeout(() => setActivityToast(null), 3000);
       } catch (e) {
         console.warn("Save toggle activity error:", e);
       }
     }
 
-    if (
-      nextCompleted &&
-      activityProgress + selectedActivity.points >= targetProgress
-    ) {
+    const nextPlanPoints = updated
+      .filter((activity) => activity.completed)
+      .reduce((total, activity) => total + activity.points, 0);
+
+    if (nextCompleted && nextPlanPoints >= targetProgress) {
       setIsCompleted(true);
     }
   };
@@ -339,15 +343,6 @@ export default function SmartActivityPlannerPage() {
   // Delete Activity
   // =========================
   const deletePlanActivity = (id: string) => {
-    const activityToRemove = plan.find((a) => a.id === id);
-    if (!activityToRemove) return;
-
-    if (activityToRemove.completed) {
-      setActivityProgress((current) =>
-        Math.max(current - activityToRemove.points, 0)
-      );
-    }
-
     const updated = plan.filter((a) => a.id !== id);
     updateAndSavePlan(updated);
   };
@@ -404,6 +399,8 @@ export default function SmartActivityPlannerPage() {
   const completedPlanPoints = plan
     .filter((activity) => activity.completed)
     .reduce((total, activity) => total + activity.points, 0);
+
+  const activityProgress = completedPlanPoints;
 
   return (
     <div className="flex flex-col gap-8 pb-12">
