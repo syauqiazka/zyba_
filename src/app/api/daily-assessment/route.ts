@@ -115,7 +115,7 @@ export async function GET(req: NextRequest) {
     );
 
     // Cek cache
-    const cacheKey = `${userId}:${page}:${limit}:${checkDate}`;
+    const cacheKey = `${userId}:${page}:${limit}:${checkDate}:${includeTotal ? "with-total" : "no-total"}`;
     const cached = getDailyAssessmentCache(cacheKey);
     if (cached) {
       return NextResponse.json(cached, {
