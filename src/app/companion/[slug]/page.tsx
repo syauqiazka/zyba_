@@ -47,7 +47,8 @@ export default function CompanionSlugPage() {
   // Hanya chat view yang tersisa
   return (
     <div className="flex flex-col h-full min-h-0">
-      <div className="flex-1 flex flex-col bg-white rounded-3xl border border-brown-900/10 overflow-hidden shadow-sm min-h-0">
+      <div className="flex-1 min-h-0 flex flex-col bg-white rounded-3xl border border-brown-900/10 overflow-hidden shadow-sm">
+        <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain scrollbar-gutter-stable">
         <ChatHeader
           activeConv={activeConv}
           selectedModel={selectedModel}
@@ -86,6 +87,8 @@ export default function CompanionSlugPage() {
           />
         )}
       </div>
+
+        </div>
 
       {/* Settings Modal */}
       {showSettingsModal && (
