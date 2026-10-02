@@ -114,6 +114,9 @@ export async function GET(req: NextRequest) {
       )
     );
 
+    const includeTotal =
+      searchParams.get("includeTotal") === "true";
+
     // Cek cache
     const cacheKey = `${userId}:${page}:${limit}:${checkDate}:${includeTotal ? "with-total" : "no-total"}`;
     const cached = getDailyAssessmentCache(cacheKey);
@@ -126,9 +129,6 @@ export async function GET(req: NextRequest) {
     }
 
     const skip = (page - 1) * limit;
-
-const includeTotal =
-  searchParams.get("includeTotal") === "true";
 
 const [todayRecord, history] =
   await Promise.all([
