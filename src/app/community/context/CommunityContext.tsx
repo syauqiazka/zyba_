@@ -244,7 +244,7 @@ export function CommunityProvider({ children }: { children: React.ReactNode }) {
         const res = await fetch("/api/community", { cache: "no-store" });
         if (res.ok) {
           const data = await res.json();
-          if (data.posts && data.posts.length > 0) {
+          if (Array.isArray(data.posts)) {
             setPosts(data.posts);
 
             // Remove legacy author-name entries from mute/block caches.
