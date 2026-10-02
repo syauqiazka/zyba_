@@ -92,7 +92,7 @@ export default function DailyConditionCard({ initialCondition }: DailyConditionC
             <span className="text-[10px] uppercase font-bold text-brown-700">
               Tidur
             </span>
-            <span className="block font-display text-lg sm:text-xl leading-tight font-extrabold text-brown-900 mt-1 break-words">
+            <span className="block font-display text-base sm:text-xl leading-tight font-extrabold text-brown-900 mt-1 whitespace-nowrap">
               {condition.sleepHours}
             </span>
           </div>
@@ -100,7 +100,7 @@ export default function DailyConditionCard({ initialCondition }: DailyConditionC
             <span className="text-[10px] uppercase font-bold text-brown-700">
               Mood
             </span>
-            <span className="block font-display text-lg sm:text-xl leading-tight font-extrabold text-green-600 mt-1 break-words">
+            <span className="block font-display text-base sm:text-xl leading-tight font-extrabold text-green-600 mt-1 whitespace-nowrap">
               {condition.moodLabel}
             </span>
           </div>
@@ -108,7 +108,7 @@ export default function DailyConditionCard({ initialCondition }: DailyConditionC
             <span className="text-[10px] uppercase font-bold text-brown-700">
               Fokus
             </span>
-            <span className="block font-display text-lg sm:text-xl leading-tight font-extrabold text-orange-500 mt-1 break-words">
+            <span className="block font-display text-base sm:text-xl leading-tight font-extrabold text-orange-500 mt-1 whitespace-nowrap">
               {condition.focusLabel}
             </span>
           </div>
