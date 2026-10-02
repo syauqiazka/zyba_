@@ -346,8 +346,8 @@ function EditProfileModal({
 }
 
 // ── Main ProfilePage ─────────────────────────────────────────────
-export default function ProfilePage) {
-  const dataRefreshSignal = useFreshDataSignal();) {
+export default function ProfilePage() {
+  const dataRefreshSignal = useFreshDataSignal();
   const params = useParams();
   const router = useRouter();
   const { handleToggleLike, handleToggleRepost, handleAddComment, handleTagFilter, currentUserId } = useCommunity();
