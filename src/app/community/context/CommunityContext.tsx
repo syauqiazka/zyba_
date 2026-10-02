@@ -243,6 +243,41 @@ export function CommunityProvider({ children }: { children: React.ReactNode }) {
           const data = await res.json();
           if (data.posts && data.posts.length > 0) {
             setPosts(data.posts);
+
+            // Remove legacy author-name entries from mute/block caches.
+            // Current entries are user IDs; only values that match a loaded
+            // post's author while pointing to a different userId are legacy names.
+            try {
+              const authorToUserId = new Map(
+                data.posts
+                  .filter((p: Post) => p.userId && p.author)
+                  .map((p: Post) => [String(p.author), String(p.userId)])
+              );
+
+              const cleanLegacyIdentifiers = (
+                storageKey: string,
+                setIdentifiers: React.Dispatch<React.SetStateAction<string[]>>
+              ) => {
+                const raw = localStorage.getItem(storageKey);
+                if (!raw) return;
+
+                const identifiers = JSON.parse(raw);
+                if (!Array.isArray(identifiers)) return;
+
+                const cleaned = identifiers.filter((identifier) => {
+                  const mappedUserId = authorToUserId.get(String(identifier));
+                  return !mappedUserId || mappedUserId === String(identifier);
+                });
+
+                if (cleaned.length !== identifiers.length) {
+                  localStorage.setItem(storageKey, JSON.stringify(cleaned));
+                  setIdentifiers(cleaned);
+                }
+              };
+
+              cleanLegacyIdentifiers("zyba_muted_users", setMutedUserIds);
+              cleanLegacyIdentifiers("zyba_blocked_users", setBlockedUserIds);
+            } catch {}
           }
         }
       } catch (err) {
