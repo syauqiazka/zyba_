@@ -1,5 +1,6 @@
 "use client";
 
+import { useFreshDataSignal } from "@/hooks/useFreshData";
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { ArrowLeft, MessageCircle, Pencil, X, EyeOff, Eye, Camera, Loader2 } from "lucide-react";
@@ -345,7 +346,8 @@ function EditProfileModal({
 }
 
 // ── Main ProfilePage ─────────────────────────────────────────────
-export default function ProfilePage() {
+export default function ProfilePage) {
+  const dataRefreshSignal = useFreshDataSignal();) {
   const params = useParams();
   const router = useRouter();
   const { handleToggleLike, handleToggleRepost, handleAddComment, handleTagFilter, currentUserId } = useCommunity();
@@ -404,7 +406,7 @@ export default function ProfilePage() {
 
   useEffect(() => {
     if (userId) loadProfile();
-  }, [userId, loadProfile]);
+  }, [userId, loadProfile, dataRefreshSignal]);
 
   const handleFollowToggle = async () => {
     if (!profile || followLoading) return;
