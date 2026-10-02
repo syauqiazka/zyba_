@@ -277,6 +277,18 @@ export function CommunityProvider({ children }: { children: React.ReactNode }) {
 
               cleanLegacyIdentifiers("zyba_muted_users", setMutedUserIds);
               cleanLegacyIdentifiers("zyba_blocked_users", setBlockedUserIds);
+
+              // A user must never be both muted and blocked.
+              const storedMuted = JSON.parse(localStorage.getItem("zyba_muted_users") || "[]");
+              const storedBlocked = JSON.parse(localStorage.getItem("zyba_blocked_users") || "[]");
+              if (Array.isArray(storedMuted) && Array.isArray(storedBlocked)) {
+                const blockedSet = new Set(storedBlocked.map(String));
+                const exclusiveMuted = storedMuted.filter((id: unknown) => !blockedSet.has(String(id)));
+                if (exclusiveMuted.length !== storedMuted.length) {
+                  localStorage.setItem("zyba_muted_users", JSON.stringify(exclusiveMuted));
+                  setMutedUserIds(exclusiveMuted);
+                }
+              }
             } catch {}
           }
         }
@@ -389,6 +401,15 @@ export function CommunityProvider({ children }: { children: React.ReactNode }) {
   };
 
   const handleMuteUser = (userId: string, authorName?: string) => {
+    // Mute and block are mutually exclusive: a user can only have one status.
+    setBlockedUserIds((prev) => {
+      const next = prev.filter((id) => id !== userId);
+      try {
+        localStorage.setItem("zyba_blocked_users", JSON.stringify(next));
+      } catch {}
+      return next;
+    });
+
     setMutedUserIds((prev) => {
       const next = Array.from(new Set([...prev, userId]));
       try {
@@ -396,6 +417,7 @@ export function CommunityProvider({ children }: { children: React.ReactNode }) {
       } catch {}
       return next;
     });
+
     showToast(`✓ @${authorName || userId} telah dibisukan`);
   };
 
@@ -411,6 +433,15 @@ export function CommunityProvider({ children }: { children: React.ReactNode }) {
   };
 
   const handleBlockUser = async (userId: string, authorName?: string) => {
+    // Block and mute are mutually exclusive: a user can only have one status.
+    setMutedUserIds((prev) => {
+      const next = prev.filter((id) => id !== userId);
+      try {
+        localStorage.setItem("zyba_muted_users", JSON.stringify(next));
+      } catch {}
+      return next;
+    });
+
     setBlockedUserIds((prev) => {
       const next = Array.from(new Set([...prev, userId]));
       try {
@@ -418,6 +449,7 @@ export function CommunityProvider({ children }: { children: React.ReactNode }) {
       } catch {}
       return next;
     });
+
     showToast(`✓ @${authorName || userId} berhasil diblokir`);
 
     // Unfollow in background if valid target
