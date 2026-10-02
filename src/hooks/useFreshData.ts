@@ -1,12 +1,41 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 const DATA_CHANGED_EVENT = "zyba:data-changed";
 
 export function notifyZybaDataChanged() {
   if (typeof window === "undefined") return;
   window.dispatchEvent(new CustomEvent(DATA_CHANGED_EVENT));
+}
+
+export function useFreshDataSignal(minIntervalMs = 1500) {
+  const [signal, setSignal] = useState(0);
+  const lastRefreshRef = useRef(Date.now());
+
+  useEffect(() => {
+    const trigger = () => {
+      if (document.visibilityState !== "visible") return;
+      const now = Date.now();
+      if (now - lastRefreshRef.current < minIntervalMs) return;
+      lastRefreshRef.current = now;
+      setSignal((value) => value + 1);
+    };
+
+    document.addEventListener("visibilitychange", trigger);
+    window.addEventListener("focus", trigger);
+    window.addEventListener("pageshow", trigger);
+    window.addEventListener(DATA_CHANGED_EVENT, trigger);
+
+    return () => {
+      document.removeEventListener("visibilitychange", trigger);
+      window.removeEventListener("focus", trigger);
+      window.removeEventListener("pageshow", trigger);
+      window.removeEventListener(DATA_CHANGED_EVENT, trigger);
+    };
+  }, [minIntervalMs]);
+
+  return signal;
 }
 
 export function useFreshData(
