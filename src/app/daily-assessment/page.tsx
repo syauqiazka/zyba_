@@ -52,7 +52,7 @@ export default function DailyAssessmentPage() {
       setIsHistoryLoading(true);
       const clientDate = new Intl.DateTimeFormat("en-CA").format(new Date());
       const res = await fetch(
-        `/api/daily-assessment?page=${page}&limit=10&date=${clientDate}&_t=${Date.now()}`,
+        `/api/daily-assessment?page=${page}&limit=10&date=${clientDate}&includeTotal=true&_t=${Date.now()}`,
         { cache: "no-store" }
       );
       if (!res.ok) throw new Error("Failed to fetch");
