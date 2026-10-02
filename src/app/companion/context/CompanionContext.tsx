@@ -1,6 +1,8 @@
 "use client";
 
 import React, { createContext, useContext, useState, useRef, useEffect, useCallback } from "react";
+import { useFreshDataSignal, notifyZybaDataChanged } from "@/hooks/useFreshData";
+
 import { usePathname, useRouter } from "next/navigation";
 import { AIModelType } from "@/backend/ai/aiModelManager";
 import { PersonaId } from "@/backend/ai/personas";
@@ -116,6 +118,8 @@ export function CompanionProvider({ children }: { children: React.ReactNode }) {
     [router]
   );
 
+  const dataRefreshSignal = useFreshDataSignal();
+
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [activeConvId, setActiveConvId] = useState<string | null>(null);
   const [chatMode, setChatMode] = useState<"curhat" | "solusi">("curhat");
@@ -186,7 +190,7 @@ export function CompanionProvider({ children }: { children: React.ReactNode }) {
 
   // Fetch conversations on mount
   useEffect(() => {
-    fetch("/api/companion/conversations")
+    fetch("/api/companion/conversations", { cache: "no-store" })
       .then((res) => res.json())
       .then((data) => {
         if (data.conversations) {
@@ -212,11 +216,11 @@ export function CompanionProvider({ children }: { children: React.ReactNode }) {
         }
       })
       .catch((err) => console.error("[Fetch Conversations]:", err));
-  }, []);
+  }, [dataRefreshSignal]);
 
   // Fetch quota on mount
   useEffect(() => {
-    fetch("/api/companion/quota")
+    fetch("/api/companion/quota", { cache: "no-store" })
       .then((res) => res.json())
       .then((data) => {
         if (data.remaining !== undefined) {
@@ -224,7 +228,7 @@ export function CompanionProvider({ children }: { children: React.ReactNode }) {
         }
       })
       .catch((err) => console.error("[Quota Check]:", err));
-  }, []);
+  }, [dataRefreshSignal]);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -389,6 +393,7 @@ export function CompanionProvider({ children }: { children: React.ReactNode }) {
 
       // Auto-play TTS for AI reply
       setLatestAIMessageId(newAiMsg.id);
+      notifyZybaDataChanged();
 
       setConversations((prev) =>
         prev.map((c) => {
