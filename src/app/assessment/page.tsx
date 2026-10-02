@@ -82,7 +82,7 @@ export default function AssessmentPage() {
       }
     }
     loadUser();
-  }, [router]);
+  }, [router, dataRefreshSignal]);
 
   const [ageError, setAgeError] = useState("");
 
