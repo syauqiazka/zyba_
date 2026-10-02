@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from "react";
 import ActivityBanner from "./components/ActivityBanner";
-import ActivityTracker from "./components/ActivityTracker";
 import AddActivityModal, {
   type NewActivity,
 } from "./components/AddActivityModal";
@@ -15,9 +14,6 @@ import DailyPlan, {
 import ZybaRecommendations, {
   type Recommendation,
 } from "./components/ZybaRecommendations";
-import LogSessionModal, {
-  type LoggedSessionData,
-} from "./components/LogSessionModal";
 
 const PLAN_STORAGE_KEY = "zyba_daily_plan_v2";
 
@@ -119,22 +115,12 @@ export default function SmartActivityPlannerPage() {
   // =========================
   // Activity
   // =========================
-  const [activeTab, setActiveTab] = useState<
-    "WALKING" | "RUNNING" | "WORKOUT"
-  >("WALKING");
-
   const [activityProgress, setActivityProgress] = useState(850);
   const targetProgress = 1200;
 
   const [isCompleted, setIsCompleted] = useState(false);
   const [conditionData, setConditionData] = useState<any>(null);
   const [activityToast, setActivityToast] = useState<string | null>(null);
-
-  // Active Session Metrics
-  const [isLogModalOpen, setIsLogModalOpen] = useState(false);
-  const [activeCalories, setActiveCalories] = useState(320);
-  const [activeDurationMin, setActiveDurationMin] = useState(42);
-  const [activeDistanceKm, setActiveDistanceKm] = useState(3.4);
 
   // =========================
   // Daily Planner State & Persistence
@@ -258,60 +244,6 @@ export default function SmartActivityPlannerPage() {
     const remainder = secs % 60;
 
     return `${mins}:${remainder < 10 ? "0" : ""}${remainder}`;
-  };
-
-  // =========================
-  // Activity Session Logging & DB Persistence
-  // =========================
-  const handleSaveSession = async (sessionData: LoggedSessionData) => {
-    const nextProgress = Math.min(
-      activityProgress + sessionData.points,
-      targetProgress,
-    );
-
-    setActivityProgress(nextProgress);
-    setActiveDurationMin((prev) => prev + sessionData.durationMin);
-    setActiveCalories((prev) => prev + sessionData.calories);
-    setActiveDistanceKm((prev) =>
-      parseFloat((prev + sessionData.distanceKm).toFixed(2))
-    );
-
-    const typeLabel =
-      sessionData.type === "WALKING"
-        ? "Jalan Kaki"
-        : sessionData.type === "RUNNING"
-        ? "Lari Santai"
-        : "Olahraga";
-
-    // Save to real database
-    try {
-      await fetch("/api/activity", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          type: sessionData.type,
-          durationMin: sessionData.durationMin,
-          distanceMeter: Math.round(sessionData.distanceKm * 1000),
-          points: sessionData.points,
-          completed: true,
-          title: `Sesi ${typeLabel} (${sessionData.durationMin} mnt)`,
-        }),
-      });
-
-      setActivityToast(
-        `✓ Sesi ${typeLabel} ${sessionData.durationMin} menit berhasil dicatat! (+${sessionData.points} poin, ~${sessionData.calories} kcal)`
-      );
-      setTimeout(() => setActivityToast(null), 4000);
-    } catch (e) {
-      console.warn("Save session error:", e);
-    }
-
-    if (
-      activityProgress < targetProgress &&
-      nextProgress >= targetProgress
-    ) {
-      setIsCompleted(true);
-    }
   };
 
   // =========================
@@ -463,6 +395,14 @@ export default function SmartActivityPlannerPage() {
     (activity) => activity.completed,
   ).length;
 
+  const nextActivity = plan
+    .filter((activity) => !activity.completed)
+    .sort((a, b) => a.time.localeCompare(b.time))[0];
+
+  const completedPlanPoints = plan
+    .filter((activity) => activity.completed)
+    .reduce((total, activity) => total + activity.points, 0);
+
   return (
     <div className="flex flex-col gap-8 pb-12">
       {activityToast && (
@@ -504,21 +444,7 @@ export default function SmartActivityPlannerPage() {
       />
 
       {/* =========================
-          ACTIVITY TRACKER
-      ========================== */}
-      <ActivityTracker
-        activeTab={activeTab}
-        setActiveTab={setActiveTab}
-        activityProgress={activityProgress}
-        targetProgress={targetProgress}
-        onOpenLogModal={() => setIsLogModalOpen(true)}
-        activeCalories={activeCalories}
-        activeDurationMin={activeDurationMin}
-        activeDistanceKm={activeDistanceKm}
-      />
-
-      {/* =========================
-          BREATHING + SUMMARY
+          BREATHING + NEXT ACTIVITY
       ========================== */}
       <div className="grid grid-cols-1 xl:grid-cols-12 gap-6">
         <div className="xl:col-span-8">
@@ -541,54 +467,49 @@ export default function SmartActivityPlannerPage() {
         <div className="xl:col-span-4 glass-card rounded-3xl p-6 border border-brown-900/10 bg-white flex flex-col justify-between">
           <div>
             <span className="text-xs font-bold uppercase tracking-wider text-green-500">
-              Ringkasan Hari Ini
+              Aktivitas Berikutnya
             </span>
 
-            <h2 className="font-display text-2xl font-extrabold text-brown-900 mt-2">
-              {completedActivities}/{plan.length}
-            </h2>
-
-            <p className="text-xs font-bold text-brown-700 mt-1">
-              aktivitas selesai
-            </p>
-
-            <div className="mt-5 space-y-3">
-              <div className="flex items-center justify-between">
-                <span className="text-xs text-brown-700">
-                  Zyba Points
-                </span>
-
-                <span className="text-xs font-bold text-orange-500">
-                  {activityProgress} / {targetProgress}
-                </span>
-              </div>
-
-              <div className="w-full h-2 rounded-full bg-cream overflow-hidden">
-                <div
-                  className="h-full rounded-full bg-orange-500 transition-all duration-300"
-                  style={{
-                    width: `${Math.min(
-                      (activityProgress / targetProgress) * 100,
-                      100,
-                    )}%`,
-                  }}
-                />
-              </div>
-            </div>
-
-            <p className="text-xs text-brown-700 mt-5 leading-relaxed">
-              Selesaikan aktivitas kecil sepanjang hari agar target
-              terasa lebih ringan.
-            </p>
+            {nextActivity ? (
+              <>
+                <div className="flex items-center gap-3 mt-4">
+                  <div className="w-12 h-12 rounded-2xl bg-cream flex items-center justify-center text-2xl shrink-0">
+                    {nextActivity.icon}
+                  </div>
+                  <div className="min-w-0">
+                    <h2 className="font-display text-xl font-extrabold text-brown-900">
+                      {nextActivity.title}
+                    </h2>
+                    <p className="text-xs text-brown-700 mt-1">
+                      {nextActivity.time} · {nextActivity.duration}
+                    </p>
+                  </div>
+                </div>
+                <p className="text-xs text-brown-700 mt-4 leading-relaxed">
+                  {nextActivity.category} · +{nextActivity.points} Zyba Points
+                </p>
+              </>
+            ) : (
+              <>
+                <h2 className="font-display text-2xl font-extrabold text-brown-900 mt-3">
+                  Selesai untuk Hari Ini
+                </h2>
+                <p className="text-xs text-brown-700 mt-2 leading-relaxed">
+                  Kamu telah menyelesaikan {completedActivities} aktivitas dengan total {completedPlanPoints} Zyba Points dari rencanamu.
+                </p>
+              </>
+            )}
           </div>
 
-          <button
-            type="button"
-            onClick={() => setIsAddModalOpen(true)}
-            className="mt-6 w-full rounded-full bg-brown-900 text-white py-3 text-xs font-bold hover:bg-green-500 transition-colors"
-          >
-            + Tambah Aktivitas
-          </button>
+          {nextActivity && (
+            <button
+              type="button"
+              onClick={() => togglePlanActivity(nextActivity.id)}
+              className="mt-6 w-full rounded-full bg-brown-900 text-white py-3 text-xs font-bold hover:bg-green-500 transition-colors"
+            >
+              Mulai Aktivitas
+            </button>
+          )}
         </div>
       </div>
 
@@ -606,12 +527,6 @@ export default function SmartActivityPlannerPage() {
         onClose={() => setIsCompleted(false)}
       />
 
-      <LogSessionModal
-        isOpen={isLogModalOpen}
-        onClose={() => setIsLogModalOpen(false)}
-        initialType={activeTab}
-        onSaveSession={handleSaveSession}
-      />
     </div>
   );
 }
