@@ -14,10 +14,12 @@ if (!dbUrl) {
   );
 }
 
-function withPoolConfig(url: string, limit = 5): string {
+function withPoolConfig(url: string, limit = 10): string {
   if (url.includes("connection_limit=")) return url;
   const sep = url.includes("?") ? "&" : "?";
-  return `${url}${sep}connection_limit=${limit}&pool_timeout=10`;
+  // pgbouncer=true enables Prisma's PgBouncer compatibility mode (needed for Neon pooler)
+  const pgbouncer = url.includes("pgbouncer") ? "" : "&pgbouncer=true";
+  return `${url}${sep}connection_limit=${limit}&pool_timeout=15${pgbouncer}`;
 }
 
 export const communityDb =
@@ -25,7 +27,7 @@ export const communityDb =
   new PrismaClient({
     datasources: {
       db: {
-        url: withPoolConfig(dbUrl, 5),
+        url: withPoolConfig(dbUrl, 10),
       },
     },
     log:

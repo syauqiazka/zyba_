@@ -1670,7 +1670,9 @@ export namespace Prisma {
     audioDurationSec: number | null
     stickerId: string | null
     isHidden: boolean | null
+    commentsDisabled: boolean | null
     createdAt: Date | null
+    updatedAt: Date | null
   }
 
   export type CommunityPostMaxAggregateOutputType = {
@@ -1682,7 +1684,9 @@ export namespace Prisma {
     audioDurationSec: number | null
     stickerId: string | null
     isHidden: boolean | null
+    commentsDisabled: boolean | null
     createdAt: Date | null
+    updatedAt: Date | null
   }
 
   export type CommunityPostCountAggregateOutputType = {
@@ -1694,7 +1698,9 @@ export namespace Prisma {
     audioDurationSec: number
     stickerId: number
     isHidden: number
+    commentsDisabled: number
     createdAt: number
+    updatedAt: number
     _all: number
   }
 
@@ -1716,7 +1722,9 @@ export namespace Prisma {
     audioDurationSec?: true
     stickerId?: true
     isHidden?: true
+    commentsDisabled?: true
     createdAt?: true
+    updatedAt?: true
   }
 
   export type CommunityPostMaxAggregateInputType = {
@@ -1728,7 +1736,9 @@ export namespace Prisma {
     audioDurationSec?: true
     stickerId?: true
     isHidden?: true
+    commentsDisabled?: true
     createdAt?: true
+    updatedAt?: true
   }
 
   export type CommunityPostCountAggregateInputType = {
@@ -1740,7 +1750,9 @@ export namespace Prisma {
     audioDurationSec?: true
     stickerId?: true
     isHidden?: true
+    commentsDisabled?: true
     createdAt?: true
+    updatedAt?: true
     _all?: true
   }
 
@@ -1839,7 +1851,9 @@ export namespace Prisma {
     audioDurationSec: number | null
     stickerId: string | null
     isHidden: boolean
+    commentsDisabled: boolean
     createdAt: Date
+    updatedAt: Date
     _count: CommunityPostCountAggregateOutputType | null
     _avg: CommunityPostAvgAggregateOutputType | null
     _sum: CommunityPostSumAggregateOutputType | null
@@ -1870,7 +1884,9 @@ export namespace Prisma {
     audioDurationSec?: boolean
     stickerId?: boolean
     isHidden?: boolean
+    commentsDisabled?: boolean
     createdAt?: boolean
+    updatedAt?: boolean
     comments?: boolean | CommunityPost$commentsArgs<ExtArgs>
     likes?: boolean | CommunityPost$likesArgs<ExtArgs>
     _count?: boolean | CommunityPostCountOutputTypeDefaultArgs<ExtArgs>
@@ -1885,7 +1901,9 @@ export namespace Prisma {
     audioDurationSec?: boolean
     stickerId?: boolean
     isHidden?: boolean
+    commentsDisabled?: boolean
     createdAt?: boolean
+    updatedAt?: boolean
   }, ExtArgs["result"]["communityPost"]>
 
   export type CommunityPostSelectScalar = {
@@ -1897,7 +1915,9 @@ export namespace Prisma {
     audioDurationSec?: boolean
     stickerId?: boolean
     isHidden?: boolean
+    commentsDisabled?: boolean
     createdAt?: boolean
+    updatedAt?: boolean
   }
 
   export type CommunityPostInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -1922,7 +1942,9 @@ export namespace Prisma {
       audioDurationSec: number | null
       stickerId: string | null
       isHidden: boolean
+      commentsDisabled: boolean
       createdAt: Date
+      updatedAt: Date
     }, ExtArgs["result"]["communityPost"]>
     composites: {}
   }
@@ -2326,7 +2348,9 @@ export namespace Prisma {
     readonly audioDurationSec: FieldRef<"CommunityPost", 'Int'>
     readonly stickerId: FieldRef<"CommunityPost", 'String'>
     readonly isHidden: FieldRef<"CommunityPost", 'Boolean'>
+    readonly commentsDisabled: FieldRef<"CommunityPost", 'Boolean'>
     readonly createdAt: FieldRef<"CommunityPost", 'DateTime'>
+    readonly updatedAt: FieldRef<"CommunityPost", 'DateTime'>
   }
     
 
@@ -10127,7 +10151,9 @@ export namespace Prisma {
     audioDurationSec: 'audioDurationSec',
     stickerId: 'stickerId',
     isHidden: 'isHidden',
-    createdAt: 'createdAt'
+    commentsDisabled: 'commentsDisabled',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
   };
 
   export type CommunityPostScalarFieldEnum = (typeof CommunityPostScalarFieldEnum)[keyof typeof CommunityPostScalarFieldEnum]
@@ -10330,7 +10356,9 @@ export namespace Prisma {
     audioDurationSec?: IntNullableFilter<"CommunityPost"> | number | null
     stickerId?: StringNullableFilter<"CommunityPost"> | string | null
     isHidden?: BoolFilter<"CommunityPost"> | boolean
+    commentsDisabled?: BoolFilter<"CommunityPost"> | boolean
     createdAt?: DateTimeFilter<"CommunityPost"> | Date | string
+    updatedAt?: DateTimeFilter<"CommunityPost"> | Date | string
     comments?: CommunityCommentListRelationFilter
     likes?: CommunityLikeListRelationFilter
   }
@@ -10344,7 +10372,9 @@ export namespace Prisma {
     audioDurationSec?: SortOrderInput | SortOrder
     stickerId?: SortOrderInput | SortOrder
     isHidden?: SortOrder
+    commentsDisabled?: SortOrder
     createdAt?: SortOrder
+    updatedAt?: SortOrder
     comments?: CommunityCommentOrderByRelationAggregateInput
     likes?: CommunityLikeOrderByRelationAggregateInput
   }
@@ -10361,7 +10391,9 @@ export namespace Prisma {
     audioDurationSec?: IntNullableFilter<"CommunityPost"> | number | null
     stickerId?: StringNullableFilter<"CommunityPost"> | string | null
     isHidden?: BoolFilter<"CommunityPost"> | boolean
+    commentsDisabled?: BoolFilter<"CommunityPost"> | boolean
     createdAt?: DateTimeFilter<"CommunityPost"> | Date | string
+    updatedAt?: DateTimeFilter<"CommunityPost"> | Date | string
     comments?: CommunityCommentListRelationFilter
     likes?: CommunityLikeListRelationFilter
   }, "id">
@@ -10375,7 +10407,9 @@ export namespace Prisma {
     audioDurationSec?: SortOrderInput | SortOrder
     stickerId?: SortOrderInput | SortOrder
     isHidden?: SortOrder
+    commentsDisabled?: SortOrder
     createdAt?: SortOrder
+    updatedAt?: SortOrder
     _count?: CommunityPostCountOrderByAggregateInput
     _avg?: CommunityPostAvgOrderByAggregateInput
     _max?: CommunityPostMaxOrderByAggregateInput
@@ -10395,7 +10429,9 @@ export namespace Prisma {
     audioDurationSec?: IntNullableWithAggregatesFilter<"CommunityPost"> | number | null
     stickerId?: StringNullableWithAggregatesFilter<"CommunityPost"> | string | null
     isHidden?: BoolWithAggregatesFilter<"CommunityPost"> | boolean
+    commentsDisabled?: BoolWithAggregatesFilter<"CommunityPost"> | boolean
     createdAt?: DateTimeWithAggregatesFilter<"CommunityPost"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"CommunityPost"> | Date | string
   }
 
   export type CommunityCommentWhereInput = {
@@ -10861,7 +10897,9 @@ export namespace Prisma {
     audioDurationSec?: number | null
     stickerId?: string | null
     isHidden?: boolean
+    commentsDisabled?: boolean
     createdAt?: Date | string
+    updatedAt?: Date | string
     comments?: CommunityCommentCreateNestedManyWithoutPostInput
     likes?: CommunityLikeCreateNestedManyWithoutPostInput
   }
@@ -10875,7 +10913,9 @@ export namespace Prisma {
     audioDurationSec?: number | null
     stickerId?: string | null
     isHidden?: boolean
+    commentsDisabled?: boolean
     createdAt?: Date | string
+    updatedAt?: Date | string
     comments?: CommunityCommentUncheckedCreateNestedManyWithoutPostInput
     likes?: CommunityLikeUncheckedCreateNestedManyWithoutPostInput
   }
@@ -10889,7 +10929,9 @@ export namespace Prisma {
     audioDurationSec?: NullableIntFieldUpdateOperationsInput | number | null
     stickerId?: NullableStringFieldUpdateOperationsInput | string | null
     isHidden?: BoolFieldUpdateOperationsInput | boolean
+    commentsDisabled?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     comments?: CommunityCommentUpdateManyWithoutPostNestedInput
     likes?: CommunityLikeUpdateManyWithoutPostNestedInput
   }
@@ -10903,7 +10945,9 @@ export namespace Prisma {
     audioDurationSec?: NullableIntFieldUpdateOperationsInput | number | null
     stickerId?: NullableStringFieldUpdateOperationsInput | string | null
     isHidden?: BoolFieldUpdateOperationsInput | boolean
+    commentsDisabled?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     comments?: CommunityCommentUncheckedUpdateManyWithoutPostNestedInput
     likes?: CommunityLikeUncheckedUpdateManyWithoutPostNestedInput
   }
@@ -10917,7 +10961,9 @@ export namespace Prisma {
     audioDurationSec?: number | null
     stickerId?: string | null
     isHidden?: boolean
+    commentsDisabled?: boolean
     createdAt?: Date | string
+    updatedAt?: Date | string
   }
 
   export type CommunityPostUpdateManyMutationInput = {
@@ -10929,7 +10975,9 @@ export namespace Prisma {
     audioDurationSec?: NullableIntFieldUpdateOperationsInput | number | null
     stickerId?: NullableStringFieldUpdateOperationsInput | string | null
     isHidden?: BoolFieldUpdateOperationsInput | boolean
+    commentsDisabled?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type CommunityPostUncheckedUpdateManyInput = {
@@ -10941,7 +10989,9 @@ export namespace Prisma {
     audioDurationSec?: NullableIntFieldUpdateOperationsInput | number | null
     stickerId?: NullableStringFieldUpdateOperationsInput | string | null
     isHidden?: BoolFieldUpdateOperationsInput | boolean
+    commentsDisabled?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type CommunityCommentCreateInput = {
@@ -11504,7 +11554,9 @@ export namespace Prisma {
     audioDurationSec?: SortOrder
     stickerId?: SortOrder
     isHidden?: SortOrder
+    commentsDisabled?: SortOrder
     createdAt?: SortOrder
+    updatedAt?: SortOrder
   }
 
   export type CommunityPostAvgOrderByAggregateInput = {
@@ -11520,7 +11572,9 @@ export namespace Prisma {
     audioDurationSec?: SortOrder
     stickerId?: SortOrder
     isHidden?: SortOrder
+    commentsDisabled?: SortOrder
     createdAt?: SortOrder
+    updatedAt?: SortOrder
   }
 
   export type CommunityPostMinOrderByAggregateInput = {
@@ -11532,7 +11586,9 @@ export namespace Prisma {
     audioDurationSec?: SortOrder
     stickerId?: SortOrder
     isHidden?: SortOrder
+    commentsDisabled?: SortOrder
     createdAt?: SortOrder
+    updatedAt?: SortOrder
   }
 
   export type CommunityPostSumOrderByAggregateInput = {
@@ -12491,7 +12547,9 @@ export namespace Prisma {
     audioDurationSec?: number | null
     stickerId?: string | null
     isHidden?: boolean
+    commentsDisabled?: boolean
     createdAt?: Date | string
+    updatedAt?: Date | string
     likes?: CommunityLikeCreateNestedManyWithoutPostInput
   }
 
@@ -12504,7 +12562,9 @@ export namespace Prisma {
     audioDurationSec?: number | null
     stickerId?: string | null
     isHidden?: boolean
+    commentsDisabled?: boolean
     createdAt?: Date | string
+    updatedAt?: Date | string
     likes?: CommunityLikeUncheckedCreateNestedManyWithoutPostInput
   }
 
@@ -12588,7 +12648,9 @@ export namespace Prisma {
     audioDurationSec?: NullableIntFieldUpdateOperationsInput | number | null
     stickerId?: NullableStringFieldUpdateOperationsInput | string | null
     isHidden?: BoolFieldUpdateOperationsInput | boolean
+    commentsDisabled?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     likes?: CommunityLikeUpdateManyWithoutPostNestedInput
   }
 
@@ -12601,7 +12663,9 @@ export namespace Prisma {
     audioDurationSec?: NullableIntFieldUpdateOperationsInput | number | null
     stickerId?: NullableStringFieldUpdateOperationsInput | string | null
     isHidden?: BoolFieldUpdateOperationsInput | boolean
+    commentsDisabled?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     likes?: CommunityLikeUncheckedUpdateManyWithoutPostNestedInput
   }
 
@@ -12661,7 +12725,9 @@ export namespace Prisma {
     audioDurationSec?: number | null
     stickerId?: string | null
     isHidden?: boolean
+    commentsDisabled?: boolean
     createdAt?: Date | string
+    updatedAt?: Date | string
     comments?: CommunityCommentCreateNestedManyWithoutPostInput
   }
 
@@ -12674,7 +12740,9 @@ export namespace Prisma {
     audioDurationSec?: number | null
     stickerId?: string | null
     isHidden?: boolean
+    commentsDisabled?: boolean
     createdAt?: Date | string
+    updatedAt?: Date | string
     comments?: CommunityCommentUncheckedCreateNestedManyWithoutPostInput
   }
 
@@ -12703,7 +12771,9 @@ export namespace Prisma {
     audioDurationSec?: NullableIntFieldUpdateOperationsInput | number | null
     stickerId?: NullableStringFieldUpdateOperationsInput | string | null
     isHidden?: BoolFieldUpdateOperationsInput | boolean
+    commentsDisabled?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     comments?: CommunityCommentUpdateManyWithoutPostNestedInput
   }
 
@@ -12716,7 +12786,9 @@ export namespace Prisma {
     audioDurationSec?: NullableIntFieldUpdateOperationsInput | number | null
     stickerId?: NullableStringFieldUpdateOperationsInput | string | null
     isHidden?: BoolFieldUpdateOperationsInput | boolean
+    commentsDisabled?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     comments?: CommunityCommentUncheckedUpdateManyWithoutPostNestedInput
   }
 

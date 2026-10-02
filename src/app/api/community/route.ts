@@ -4,55 +4,59 @@ import { verifySessionToken } from "@/lib/auth";
 import { communityRepository } from "@/backend/community/communityRepository";
 import { userRepository } from "@/backend/auth/userRepository";
 import { resolveAvatar } from "@/lib/avatarUtils";
+import {
+  getCommunityCache,
+  setCommunityCache,
+  invalidateCommunityCache,
+  COMMUNITY_CACHE_TTL,
+} from "@/lib/communityCache";
 
-let cachedCommunityPosts: {
-  data: any;
-  timestamp: number;
-} | null = null;
-
-const COMMUNITY_CACHE_TTL = 6000;
-
-function invalidateCommunityCache() {
-  cachedCommunityPosts = null;
-}
-
-export async function GET() {
+export async function GET(req: NextRequest) {
   try {
+    const { searchParams } = new URL(req.url);
+    const cursor = searchParams.get("cursor") || undefined;
+    const take = Math.min(Number(searchParams.get("take") || 30), 50);
+
+    // Only use cache for first page (no cursor) to avoid stale paginated results
+    const isFirstPage = !cursor;
+
+    const cached = getCommunityCache();
     if (
-      cachedCommunityPosts &&
-      Date.now() - cachedCommunityPosts.timestamp <
-      COMMUNITY_CACHE_TTL
+      isFirstPage &&
+      cached &&
+      Date.now() - cached.timestamp < COMMUNITY_CACHE_TTL
     ) {
       return NextResponse.json(
-        cachedCommunityPosts.data,
+        cached.data,
         {
           headers: {
-            "Cache-Control":
-              "public, max-age=5, stale-while-revalidate=15",
+            "Cache-Control": "public, max-age=20, stale-while-revalidate=60",
+            "X-Cache": "HIT",
           },
         }
       );
     }
 
-    const posts =
-      await communityRepository.getAllPosts();
+    const posts = await communityRepository.getAllPosts(take, cursor);
 
     const responseData = {
       success: true,
       posts,
+      nextCursor: posts.length === take ? posts[posts.length - 1]?.id : null,
     };
 
-    cachedCommunityPosts = {
-      data: responseData,
-      timestamp: Date.now(),
-    };
+    if (isFirstPage) {
+      setCommunityCache(responseData);
+    }
 
     return NextResponse.json(
       responseData,
       {
         headers: {
-          "Cache-Control":
-            "public, max-age=5, stale-while-revalidate=15",
+          "Cache-Control": isFirstPage
+            ? "public, max-age=20, stale-while-revalidate=60"
+            : "public, max-age=10, stale-while-revalidate=30",
+          "X-Cache": "MISS",
         },
       }
     );
@@ -62,7 +66,7 @@ export async function GET() {
       error
     );
 
-    cachedCommunityPosts = null;
+    invalidateCommunityCache();
 
     return NextResponse.json(
       {

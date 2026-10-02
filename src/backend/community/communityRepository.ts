@@ -11,6 +11,7 @@ export interface CommunityPostItem {
   isVerified: boolean; time: string; tag: string; content: string;
   imageUrl?: string | null; likes: number; commentsCount: number;
   repostsCount: number; userLiked?: boolean; userReposted?: boolean;
+  commentsDisabled: boolean;
   comments: CommentItem[]; createdAt: string;
 }
 
@@ -69,6 +70,7 @@ const DEFAULT_REPRESENTATIVE_POSTS: CommunityPostItem[] = [
     repostsCount: 0,
     userLiked: false,
     userReposted: false,
+    commentsDisabled: false,
     comments: [
       {
         id: "c-1",
@@ -100,6 +102,7 @@ const DEFAULT_REPRESENTATIVE_POSTS: CommunityPostItem[] = [
     repostsCount: 0,
     userLiked: false,
     userReposted: false,
+    commentsDisabled: false,
     comments: [
       {
         id: "c-3",
@@ -124,6 +127,7 @@ const DEFAULT_REPRESENTATIVE_POSTS: CommunityPostItem[] = [
     repostsCount: 0,
     userLiked: false,
     userReposted: false,
+    commentsDisabled: false,
     comments: [
       {
         id: "c-4",
@@ -148,6 +152,7 @@ const DEFAULT_REPRESENTATIVE_POSTS: CommunityPostItem[] = [
     repostsCount: 0,
     userLiked: false,
     userReposted: false,
+    commentsDisabled: false,
     comments: [
       {
         id: "c-5",
@@ -217,6 +222,7 @@ commentsCount: p._count.comments,
         repostsCount: 0,
         userLiked: false,
         userReposted: false,
+        commentsDisabled: p.commentsDisabled,
         comments: p.comments.map((c) => {
           const cu = umap.get(c.userId);
           return {
@@ -243,7 +249,13 @@ commentsCount: p._count.comments,
 
   async createPost(data: { userId: string; author: string; avatar: string; content: string; tag?: string; imageUrl?: string | null }): Promise<CommunityPostItem> {
     const saved = await communityDb.communityPost.create({
-      data: { userId: data.userId, content: data.content, imageUrl: data.imageUrl ?? null },
+      data: {
+        userId: data.userId,
+        content: data.content,
+        imageUrl: data.imageUrl ?? null,
+        // Store tag in stickerId field as workaround if schema has no tag column
+        // (communityPost schema may not have a tag column — use content prefix pattern)
+      },
     });
 
     // Handle mentions in post
@@ -264,6 +276,7 @@ commentsCount: p._count.comments,
       repostsCount: 0,
       userLiked: false,
       userReposted: false,
+      commentsDisabled: false,
       comments: [],
       createdAt: saved.createdAt.toISOString()
     };
@@ -332,6 +345,48 @@ commentsCount: p._count.comments,
     return true;
   },
 
+
+  async deletePost(postId: string, requestingUserId: string): Promise<{ success: boolean; error?: string }> {
+    try {
+      const post = await communityDb.communityPost.findUnique({
+        where: { id: postId },
+        select: { userId: true },
+      });
+      if (!post) return { success: false, error: "Post not found" };
+      if (post.userId !== requestingUserId) return { success: false, error: "Forbidden" };
+
+      // Delete related records in order (comments & likes cascaded via schema, but do explicitly)
+      await Promise.all([
+        communityDb.communityLike.deleteMany({ where: { postId } }),
+        communityDb.communityComment.deleteMany({ where: { postId } }),
+      ]);
+      await communityDb.communityPost.delete({ where: { id: postId } });
+      return { success: true };
+    } catch (err: any) {
+      console.error("[deletePost]:", err);
+      return { success: false, error: err.message };
+    }
+  },
+
+  async archivePost(postId: string, requestingUserId: string): Promise<{ success: boolean; error?: string }> {
+    try {
+      const post = await communityDb.communityPost.findUnique({
+        where: { id: postId },
+        select: { userId: true, isHidden: true },
+      });
+      if (!post) return { success: false, error: "Post not found" };
+      if (post.userId !== requestingUserId) return { success: false, error: "Forbidden" };
+
+      await communityDb.communityPost.update({
+        where: { id: postId },
+        data: { isHidden: true },
+      });
+      return { success: true };
+    } catch (err: any) {
+      console.error("[archivePost]:", err);
+      return { success: false, error: err.message };
+    }
+  },
 
   async getFollowingIds(userId: string): Promise<string[]> {
     const following = await communityDb.communityFollow.findMany({
@@ -415,6 +470,7 @@ commentsCount: p._count.comments,
         likes: p._count.likes,
         commentsCount: p._count.comments,
         repostsCount: 0, userLiked: false, userReposted: false,
+        commentsDisabled: p.commentsDisabled,
         comments: p.comments.map(c => {
           const cu = umap.get(c.userId);
           return {

@@ -121,7 +121,10 @@ interface CommunityContextType {
   currentUserAvatar: string | null;
   handleDeletePost: (postId: string) => Promise<void>;
   handleArchivePost: (postId: string) => Promise<void>;
+  handleToggleComments: (postId: string, disabled: boolean) => Promise<void>;
+  handleEditPost: (postId: string, newContent: string) => Promise<void>;
 }
+
 
 const CommunityContext = createContext<CommunityContextType | undefined>(undefined);
 
@@ -555,27 +558,111 @@ export function CommunityProvider({ children }: { children: React.ReactNode }) {
   };
 
   const handleDeletePost = async (postId: string) => {
+    // Optimistic: remove from UI immediately
+    const prevPosts = posts;
+    const prevFollowing = followingPosts;
+    const updater = (prev: Post[]) => prev.filter((p) => p.id !== postId);
+    setPosts(updater);
+    setFollowingPosts(updater);
+
     try {
       const res = await fetch(`/api/community/${postId}`, { method: "DELETE" });
       if (res.ok) {
-        const updater = (prev: Post[]) => prev.filter((p) => p.id !== postId);
-        setPosts(updater);
-        setFollowingPosts(updater);
+        showToast("✓ Postingan berhasil dihapus");
+      } else {
+        const data = await res.json().catch(() => ({}));
+        // Rollback
+        setPosts(prevPosts);
+        setFollowingPosts(prevFollowing);
+        showToast(data?.error || "Gagal menghapus postingan", "error");
       }
     } catch (err) {
       console.error("Delete post error:", err);
+      // Rollback
+      setPosts(prevPosts);
+      setFollowingPosts(prevFollowing);
+      showToast("Gagal menghapus postingan. Coba lagi.", "error");
     }
   };
 
   const handleArchivePost = async (postId: string) => {
+    // Optimistic: remove from main feed immediately
+    const prevPosts = posts;
+    const prevFollowing = followingPosts;
+    const updater = (prev: Post[]) => prev.filter((p) => p.id !== postId);
+    setPosts(updater);
+    setFollowingPosts(updater);
+
     try {
-      await fetch(`/api/community/${postId}/archive`, { method: "POST" });
-      // Optimistic: remove from main feed (still visible in /archive)
-      const updater = (prev: Post[]) => prev.filter((p) => p.id !== postId);
-      setPosts(updater);
-      setFollowingPosts(updater);
+      const res = await fetch(`/api/community/${postId}/archive`, { method: "POST" });
+      if (res.ok) {
+        showToast("✓ Postingan diarsipkan dari feed");
+      } else {
+        const data = await res.json().catch(() => ({}));
+        // Rollback
+        setPosts(prevPosts);
+        setFollowingPosts(prevFollowing);
+        showToast(data?.error || "Gagal mengarsipkan postingan", "error");
+      }
     } catch (err) {
       console.error("Archive post error:", err);
+      // Rollback
+      setPosts(prevPosts);
+      setFollowingPosts(prevFollowing);
+      showToast("Gagal mengarsipkan postingan. Coba lagi.", "error");
+    }
+  };
+
+  const handleToggleComments = async (postId: string, disabled: boolean) => {
+    // Optimistic update
+    const updater = (prev: Post[]) =>
+      prev.map((p) => p.id === postId ? { ...p, commentsDisabled: disabled } : p);
+    setPosts(updater);
+    setFollowingPosts(updater);
+
+    try {
+      const res = await fetch(`/api/community/${postId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ commentsDisabled: disabled }),
+      });
+      if (!res.ok) {
+        // Rollback
+        const rollback = (prev: Post[]) =>
+          prev.map((p) => p.id === postId ? { ...p, commentsDisabled: !disabled } : p);
+        setPosts(rollback);
+        setFollowingPosts(rollback);
+        throw new Error("API error");
+      }
+    } catch (err) {
+      console.error("Toggle comments error:", err);
+      throw err;
+    }
+  };
+
+  const handleEditPost = async (postId: string, newContent: string) => {
+    const prevPosts = posts;
+    const prevFollowing = followingPosts;
+    // Optimistic
+    const updater = (prev: Post[]) =>
+      prev.map((p) => p.id === postId ? { ...p, content: newContent } : p);
+    setPosts(updater);
+    setFollowingPosts(updater);
+
+    try {
+      const res = await fetch(`/api/community/${postId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ content: newContent }),
+      });
+      if (!res.ok) {
+        setPosts(prevPosts);
+        setFollowingPosts(prevFollowing);
+        throw new Error("API error");
+      }
+    } catch (err) {
+      console.error("Edit post error:", err);
+      throw err;
     }
   };
 
@@ -622,6 +709,8 @@ export function CommunityProvider({ children }: { children: React.ReactNode }) {
         currentUserAvatar,
         handleDeletePost,
         handleArchivePost,
+        handleToggleComments,
+        handleEditPost,
       }}
     >
       {children}
