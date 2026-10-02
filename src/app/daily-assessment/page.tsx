@@ -1,6 +1,6 @@
 "use client";
 
-import { useFreshDataSignal, notifyZybaDataChanged } from "@/hooks/useFreshData";
+import { useFreshDataSignal } from "@/hooks/useFreshData";
 import React, { useState, useEffect, useCallback } from "react";
 import {
   DailyRecord,
@@ -132,8 +132,6 @@ export default function DailyAssessmentPage() {
         }
         return [resolvedRecord, ...prev];
       });
-
-      notifyZybaDataChanged();
 
       setSavedSuccess(true);
       setTimeout(() => setSavedSuccess(false), 4500);
