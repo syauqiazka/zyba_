@@ -45,7 +45,7 @@ export default function CommunitySidebar({ onClose }: { onClose?: () => void }) 
     let isMounted = true;
     async function loadBadges() {
       try {
-        const res = await fetch("/api/community/badges", { cache: "no-store" });
+        const res = await fetch("/api/community/badges", { cache: "default" });
         if (res.ok) {
           const data = await res.json();
           if (isMounted) {
@@ -74,7 +74,7 @@ export default function CommunitySidebar({ onClose }: { onClose?: () => void }) 
       if (typeof document !== "undefined" && document.visibilityState === "visible") {
         loadBadges();
       }
-    }, 30000);
+    }, 60000);
 
     return () => {
       isMounted = false;
@@ -275,7 +275,7 @@ export default function CommunitySidebar({ onClose }: { onClose?: () => void }) 
       onMouseEnter={() => isDesktop && setExpanded(true)}
       onMouseLeave={() => isDesktop && setExpanded(false)}
       style={{ width: isDesktop ? (expanded ? 240 : 64) : 260 }}
-      className="flex flex-col shrink-0 bg-[#FAF7F2] border-r border-brown-900/10 h-screen select-none transition-[width] duration-300 ease-in-out overflow-hidden z-30 relative shadow-lg md:shadow-none"
+      className="flex flex-col shrink-0 bg-[#FAF7F2] border-r border-brown-900/10 h-[100dvh] min-h-0 select-none transition-[width] duration-300 ease-in-out overflow-hidden z-30 relative shadow-lg md:shadow-none"
     >
       {/* Mobile close button */}
       {onClose && (
@@ -315,7 +315,7 @@ export default function CommunitySidebar({ onClose }: { onClose?: () => void }) 
       </div>
 
       {/* ── Scrollable Nav ───────────────────────────────────── */}
-      <div className="flex-1 overflow-y-auto overflow-x-hidden py-3 flex flex-col gap-4">
+      <div className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden overscroll-contain py-3 flex flex-col gap-4">
         {/* Back to dashboard */}
         <div className="px-2.5">
           <Link

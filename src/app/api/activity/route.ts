@@ -106,7 +106,7 @@ export async function GET(req: NextRequest) {
       energyTitle = "Energi Rendah";
       badgeText = "Recovery Perlu Dijaga";
       badgeColor = "orange";
-      insight = "Tingkat energimu sedang butuh jeda. Prioritaskan latihan pernapasan Zyba Hours dan jalan santai ringan sebelum beban berat.";
+      insight = "Energi kamu sedang butuh jeda. Prioritaskan latihan pernapasan Zyba Hours dan jalan santai ringan sebelum aktivitas yang lebih berat.";
     } else if (resolvedStress <= 2 && (resolvedMood === "HAPPY" || resolvedMood === "OVERJOYED") && resolvedSleep >= 3) {
       energyTitle = "Energi Prima";
       badgeText = "Kondisi Prima";

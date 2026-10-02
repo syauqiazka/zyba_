@@ -17,7 +17,7 @@ function CommunityLayoutInner({ children }: { children: React.ReactNode }) {
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
 
   return (
-    <div className="flex h-screen overflow-hidden bg-cream relative">
+    <div className="flex h-[100dvh] min-h-0 overflow-hidden bg-cream relative overscroll-none">
       {/* Mobile hamburger button */}
       <button
         type="button"
@@ -50,14 +50,14 @@ function CommunityLayoutInner({ children }: { children: React.ReactNode }) {
 
       {/* Sidebar: off-canvas drawer on mobile, sticky on desktop */}
       <div
-        className={`fixed md:sticky top-0 left-0 z-50 h-screen transition-transform duration-300 md:translate-x-0 ${mobileSidebarOpen ? "translate-x-0 shadow-2xl" : "-translate-x-full md:translate-x-0"
+        className={`fixed md:sticky top-0 left-0 z-50 h-[100dvh] transition-transform duration-300 md:translate-x-0 ${mobileSidebarOpen ? "translate-x-0 shadow-2xl" : "-translate-x-full md:translate-x-0"
           }`}
       >
         <CommunitySidebar onClose={() => setMobileSidebarOpen(false)} />
       </div>
 
       {/* Main content: mobile has pt-16 to avoid hamburger overlap, reset with md:pt-0 per Bagian 15.1 */}
-      <div className="flex-1 min-w-0 h-full overflow-hidden flex flex-col pt-16 md:pt-0">
+      <div className="flex-1 min-w-0 h-full min-h-0 overflow-hidden flex flex-col pt-16 md:pt-0">
         {children}
       </div>
     </div>

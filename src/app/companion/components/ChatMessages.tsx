@@ -74,7 +74,7 @@ export default function ChatMessages({
   // 1. EXACT CLAUDE.AI EMPTY STATE (Image 1)
   if (messages.length === 0) {
     return (
-      <div className="flex-1 overflow-y-auto overflow-x-hidden p-3 sm:p-6 md:p-8 flex flex-col items-center justify-center text-center min-h-0 w-full max-w-full">
+      <div className="flex-1 min-h-0 overflow-visible overflow-x-hidden p-3 sm:p-6 md:p-8 flex flex-col items-center justify-center text-center w-full max-w-full">
         {/* Emblem + Greeting */}
         <div className="flex flex-col items-center justify-center gap-2 mb-4 sm:mb-7">
           {/* Zyba Character Avatar */}
@@ -205,7 +205,7 @@ export default function ChatMessages({
 
   // 2. ACTIVE CHAT STREAM
   return (
-    <div className="flex-1 overflow-y-auto px-4 py-6 md:px-8 space-y-6">
+    <div className="flex-1 min-h-0 overflow-visible px-3 sm:px-4 py-5 sm:py-6 md:px-8 space-y-5 sm:space-y-6">
       {messages.map((msg, idx) => {
         const isUser = msg.role === "USER";
         const prevMsg = messages[idx - 1];
@@ -228,7 +228,7 @@ export default function ChatMessages({
               className={`flex flex-col ${isUser ? "items-end" : "items-start"}`}
             >
             <div
-              className={`flex items-start gap-3 max-w-[85%] sm:max-w-[75%] ${
+              className={`flex items-start gap-2.5 sm:gap-3 max-w-[90%] sm:max-w-[75%] min-w-0 ${
                 isUser ? "flex-row-reverse" : "flex-row"
               }`}
             >
@@ -244,7 +244,7 @@ export default function ChatMessages({
 
               {/* Message Content */}
               <div
-                className={`px-4 py-3 rounded-2xl text-xs md:text-sm leading-relaxed shadow-2xs ${
+                className={`min-w-0 break-words overflow-wrap-anywhere px-3.5 sm:px-4 py-3 rounded-2xl text-xs md:text-sm leading-relaxed shadow-2xs ${
                   isUser
                     ? "bg-brown-900 text-white rounded-br-xs"
                     : "bg-white text-brown-900 border border-brown-900/8 rounded-bl-xs"

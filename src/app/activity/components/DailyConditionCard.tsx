@@ -71,28 +71,28 @@ export default function DailyConditionCard({ initialCondition }: DailyConditionC
       : "bg-green-100 text-green-700";
 
   return (
-    <div className="xl:col-span-5 glass-card rounded-3xl p-6 md:p-7 border border-brown-900/10 bg-gradient-to-b from-white to-cream/40 flex flex-col justify-between shadow-xs">
+    <div className="xl:col-span-5 glass-card rounded-3xl p-4 sm:p-6 md:p-7 border border-brown-900/10 bg-gradient-to-b from-white to-cream/40 flex flex-col justify-between shadow-xs min-w-0">
       <div>
-        <div className="flex items-center justify-between gap-3 flex-wrap">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2.5 sm:gap-3">
           <div>
             <span className="text-xs font-bold uppercase tracking-wider text-brown-700">
               Kondisi Hari Ini
             </span>
-            <h2 className="font-display text-2xl font-extrabold text-brown-900 mt-1">
+            <h2 className="font-display text-xl sm:text-2xl font-extrabold text-brown-900 mt-1 leading-tight break-words">
               {condition.energyTitle}
             </h2>
           </div>
-          <span className={`px-3 py-1 rounded-full text-[10px] font-bold ${badgeBg}`}>
+          <span className={`self-start sm:self-auto px-3 py-1 rounded-full text-[10px] font-bold whitespace-nowrap ${badgeBg}`}>
             {condition.badgeText}
           </span>
         </div>
 
-        <div className="grid grid-cols-3 gap-3 mt-6">
-          <div className="rounded-2xl bg-white border border-brown-900/10 p-3.5 text-center shadow-2xs">
+        <div className="grid grid-cols-1 min-[400px]:grid-cols-3 gap-2.5 sm:gap-3 mt-5 sm:mt-6">
+          <div className="rounded-2xl bg-white border border-brown-900/10 p-3 sm:p-3.5 text-center shadow-2xs min-w-0 min-h-[92px] flex flex-col items-center justify-center">
             <span className="text-[10px] uppercase font-bold text-brown-700">
               Tidur
             </span>
-            <span className="block font-display text-xl font-extrabold text-brown-900 mt-1">
+            <span className="block font-display text-base sm:text-xl leading-tight font-extrabold text-brown-900 mt-1 whitespace-nowrap">
               {condition.sleepHours}
             </span>
           </div>
@@ -100,7 +100,7 @@ export default function DailyConditionCard({ initialCondition }: DailyConditionC
             <span className="text-[10px] uppercase font-bold text-brown-700">
               Mood
             </span>
-            <span className="block font-display text-xl font-extrabold text-green-600 mt-1">
+            <span className="block font-display text-base sm:text-xl leading-tight font-extrabold text-green-600 mt-1 whitespace-nowrap">
               {condition.moodLabel}
             </span>
           </div>
@@ -108,13 +108,13 @@ export default function DailyConditionCard({ initialCondition }: DailyConditionC
             <span className="text-[10px] uppercase font-bold text-brown-700">
               Fokus
             </span>
-            <span className="block font-display text-xl font-extrabold text-orange-500 mt-1">
+            <span className="block font-display text-base sm:text-xl leading-tight font-extrabold text-orange-500 mt-1 whitespace-nowrap">
               {condition.focusLabel}
             </span>
           </div>
         </div>
 
-        <div className="mt-5 rounded-2xl bg-cream/70 border border-brown-900/10 p-4">
+        <div className="mt-4 sm:mt-5 rounded-2xl bg-cream/70 border border-brown-900/10 p-3.5 sm:p-4">
           <p className="text-xs leading-relaxed text-brown-700">
             <strong className="text-brown-900">Insight Zyba: </strong>
             {condition.insight}
@@ -122,13 +122,13 @@ export default function DailyConditionCard({ initialCondition }: DailyConditionC
         </div>
       </div>
 
-      <div className="mt-4 pt-3 border-t border-brown-900/10 flex items-center justify-between text-xs">
-        <span className="text-brown-700/70 text-[11px]">
+      <div className="mt-4 pt-3 border-t border-brown-900/10 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 text-xs">
+        <span className="text-brown-700/70 text-[11px] leading-relaxed min-w-0 break-words">
           {condition.hasCheckedInToday ? "✓ Terhubung dengan Check-In Harian" : "Belum check-in hari ini"}
         </span>
         <Link
           href="/mood-check-in"
-          className="text-orange-500 hover:text-brown-900 font-bold transition-colors inline-flex items-center gap-1 text-[11px]"
+          className="text-orange-500 hover:text-brown-900 font-bold transition-colors inline-flex items-center gap-1 text-[11px] shrink-0 self-start sm:self-auto"
         >
           <span>{condition.hasCheckedInToday ? "Lihat Mood" : "Check-in Sekarang"}</span>
           <span>→</span>
