@@ -366,7 +366,7 @@ export default function ProfilePage() {
     try {
       setLoading(true);
 
-      const userRes = await fetch("/api/user/profile/" + userId);
+      const userRes = await fetch("/api/user/profile/" + userId, { cache: "no-store" });
       if (!userRes.ok) {
         console.error("Failed to load user");
         return;
@@ -374,12 +374,12 @@ export default function ProfilePage() {
 
       const userData = await userRes.json();
 
-      const followRes = await fetch("/api/community/follows/" + userId);
+      const followRes = await fetch("/api/community/follows/" + userId, { cache: "no-store" });
       const followData = followRes.ok
         ? await followRes.json()
         : { isFollowing: false, isFollower: false, isSelf: false };
 
-      const postsRes = await fetch("/api/community/users/" + userId + "/posts?includeHidden=true");
+      const postsRes = await fetch("/api/community/users/" + userId + "/posts?includeHidden=true", { cache: "no-store" });
       const postsData = postsRes.ok ? await postsRes.json() : { posts: [] };
 
       setProfile({
