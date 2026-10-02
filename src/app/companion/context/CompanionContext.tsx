@@ -210,9 +210,12 @@ export function CompanionProvider({ children }: { children: React.ReactNode }) {
             })),
           }));
           setConversations(mapped);
-          if (mapped.length > 0) {
-            setActiveConvId(mapped[0].id);
-          }
+          setActiveConvId((currentId) => {
+            if (currentId && mapped.some((conversation: Conversation) => conversation.id === currentId)) {
+              return currentId;
+            }
+            return mapped[0]?.id ?? null;
+          });
         }
       })
       .catch((err) => console.error("[Fetch Conversations]:", err));
