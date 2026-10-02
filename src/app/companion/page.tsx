@@ -125,6 +125,7 @@ export default function CompanionPage() {
               setCommStyle={setCommStyle}
             />
           )}
+          </div>
       </div>
 
       {/* Persona Selection Modal */}
