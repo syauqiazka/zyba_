@@ -188,6 +188,8 @@ export default function CompanionPage() {
         isOpen={showProModal}
         onClose={() => setShowProModal(false)}
         remaining={quotaRemaining || 0}
+        limit={quotaLimit}
+        plan={plan}
       />
 
       {/* Delete Modal */}
