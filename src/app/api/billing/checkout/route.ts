@@ -14,11 +14,9 @@ const MIDTRANS_SNAP_JS = MIDTRANS_IS_PRODUCTION
   : "https://app.sandbox.midtrans.com/snap/snap.js";
 
 // ── Harga plan (Rupiah) ──────────────────────────────────────────────────────
-const PLAN_PRICES: Record<string, { amount: number; label: string }> = {
+const PLAN_PRICES = {
   monthly: { amount: 49_000, label: "Zyba Plus - Langganan Bulanan" },
-  yearly: { amount: 399_000, label: "Zyba Plus - Langganan Tahunan" },
-  lifetime: { amount: 999_000, label: "Zyba Plus - Seumur Hidup" },
-};
+} as const;
 
 export async function POST(req: NextRequest) {
   try {
@@ -41,13 +39,22 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // ── Parse plan dari body ────────────────────────────────────────────────
-    let planId = "yearly";
+    // ── Premium saat ini hanya tersedia bulanan ──────────────────────────────
+    let body: { plan?: unknown } = {};
     try {
-      const body = await req.json();
-      if (body?.plan && PLAN_PRICES[body.plan]) planId = body.plan;
-    } catch {}
+      body = await req.json();
+    } catch {
+      return NextResponse.json({ error: "Request tidak valid." }, { status: 400 });
+    }
 
+    if (body.plan !== "monthly") {
+      return NextResponse.json(
+        { error: "Plan Premium yang tersedia hanya bulanan." },
+        { status: 400 }
+      );
+    }
+
+    const planId = "monthly";
     const plan = PLAN_PRICES[planId];
     const userId = session.userId;
 
@@ -114,9 +121,21 @@ export async function POST(req: NextRequest) {
     if (!midtransRes.ok) {
       const errorText = await midtransRes.text();
       console.error("[Checkout] Midtrans API error:", errorText);
+
+      await accountDb.$transaction([
+        accountDb.payment.update({
+          where: { orderId },
+          data: { status: "FAILED", rawPayload: { error: errorText.slice(0, 1000) } },
+        }),
+        accountDb.subscription.update({
+          where: { id: subscription.id },
+          data: { status: "CANCELLED" },
+        }),
+      ]);
+
       return NextResponse.json(
         { error: "Payment gateway request failed" },
-        { status: 500 }
+        { status: 502 }
       );
     }
 
