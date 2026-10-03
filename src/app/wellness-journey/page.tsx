@@ -573,6 +573,32 @@ export default function WellnessJourneyPage() {
         </div>
       </div>
 
+      {/* PREMIUM INSIGHT */}
+      <Link
+        href="/settings/zyba-plus/insights"
+        className="group relative overflow-hidden rounded-3xl border border-orange-300/40 bg-gradient-to-r from-white via-orange-50/70 to-purple-50/70 p-5 shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md sm:p-6"
+      >
+        <div className="relative flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="inline-flex items-center gap-1 rounded-full bg-orange-500 px-2.5 py-1 text-[10px] font-extrabold uppercase tracking-wider text-white">
+                ✨ Premium Insight
+              </span>
+              <span className="text-[10px] font-bold text-brown-700/50">60 AI chat/hari</span>
+            </div>
+            <h2 className="mt-2 font-display text-lg font-extrabold text-brown-900 sm:text-xl">
+              Lihat apa yang berubah dalam wellness-mu
+            </h2>
+            <p className="mt-1 max-w-2xl text-xs leading-5 text-brown-700 sm:text-sm">
+              Dapatkan Wellness Memory, Pattern Detection, Weekly Insight, dan Personalized 7-Day Plan dari data perjalananmu.
+            </p>
+          </div>
+          <span className="inline-flex shrink-0 items-center justify-center rounded-full bg-brown-900 px-4 py-2.5 text-xs font-extrabold text-white">
+            Buka Insight →
+          </span>
+        </div>
+      </Link>
+
       {/* ERROR STATE */}
       {hasError && (
         <div className="rounded-2xl border border-red-200 bg-red-50/70 p-4 flex items-center justify-between gap-3 text-red-800 text-xs">
