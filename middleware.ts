@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { verifySessionToken } from "@/lib/auth";
+import { isDemoAccount } from "@/lib/demoAccount";
 
 /** Halaman yang hanya bisa diakses setelah login */
 const PROTECTED_PATHS = [
@@ -59,6 +60,32 @@ function getRedirectUrl(path: string, request: NextRequest): URL {
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
+  // Akun demo bersifat read-only. GET tetap boleh untuk melihat data/halaman,
+  // tetapi semua operasi yang dapat mengubah data atau memicu aksi diblokir
+  // di server agar tidak bisa dilewati hanya dengan memodifikasi frontend.
+  const isMutatingMethod = ["POST", "PUT", "PATCH", "DELETE"].includes(request.method);
+  const token = request.cookies.get("auth-token");
+
+  if (isMutatingMethod && token?.value) {
+    const session = await verifySessionToken(token.value);
+
+    if (session && isDemoAccount({ id: session.userId, email: session.email })) {
+      return NextResponse.json(
+        {
+          error: "Akun demo hanya dapat melihat aplikasi. Perubahan data dan aksi dinonaktifkan.",
+          code: "DEMO_READ_ONLY",
+        },
+        { status: 403 }
+      );
+    }
+  }
+
+  // API tidak membutuhkan page-level auth redirect di middleware.
+  // Route API tetap melakukan autentikasi/otorisasi masing-masing.
+  if (pathname.startsWith("/api/")) {
+    return NextResponse.next();
+  }
+
   // Izinkan public paths & uploaded media tanpa autentikasi
   if (
     pathname === "/" ||
@@ -91,6 +118,14 @@ export async function middleware(request: NextRequest) {
       return response;
     }
 
+    const isDemo = isDemoAccount({ id: session.userId, email: session.email });
+
+    // Akun demo boleh membuka assessment untuk melihat alurnya, tetapi
+    // tetap read-only karena request mutasi sudah diblokir di atas.
+    if (isDemo && isOnboardingDone && isOnAssessment) {
+      return NextResponse.next();
+    }
+
     // ⚠️ GATE ASSESSMENT:
     // 1. User yang belum menyelesaikan assessment awal HANYA boleh mengakses /assessment.
     // 2. User yang SUDAH menyelesaikan assessment dilarang membuka /assessment lagi (dialihkan ke /dashboard).
@@ -112,5 +147,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/((?!api|_next/static|_next/image|favicon.ico).*)"],
+  matcher: ["/((?!_next/static|_next/image|favicon.ico).*)"],
 };
