@@ -25,6 +25,8 @@ interface Insights {
   patterns: string[];
   recommendations: string[];
   memory: string[];
+  personalizedPlan: { title: string; detail: string; reason: string }[];
+  dataQuality: { level: "low" | "medium" | "high"; label: string; checkIns: number };
 }
 
 export default function PremiumInsightsPage() {
@@ -106,6 +108,9 @@ export default function PremiumInsightsPage() {
             <p className="mt-2 max-w-2xl text-sm leading-6 text-brown-700">
               Ringkasan personal dari check-in, kebiasaan, jurnal, dan perkembangan wellness-mu.
             </p>
+            <div className="mt-3 inline-flex rounded-full bg-white px-3 py-1.5 text-[10px] font-bold text-brown-700 shadow-sm">
+              {data.dataQuality.label} · {data.dataQuality.checkIns} check-in
+            </div>
           </div>
           <button onClick={load} className="inline-flex items-center justify-center gap-2 rounded-2xl border border-brown-900/10 bg-white px-4 py-2.5 text-xs font-bold text-brown-900">
             <RefreshCw size={13} /> Perbarui
@@ -198,6 +203,29 @@ export default function PremiumInsightsPage() {
               )}
             </div>
           </article>
+        </section>
+
+        <section className="mt-4 rounded-3xl border border-brown-900/10 bg-white p-5 sm:p-6">
+          <h2 className="font-display text-lg font-extrabold text-brown-900">Personalized 7-Day Plan</h2>
+          <p className="mt-1 text-xs leading-5 text-brown-700/60">
+            Rencana ini dibuat dari pola wellness terbaru, bukan template yang sama untuk semua orang.
+          </p>
+          <div className="mt-4 grid gap-3 sm:grid-cols-2">
+            {data.personalizedPlan.map((item, index) => (
+              <article key={item.title} className="rounded-2xl bg-cream p-4">
+                <div className="flex items-start gap-3">
+                  <span className="grid h-7 w-7 shrink-0 place-items-center rounded-xl bg-orange-100 text-xs font-extrabold text-orange-700">
+                    {index + 1}
+                  </span>
+                  <div>
+                    <h3 className="text-xs font-extrabold text-brown-900">{item.title}</h3>
+                    <p className="mt-1 text-xs leading-5 text-brown-700">{item.detail}</p>
+                    <p className="mt-2 text-[10px] leading-4 text-brown-700/50">{item.reason}</p>
+                  </div>
+                </div>
+              </article>
+            ))}
+          </div>
         </section>
 
         <section className="mt-4 rounded-3xl border border-brown-900/10 bg-brown-900 p-5 text-white sm:p-6">
