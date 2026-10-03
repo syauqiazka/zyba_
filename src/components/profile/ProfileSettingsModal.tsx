@@ -8,7 +8,6 @@ import { PersonaId } from "@/backend/ai/personas";
 import { isAvatarUrl, resolveAvatar } from "@/lib/avatarUtils";
 import UserAvatar from "@/components/ui/UserAvatar";
 import AvatarCropModal from "@/components/ui/AvatarCropModal";
-import { isDemoAccount } from "@/lib/demoAccount";
 
 interface ProfileSettingsModalProps {
   user: ProfileUser;
@@ -858,7 +857,7 @@ export default function ProfileSettingsModal({ user, isOpen, onClose, onUserUpda
             {/* ── BILLING ──────────────────────────────────────────── */}
             <SectionDivider />
             <Section id="zyba-plus" title="Zyba Plus">
-              <ZybaPlusTab onSuccess={ok} isDemo={isDemoAccount({ email: user.email })} />
+              <ZybaPlusTab onSuccess={ok} />
             </Section>
 
             <Section id="billing-history" title="Riwayat Pembayaran">
@@ -1009,12 +1008,12 @@ const PLUS_FEATURES = [
   "Prioritas pemrosesan AI",
 ];
 
-function ZybaPlusTab({ onSuccess, isDemo }: { onSuccess: (msg: string) => void; isDemo: boolean }) {
+function ZybaPlusTab({ onSuccess }: { onSuccess: (msg: string) => void }) {
   const [selected] = useState<"monthly">("monthly");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const handleCheckout = async () => {
-    if (isDemo || loading) return;
+    if (loading) return;
     setLoading(true);
     setError(null);
 
@@ -1122,13 +1121,11 @@ function ZybaPlusTab({ onSuccess, isDemo }: { onSuccess: (msg: string) => void; 
       {/* CTA */}
       <button
         type="button"
-        disabled={loading || isDemo}
+        disabled={loading}
         onClick={handleCheckout}
         className="w-full py-3.5 rounded-full bg-orange-500 text-white text-sm font-extrabold hover:bg-orange-600 transition-colors shadow-md flex items-center justify-center gap-2 disabled:opacity-50 cursor-pointer"
       >
-        {isDemo ? (
-          <span>Mode Demo — Hanya Lihat</span>
-        ) : loading ? (
+        {loading ? (
           <>
             <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
             <span>Menghubungkan ke Midtrans...</span>
