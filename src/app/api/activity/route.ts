@@ -177,6 +177,40 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
     const { type, durationMin, distanceMeter, targetMin, completed = true, title } = body;
 
+    if (
+      typeof type !== "string" ||
+      !["WALKING", "RUNNING", "WORKOUT", "BREATHING", "SLEEP"].includes(type)
+    ) {
+      return NextResponse.json({ error: "Jenis aktivitas tidak valid." }, { status: 400 });
+    }
+
+    if (typeof completed !== "boolean") {
+      return NextResponse.json({ error: "Status aktivitas tidak valid." }, { status: 400 });
+    }
+
+    const numericFields = [
+      ["durationMin", durationMin, 1, 1440],
+      ["distanceMeter", distanceMeter, 0, 1_000_000],
+      ["targetMin", targetMin, 0, 1440],
+    ] as const;
+
+    for (const [field, value, min, max] of numericFields) {
+      if (value !== undefined && value !== null) {
+        const numberValue = Number(value);
+        if (!Number.isFinite(numberValue) || numberValue < min || numberValue > max) {
+          return NextResponse.json({ error: `${field} tidak valid.` }, { status: 400 });
+        }
+      }
+    }
+
+    if (
+      title !== undefined &&
+      title !== null &&
+      (typeof title !== "string" || title.length > 200)
+    ) {
+      return NextResponse.json({ error: "Judul aktivitas tidak valid." }, { status: 400 });
+    }
+
     // Optional crisis text detection if title is custom
     if (title && typeof title === "string") {
       const isRisk = detectRisk(title);
@@ -193,8 +227,7 @@ export async function POST(req: NextRequest) {
     }
 
     // Validate type
-    const validTypes = ["WALKING", "RUNNING", "WORKOUT", "BREATHING", "SLEEP"];
-    const resolvedType = validTypes.includes(type) ? type : "WALKING";
+    const resolvedType = type;
 
     // Save to ActivityLog in database
     const activity = await accountDb.activityLog.create({
