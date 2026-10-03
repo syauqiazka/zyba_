@@ -109,6 +109,7 @@ export default function CompanionPage() {
             selectedModel={selectedModel}
             setSelectedModel={setSelectedModel}
             selectedPersona={selectedPersona}
+            plan={plan}
             messagesEndRef={messagesEndRef}
             onSelectPromptStarter={(prompt) => handleSendMessage(prompt)}
             onSendMessage={(prompt) => handleSendMessage(prompt)}
