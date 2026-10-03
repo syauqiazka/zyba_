@@ -19,7 +19,8 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({
       allowed: quotaCheck.allowed,
       remaining: quotaCheck.remaining,
-      limit: quotaCheck.remaining === Infinity ? "unlimited" : 20,
+      limit: quotaCheck.limit,
+      plan: quotaCheck.plan,
     });
   } catch (err: any) {
     console.error("[Quota Check Error]:", err);
