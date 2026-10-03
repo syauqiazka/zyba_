@@ -136,7 +136,7 @@ export default function CompanionPage() {
             />
           )}
           </div>
-      </div>      </div>
+      </div>
 
       {/* Persona Selection Modal */}
       {(showSettingsModal || showPersonaModal) && (
