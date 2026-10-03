@@ -47,7 +47,7 @@ const SIDEBAR: SidebarSection[] = [
     { id: "community-activity",   label: "Aktivitas & Interaksi" },
   ]},
   { label: "BILLING & LANGGANAN", key: "billing", items: [
-    { id: "zyba-plus",       label: "Zyba Plus", badge: "1 BULAN FREE", badgeColor: "bg-green-100 text-green-700" },
+    { id: "zyba-plus",       label: "Zyba Plus" },
     { id: "billing-history", label: "Riwayat Pembayaran" },
   ]},
   { label: "PREFERENSI APLIKASI", key: "app", items: [
