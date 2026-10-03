@@ -58,73 +58,89 @@ export async function POST(req: NextRequest) {
     const plan = PLAN_PRICES[planId];
     const userId = session.userId;
 
-    // Jangan membuat checkout baru kalau user masih memiliki Premium aktif.
+    // Serialisasi checkout per user di PostgreSQL. Tanpa lock ini, dua request
+    // yang datang hampir bersamaan bisa sama-sama lolos pengecekan PENDING
+    // sebelum salah satunya sempat membuat subscription.
     const now = new Date();
-    const activeSubscription = await accountDb.subscription.findFirst({
-      where: {
-        userId,
-        plan: "PLUS",
-        status: "ACTIVE",
-        endDate: { gt: now },
-      },
-      select: { id: true, endDate: true },
+    const pendingCutoff = new Date(now.getTime() - 15 * 60 * 1000);
+
+    const checkout = await accountDb.$transaction(async (tx) => {
+      await tx.$executeRaw`SELECT pg_advisory_xact_lock(hashtext(${userId}))`;
+
+      const activeSubscription = await tx.subscription.findFirst({
+        where: {
+          userId,
+          plan: "PLUS",
+          status: "ACTIVE",
+          endDate: { gt: now },
+        },
+        select: { id: true, endDate: true },
+      });
+
+      if (activeSubscription) {
+        return { activeSubscription, recentPending: null, subscription: null };
+      }
+
+      const recentPending = await tx.subscription.findFirst({
+        where: {
+          userId,
+          plan: "PLUS",
+          status: "PENDING",
+          createdAt: { gt: pendingCutoff },
+        },
+        select: { id: true },
+      });
+
+      if (recentPending) {
+        return { activeSubscription: null, recentPending, subscription: null };
+      }
+
+      const subscription = await tx.subscription.create({
+        data: {
+          userId,
+          plan: "PLUS",
+          status: "PENDING",
+        },
+      });
+
+      // order_id Midtrans max 50 karakter
+      // Format: zyba-{plan}-{sub6}-{ts36}
+      const subShort = subscription.id.slice(-6);
+      const tsBase36 = Date.now().toString(36);
+      const orderId = `zyba-${planId}-${subShort}-${tsBase36}`;
+
+      await tx.payment.create({
+        data: {
+          subscriptionId: subscription.id,
+          userId,
+          amount: plan.amount,
+          orderId,
+          status: "PENDING",
+        },
+      });
+
+      return { activeSubscription: null, recentPending: null, subscription: { id: subscription.id, orderId } };
     });
 
-    if (activeSubscription) {
+    if (checkout.activeSubscription) {
       return NextResponse.json(
         {
           error: "Akun kamu sudah memiliki Zyba Premium aktif.",
-          endDate: activeSubscription.endDate,
+          endDate: checkout.activeSubscription.endDate,
         },
         { status: 409 }
       );
     }
 
-    // Batasi checkout duplikat akibat double-click/retry browser.
-    const pendingCutoff = new Date(now.getTime() - 15 * 60 * 1000);
-    const recentPending = await accountDb.subscription.findFirst({
-      where: {
-        userId,
-        plan: "PLUS",
-        status: "PENDING",
-        createdAt: { gt: pendingCutoff },
-      },
-      select: { id: true },
-    });
-
-    if (recentPending) {
+    if (checkout.recentPending) {
       return NextResponse.json(
         { error: "Checkout Premium sedang diproses. Tunggu beberapa menit sebelum mencoba lagi." },
         { status: 409 }
       );
     }
 
-    // ── Buat Subscription (PENDING) ─────────────────────────────────────────
-    const subscription = await accountDb.subscription.create({
-      data: {
-        userId,
-        plan: "PLUS",
-        status: "PENDING",
-      },
-    });
-
-    // order_id Midtrans max 50 karakter
-    // Format: zyba-{plan}-{sub6}-{ts36}
-    // Contoh: zyba-yearly-fy8100-lq7k2a  (≤ 30 chars)
-    const subShort = subscription.id.slice(-6);
-    const tsBase36 = Date.now().toString(36);
-    const orderId = `zyba-${planId}-${subShort}-${tsBase36}`;
-
-    // ── Buat Payment record (PENDING) ────────────────────────────────────────
-    await accountDb.payment.create({
-      data: {
-        subscriptionId: subscription.id,
-        userId,
-        amount: plan.amount,
-        orderId,
-        status: "PENDING",
-      },
-    });
+    const subscription = checkout.subscription!;
+    const orderId = subscription.orderId;
 
     // ── Request Snap Token dari Midtrans ─────────────────────────────────────
     const midtransPayload = {
