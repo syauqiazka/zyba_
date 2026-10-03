@@ -80,7 +80,7 @@ export default function CompanionPage() {
           />
 
 
-        <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain scrollbar-gutter-stable flex flex-col">
+        <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain scrollbar-gutter-stable flex flex-col pt-16 md:pt-0">
           {/* Crisis Banner (10.5) — calm, supportive */}
           {crisisAlert && (
             <CrisisBanner onClose={() => setCrisisAlert(false)} />
