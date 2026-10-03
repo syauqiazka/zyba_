@@ -56,7 +56,7 @@ export default function CompanionSlugPage() {
           setShowDeleteModal={setShowDeleteModal}
           setShowProModal={setShowProModal}
         />
-        <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain scrollbar-gutter-stable flex flex-col">
+        <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain scrollbar-gutter-stable flex flex-col pt-16 md:pt-0">
 
 
         {crisisAlert && <CrisisBanner onClose={() => setCrisisAlert(false)} />}
