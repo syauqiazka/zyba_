@@ -26,25 +26,6 @@ export async function POST(req: NextRequest) {
       return rateLimitResponse(chatLimit.retryAfterSec, "Kamu mengirim pesan terlalu cepat.");
     }
 
-    // Reserve one slot atomically before provider work.
-    const quotaCheck = await consumeMessageQuota(session.userId);
-
-    if (!quotaCheck.allowed) {
-      return NextResponse.json(
-        {
-          error: "QUOTA_EXCEEDED",
-          message:
-            quotaCheck.plan === "FREE"
-              ? "Kamu sudah mencapai batas 20 chat hari ini. Upgrade ke Zyba Plus untuk mendapatkan 60 chat/hari."
-              : "Kamu sudah mencapai batas 60 chat Premium hari ini. Kuota akan reset besok.",
-          remaining: quotaCheck.remaining,
-          limit: quotaCheck.limit,
-          plan: quotaCheck.plan,
-        },
-        { status: 403 }
-      );
-    }
-
     const body = await req.json();
     const {
       message,
@@ -76,6 +57,26 @@ export async function POST(req: NextRequest) {
         emotionTag: "Crisis Support Needed",
         modelUsed: "zyba-default",
       });
+    }
+
+    // Reserve one slot only after payload validation and crisis handling.
+    // Safety responses and malformed requests never consume the daily quota.
+    const quotaCheck = await consumeMessageQuota(session.userId);
+
+    if (!quotaCheck.allowed) {
+      return NextResponse.json(
+        {
+          error: "QUOTA_EXCEEDED",
+          message:
+            quotaCheck.plan === "FREE"
+              ? "Kamu sudah mencapai batas 20 chat hari ini. Upgrade ke Zyba Plus untuk mendapatkan 60 chat/hari."
+              : "Kamu sudah mencapai batas 60 chat Premium hari ini. Kuota akan reset besok.",
+          remaining: quotaCheck.remaining,
+          limit: quotaCheck.limit,
+          plan: quotaCheck.plan,
+        },
+        { status: 403 }
+      );
     }
 
     // Free users can use the existing provider pool. Premium is pinned to
