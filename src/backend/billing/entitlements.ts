@@ -23,10 +23,61 @@ export async function getUserPlan(userId: string): Promise<"FREE" | "PLUS"> {
 
   const user = await accountDb.user.findUnique({
     where: { id: userId },
-    select: { plan: true },
+    select: {
+      plan: true,
+      subscriptions: {
+        where: {
+          plan: "PLUS",
+          status: "ACTIVE",
+          endDate: { gt: new Date() },
+        },
+        select: { id: true },
+        take: 1,
+      },
+    },
   });
 
-  const plan = user?.plan ?? "FREE";
+  if (!user) {
+    userPlanCache.set(userId, { plan: "FREE", timestamp: Date.now() });
+    return "FREE";
+  }
+
+  // Subscription expiry is enforced lazily on entitlement reads, so a user
+  // cannot keep Premium access after endDate merely because no webhook/job
+  // happened to run at the exact expiry time.
+  let plan: "FREE" | "PLUS" = user.plan === "PLUS" ? "PLUS" : "FREE";
+
+  if (plan === "PLUS" && user.subscriptions.length === 0) {
+    await accountDb.$transaction(async (tx) => {
+      await tx.subscription.updateMany({
+        where: {
+          userId,
+          plan: "PLUS",
+          status: "ACTIVE",
+          endDate: { lte: new Date() },
+        },
+        data: { status: "EXPIRED" },
+      });
+
+      await tx.user.updateMany({
+        where: {
+          id: userId,
+          plan: "PLUS",
+          subscriptions: {
+            none: {
+              plan: "PLUS",
+              status: "ACTIVE",
+              endDate: { gt: new Date() },
+            },
+          },
+        },
+        data: { plan: "FREE" },
+      });
+    });
+
+    plan = "FREE";
+  }
+
   userPlanCache.set(userId, { plan, timestamp: Date.now() });
   return plan;
 }
