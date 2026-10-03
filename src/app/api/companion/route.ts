@@ -81,7 +81,7 @@ export async function POST(req: NextRequest) {
       "zyba-default",
     ];
 
-    if (model && !FREE_MODELS.includes(model)) {
+    if (model && model !== "openai-premium" && !FREE_MODELS.includes(model)) {
       return NextResponse.json(
         { error: "Model tidak tersedia untuk akun Free." },
         { status: 403 }
@@ -130,6 +130,14 @@ export async function POST(req: NextRequest) {
           limit: quotaCheck.limit,
           plan: quotaCheck.plan,
         },
+        { status: 403 }
+      );
+    }
+
+    if (model === "openai-premium" && quotaCheck.plan !== "PLUS") {
+      await releaseMessageQuota(session.userId).catch(() => undefined);
+      return NextResponse.json(
+        { error: "Model Premium hanya tersedia untuk pelanggan Premium." },
         { status: 403 }
       );
     }
