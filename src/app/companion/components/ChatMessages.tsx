@@ -24,6 +24,7 @@ interface Props {
   selectedModel: AIModelType;
   setSelectedModel?: (m: AIModelType) => void;
   selectedPersona?: PersonaId;
+  plan?: "FREE" | "PLUS";
   messagesEndRef: React.RefObject<HTMLDivElement>;
   onSelectPromptStarter?: (prompt: string) => void;
   onSendMessage?: (text: string) => void;
@@ -50,6 +51,7 @@ export default function ChatMessages({
   selectedModel,
   setSelectedModel,
   selectedPersona = "KINA",
+  plan = "FREE",
   messagesEndRef,
   onSelectPromptStarter,
   onSendMessage,
@@ -151,6 +153,7 @@ export default function ChatMessages({
                 <ModelSelector
                   selectedModel={selectedModel}
                   setSelectedModel={setSelectedModel}
+                  plan={plan}
                 />
               ) : (
                 <span className="text-[11px] font-semibold text-brown-700 px-2 py-1 rounded-lg bg-cream/70">
