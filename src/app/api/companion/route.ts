@@ -33,8 +33,10 @@ export async function POST(req: NextRequest) {
       return NextResponse.json(
         {
           error: "QUOTA_EXCEEDED",
-          message: "Kamu sudah mencapai batas 20 pesan hari ini. Upgrade ke Zyba Plus untuk chat unlimited.",
+          message: `Kamu sudah mencapai batas ${quotaCheck.limit} pesan hari ini. Upgrade ke Zyba Plus untuk mendapatkan 60 chat/hari.`,
           remaining: quotaCheck.remaining,
+          limit: quotaCheck.limit,
+          plan: quotaCheck.plan,
         },
         { status: 403 }
       );
@@ -73,7 +75,39 @@ export async function POST(req: NextRequest) {
       });
     }
 
-    const aiResult = await processMultiModelAIResponse({ message, model, persona, history });
+    // Free users can use the existing provider pool. Premium is pinned to
+    // the paid OpenAI model so the 60-chat entitlement actually unlocks
+    // paid inference instead of merely changing the quota number.
+    const effectiveModel: AIModelType =
+      quotaCheck.plan === "PLUS"
+        ? "openai-premium"
+        : (model || "gemini-3.8-flash");
+
+    let aiResult;
+    try {
+      aiResult = await processMultiModelAIResponse({
+        message,
+        model: effectiveModel,
+        persona,
+        history,
+      });
+    } catch (aiErr: any) {
+      if (
+        aiErr?.message === "PREMIUM_AI_NOT_CONFIGURED" ||
+        aiErr?.message === "PREMIUM_AI_UNAVAILABLE" ||
+        aiErr?.message === "PREMIUM_AI_EMPTY_RESPONSE"
+      ) {
+        return NextResponse.json(
+          {
+            error: "PREMIUM_AI_UNAVAILABLE",
+            message:
+              "AI Premium sedang tidak tersedia. Silakan coba lagi beberapa saat lagi.",
+          },
+          { status: 503 }
+        );
+      }
+      throw aiErr;
+    }
 
     // Save user message + AI reply to DB (skip if temporary conversationId)
     if (conversationId && !conversationId.startsWith("conv-")) {
@@ -141,7 +175,9 @@ void (async () => {
       emotionTag: aiResult.emotionTag,
       modelUsed: aiResult.modelUsed,
       providerStatus: aiResult.providerStatus,
-      quotaRemaining: quotaCheck.remaining - 1, // after this message
+      quotaRemaining: Math.max(0, quotaCheck.remaining - 1),
+      quotaLimit: quotaCheck.limit,
+      plan: quotaCheck.plan,
     });
   } catch (err: any) {
     console.error("[API Companion Error]:", err);
