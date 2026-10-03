@@ -66,18 +66,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ message: "Already processed" }, { status: 200 });
     }
 
-    // 4. Update Payment rawPayload untuk audit
-    await accountDb.payment.update({
-      where: { id: payment.id },
-      data: {
-        rawPayload: body,
-        transactionId: transaction_id || payment.transactionId,
-        paymentMethod: payment_type || payment.paymentMethod,
-        updatedAt: new Date(),
-      },
-    });
-
-    // 5. Tentukan status berdasarkan transaction_status + fraud_status
+    // 4. Tentukan status berdasarkan transaction_status + fraud_status
     let newPaymentStatus: "SUCCESS" | "FAILED" | "PENDING" | "EXPIRED" | "CANCELLED" = "PENDING";
     let subscriptionStatus: "ACTIVE" | "CANCELLED" | "EXPIRED" | "PENDING" = "PENDING";
 
@@ -85,8 +74,6 @@ export async function POST(req: NextRequest) {
       if (fraud_status === "accept") {
         newPaymentStatus = "SUCCESS";
         subscriptionStatus = "ACTIVE";
-      } else {
-        newPaymentStatus = "PENDING";
       }
     } else if (transaction_status === "settlement") {
       newPaymentStatus = "SUCCESS";
@@ -97,70 +84,86 @@ export async function POST(req: NextRequest) {
     } else if (transaction_status === "expire") {
       newPaymentStatus = "EXPIRED";
       subscriptionStatus = "EXPIRED";
-    } else if (transaction_status === "pending") {
-      newPaymentStatus = "PENDING";
     }
 
-    // 6. Update Payment status
-    await accountDb.payment.update({
-      where: { id: payment.id },
-      data: { status: newPaymentStatus },
-    });
+    // 5. Claim payment + entitlement dalam satu transaction.
+    // Guard status mencegah dua webhook sukses mengaktifkan entitlement bersamaan
+    // dan mencegah webhook lama menurunkan status SUCCESS.
+    const result = await accountDb.$transaction(async (tx) => {
+      const claimed = await tx.payment.updateMany({
+        where: {
+          id: payment.id,
+          status: { not: "SUCCESS" },
+        },
+        data: {
+          rawPayload: body,
+          transactionId: transaction_id || payment.transactionId,
+          paymentMethod: payment_type || payment.paymentMethod,
+          status: newPaymentStatus,
+        },
+      });
 
-    // 7. Kalau SUCCESS → aktifkan subscription + upgrade user plan
-    if (newPaymentStatus === "SUCCESS" && subscriptionStatus === "ACTIVE") {
-      const now = new Date();
-      const endDate = new Date(now);
-      endDate.setDate(endDate.getDate() + 30); // 30 hari dari sekarang
+      if (claimed.count !== 1) {
+        return { alreadyProcessed: true, activated: false };
+      }
 
-      await accountDb.$transaction([
-        accountDb.payment.update({
-          where: { id: payment.id },
-          data: { status: "SUCCESS" },
-        }),
-        accountDb.subscription.update({
+      if (newPaymentStatus === "SUCCESS" && subscriptionStatus === "ACTIVE") {
+        const now = new Date();
+        const endDate = new Date(now);
+        endDate.setDate(endDate.getDate() + 30);
+
+        await tx.subscription.update({
           where: { id: payment.subscriptionId },
           data: {
             status: "ACTIVE",
             startDate: now,
             endDate,
           },
-        }),
-        accountDb.user.update({
+        });
+
+        await tx.user.update({
           where: { id: payment.userId },
           data: { plan: "PLUS" },
-        }),
-      ]);
+        });
 
-      invalidateUserPlanCache(payment.userId);
-      invalidateUserMeCache(payment.userId);
+        return { alreadyProcessed: false, activated: true };
+      }
 
-      console.log("[Webhook] Subscription activated for user:", payment.userId);
-    } else {
-      // Update subscription status kalau bukan ACTIVE
-      await accountDb.subscription.update({
+      await tx.subscription.update({
         where: { id: payment.subscriptionId },
         data: { status: subscriptionStatus },
       });
 
-      if (subscriptionStatus === "CANCELLED" || subscriptionStatus === "EXPIRED") {
-        const remainingActive = await accountDb.subscription.findFirst({
-          where: {
-            userId: payment.userId,
-            status: "ACTIVE",
-            endDate: { gt: new Date() },
+      return { alreadyProcessed: false, activated: false };
+    });
+
+    if (result.alreadyProcessed) {
+      console.log("[Webhook] Payment already processed concurrently:", order_id);
+      return NextResponse.json({ message: "Already processed" }, { status: 200 });
+    }
+
+    if (result.activated) {
+      invalidateUserPlanCache(payment.userId);
+      invalidateUserMeCache(payment.userId);
+      console.log("[Webhook] Subscription activated for user:", payment.userId);
+    } else if (subscriptionStatus === "CANCELLED" || subscriptionStatus === "EXPIRED") {
+      const downgrade = await accountDb.user.updateMany({
+        where: {
+          id: payment.userId,
+          plan: "PLUS",
+          subscriptions: {
+            none: {
+              status: "ACTIVE",
+              endDate: { gt: new Date() },
+            },
           },
-        });
+        },
+        data: { plan: "FREE" },
+      });
 
-        if (!remainingActive) {
-          await accountDb.user.update({
-            where: { id: payment.userId },
-            data: { plan: "FREE" },
-          });
-
-          invalidateUserPlanCache(payment.userId);
-          invalidateUserMeCache(payment.userId);
-        }
+      if (downgrade.count === 1) {
+        invalidateUserPlanCache(payment.userId);
+        invalidateUserMeCache(payment.userId);
       }
     }
 

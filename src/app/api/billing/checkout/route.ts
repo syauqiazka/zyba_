@@ -58,6 +58,47 @@ export async function POST(req: NextRequest) {
     const plan = PLAN_PRICES[planId];
     const userId = session.userId;
 
+    // Jangan membuat checkout baru kalau user masih memiliki Premium aktif.
+    const now = new Date();
+    const activeSubscription = await accountDb.subscription.findFirst({
+      where: {
+        userId,
+        plan: "PLUS",
+        status: "ACTIVE",
+        endDate: { gt: now },
+      },
+      select: { id: true, endDate: true },
+    });
+
+    if (activeSubscription) {
+      return NextResponse.json(
+        {
+          error: "Akun kamu sudah memiliki Zyba Premium aktif.",
+          endDate: activeSubscription.endDate,
+        },
+        { status: 409 }
+      );
+    }
+
+    // Batasi checkout duplikat akibat double-click/retry browser.
+    const pendingCutoff = new Date(now.getTime() - 15 * 60 * 1000);
+    const recentPending = await accountDb.subscription.findFirst({
+      where: {
+        userId,
+        plan: "PLUS",
+        status: "PENDING",
+        createdAt: { gt: pendingCutoff },
+      },
+      select: { id: true },
+    });
+
+    if (recentPending) {
+      return NextResponse.json(
+        { error: "Checkout Premium sedang diproses. Tunggu beberapa menit sebelum mencoba lagi." },
+        { status: 409 }
+      );
+    }
+
     // ── Buat Subscription (PENDING) ─────────────────────────────────────────
     const subscription = await accountDb.subscription.create({
       data: {

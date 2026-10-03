@@ -1,7 +1,12 @@
 import { SignJWT, jwtVerify } from "jose";
 
 const getSecretKey = () => {
-  const secret = process.env.NEXTAUTH_SECRET || "zyba-wellness-secure-secret-token-key-2024";
+  const secret = process.env.NEXTAUTH_SECRET;
+
+  if (!secret || secret.length < 32) {
+    throw new Error("NEXTAUTH_SECRET must be configured with at least 32 characters.");
+  }
+
   return new TextEncoder().encode(secret);
 };
 
