@@ -999,12 +999,14 @@ const PLANS = [
 ] as const;
 
 const PLUS_FEATURES = [
-  "Semua model AI premium (Gemini Pro, GPT-4o, Claude)",
-  "Chat tanpa batas per hari",
-  "Analitik wellness mendalam",
-  "Ekspor laporan PDF bulanan",
-  "Prioritas respons AI",
-  "Akses fitur beta lebih awal",
+  "Semua fitur Premium ZYBA.",
+  "60 chat AI Premium per hari",
+  "Personalized Wellness Memory",
+  "Advanced Wellness Insight & Pattern",
+  "Weekly Wellness Insight",
+  "Rekomendasi wellness personal",
+  "AI-generated personalized plan",
+  "Prioritas pemrosesan AI",
 ];
 
 function ZybaPlusTab({ onSuccess, isDemo }: { onSuccess: (msg: string) => void; isDemo: boolean }) {
@@ -1076,10 +1078,7 @@ function ZybaPlusTab({ onSuccess, isDemo }: { onSuccess: (msg: string) => void; 
         <p className="text-xs text-brown-700 max-w-xs">
           Akses penuh ke semua AI model, percakapan tanpa batas, dan analitik wellness mendalam.
         </p>
-        <span className="text-xs font-bold bg-green-100 text-green-700 px-3 py-1 rounded-full border border-green-200">
-          🎁 1 BULAN FREE untuk pengguna baru
-        </span>
-      </div>
+</div>
 
       {/* Plan cards */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
