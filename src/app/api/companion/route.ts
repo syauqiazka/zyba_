@@ -3,7 +3,7 @@ import { detectRisk, CRISIS_RESOURCES } from "@/backend/crisis/crisisDetection";
 import { processMultiModelAIResponse, AIModelType } from "@/backend/ai/aiModelManager";
 import { PersonaId } from "@/backend/ai/personas";
 import { verifySessionToken } from "@/lib/auth";
-import { checkMessageQuota } from "@/backend/billing/entitlements";
+import { consumeMessageQuota, releaseMessageQuota } from "@/backend/billing/entitlements";
 import { companionDb } from "@/backend/db/companionClient";
 import { checkAndUnlock } from "@/lib/achievements/engine";
 import { checkRateLimit, rateLimitResponse } from "@/lib/server/rateLimit";
@@ -26,8 +26,8 @@ export async function POST(req: NextRequest) {
       return rateLimitResponse(chatLimit.retryAfterSec, "Kamu mengirim pesan terlalu cepat.");
     }
 
-    // Quota check (Bagian 27.4)
-    const quotaCheck = await checkMessageQuota(session.userId);
+    // Reserve one slot atomically before provider work.
+    const quotaCheck = await consumeMessageQuota(session.userId);
 
     if (!quotaCheck.allowed) {
       return NextResponse.json(
@@ -95,6 +95,8 @@ export async function POST(req: NextRequest) {
         history,
       });
     } catch (aiErr: any) {
+      await releaseMessageQuota(session.userId);
+
       if (
         aiErr?.message === "PREMIUM_AI_NOT_CONFIGURED" ||
         aiErr?.message === "PREMIUM_AI_UNAVAILABLE" ||
