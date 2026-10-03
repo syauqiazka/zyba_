@@ -1,24 +1,51 @@
 import { NextRequest, NextResponse } from "next/server";
+import { companionDb } from "@/backend/db/companionClient";
 
-interface RateLimitRecord {
-  timestamps: number[];
+// Shared PostgreSQL-backed rate limiter.
+
+export interface RateLimitResult {
+  allowed: boolean;
+  remaining: number;
+  retryAfterSec: number;
 }
 
-// Global store in memory
-const rateLimitMap = new Map<string, RateLimitRecord>();
+function normalizeKey(key: string): string {
+  return key.length <= 180 ? key : key.slice(0, 180);
+}
 
-// Clean up stale entries every 60s
-if (typeof setInterval !== "undefined") {
-  setInterval(() => {
-    const now = Date.now();
-    for (const [key, record] of rateLimitMap.entries()) {
-      // Remove timestamps older than 10 minutes
-      record.timestamps = record.timestamps.filter((ts) => now - ts < 600000);
-      if (record.timestamps.length === 0) {
-        rateLimitMap.delete(key);
-      }
-    }
-  }, 60000).unref?.();
+export async function checkRateLimit(key: string, limit: number, windowSec: number): Promise<RateLimitResult> {
+  const normalizedKey = normalizeKey(key);
+  const now = new Date();
+  const windowMs = windowSec * 1000;
+
+  const rows = await companionDb.$queryRaw<Array<{ hitCount: number; windowStart: Date }>>
+  `INSERT INTO "rate_limit_buckets"
+  ("id", "key", "windowStart", "windowMs", "hitCount", "createdAt", "updatedAt")
+VALUES (
+  ${normalizedKey}, ${normalizedKey}, ${now}, ${windowMs}, 1, NOW(), NOW()
+)
+ON CONFLICT ("key") DO UPDATE SET
+  "hitCount" = CASE
+    WHEN EXTRACT(EPOCH FROM (${now} - "rate_limit_buckets"."windowStart")) * 1000 >= "rate_limit_buckets"."windowMs"
+      THEN 1 ELSE "rate_limit_buckets"."hitCount" + 1 END,
+  "windowStart" = CASE
+    WHEN EXTRACT(EPOCH FROM (${now} - "rate_limit_buckets"."windowStart")) * 1000 >= "rate_limit_buckets"."windowMs"
+      THEN ${now} ELSE "rate_limit_buckets"."windowStart" END,
+  "windowMs" = ${windowMs},
+  "updatedAt" = NOW()
+RETURNING "hitCount", "windowStart"`;
+
+  const bucket = rows[0];
+  if (!bucket) throw new Error("RATE_LIMIT_BUCKET_UPDATE_FAILED");
+
+  const elapsedMs = Math.max(0, now.getTime() - new Date(bucket.windowStart).getTime());
+  const allowed = bucket.hitCount <= limit;
+
+  return {
+    allowed,
+    remaining: Math.max(0, limit - bucket.hitCount),
+    retryAfterSec: allowed ? 0 : Math.max(1, Math.ceil((windowMs - elapsedMs) / 1000)),
+  };
 }
 
 export function getClientIp(req: NextRequest): string {
