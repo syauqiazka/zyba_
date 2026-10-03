@@ -90,11 +90,6 @@ export default function CompanionSlugPage() {
         )}
       </div>
 
-        </div>
-
-
-        </div>
-
       {/* Settings Modal */}
       {showSettingsModal && (
         <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-xs flex items-center justify-center p-4">
