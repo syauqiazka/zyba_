@@ -74,3 +74,15 @@ model RateLimitBucket {
   @@index([windowStart])
   @@map("rate_limit_buckets")
 }
+
+model PremiumInsightCache {
+  id        String   @id
+  userId    String   @unique
+  expiresAt DateTime
+  data      Json
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([expiresAt])
+  @@map("premium_insight_cache")
+}
