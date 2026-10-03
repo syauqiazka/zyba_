@@ -49,6 +49,8 @@ export default function CompanionPage() {
     activeConv,
     messagesEndRef,
     quotaRemaining,
+    quotaLimit,
+    plan,
     isTTSEnabled,
     setIsTTSEnabled,
     ttsProvider,
@@ -84,13 +86,18 @@ export default function CompanionPage() {
           )}
 
           {/* Quota indicator for Free users (27.5) */}
-          {quotaRemaining !== null && quotaRemaining <= 20 && (
+          {quotaRemaining !== null && quotaRemaining <= 10 && (
             <div className="px-4 py-2 bg-orange-50 border-b border-orange-200 text-center">
               <p className="text-xs text-brown-700">
-                <span className="font-bold">{quotaRemaining}/20</span> pesan tersisa hari ini · 
-                <a href="/settings/zyba-plus" className="ml-1 text-orange-500 font-bold hover:underline">
-                  Upgrade untuk unlimited
-                </a>
+                <span className="font-bold">{quotaRemaining}/{quotaLimit}</span> chat tersisa hari ini
+                {plan === "FREE" ? (
+                  <>
+                    {" · "}
+                    <a href="/settings/zyba-plus" className="ml-1 text-orange-500 font-bold hover:underline">
+                      Upgrade ke 60 chat
+                    </a>
+                  </>
+                ) : null}
               </p>
             </div>
           )}
