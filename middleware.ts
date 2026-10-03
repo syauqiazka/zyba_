@@ -119,6 +119,8 @@ export async function middleware(request: NextRequest) {
     }
 
     const isDemo = isDemoAccount({ id: session.userId, email: session.email });
+    const isOnboardingDone = session.onboardingCompleted === true;
+    const isOnAssessment = pathname.startsWith("/assessment");
 
     // Akun demo boleh membuka assessment untuk melihat alurnya, tetapi
     // tetap read-only karena request mutasi sudah diblokir di atas.
@@ -129,8 +131,6 @@ export async function middleware(request: NextRequest) {
     // ⚠️ GATE ASSESSMENT:
     // 1. User yang belum menyelesaikan assessment awal HANYA boleh mengakses /assessment.
     // 2. User yang SUDAH menyelesaikan assessment dilarang membuka /assessment lagi (dialihkan ke /dashboard).
-    const isOnboardingDone = session.onboardingCompleted === true;
-    const isOnAssessment = pathname.startsWith("/assessment");
 
     if (!isOnboardingDone && !isOnAssessment) {
       return NextResponse.redirect(getRedirectUrl("/assessment", request));
