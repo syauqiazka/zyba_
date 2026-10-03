@@ -43,12 +43,67 @@ export async function POST(req: NextRequest) {
       conversationId?: string;
     };
 
-    if (!message || !message.trim()) {
+    if (typeof message !== "string" || !message.trim()) {
       return NextResponse.json({ error: "Konten pesan wajib diisi." }, { status: 400 });
     }
 
+    const trimmedMessage = message.trim();
+    if (trimmedMessage.length > 4000) {
+      return NextResponse.json({ error: "Pesan terlalu panjang. Maksimal 4.000 karakter." }, { status: 400 });
+    }
+
+    if (!Array.isArray(history) || history.length > 30) {
+      return NextResponse.json({ error: "Riwayat percakapan tidak valid." }, { status: 400 });
+    }
+
+    const safeHistory = history.map((item) => ({
+      role: item?.role,
+      content: item?.content,
+    }));
+    if (safeHistory.some((item) =>
+      (item.role !== "USER" && item.role !== "ASSISTANT") ||
+      typeof item.content !== "string" ||
+      item.content.length > 4000
+    )) {
+      return NextResponse.json({ error: "Riwayat percakapan tidak valid." }, { status: 400 });
+    }
+
+    const FREE_MODELS: AIModelType[] = [
+      "gemini-3.8-flash",
+      "gemini-3.7-flash",
+      "gemini-3.5-flash-lite",
+      "llama-3.3-70b",
+      "qwen-3.8-27b",
+      "ministral-8b",
+      "openrouter-free",
+      "nemotron-3-ultra",
+      "gemma-4-31b",
+      "zyba-default",
+    ];
+
+    if (model && model !== "openai-premium" && !FREE_MODELS.includes(model)) {
+      return NextResponse.json(
+        { error: "Model tidak tersedia untuk akun Free." },
+        { status: 403 }
+      );
+    }
+
+    if (conversationId && !conversationId.startsWith("conv-")) {
+      const conversation = await companionDb.conversation.findUnique({
+        where: { id: conversationId },
+        select: { userId: true },
+      });
+
+      if (!conversation || conversation.userId !== session.userId) {
+        return NextResponse.json(
+          { error: "Percakapan tidak ditemukan." },
+          { status: 404 }
+        );
+      }
+    }
+
     // Safety: crisis check SEBELUM persona — tidak ada persona yang bypass ini (AGENTS.md 10.5, 21)
-    const isRisk = detectRisk(message);
+    const isRisk = detectRisk(trimmedMessage);
     if (isRisk) {
       return NextResponse.json({
         reply: "Zyba memprioritaskan keselamatanmu. Nomor hotline pendampingan darurat resmi tersedia di bawah — bisa dihubungi kapan saja secara gratis.",
@@ -79,6 +134,14 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    if (model === "openai-premium" && quotaCheck.plan !== "PLUS") {
+      await releaseMessageQuota(session.userId).catch(() => undefined);
+      return NextResponse.json(
+        { error: "Model Premium hanya tersedia untuk pelanggan Premium." },
+        { status: 403 }
+      );
+    }
+
     // Free users can use the existing provider pool. Premium is pinned to
     // the paid OpenAI model so the 60-chat entitlement actually unlocks
     // paid inference instead of merely changing the quota number.
@@ -90,10 +153,10 @@ export async function POST(req: NextRequest) {
     let aiResult;
     try {
       aiResult = await processMultiModelAIResponse({
-        message,
+        message: trimmedMessage,
         model: effectiveModel,
         persona,
-        history,
+        history: safeHistory,
       });
     } catch (aiErr: any) {
       // AI failure must not burn the user's daily slot. Keep release failure

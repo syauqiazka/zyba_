@@ -324,10 +324,15 @@ export async function GET(req: NextRequest) {
       );
     }
 
-    const cached = await companionDb.premiumInsightCache.findUnique({
-      where: { userId: session.userId },
-      select: { expiresAt: true, data: true },
-    });
+    let cached: { expiresAt: Date; data: unknown } | null = null;
+    try {
+      cached = await companionDb.premiumInsightCache.findUnique({
+        where: { userId: session.userId },
+        select: { expiresAt: true, data: true },
+      });
+    } catch (cacheError) {
+      console.warn("[PremiumInsights] Cache read unavailable; computing fresh:", cacheError);
+    }
 
     if (cached && cached.expiresAt.getTime() > Date.now()) {
       return NextResponse.json(cached.data as InsightData, {
@@ -368,19 +373,23 @@ export async function GET(req: NextRequest) {
     const data = buildInsights({ assessments, journals, activities });
     const expiresAt = new Date(Date.now() + CACHE_TTL_MS);
 
-    await companionDb.premiumInsightCache.upsert({
-      where: { userId: session.userId },
-      create: {
-        id: `premium-insight:${session.userId}`,
-        userId: session.userId,
-        expiresAt,
-        data,
-      },
-      update: {
-        expiresAt,
-        data,
-      },
-    });
+    try {
+      await companionDb.premiumInsightCache.upsert({
+        where: { userId: session.userId },
+        create: {
+          id: `premium-insight:${session.userId}`,
+          userId: session.userId,
+          expiresAt,
+          data,
+        },
+        update: {
+          expiresAt,
+          data,
+        },
+      });
+    } catch (cacheError) {
+      console.warn("[PremiumInsights] Cache write unavailable; returning fresh data:", cacheError);
+    }
 
     return NextResponse.json(data, {
       headers: {
