@@ -58,10 +58,10 @@ const PLANS: Plan[] = [
 ];
 
 const FEATURES = [
-  "Semua model AI premium (Gemini Pro, GPT-4o, Claude)",
+  "GPT-6.1 Sol — AI Premium ZYBA"
   "Analitik wellness mendalam",
   "Prioritas respons AI",
-  "Chat tanpa batas per hari",
+  "60 chat per hari"
   "Ekspor laporan PDF bulanan",
   "Akses fitur beta lebih awal",
 ];
@@ -147,7 +147,7 @@ export default function ZybaPlusPage() {
           </div>
           <h1 className="font-display text-2xl font-extrabold text-brown-900">Zyba Plus</h1>
           <p className="text-sm text-brown-700 mt-1 max-w-xs mx-auto">
-            Akses penuh ke semua AI model, percakapan tanpa batas, dan analitik wellness mendalam.
+            AI Premium yang lebih canggih, hingga 60 chat/hari, dan analitik wellness mendalam.
           </p>
           <span className="inline-block mt-3 text-xs font-bold bg-green-100 text-green-700 px-4 py-1.5 rounded-full">
             🎁 1 BULAN FREE untuk pengguna baru
