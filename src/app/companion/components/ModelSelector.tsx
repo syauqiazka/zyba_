@@ -105,12 +105,12 @@ export default function ModelSelector({
     };
   }, [isOpen]);
 
-  const currentOption =
-    planOptions.find((m) => m.id === selectedModel) || planOptions[0];
-
   const planOptions = MODEL_OPTIONS.filter((m) =>
     plan === "PLUS" ? m.id === "openai-premium" : m.id !== "openai-premium"
   );
+
+  const currentOption =
+    planOptions.find((m) => m.id === selectedModel) || planOptions[0];
 
   const filteredOptions = planOptions.filter(
     (m) =>
