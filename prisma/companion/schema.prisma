@@ -47,3 +47,16 @@ model Message {
   @@index([role, createdAt, conversationId])
   @@map("messages")
 }
+
+model DailyMessageQuota {
+  id           String   @id
+  userId       String
+  date         String
+  messageCount Int      @default(0)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@unique([userId, date])
+  @@index([date])
+  @@map("daily_message_quotas")
+}

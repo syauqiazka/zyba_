@@ -3,7 +3,7 @@ import { detectRisk, CRISIS_RESOURCES } from "@/backend/crisis/crisisDetection";
 import { processMultiModelAIResponse, AIModelType } from "@/backend/ai/aiModelManager";
 import { PersonaId } from "@/backend/ai/personas";
 import { verifySessionToken } from "@/lib/auth";
-import { checkMessageQuota } from "@/backend/billing/entitlements";
+import { consumeMessageQuota, releaseMessageQuota } from "@/backend/billing/entitlements";
 import { companionDb } from "@/backend/db/companionClient";
 import { checkAndUnlock } from "@/lib/achievements/engine";
 import { checkRateLimit, rateLimitResponse } from "@/lib/server/rateLimit";
@@ -24,25 +24,6 @@ export async function POST(req: NextRequest) {
     const chatLimit = checkRateLimit(`chat:${session.userId}`, 20, 60);
     if (!chatLimit.allowed) {
       return rateLimitResponse(chatLimit.retryAfterSec, "Kamu mengirim pesan terlalu cepat.");
-    }
-
-    // Quota check (Bagian 27.4)
-    const quotaCheck = await checkMessageQuota(session.userId);
-
-    if (!quotaCheck.allowed) {
-      return NextResponse.json(
-        {
-          error: "QUOTA_EXCEEDED",
-          message:
-            quotaCheck.plan === "FREE"
-              ? "Kamu sudah mencapai batas 20 chat hari ini. Upgrade ke Zyba Plus untuk mendapatkan 60 chat/hari."
-              : "Kamu sudah mencapai batas 60 chat Premium hari ini. Kuota akan reset besok.",
-          remaining: quotaCheck.remaining,
-          limit: quotaCheck.limit,
-          plan: quotaCheck.plan,
-        },
-        { status: 403 }
-      );
     }
 
     const body = await req.json();
@@ -78,6 +59,26 @@ export async function POST(req: NextRequest) {
       });
     }
 
+    // Reserve one slot only after payload validation and crisis handling.
+    // Safety responses and malformed requests never consume the daily quota.
+    const quotaCheck = await consumeMessageQuota(session.userId);
+
+    if (!quotaCheck.allowed) {
+      return NextResponse.json(
+        {
+          error: "QUOTA_EXCEEDED",
+          message:
+            quotaCheck.plan === "FREE"
+              ? "Kamu sudah mencapai batas 20 chat hari ini. Upgrade ke Zyba Plus untuk mendapatkan 60 chat/hari."
+              : "Kamu sudah mencapai batas 60 chat Premium hari ini. Kuota akan reset besok.",
+          remaining: quotaCheck.remaining,
+          limit: quotaCheck.limit,
+          plan: quotaCheck.plan,
+        },
+        { status: 403 }
+      );
+    }
+
     // Free users can use the existing provider pool. Premium is pinned to
     // the paid OpenAI model so the 60-chat entitlement actually unlocks
     // paid inference instead of merely changing the quota number.
@@ -95,6 +96,8 @@ export async function POST(req: NextRequest) {
         history,
       });
     } catch (aiErr: any) {
+      await releaseMessageQuota(session.userId);
+
       if (
         aiErr?.message === "PREMIUM_AI_NOT_CONFIGURED" ||
         aiErr?.message === "PREMIUM_AI_UNAVAILABLE" ||
