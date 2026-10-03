@@ -33,7 +33,10 @@ export async function POST(req: NextRequest) {
       return NextResponse.json(
         {
           error: "QUOTA_EXCEEDED",
-          message: `Kamu sudah mencapai batas ${quotaCheck.limit} pesan hari ini. Upgrade ke Zyba Plus untuk mendapatkan 60 chat/hari.`,
+          message:
+            quotaCheck.plan === "FREE"
+              ? "Kamu sudah mencapai batas 20 chat hari ini. Upgrade ke Zyba Plus untuk mendapatkan 60 chat/hari."
+              : "Kamu sudah mencapai batas 60 chat Premium hari ini. Kuota akan reset besok.",
           remaining: quotaCheck.remaining,
           limit: quotaCheck.limit,
           plan: quotaCheck.plan,
