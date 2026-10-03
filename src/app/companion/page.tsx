@@ -63,7 +63,6 @@ export default function CompanionPage() {
     <div className="flex flex-col h-full min-h-0 overflow-hidden">
       {/* Chat Window — fills the remaining height, no rounded corners on mobile */}
       <div className="flex-1 min-h-0 flex flex-col bg-white md:rounded-3xl border-0 md:border border-brown-900/10 overflow-hidden shadow-sm">
-          <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain scrollbar-gutter-stable">
           <ChatHeader
             activeConv={activeConv}
             selectedModel={selectedModel}
@@ -80,6 +79,8 @@ export default function CompanionPage() {
             setTTSProvider={setTTSProvider}
           />
 
+
+        <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain scrollbar-gutter-stable flex flex-col">
           {/* Crisis Banner (10.5) — calm, supportive */}
           {crisisAlert && (
             <CrisisBanner onClose={() => setCrisisAlert(false)} />
@@ -118,6 +119,7 @@ export default function CompanionPage() {
             ttsProvider={ttsProvider}
           />
 
+        </div>
           {/* Sticky Bottom Input — shown when there are active messages in the conversation */}
           {hasMessages && (
             <ChatInput
@@ -134,7 +136,7 @@ export default function CompanionPage() {
             />
           )}
           </div>
-      </div>
+      </div>      </div>
 
       {/* Persona Selection Modal */}
       {(showSettingsModal || showPersonaModal) && (
