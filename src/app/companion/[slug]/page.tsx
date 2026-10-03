@@ -48,7 +48,6 @@ export default function CompanionSlugPage() {
   return (
     <div className="flex flex-col h-full min-h-0">
       <div className="flex-1 min-h-0 flex flex-col bg-white rounded-3xl border border-brown-900/10 overflow-hidden shadow-sm">
-        <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain scrollbar-gutter-stable">
         <ChatHeader
           activeConv={activeConv}
           selectedModel={selectedModel}
@@ -57,6 +56,8 @@ export default function CompanionSlugPage() {
           setShowDeleteModal={setShowDeleteModal}
           setShowProModal={setShowProModal}
         />
+        <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain scrollbar-gutter-stable flex flex-col">
+
 
         {crisisAlert && <CrisisBanner onClose={() => setCrisisAlert(false)} />}
 
@@ -71,6 +72,7 @@ export default function CompanionSlugPage() {
           chatMode={chatMode}
           setChatMode={setChatMode}
         />
+        </div>
 
         {hasMessages && (
           <ChatInput
@@ -87,6 +89,9 @@ export default function CompanionSlugPage() {
           />
         )}
       </div>
+
+        </div>
+
 
         </div>
 
