@@ -682,6 +682,40 @@ export default function DashboardPage() {
   return (
     <div className="flex flex-col gap-8 pb-12 min-h-0">
 
+      {/* PREMIUM EXPERIENCE */}
+      <Link
+        href="/settings/zyba-plus/insights"
+        className="group relative overflow-hidden rounded-3xl border border-orange-300/40 bg-gradient-to-br from-[#fff7ed] via-white to-[#f5f0ff] p-5 shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md sm:p-6"
+      >
+        <div className="absolute -right-12 -top-12 h-32 w-32 rounded-full bg-orange-200/30 blur-2xl" />
+        <div className="relative flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
+          <div className="min-w-0">
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="inline-flex items-center gap-1 rounded-full bg-orange-500 px-2.5 py-1 text-[10px] font-extrabold uppercase tracking-wider text-white">
+                ✨ ZYBA Premium
+              </span>
+              <span className="text-[10px] font-bold text-brown-700/50">Wellness yang lebih personal</span>
+            </div>
+            <h2 className="mt-2 font-display text-xl font-extrabold tracking-tight text-brown-900 sm:text-2xl">
+              Temukan pola wellness-mu
+            </h2>
+            <p className="mt-1 max-w-2xl text-xs leading-5 text-brown-700 sm:text-sm">
+              Premium mengubah data check-in, aktivitas, dan jurnal menjadi Wellness Insight, Pattern Detection, dan rencana personal 7 hari.
+            </p>
+            <div className="mt-4 flex flex-wrap gap-2">
+              {["60 AI chat/hari", "Wellness Memory", "Pattern Detection", "Personalized Plan"].map((feature) => (
+                <span key={feature} className="rounded-full border border-brown-900/10 bg-white/80 px-2.5 py-1 text-[10px] font-bold text-brown-700">
+                  ✓ {feature}
+                </span>
+              ))}
+            </div>
+          </div>
+          <span className="inline-flex shrink-0 items-center justify-center rounded-full bg-brown-900 px-4 py-2.5 text-xs font-extrabold text-white transition-transform group-hover:translate-x-0.5">
+            Lihat Premium →
+          </span>
+        </div>
+      </Link>
+
       {/* =================================================
           TOP BANNER
       ================================================= */}
