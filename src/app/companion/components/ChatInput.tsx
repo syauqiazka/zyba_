@@ -2,7 +2,7 @@
 
 import { Paperclip, Mic, Send } from "lucide-react";
 
-import { useRef, useEffect } from "react";
+import { useRef, useEffect, useState } from "react";
 import ModelSelector from "./ModelSelector";
 import { AIModelType } from "@/backend/ai/aiModelManager";
 
@@ -33,8 +33,38 @@ export default function ChatInput({
 }: Props) {
   const inputRef = useRef<HTMLInputElement>(null);
 
+  const [keyboardOffset, setKeyboardOffset] = useState(0);
+
   useEffect(() => {
-    inputRef.current?.focus();
+    const viewport = window.visualViewport;
+    if (!viewport) return;
+
+    const updateKeyboardOffset = () => {
+      const isMobile = window.matchMedia("(max-width: 767px)").matches;
+      if (!isMobile) {
+        setKeyboardOffset(0);
+        return;
+      }
+
+      // visualViewport shrinks when the Android/iOS keyboard opens.
+      // Keep the composer directly above that viewport instead of leaving a gap.
+      const offset = Math.max(
+        0,
+        window.innerHeight - viewport.height - viewport.offsetTop
+      );
+      setKeyboardOffset(offset);
+    };
+
+    updateKeyboardOffset();
+    viewport.addEventListener("resize", updateKeyboardOffset);
+    viewport.addEventListener("scroll", updateKeyboardOffset);
+    window.addEventListener("resize", updateKeyboardOffset);
+
+    return () => {
+      viewport.removeEventListener("resize", updateKeyboardOffset);
+      viewport.removeEventListener("scroll", updateKeyboardOffset);
+      window.removeEventListener("resize", updateKeyboardOffset);
+    };
   }, []);
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -45,7 +75,20 @@ export default function ChatInput({
   };
 
   return (
-    <div className="p-3 sm:p-4 border-t border-brown-900/10 bg-white sticky bottom-0 z-20" style={{ paddingBottom: "max(0.75rem, env(safe-area-inset-bottom))" }}>
+    <div
+      className="p-3 sm:p-4 border-t border-brown-900/10 bg-white sticky bottom-0 z-40 shrink-0 md:static"
+      style={{
+        paddingBottom: "max(0.75rem, env(safe-area-inset-bottom))",
+        ...(keyboardOffset > 0
+          ? {
+              position: "fixed",
+              left: 0,
+              right: 0,
+              bottom: keyboardOffset,
+            }
+          : {}),
+      }}
+    >
       {/* Voice input active feedback */}
       {isVoiceActive && (
         <div className="mb-2 flex items-center justify-between bg-orange-100 text-orange-500 px-4 py-2 rounded-pill text-xs animate-pulse">
