@@ -88,7 +88,13 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    if (conversationId && !conversationId.startsWith("conv-")) {
+    // Client-side temporary conversation IDs use the "conv-" prefix and are
+    // never persisted to the database. Persisted conversation IDs are always
+    // checked against the authenticated user before any DB read/write.
+    const isTemporaryConversationId =
+      typeof conversationId === "string" && conversationId.startsWith("conv-");
+
+    if (conversationId && !isTemporaryConversationId) {
       const conversation = await companionDb.conversation.findUnique({
         where: { id: conversationId },
         select: { userId: true },
@@ -188,7 +194,7 @@ export async function POST(req: NextRequest) {
     }
 
     // Save user message + AI reply to DB (skip if temporary conversationId)
-    if (conversationId && !conversationId.startsWith("conv-")) {
+    if (conversationId && !isTemporaryConversationId) {
       try {
         await companionDb.message.createMany({
           data: [
