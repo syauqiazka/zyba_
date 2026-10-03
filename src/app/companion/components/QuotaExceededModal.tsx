@@ -6,9 +6,17 @@ interface QuotaExceededModalProps {
   isOpen: boolean;
   onClose: () => void;
   remaining: number;
+  limit: number;
+  plan: "FREE" | "PLUS";
 }
 
-export default function QuotaExceededModal({ isOpen, onClose, remaining }: QuotaExceededModalProps) {
+export default function QuotaExceededModal({
+  isOpen,
+  onClose,
+  remaining,
+  limit,
+  plan,
+}: QuotaExceededModalProps) {
   const router = useRouter();
 
   if (!isOpen) return null;
@@ -35,11 +43,14 @@ export default function QuotaExceededModal({ isOpen, onClose, remaining }: Quota
 
           {/* Message */}
           <p className="text-brown-700 mb-6">
-            Kamu sudah mencapai <span className="font-bold">20 chat gratis</span> hari ini. 
-            Upgrade ke <span className="font-bold text-orange-500">Zyba Plus</span> untuk mendapatkan hingga <span className="font-bold">60 chat/hari</span> dengan AI Premium.
+            Kamu sudah menggunakan <span className="font-bold">{limit} chat</span> hari ini.
+            {plan === "FREE"
+              ? <> Upgrade ke <span className="font-bold text-orange-500">Zyba Plus</span> untuk mendapatkan hingga <span className="font-bold">60 chat/hari</span> dengan AI Premium.</>
+              : <> Kuota Premium akan tersedia lagi besok.</>}
           </p>
 
           {/* Benefits */}
+          {plan === "FREE" && (
           <div className="bg-white/70 rounded-2xl p-4 mb-6 w-full text-left border border-brown-900/10">
             <p className="font-bold text-brown-900 mb-2 text-sm">Dengan Zyba Plus:</p>
             <ul className="space-y-1.5 text-sm text-brown-700">
@@ -61,15 +72,18 @@ export default function QuotaExceededModal({ isOpen, onClose, remaining }: Quota
               </li>
             </ul>
           </div>
+          )}
 
           {/* Actions */}
           <div className="flex flex-col gap-3 w-full">
-            <button
-              onClick={handleUpgrade}
-              className="w-full py-3 bg-orange-500 hover:bg-orange-600 text-white font-bold rounded-full transition-colors"
-            >
-              Upgrade ke Zyba Plus →
-            </button>
+            {plan === "FREE" && (
+              <button
+                onClick={handleUpgrade}
+                className="w-full py-3 bg-orange-500 hover:bg-orange-600 text-white font-bold rounded-full transition-colors"
+              >
+                Upgrade ke Zyba Plus →
+              </button>
+            )}
             <button
               onClick={onClose}
               className="w-full py-3 bg-white hover:bg-brown-900/5 text-brown-900 font-semibold rounded-full transition-colors border border-brown-900/10"
