@@ -147,21 +147,21 @@ export async function POST(req: NextRequest) {
       invalidateUserMeCache(payment.userId);
       console.log("[Webhook] Subscription activated for user:", payment.userId);
     } else if (subscriptionStatus === "CANCELLED" || subscriptionStatus === "EXPIRED") {
-      const remainingActive = await accountDb.subscription.findFirst({
+      const downgrade = await accountDb.user.updateMany({
         where: {
-          userId: payment.userId,
-          status: "ACTIVE",
-          endDate: { gt: new Date() },
+          id: payment.userId,
+          plan: "PLUS",
+          subscriptions: {
+            none: {
+              status: "ACTIVE",
+              endDate: { gt: new Date() },
+            },
+          },
         },
-        select: { id: true },
+        data: { plan: "FREE" },
       });
 
-      if (!remainingActive) {
-        await accountDb.user.update({
-          where: { id: payment.userId },
-          data: { plan: "FREE" },
-        });
-
+      if (downgrade.count === 1) {
         invalidateUserPlanCache(payment.userId);
         invalidateUserMeCache(payment.userId);
       }
