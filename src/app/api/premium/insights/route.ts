@@ -3,6 +3,7 @@ import { verifySessionToken } from "@/lib/auth";
 import { accountDb } from "@/backend/db/accountClient";
 import { getUserPlan } from "@/backend/billing/entitlements";
 import { calculateDailyZybaScore } from "@/lib/assessmentMetrics";
+import { companionDb } from "@/backend/db/companionClient";
 
 type PlanItem = {
   title: string;
@@ -39,17 +40,8 @@ type InsightData = {
   };
 };
 
-type InsightCache = { expiresAt: number; data: InsightData };
-
-const globalForInsights = globalThis as typeof globalThis & {
-  __zybaPremiumInsightsCache?: Map<string, InsightCache>;
-};
-const cache =
-  globalForInsights.__zybaPremiumInsightsCache ??
-  new Map<string, InsightCache>();
-globalForInsights.__zybaPremiumInsightsCache = cache;
-
 const CACHE_TTL_MS = 60_000;
+
 const MOOD_SCORE: Record<string, number> = {
   DEPRESSED: 20,
   SAD: 40,
@@ -332,9 +324,13 @@ export async function GET(req: NextRequest) {
       );
     }
 
-    const cached = cache.get(session.userId);
-    if (cached && cached.expiresAt > Date.now()) {
-      return NextResponse.json(cached.data, {
+    const cached = await companionDb.premiumInsightCache.findUnique({
+      where: { userId: session.userId },
+      select: { expiresAt: true, data: true },
+    });
+
+    if (cached && cached.expiresAt.getTime() > Date.now()) {
+      return NextResponse.json(cached.data as InsightData, {
         headers: {
           "Cache-Control": "private, max-age=30, stale-while-revalidate=60",
         },
@@ -370,7 +366,21 @@ export async function GET(req: NextRequest) {
     ]);
 
     const data = buildInsights({ assessments, journals, activities });
-    cache.set(session.userId, { expiresAt: Date.now() + CACHE_TTL_MS, data });
+    const expiresAt = new Date(Date.now() + CACHE_TTL_MS);
+
+    await companionDb.premiumInsightCache.upsert({
+      where: { userId: session.userId },
+      create: {
+        id: `premium-insight:${session.userId}`,
+        userId: session.userId,
+        expiresAt,
+        data,
+      },
+      update: {
+        expiresAt,
+        data,
+      },
+    });
 
     return NextResponse.json(data, {
       headers: {
