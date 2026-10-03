@@ -89,6 +89,8 @@ interface CompanionContextType {
   activeConv: Conversation | undefined;
   messagesEndRef: React.RefObject<HTMLDivElement>;
   quotaRemaining: number | null;
+  quotaLimit: number;
+  plan: "FREE" | "PLUS";
   isTTSEnabled: boolean;
   setIsTTSEnabled: (val: boolean) => void;
   ttsProvider: "elevenlabs" | "edge";
@@ -173,6 +175,8 @@ export function CompanionProvider({ children }: { children: React.ReactNode }) {
   const [crisisAlert, setCrisisAlert] = useState<boolean>(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [quotaRemaining, setQuotaRemaining] = useState<number | null>(null);
+  const [quotaLimit, setQuotaLimit] = useState(20);
+  const [plan, setPlan] = useState<"FREE" | "PLUS">("FREE");
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const { speak, stop } = useTTS();
@@ -227,7 +231,17 @@ export function CompanionProvider({ children }: { children: React.ReactNode }) {
       .then((res) => res.json())
       .then((data) => {
         if (data.remaining !== undefined) {
-          setQuotaRemaining(data.remaining === Infinity ? null : data.remaining);
+          setQuotaRemaining(data.remaining);
+        }
+        if (typeof data.limit === "number") {
+          setQuotaLimit(data.limit);
+        }
+        if (data.plan === "FREE" || data.plan === "PLUS") {
+          setPlan(data.plan);
+          setSelectedModelRaw((current) => {
+            if (data.plan === "PLUS") return "openai-premium";
+            return current === "openai-premium" ? "gemini-3.8-flash" : current;
+          });
         }
       })
       .catch((err) => console.error("[Quota Check]:", err));
@@ -378,6 +392,12 @@ export function CompanionProvider({ children }: { children: React.ReactNode }) {
       if (data.quotaRemaining !== undefined) {
         setQuotaRemaining(data.quotaRemaining);
       }
+      if (typeof data.quotaLimit === "number") {
+        setQuotaLimit(data.quotaLimit);
+      }
+      if (data.plan === "FREE" || data.plan === "PLUS") {
+        setPlan(data.plan);
+      }
 
       if (data.isRisk) {
         setCrisisAlert(true);
@@ -516,6 +536,8 @@ export function CompanionProvider({ children }: { children: React.ReactNode }) {
         activeConv,
         messagesEndRef,
         quotaRemaining,
+        quotaLimit,
+        plan,
         isTTSEnabled,
         setIsTTSEnabled,
         ttsProvider,
