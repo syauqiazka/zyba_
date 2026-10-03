@@ -96,18 +96,27 @@ export async function POST(req: NextRequest) {
         history,
       });
     } catch (aiErr: any) {
-      await releaseMessageQuota(session.userId);
+      // AI failure must not burn the user's daily slot. Keep release failure
+      // from masking the provider error, because the request is already failed.
+      try {
+        await releaseMessageQuota(session.userId);
+      } catch (releaseErr) {
+        console.error("[Companion] Failed to release AI quota:", releaseErr);
+      }
 
       if (
         aiErr?.message === "PREMIUM_AI_NOT_CONFIGURED" ||
         aiErr?.message === "PREMIUM_AI_UNAVAILABLE" ||
-        aiErr?.message === "PREMIUM_AI_EMPTY_RESPONSE"
+        aiErr?.message === "PREMIUM_AI_EMPTY_RESPONSE" ||
+        aiErr?.message === "RATE_LIMIT"
       ) {
         return NextResponse.json(
           {
-            error: "PREMIUM_AI_UNAVAILABLE",
+            error: "AI_TEMPORARILY_UNAVAILABLE",
             message:
-              "AI Premium sedang tidak tersedia. Silakan coba lagi beberapa saat lagi.",
+              aiErr?.message === "RATE_LIMIT"
+                ? "Layanan AI sedang padat. Silakan coba lagi sebentar."
+                : "AI Premium sedang tidak tersedia. Silakan coba lagi beberapa saat lagi.",
           },
           { status: 503 }
         );
