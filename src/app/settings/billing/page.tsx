@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { ArrowLeft, Receipt, RefreshCw } from "lucide-react";
 
 interface Payment {
   id: string;
@@ -12,125 +13,143 @@ interface Payment {
   orderId: string;
 }
 
+const statusLabel: Record<string, string> = {
+  SUCCESS: "Berhasil",
+  PENDING: "Menunggu",
+  FAILED: "Gagal",
+  EXPIRED: "Kedaluwarsa",
+  CANCELLED: "Dibatalkan",
+};
+
 export default function BillingHistoryPage() {
   const router = useRouter();
   const [payments, setPayments] = useState<Payment[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
+
+  const load = async () => {
+    setLoading(true);
+    setError(false);
+    try {
+      const res = await fetch("/api/billing/history", { cache: "no-store" });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Gagal memuat");
+      setPayments(Array.isArray(data.payments) ? data.payments : []);
+    } catch {
+      setError(true);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    fetch("/api/billing/history")
-      .then((res) => res.json())
-      .then((data) => {
-        setPayments(data.payments || []);
-        setLoading(false);
-      })
-      .catch((err) => {
-        console.error("[Billing History] Error:", err);
-        setLoading(false);
-      });
+    void load();
   }, []);
 
-  const formatDate = (dateString: string) => {
-    return new Intl.DateTimeFormat("id-ID", {
+  const formatDate = (value: string) =>
+    new Intl.DateTimeFormat("id-ID", {
       day: "numeric",
       month: "short",
       year: "numeric",
       hour: "2-digit",
       minute: "2-digit",
-    }).format(new Date(dateString));
-  };
+    }).format(new Date(value));
 
-  const formatAmount = (amount: number) => {
-    return new Intl.NumberFormat("id-ID", {
+  const formatAmount = (amount: number) =>
+    new Intl.NumberFormat("id-ID", {
       style: "currency",
       currency: "IDR",
-      minimumFractionDigits: 0,
-    }).format(amount);
-  };
-
-  const statusColor = (status: string) => {
-    switch (status) {
-      case "SUCCESS":
-        return "bg-green-100 text-green-700";
-      case "PENDING":
-        return "bg-orange-100 text-orange-700";
-      case "FAILED":
-      case "EXPIRED":
-      case "CANCELLED":
-        return "bg-red-100 text-red-700";
-      default:
-        return "bg-gray-100 text-gray-700";
-    }
-  };
+      maximumFractionDigits: 0,
+    })
+      .format(amount)
+      .replace("IDR", "Rp");
 
   return (
-    <div className="min-h-screen bg-cream px-6 py-8">
-      <div className="max-w-4xl mx-auto">
-        <div className="flex items-center justify-between mb-6">
+    <main className="min-h-screen bg-cream px-4 py-6 sm:px-6 sm:py-10">
+      <div className="mx-auto w-full max-w-4xl">
+        <header className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <h1 className="font-display text-3xl font-extrabold text-brown-900 mb-1">
+            <button
+              type="button"
+              onClick={() => router.back()}
+              className="mb-4 inline-flex items-center gap-1 text-xs font-bold text-brown-700/60 hover:text-brown-900"
+            >
+              <ArrowLeft size={14} /> Kembali
+            </button>
+            <h1 className="font-display text-2xl font-extrabold text-brown-900 sm:text-3xl">
               Riwayat Pembayaran
             </h1>
-            <p className="text-brown-700 text-sm">
-              Semua transaksi upgrade Zyba Plus Anda
+            <p className="mt-1 text-xs leading-5 text-brown-700 sm:text-sm">
+              Semua transaksi ZYBA Premium yang terkait dengan akunmu.
             </p>
           </div>
           <button
+            type="button"
             onClick={() => router.push("/settings/zyba-plus")}
-            className="px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white font-semibold rounded-full transition-colors text-sm"
+            className="rounded-2xl bg-orange-500 px-4 py-2.5 text-xs font-bold text-white hover:bg-orange-600"
           >
-            Upgrade Paket
+            Upgrade Premium
           </button>
-        </div>
+        </header>
 
-        {loading ? (
-          <div className="text-center py-12 text-brown-700">Memuat riwayat...</div>
-        ) : payments.length === 0 ? (
-          <div className="bg-white rounded-3xl p-8 text-center border border-brown-900/10">
-            <p className="text-brown-700 mb-4">Belum ada riwayat pembayaran</p>
-            <button
-              onClick={() => router.push("/settings/zyba-plus")}
-              className="px-6 py-2 bg-orange-500 hover:bg-orange-600 text-white font-semibold rounded-full transition-colors"
-            >
-              Upgrade ke Zyba Plus
-            </button>
-          </div>
-        ) : (
-          <div className="space-y-3">
-            {payments.map((payment) => (
-              <div
-                key={payment.id}
-                className="bg-white rounded-2xl p-5 border border-brown-900/10 shadow-sm flex items-center justify-between"
+        <section className="mt-6 overflow-hidden rounded-3xl border border-brown-900/10 bg-white">
+          {loading ? (
+            <div className="space-y-3 p-5">
+              {[1, 2, 3].map((item) => (
+                <div key={item} className="h-20 animate-pulse rounded-2xl bg-cream" />
+              ))}
+            </div>
+          ) : error ? (
+            <div className="p-8 text-center">
+              <p className="text-sm text-brown-700">Riwayat pembayaran gagal dimuat.</p>
+              <button
+                type="button"
+                onClick={load}
+                className="mt-4 inline-flex items-center gap-2 rounded-xl bg-brown-900 px-4 py-2 text-xs font-bold text-white"
               >
-                <div className="flex-1">
-                  <div className="flex items-center gap-3 mb-1">
-                    <h3 className="font-bold text-brown-900">Zyba Plus - Langganan Bulanan</h3>
-                    <span className={`px-2 py-1 rounded-full text-xs font-bold ${statusColor(payment.status)}`}>
-                      {payment.status}
-                    </span>
-                  </div>
-                  <p className="text-sm text-brown-700">
-                    {formatDate(payment.createdAt)}
-                  </p>
-                  <p className="text-xs text-brown-600 font-mono mt-1">
-                    Order ID: {payment.orderId}
-                  </p>
-                  {payment.paymentMethod && (
-                    <p className="text-xs text-brown-600 mt-0.5">
-                      Metode: {payment.paymentMethod}
+                <RefreshCw size={13} /> Coba lagi
+              </button>
+            </div>
+          ) : payments.length === 0 ? (
+            <div className="p-10 text-center">
+              <Receipt className="mx-auto text-brown-700/30" size={30} />
+              <p className="mt-3 text-sm font-bold text-brown-900">Belum ada transaksi</p>
+              <p className="mt-1 text-xs text-brown-700/60">Upgrade saat kamu siap.</p>
+            </div>
+          ) : (
+            <div className="divide-y divide-brown-900/10">
+              {payments.map((payment) => (
+                <article key={payment.id} className="p-4 sm:p-5">
+                  <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                    <div className="min-w-0">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <h2 className="text-sm font-bold text-brown-900">
+                          Zyba Premium
+                        </h2>
+                        <span className={`rounded-full px-2 py-1 text-[10px] font-bold ${payment.status === "SUCCESS" ? "bg-green-100 text-green-700" : payment.status === "PENDING" ? "bg-orange-100 text-orange-700" : "bg-red-100 text-red-700"}`}>
+                          {statusLabel[payment.status] || payment.status}
+                        </span>
+                      </div>
+                      <p className="mt-1 text-xs text-brown-700">{formatDate(payment.createdAt)}</p>
+                      <p className="mt-1 break-all font-mono text-[10px] text-brown-700/50">
+                        {payment.orderId}
+                      </p>
+                      {payment.paymentMethod && (
+                        <p className="mt-1 text-[10px] text-brown-700/60">
+                          Metode: {payment.paymentMethod}
+                        </p>
+                      )}
+                    </div>
+                    <p className="shrink-0 text-lg font-extrabold text-brown-900">
+                      {formatAmount(payment.amount)}
                     </p>
-                  )}
-                </div>
-                <div className="text-right">
-                  <p className="text-xl font-bold text-brown-900">
-                    {formatAmount(payment.amount)}
-                  </p>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
+                  </div>
+                </article>
+              ))}
+            </div>
+          )}
+        </section>
       </div>
-    </div>
+    </main>
   );
 }
