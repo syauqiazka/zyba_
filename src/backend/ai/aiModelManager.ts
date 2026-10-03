@@ -23,53 +23,162 @@ export interface AIResponseResult {
 
 type PR = { reply: string; emotionTag: string };
 
+const RETRYABLE_STATUS = new Set([429, 500, 502, 503, 504]);
+const AI_MAX_ATTEMPTS = 2;
+
+function sleep(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+function isTransientFetchError(error: unknown): boolean {
+  if (!error || typeof error !== "object") return false;
+  const name = "name" in error ? String((error as { name?: unknown }).name) : "";
+  return name === "AbortError" || name === "TimeoutError" || name === "TypeError";
+}
+
+async function fetchWithTransientRetry(
+  input: string,
+  init: RequestInit,
+  timeoutMs: number,
+): Promise<Response> {
+  let lastError: unknown;
+
+  for (let attempt = 1; attempt <= AI_MAX_ATTEMPTS; attempt++) {
+    try {
+      const response = await fetch(input, {
+        ...init,
+        signal: AbortSignal.timeout(timeoutMs),
+      });
+
+      if (!RETRYABLE_STATUS.has(response.status) || attempt === AI_MAX_ATTEMPTS) {
+        return response;
+      }
+
+      const retryAfter = Number(response.headers.get("retry-after"));
+      const retryDelayMs = Number.isFinite(retryAfter)
+        ? Math.min(Math.max(retryAfter * 1000, 250), 2000)
+        : attempt * 500;
+
+      console.warn(
+        `[aiModelManager] transient provider status ${response.status}; retrying in ${retryDelayMs}ms`,
+      );
+      await sleep(retryDelayMs);
+    } catch (error) {
+      lastError = error;
+
+      if (!isTransientFetchError(error) || attempt === AI_MAX_ATTEMPTS) {
+        throw error;
+      }
+
+      const retryDelayMs = attempt * 500;
+      console.warn(
+        `[aiModelManager] transient provider error; retrying in ${retryDelayMs}ms`,
+      );
+      await sleep(retryDelayMs);
+    }
+  }
+
+  throw lastError instanceof Error ? lastError : new Error("AI_PROVIDER_REQUEST_FAILED");
+}
+
+
 async function callGemini(mn: string, sp: string, msg: string, hist: AIRequestParams["history"]): Promise<PR | null> {
-  const key = process.env.GEMINI_API_KEY; if (!key) return null;
-  const contents = [...(hist ?? []).map(h => ({ role: h.role === "USER" ? "user" : "model", parts: [{ text: h.content }] })), { role: "user", parts: [{ text: msg }] }];
-  const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${mn}:generateContent?key=${key}`, { 
-    method: "POST", 
-    headers: { "Content-Type": "application/json" }, 
-    body: JSON.stringify({ 
-      system_instruction: { parts: [{ text: sp }] }, 
-      contents,
-      generationConfig: { maxOutputTokens: 500, temperature: 0.7 } // faster, shorter
-    }),
-    signal: AbortSignal.timeout(8000) // 8s timeout
-  });
+  const key = process.env.GEMINI_API_KEY;
+  if (!key) return null;
+
+  const contents = [
+    ...(hist ?? []).map((h) => ({
+      role: h.role === "USER" ? "user" : "model",
+      parts: [{ text: h.content }],
+    })),
+    { role: "user", parts: [{ text: msg }] },
+  ];
+
+  const res = await fetchWithTransientRetry(
+    `https://generativelanguage.googleapis.com/v1beta/models/${mn}:generateContent?key=${key}`,
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        system_instruction: { parts: [{ text: sp }] },
+        contents,
+        generationConfig: { maxOutputTokens: 500, temperature: 0.7 },
+      }),
+    },
+    6000,
+  );
+
   if (res.status === 429) throw new Error("RATE_LIMIT");
   if (!res.ok) return null;
+
   const data = await res.json();
   const text = data?.candidates?.[0]?.content?.parts?.[0]?.text;
   return text ? { reply: text.trim(), emotionTag: "Empathetic (Gemini)" } : null;
 }
 
 async function callGroq(gm: string, sp: string, msg: string, hist: AIRequestParams["history"]): Promise<PR | null> {
-  const key = process.env.GROQ_API_KEY; if (!key) return null;
-  const messages = [{ role: "system", content: sp }, ...(hist ?? []).map(h => ({ role: h.role === "USER" ? "user" : "assistant", content: h.content })), { role: "user", content: msg }];
-  const res = await fetch("https://api.groq.com/openai/v1/chat/completions", { 
-    method: "POST", 
-    headers: { "Content-Type": "application/json", "Authorization": "Bearer " + key }, 
-    body: JSON.stringify({ model: gm, messages, max_tokens: 500, temperature: 0.7 }),
-    signal: AbortSignal.timeout(8000)
-  });
+  const key = process.env.GROQ_API_KEY;
+  if (!key) return null;
+
+  const messages = [
+    { role: "system", content: sp },
+    ...(hist ?? []).map((h) => ({
+      role: h.role === "USER" ? "user" : "assistant",
+      content: h.content,
+    })),
+    { role: "user", content: msg },
+  ];
+
+  const res = await fetchWithTransientRetry(
+    "https://api.groq.com/openai/v1/chat/completions",
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + key,
+      },
+      body: JSON.stringify({ model: gm, messages, max_tokens: 500, temperature: 0.7 }),
+    },
+    6000,
+  );
+
   if (res.status === 429) throw new Error("RATE_LIMIT");
   if (!res.ok) return null;
+
   const data = await res.json();
   const text = data?.choices?.[0]?.message?.content;
   return text ? { reply: text.trim(), emotionTag: "Insightful (Groq)" } : null;
 }
 
 async function callMistral(sp: string, msg: string, hist: AIRequestParams["history"]): Promise<PR | null> {
-  const key = process.env.MISTRAL_API_KEY; if (!key) return null;
-  const messages = [{ role: "system", content: sp }, ...(hist ?? []).map(h => ({ role: h.role === "USER" ? "user" : "assistant", content: h.content })), { role: "user", content: msg }];
-  const res = await fetch("https://api.mistral.ai/v1/chat/completions", { 
-    method: "POST", 
-    headers: { "Content-Type": "application/json", "Authorization": "Bearer " + key }, 
-    body: JSON.stringify({ model: "ministral-8b-latest", messages, max_tokens: 500, temperature: 0.7 }),
-    signal: AbortSignal.timeout(8000)
-  });
+  const key = process.env.MISTRAL_API_KEY;
+  if (!key) return null;
+
+  const messages = [
+    { role: "system", content: sp },
+    ...(hist ?? []).map((h) => ({
+      role: h.role === "USER" ? "user" : "assistant",
+      content: h.content,
+    })),
+    { role: "user", content: msg },
+  ];
+
+  const res = await fetchWithTransientRetry(
+    "https://api.mistral.ai/v1/chat/completions",
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + key,
+      },
+      body: JSON.stringify({ model: "ministral-8b-latest", messages, max_tokens: 500, temperature: 0.7 }),
+    },
+    6000,
+  );
+
   if (res.status === 429) throw new Error("RATE_LIMIT");
   if (!res.ok) return null;
+
   const data = await res.json();
   const text = data?.choices?.[0]?.message?.content;
   return text ? { reply: text.trim(), emotionTag: "Reflective (Mistral)" } : null;
@@ -90,20 +199,29 @@ async function callOpenAIPremium(sp: string, msg: string, hist: AIRequestParams[
     { role: "user", content: msg },
   ];
 
-  const res = await fetch("https://api.openai.com/v1/responses", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${key}`,
-    },
-    body: JSON.stringify({
-      model,
-      instructions: sp,
-      input,
-      max_output_tokens: 500,
-    }),
-    signal: AbortSignal.timeout(12000),
-  });
+  let res: Response;
+  try {
+    res = await fetchWithTransientRetry(
+      "https://api.openai.com/v1/responses",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${key}`,
+        },
+        body: JSON.stringify({
+          model,
+          instructions: sp,
+          input,
+          max_output_tokens: 500,
+        }),
+      },
+      9000,
+    );
+  } catch (error) {
+    console.error("[aiModelManager] OpenAI premium request failed:", error);
+    throw new Error("PREMIUM_AI_UNAVAILABLE");
+  }
 
   if (res.status === 429) throw new Error("RATE_LIMIT");
 
@@ -127,22 +245,47 @@ async function callOpenAIPremium(sp: string, msg: string, hist: AIRequestParams[
 }
 
 async function callOpenRouter(sp: string, msg: string, hist: AIRequestParams["history"]): Promise<PR | null> {
-  const key = process.env.OPENROUTER_API_KEY; if (!key) return null;
-  const messages = [{ role: "system", content: sp }, ...(hist ?? []).map(h => ({ role: h.role === "USER" ? "user" : "assistant", content: h.content })), { role: "user", content: msg }];
-  const res = await fetch("https://openrouter.ai/api/v1/chat/completions", { 
-    method: "POST", 
-    headers: { "Content-Type": "application/json", "Authorization": "Bearer " + key, "HTTP-Referer": "https://zyba.app", "X-Title": "Zyba Companion" }, 
-    body: JSON.stringify({ 
-      models: ["nvidia/nemotron-3-ultra:free", "google/gemma-4-31b:free", "nvidia/nemotron-3-super:free", "cohere/north-mini-code:free"], 
-      route: "fallback", 
-      messages, 
-      max_tokens: 500,
-      temperature: 0.7
-    }),
-    signal: AbortSignal.timeout(10000) // 10s untuk OpenRouter (multi-model fallback)
-  });
+  const key = process.env.OPENROUTER_API_KEY;
+  if (!key) return null;
+
+  const messages = [
+    { role: "system", content: sp },
+    ...(hist ?? []).map((h) => ({
+      role: h.role === "USER" ? "user" : "assistant",
+      content: h.content,
+    })),
+    { role: "user", content: msg },
+  ];
+
+  const res = await fetchWithTransientRetry(
+    "https://openrouter.ai/api/v1/chat/completions",
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + key,
+        "HTTP-Referer": "https://zyba.app",
+        "X-Title": "Zyba Companion",
+      },
+      body: JSON.stringify({
+        models: [
+          "nvidia/nemotron-3-ultra:free",
+          "google/gemma-4-31b:free",
+          "nvidia/nemotron-3-super:free",
+          "cohere/north-mini-code:free",
+        ],
+        route: "fallback",
+        messages,
+        max_tokens: 500,
+        temperature: 0.7,
+      }),
+    },
+    8000,
+  );
+
   if (res.status === 429) throw new Error("RATE_LIMIT");
   if (!res.ok) return null;
+
   const data = await res.json();
   const text = data?.choices?.[0]?.message?.content;
   return text ? { reply: text.trim(), emotionTag: "Supportive (OpenRouter)" } : null;
