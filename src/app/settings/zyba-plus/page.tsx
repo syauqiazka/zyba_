@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Check, CreditCard, ShieldCheck, Sparkles, Zap } from "lucide-react";
-import { isDemoAccount } from "@/lib/demoAccount";
 
 declare global {
   interface Window {
@@ -94,32 +93,10 @@ export default function ZybaPlusPage() {
   const [selected] = useState<PlanId>("monthly");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [isDemo, setIsDemo] = useState(false);
-
-  useEffect(() => {
-    let cancelled = false;
-
-    fetch("/api/user/me", { cache: "no-store" })
-      .then(async (res) => {
-        if (!res.ok) return null;
-        return res.json();
-      })
-      .then((data) => {
-        if (!cancelled) setIsDemo(isDemoAccount(data?.user));
-      })
-      .catch(() => {
-        // Keep the page usable if the profile request fails.
-      });
-
-    return () => {
-      cancelled = true;
-    };
-  }, []);
-
   const selectedPlan = PLANS.find((plan) => plan.id === selected)!;
 
   const handleUpgrade = async () => {
-    if (loading || isDemo) return;
+    if (loading) return;
 
     setLoading(true);
     setError(null);
@@ -181,17 +158,6 @@ export default function ZybaPlusPage() {
             dan rencana yang disusun dari perjalanan wellness-mu.
           </p>
         </header>
-
-        {isDemo && (
-          <div className="mt-6 rounded-2xl border border-orange-200 bg-orange-50 px-4 py-3 text-center">
-            <p className="text-xs font-extrabold text-brown-900">
-              Mode Demo — Halaman ini hanya untuk melihat fitur ZYBA Plus.
-            </p>
-            <p className="mt-1 text-[11px] text-brown-700/70">
-              Pembelian dan aktivasi Premium dinonaktifkan untuk akun demo.
-            </p>
-          </div>
-        )}
 
         <section className="mt-7 grid gap-3 rounded-3xl border border-brown-900/10 bg-white p-3 shadow-sm sm:p-4">
           {PLANS.map((plan) => (
@@ -272,15 +238,11 @@ export default function ZybaPlusPage() {
             <button
               type="button"
               onClick={handleUpgrade}
-              disabled={loading || isDemo}
+              disabled={loading}
               className="mt-6 flex w-full items-center justify-center gap-2 rounded-2xl bg-orange-500 px-4 py-3.5 text-sm font-extrabold text-white transition-colors hover:bg-orange-400 disabled:cursor-not-allowed disabled:opacity-50"
             >
               <CreditCard size={17} />
-              {isDemo
-                ? "Mode Demo — Hanya Lihat"
-                : loading
-                  ? "Menyiapkan pembayaran..."
-                  : "Lanjut ke Pembayaran"}
+              {loading ? "Menyiapkan pembayaran..." : "Lanjut ke Pembayaran"}
             </button>
 
             {error && (
@@ -290,9 +252,7 @@ export default function ZybaPlusPage() {
             )}
 
             <p className="mt-4 text-center text-[10px] leading-4 text-white/40">
-              {isDemo
-                ? "Akun demo tidak dapat melakukan pembelian atau mengaktifkan Premium."
-                : "Setelah pembayaran berhasil, status Premium akan aktif setelah konfirmasi dari payment gateway."}
+              Setelah pembayaran berhasil, status Premium akan aktif setelah konfirmasi dari payment gateway.
             </p>
           </aside>
         </section>
