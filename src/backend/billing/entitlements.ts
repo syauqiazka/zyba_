@@ -3,6 +3,7 @@ import { accountDb } from "@/backend/db/accountClient";
 import { companionDb } from "@/backend/db/companionClient";
 
 export const FREE_DAILY_MESSAGE_LIMIT = 20;
+export const PREMIUM_DAILY_MESSAGE_LIMIT = 60;
 
 // =====================================================
 // USER PLAN CACHE
@@ -84,12 +85,10 @@ export async function checkMessageQuota(
 ) {
   const plan = await getUserPlan(userId);
 
-  if (plan === "PLUS") {
-    return {
-      allowed: true,
-      remaining: Infinity,
-    };
-  }
+  const dailyLimit =
+    plan === "PLUS"
+      ? PREMIUM_DAILY_MESSAGE_LIMIT
+      : FREE_DAILY_MESSAGE_LIMIT;
 
   const startOfDay = new Date();
   startOfDay.setHours(0, 0, 0, 0);
@@ -110,15 +109,10 @@ export async function checkMessageQuota(
     });
 
   return {
-    allowed:
-      countToday <
-      FREE_DAILY_MESSAGE_LIMIT,
-
-    remaining: Math.max(
-      0,
-      FREE_DAILY_MESSAGE_LIMIT -
-        countToday
-    ),
+    allowed: countToday < dailyLimit,
+    remaining: Math.max(0, dailyLimit - countToday),
+    limit: dailyLimit,
+    plan,
   };
 }
 

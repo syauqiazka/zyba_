@@ -7,6 +7,7 @@ interface Props {
   selectedModel: AIModelType;
   setSelectedModel: (model: AIModelType) => void;
   dropDirection?: "up" | "down";
+  plan?: "FREE" | "PLUS";
 }
 
 interface ModelOption {
@@ -18,6 +19,13 @@ interface ModelOption {
 }
 
 const MODEL_OPTIONS: ModelOption[] = [
+  {
+    id: "openai-premium",
+    name: "GPT-6.1 Sol",
+    badge: "Premium",
+    desc: "AI premium ZYBA dengan model berbayar OpenAI",
+    icon: "✨",
+  },
   {
     id: "gemini-3.8-flash",
     name: "Gemini 3.8 Flash",
@@ -73,6 +81,7 @@ export default function ModelSelector({
   selectedModel,
   setSelectedModel,
   dropDirection = "up",
+  plan = "FREE",
 }: Props) {
   const [isOpen, setIsOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
@@ -96,10 +105,14 @@ export default function ModelSelector({
     };
   }, [isOpen]);
 
-  const currentOption =
-    MODEL_OPTIONS.find((m) => m.id === selectedModel) || MODEL_OPTIONS[0];
+  const planOptions = MODEL_OPTIONS.filter((m) =>
+    plan === "PLUS" ? m.id === "openai-premium" : m.id !== "openai-premium"
+  );
 
-  const filteredOptions = MODEL_OPTIONS.filter(
+  const currentOption =
+    planOptions.find((m) => m.id === selectedModel) || planOptions[0];
+
+  const filteredOptions = planOptions.filter(
     (m) =>
       m.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       m.desc.toLowerCase().includes(searchQuery.toLowerCase())

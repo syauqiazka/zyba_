@@ -3,7 +3,7 @@
 
 import { getPersonaById, PersonaDef, PersonaId } from "./personas";
 
-export type AIModelType = "gemini-3.8-flash" | "gemini-3.7-flash" | "gemini-3.5-flash-lite" | "llama-3.3-70b" | "qwen-3.8-27b" | "ministral-8b" | "openrouter-free" | "nemotron-3-ultra" | "gemma-4-31b" | "zyba-default";
+export type AIModelType = "openai-premium" | "gemini-3.8-flash" | "gemini-3.7-flash" | "gemini-3.5-flash-lite" | "llama-3.3-70b" | "qwen-3.8-27b" | "ministral-8b" | "openrouter-free" | "nemotron-3-ultra" | "gemma-4-31b" | "zyba-default";
 
 export interface AIRequestParams {
   message: string;
@@ -75,6 +75,57 @@ async function callMistral(sp: string, msg: string, hist: AIRequestParams["histo
   return text ? { reply: text.trim(), emotionTag: "Reflective (Mistral)" } : null;
 }
 
+async function callOpenAIPremium(sp: string, msg: string, hist: AIRequestParams["history"]): Promise<PR> {
+  const key = process.env.OPENAI_API_KEY;
+  if (!key) {
+    throw new Error("PREMIUM_AI_NOT_CONFIGURED");
+  }
+
+  const model = process.env.OPENAI_PREMIUM_MODEL || "gpt-6.1-sol";
+  const input = [
+    ...(hist ?? []).map((h) => ({
+      role: h.role === "USER" ? "user" : "assistant",
+      content: h.content,
+    })),
+    { role: "user", content: msg },
+  ];
+
+  const res = await fetch("https://api.openai.com/v1/responses", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${key}`,
+    },
+    body: JSON.stringify({
+      model,
+      instructions: sp,
+      input,
+      max_output_tokens: 500,
+    }),
+    signal: AbortSignal.timeout(12000),
+  });
+
+  if (res.status === 429) throw new Error("RATE_LIMIT");
+
+  if (!res.ok) {
+    const errorText = await res.text().catch(() => "");
+    console.error("[aiModelManager] OpenAI premium error:", res.status, errorText.slice(0, 500));
+    throw new Error("PREMIUM_AI_UNAVAILABLE");
+  }
+
+  const data = await res.json();
+  const text = data?.output_text;
+
+  if (!text || typeof text !== "string") {
+    throw new Error("PREMIUM_AI_EMPTY_RESPONSE");
+  }
+
+  return {
+    reply: text.trim(),
+    emotionTag: "Insightful (ZYBA Premium AI)",
+  };
+}
+
 async function callOpenRouter(sp: string, msg: string, hist: AIRequestParams["history"]): Promise<PR | null> {
   const key = process.env.OPENROUTER_API_KEY; if (!key) return null;
   const messages = [{ role: "system", content: sp }, ...(hist ?? []).map(h => ({ role: h.role === "USER" ? "user" : "assistant", content: h.content })), { role: "user", content: msg }];
@@ -126,6 +177,7 @@ export async function processMultiModelAIResponse(params: AIRequestParams): Prom
 
   // Map model to provider function
   const modelMap: Record<AIModelType, () => Promise<PR | null>> = {
+    "openai-premium": () => callOpenAIPremium(sp, message, history),
     "gemini-3.8-flash": () => callGemini("gemini-3.8-flash", sp, message, history),
     "gemini-3.7-flash": () => callGemini("gemini-3.7-flash", sp, message, history),
     "gemini-3.5-flash-lite": () => callGemini("gemini-3.5-flash-lite", sp, message, history),
@@ -137,6 +189,18 @@ export async function processMultiModelAIResponse(params: AIRequestParams): Prom
     "gemma-4-31b": () => callOpenRouter(sp, message, history),
     "zyba-default": async () => null, // skip to fallback
   };
+
+  // Premium is intentionally pinned to the paid OpenAI model.
+  // It must never silently downgrade to the free-provider fallback chain.
+  if (model === "openai-premium") {
+    const result = await callOpenAIPremium(sp, message, history);
+    return {
+      reply: result.reply,
+      modelUsed: "openai-premium",
+      emotionTag: result.emotionTag,
+      providerStatus: "API_LIVE",
+    };
+  }
 
   // If user specified a model, try it first
   if (model && modelMap[model]) {
