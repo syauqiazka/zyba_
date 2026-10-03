@@ -858,7 +858,7 @@ export default function ProfileSettingsModal({ user, isOpen, onClose, onUserUpda
             {/* ── BILLING ──────────────────────────────────────────── */}
             <SectionDivider />
             <Section id="zyba-plus" title="Zyba Plus">
-              <ZybaPlusTab onSuccess={ok} />
+              <ZybaPlusTab onSuccess={ok} isDemo={isDemoAccount({ email: user.email })} />
             </Section>
 
             <Section id="billing-history" title="Riwayat Pembayaran">
@@ -1007,12 +1007,10 @@ const PLUS_FEATURES = [
   "Akses fitur beta lebih awal",
 ];
 
-function ZybaPlusTab({ onSuccess }: { onSuccess: (msg: string) => void }) {
+function ZybaPlusTab({ onSuccess, isDemo }: { onSuccess: (msg: string) => void; isDemo: boolean }) {
   const [selected] = useState<"monthly">("monthly");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const isDemo = isDemoAccount({ email: user.email });
-
   const handleCheckout = async () => {
     if (isDemo || loading) return;
     setLoading(true);
@@ -1129,7 +1127,9 @@ function ZybaPlusTab({ onSuccess }: { onSuccess: (msg: string) => void }) {
         onClick={handleCheckout}
         className="w-full py-3.5 rounded-full bg-orange-500 text-white text-sm font-extrabold hover:bg-orange-600 transition-colors shadow-md flex items-center justify-center gap-2 disabled:opacity-50 cursor-pointer"
       >
-        {loading ? (
+        {isDemo ? (
+          <span>Mode Demo — Hanya Lihat</span>
+        ) : loading ? (
           <>
             <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
             <span>Menghubungkan ke Midtrans...</span>
