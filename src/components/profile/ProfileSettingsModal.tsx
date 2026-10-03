@@ -8,6 +8,7 @@ import { PersonaId } from "@/backend/ai/personas";
 import { isAvatarUrl, resolveAvatar } from "@/lib/avatarUtils";
 import UserAvatar from "@/components/ui/UserAvatar";
 import AvatarCropModal from "@/components/ui/AvatarCropModal";
+import { isDemoAccount } from "@/lib/demoAccount";
 
 interface ProfileSettingsModalProps {
   user: ProfileUser;
@@ -995,25 +996,7 @@ const PLANS = [
     desc: "Fleksibel, batalkan kapan saja",
     highlight: false,
   },
-  {
-    id: "yearly",
-    label: "Tahunan",
-    price: "Rp 399.000",
-    period: "/ tahun",
-    badge: "HEMAT 32%",
-    desc: "Setara Rp 33.250 / bulan",
-    highlight: true,
-  },
-  {
-    id: "lifetime",
-    label: "Seumur Hidup",
-    price: "Rp 999.000",
-    period: "sekali bayar",
-    badge: "BEST VALUE",
-    desc: "Akses permanen, tidak perlu perpanjang",
-    highlight: false,
-  },
-];
+] as const;
 
 const PLUS_FEATURES = [
   "Semua model AI premium (Gemini Pro, GPT-4o, Claude)",
@@ -1025,11 +1008,13 @@ const PLUS_FEATURES = [
 ];
 
 function ZybaPlusTab({ onSuccess }: { onSuccess: (msg: string) => void }) {
-  const [selected, setSelected] = useState<"monthly" | "yearly" | "lifetime">("yearly");
+  const [selected] = useState<"monthly">("monthly");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const isDemo = isDemoAccount({ email: user.email });
 
   const handleCheckout = async () => {
+    if (isDemo || loading) return;
     setLoading(true);
     setError(null);
 
@@ -1104,7 +1089,7 @@ function ZybaPlusTab({ onSuccess }: { onSuccess: (msg: string) => void }) {
           <button
             key={plan.id}
             type="button"
-            onClick={() => setSelected(plan.id as any)}
+            onClick={() => {}}
             className={`relative flex flex-col gap-1.5 p-4 rounded-2xl border-2 text-left transition-all ${
               selected === plan.id
                 ? "border-orange-500 bg-orange-50 shadow-md"
@@ -1140,7 +1125,7 @@ function ZybaPlusTab({ onSuccess }: { onSuccess: (msg: string) => void }) {
       {/* CTA */}
       <button
         type="button"
-        disabled={loading}
+        disabled={loading || isDemo}
         onClick={handleCheckout}
         className="w-full py-3.5 rounded-full bg-orange-500 text-white text-sm font-extrabold hover:bg-orange-600 transition-colors shadow-md flex items-center justify-center gap-2 disabled:opacity-50 cursor-pointer"
       >
