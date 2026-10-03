@@ -57,7 +57,7 @@ export default function ChatHeader({
   };
 
   return (
-    <header className="px-2.5 sm:px-6 py-2 sm:py-3 border-b border-brown-900/10 flex items-center gap-1.5 sm:gap-2 justify-between bg-white/95 sticky top-0 z-30 w-full max-w-full box-border">
+    <header className="shrink-0 mx-2 mt-2 sm:mx-3 sm:mt-3 md:mx-0 md:mt-0 px-2.5 sm:px-6 py-2 sm:py-3 border border-brown-900/10 md:border-b rounded-2xl md:rounded-none flex items-center gap-1.5 sm:gap-2 justify-between bg-white/90 backdrop-blur-xl shadow-sm md:shadow-none z-30 w-auto md:w-full max-w-full box-border">
       {/* Mobile Hamburger */}
       <button
         type="button"
