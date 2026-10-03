@@ -54,21 +54,6 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Demo account is strictly read-only: it may inspect the Premium page,
-    // but it must never create a payment/subscription.
-    if (
-      session.userId === "user_demo_alex" ||
-      session.email?.trim().toLowerCase() === "alex@zyba.app"
-    ) {
-      return NextResponse.json(
-        {
-          error: "Akun demo hanya dapat melihat halaman ZYBA Plus. Pembelian dinonaktifkan.",
-          code: "DEMO_READ_ONLY",
-        },
-        { status: 403 }
-      );
-    }
-
     const planId = "monthly";
     const plan = PLAN_PRICES[planId];
     const userId = session.userId;
