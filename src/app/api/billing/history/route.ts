@@ -18,6 +18,25 @@ export async function GET(req: NextRequest) {
       where: { userId: session.userId },
       orderBy: { createdAt: "desc" },
       take: 50,
+      select: {
+        id: true,
+        amount: true,
+        provider: true,
+        orderId: true,
+        transactionId: true,
+        paymentMethod: true,
+        status: true,
+        createdAt: true,
+        updatedAt: true,
+        subscription: {
+          select: {
+            plan: true,
+            status: true,
+            startDate: true,
+            endDate: true,
+          },
+        },
+      },
     });
 
     return NextResponse.json({ payments });
