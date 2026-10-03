@@ -60,48 +60,6 @@ export function getClientIp(req: NextRequest): string {
   return "127.0.0.1";
 }
 
-/**
- * Sliding window rate limit checker
- * @param key unique identifier (e.g. `auth:${ip}` or `user:${userId}`)
- * @param limit maximum allowed hits in the time window
- * @param windowSec window duration in seconds
- */
-export function checkRateLimit(
-  key: string,
-  limit: number,
-  windowSec: number
-): { allowed: boolean; remaining: number; retryAfterSec: number } {
-  const now = Date.now();
-  const windowMs = windowSec * 1000;
-  const cutoff = now - windowMs;
-
-  let record = rateLimitMap.get(key);
-  if (!record) {
-    record = { timestamps: [] };
-    rateLimitMap.set(key, record);
-  }
-
-  // Filter out timestamps outside window
-  record.timestamps = record.timestamps.filter((t) => t > cutoff);
-
-  if (record.timestamps.length >= limit) {
-    const oldestInWindow = record.timestamps[0];
-    const retryAfterSec = Math.max(1, Math.ceil((oldestInWindow + windowMs - now) / 1000));
-    return {
-      allowed: false,
-      remaining: 0,
-      retryAfterSec,
-    };
-  }
-
-  record.timestamps.push(now);
-  return {
-    allowed: true,
-    remaining: limit - record.timestamps.length,
-    retryAfterSec: 0,
-  };
-}
-
 export function rateLimitResponse(
   retryAfterSec: number,
   message = "Terlalu banyak permintaan. Silakan coba lagi nanti."
