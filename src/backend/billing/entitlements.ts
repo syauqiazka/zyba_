@@ -98,30 +98,47 @@ export async function checkMessageQuota(userId: string) {
  */
 export async function consumeMessageQuota(userId: string) {
   const plan = await getUserPlan(userId);
-  const dailyLimit =
-    plan === "PLUS" ? PREMIUM_DAILY_MESSAGE_LIMIT : FREE_DAILY_MESSAGE_LIMIT;
-
+  const dailyLimit = plan === "PLUS" ? PREMIUM_DAILY_MESSAGE_LIMIT : FREE_DAILY_MESSAGE_LIMIT;
   const dateKey = getJakartaDateKey();
-  const { start, end } = getJakartaDayBounds(dateKey);
+  const { start: dayStart, end: dayEnd } = getJakartaDayBounds(dateKey);
   const quotaId = getQuotaId(userId, dateKey);
 
+  // Fast path: once today's counter exists, never rescan message history.
+  const existing = await companionDb.dailyMessageQuota.findUnique({
+    where: { userId_date: { userId, date: dateKey } },
+    select: { messageCount: true },
+  });
+
+  if (existing) {
+    const rows = await companionDb.$queryRaw<QuotaRow[]>`
+      INSERT INTO "daily_message_quotas"
+        ("id", "userId", "date", "messageCount", "createdAt", "updatedAt")
+      VALUES
+        (${quotaId}, ${userId}, ${dateKey}, 1, NOW(), NOW())
+      ON CONFLICT ("userId", "date")
+      DO UPDATE SET
+        "messageCount" = "daily_message_quotas"."messageCount" + 1,
+        "updatedAt" = NOW()
+      WHERE "daily_message_quotas"."messageCount" < ${dailyLimit}
+      RETURNING "messageCount"
+    `;
+    const count = rows[0]?.messageCount;
+    if (count === undefined) return { allowed: false, remaining: 0, limit: dailyLimit, plan };
+    return { allowed: true, remaining: Math.max(0, dailyLimit - count), limit: dailyLimit, plan };
+  }
+
+  // First request of the day: bootstrap from persisted USER messages.
   const rows = await companionDb.$queryRaw<QuotaRow[]>`
     INSERT INTO "daily_message_quotas"
       ("id", "userId", "date", "messageCount", "createdAt", "updatedAt")
     SELECT
-      ${quotaId},
-      ${userId},
-      ${dateKey},
-      COUNT(*)::int + 1,
-      NOW(),
-      NOW()
+      ${quotaId}, ${userId}, ${dateKey}, COUNT(*)::int + 1, NOW(), NOW()
     FROM "messages" AS m
-    INNER JOIN "conversations" AS c
-      ON c."id" = m."conversationId"
+    INNER JOIN "conversations" AS c ON c."id" = m."conversationId"
     WHERE c."userId" = ${userId}
       AND m."role" = 'USER'
-      AND m."createdAt" >= ${start}
-      AND m."createdAt" < ${end}
+      AND m."createdAt" >= ${dayStart}
+      AND m."createdAt" < ${dayEnd}
     HAVING COUNT(*) < ${dailyLimit}
     ON CONFLICT ("userId", "date")
     DO UPDATE SET
@@ -130,19 +147,9 @@ export async function consumeMessageQuota(userId: string) {
     WHERE "daily_message_quotas"."messageCount" < ${dailyLimit}
     RETURNING "messageCount"
   `;
-
   const count = rows[0]?.messageCount;
-
-  if (count === undefined) {
-    return { allowed: false, remaining: 0, limit: dailyLimit, plan };
-  }
-
-  return {
-    allowed: true,
-    remaining: Math.max(0, dailyLimit - count),
-    limit: dailyLimit,
-    plan,
-  };
+  if (count === undefined) return { allowed: false, remaining: 0, limit: dailyLimit, plan };
+  return { allowed: true, remaining: Math.max(0, dailyLimit - count), limit: dailyLimit, plan };
 }
 
 export async function releaseMessageQuota(userId: string) {
