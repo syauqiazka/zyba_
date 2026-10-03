@@ -6,7 +6,6 @@ import {
   EyeOff,
   LockKeyhole,
   Mail,
-  Sparkles,
 } from "lucide-react";
 
 interface SignInCardProps {
@@ -215,22 +214,6 @@ export default function SignInCard({
           )}
         </button>
 
-        {/* DEMO */}
-        <button
-          type="button"
-          onClick={() => {
-            setEmail("alex@zyba.app");
-            setPassword("demo_password");
-          }}
-          className="inline-flex items-center justify-center gap-2 text-xs font-semibold text-brown-700/70 transition-colors hover:text-orange-500"
-        >
-          <Sparkles
-            size={13}
-            className="text-orange-500"
-          />
-
-          Isi akun demo
-        </button>
       </form>
 
       {/* DIVIDER */}
