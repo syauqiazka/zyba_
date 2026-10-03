@@ -35,9 +35,8 @@ export default function QuotaExceededModal({ isOpen, onClose, remaining }: Quota
 
           {/* Message */}
           <p className="text-brown-700 mb-6">
-            Kamu sudah menggunakan <span className="font-bold">20 pesan gratis</span> hari ini. 
-            Upgrade ke <span className="font-bold text-orange-500">Zyba Plus</span> untuk chat unlimited 
-            tanpa batas dengan AI Companion kapan saja.
+            Kamu sudah mencapai <span className="font-bold">20 chat gratis</span> hari ini. 
+            Upgrade ke <span className="font-bold text-orange-500">Zyba Plus</span> untuk mendapatkan hingga <span className="font-bold">60 chat/hari</span> dengan AI Premium.
           </p>
 
           {/* Benefits */}
@@ -46,7 +45,7 @@ export default function QuotaExceededModal({ isOpen, onClose, remaining }: Quota
             <ul className="space-y-1.5 text-sm text-brown-700">
               <li className="flex items-start gap-2">
                 <span className="text-orange-500 mt-0.5">✓</span>
-                <span>Chat unlimited dengan Zyba Companion</span>
+                <span>60 chat/hari dengan AI Premium</span>
               </li>
               <li className="flex items-start gap-2">
                 <span className="text-orange-500 mt-0.5">✓</span>
@@ -81,7 +80,7 @@ export default function QuotaExceededModal({ isOpen, onClose, remaining }: Quota
 
           {/* Footer note */}
           <p className="text-xs text-brown-600 mt-4">
-            Kuota akan direset besok jam 00:00 WIB
+            Kuota 20 chat Free / 60 chat Premium akan direset besok jam 00:00 WIB
           </p>
         </div>
       </div>
