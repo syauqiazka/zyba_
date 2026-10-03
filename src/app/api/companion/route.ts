@@ -21,7 +21,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Invalid session" }, { status: 401 });
     }
 
-    const chatLimit = checkRateLimit(`chat:${session.userId}`, 20, 60);
+    const chatLimit = await checkRateLimit(`chat:${session.userId}`, 20, 60);
     if (!chatLimit.allowed) {
       return rateLimitResponse(chatLimit.retryAfterSec, "Kamu mengirim pesan terlalu cepat.");
     }
