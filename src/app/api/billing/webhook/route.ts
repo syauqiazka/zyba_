@@ -49,6 +49,17 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Payment not found" }, { status: 404 });
     }
 
+    // Pastikan nominal webhook sama dengan nominal Payment yang dibuat server.
+    const webhookAmount = Number(gross_amount);
+    if (!Number.isFinite(webhookAmount) || webhookAmount !== payment.amount) {
+      console.warn("[Webhook] Amount mismatch:", {
+        order_id,
+        webhookAmount,
+        expectedAmount: payment.amount,
+      });
+      return NextResponse.json({ error: "Payment amount mismatch" }, { status: 400 });
+    }
+
     // 3. Idempotency check — jangan proses ulang kalau sudah SUCCESS
     if (payment.status === "SUCCESS") {
       console.log("[Webhook] Payment already processed as SUCCESS:", order_id);
@@ -102,19 +113,24 @@ export async function POST(req: NextRequest) {
       const endDate = new Date(now);
       endDate.setDate(endDate.getDate() + 30); // 30 hari dari sekarang
 
-      await accountDb.subscription.update({
-        where: { id: payment.subscriptionId },
-        data: {
-          status: "ACTIVE",
-          startDate: now,
-          endDate,
-        },
-      });
-
-      await accountDb.user.update({
-        where: { id: payment.userId },
-        data: { plan: "PLUS" },
-      });
+      await accountDb.$transaction([
+        accountDb.payment.update({
+          where: { id: payment.id },
+          data: { status: "SUCCESS" },
+        }),
+        accountDb.subscription.update({
+          where: { id: payment.subscriptionId },
+          data: {
+            status: "ACTIVE",
+            startDate: now,
+            endDate,
+          },
+        }),
+        accountDb.user.update({
+          where: { id: payment.userId },
+          data: { plan: "PLUS" },
+        }),
+      ]);
 
       invalidateUserPlanCache(payment.userId);
       invalidateUserMeCache(payment.userId);
