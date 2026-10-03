@@ -140,7 +140,7 @@ export default function ChatHeader({
           >
             <Zap size={12} aria-hidden />
             <span className="hidden md:inline">Zyba </span>
-            <span className="hidden xs:inline">Plus</span>
+            <span className="inline sm:hidden">Plus</span>
           </button>
         )}
 
