@@ -1,25 +1,18 @@
 const partners = [
-  {
-    name: "Jagoan Hosting",
-    mark: "JH",
-    tone: "partner-mark-orange",
-  },
-  {
-    name: "KOMDIGI",
-    mark: "K",
-    tone: "partner-mark-blue",
-  },
-  {
-    name: "QA UDA SPARK",
-    mark: "Q",
-    tone: "partner-mark-dark",
-  },
-  {
-    name: "NGALUP.CO",
-    mark: "N",
-    tone: "partner-mark-blue",
-  },
+  { name: "Jagoan Hosting", mark: "JH", tone: "partner-mark-orange" },
+  { name: "KOMDIGI", mark: "K", tone: "partner-mark-blue" },
+  { name: "QA UDA SPARK", mark: "Q", tone: "partner-mark-dark" },
+  { name: "NGALUP.CO", mark: "N", tone: "partner-mark-blue" },
 ];
+
+function PartnerItem({ name, mark, tone }: (typeof partners)[number]) {
+  return (
+    <div className="partner-wordmark" aria-hidden="true">
+      <span className={`partner-mark ${tone}`}>{mark}</span>
+      <span className="partner-name">{name}</span>
+    </div>
+  );
+}
 
 export default function LandingPartners() {
   return (
@@ -34,15 +27,12 @@ export default function LandingPartners() {
             </p>
           </div>
 
-          <div className="partners-list">
-            {partners.map((partner) => (
-              <div className="partner-wordmark" key={partner.name}>
-                <span className={`partner-mark ${partner.tone}`} aria-hidden="true">
-                  {partner.mark}
-                </span>
-                <span className="partner-name">{partner.name}</span>
-              </div>
-            ))}
+          <div className="partners-marquee" aria-label="Partner ZYBA">
+            <div className="partners-marquee-track">
+              {[...partners, ...partners].map((partner, index) => (
+                <PartnerItem key={`${partner.name}-${index}`} {...partner} />
+              ))}
+            </div>
           </div>
         </div>
       </div>
