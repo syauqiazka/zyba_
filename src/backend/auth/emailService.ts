@@ -5,43 +5,17 @@
 
 import nodemailer from "nodemailer";
 
-const otpStore = new Map<string, { otp: string; expiresAt: number }>();
-
 export function generateOTP(email: string): string {
   // Generate 4-digit numeric code
   const otp = Math.floor(1000 + Math.random() * 9000).toString();
-  const expiresAt = Date.now() + 10 * 60 * 1000; // 10 minutes
-
-  otpStore.set(email.toLowerCase().trim(), { otp, expiresAt });
-  console.log(`[Backend EmailService] OTP generated for ${email}: ${otp}`);
-
-  return otp;
+  return Math.floor(100000 + Math.random() * 900000).toString();
 }
 
-export function verifyOTP(email: string, inputOtp: string): { success: boolean; message: string } {
-  // Mode demo fallback sesuai AGENTS.md Bagian 8.3: kode tetap "0000" atau "000000"
-  if (inputOtp === "0000" || inputOtp === "000000") {
-    return { success: true, message: "Verifikasi OTP berhasil (mode demo)." };
-  }
-
-  const normalized = email.toLowerCase().trim();
-  const record = otpStore.get(normalized);
-
-  if (!record) {
-    return { success: false, message: "Kode OTP tidak ditemukan atau belum diminta. Silakan minta kode baru." };
-  }
-
-  if (Date.now() > record.expiresAt) {
-    otpStore.delete(normalized);
-    return { success: false, message: "Kode OTP telah kadaluarsa (berlaku 10 menit). Silakan minta kode baru." };
-  }
-
-  if (record.otp !== inputOtp) {
-    return { success: false, message: "Kode OTP tidak cocok. Periksa kembali email Anda." };
-  }
-
-  otpStore.delete(normalized);
-  return { success: true, message: "Verifikasi OTP berhasil." };
+export function verifyOTP(_email: string, _inputOtp: string): { success: boolean; message: string } {
+  return {
+    success: false,
+    message: "Verifikasi OTP harus dilakukan melalui challenge sesi.",
+  };
 }
 
 /**
@@ -231,11 +205,10 @@ export async function sendOTPEmail(
     } catch (err: any) {
       console.error("[Backend EmailService] ❌ Gagal mengirim email via SMTP:", err?.message || err);
       // Fallback log
-      console.log(`[Backend EmailService] ⚠️ Simpan kode OTP untuk pengujian: ${otp}`);
       return {
-        success: true,
+        success: false,
         delivered: false,
-        message: `Gagal mengirim email secara otomatis (${err?.message || "Kredensial SMTP tidak valid"}). Mode pengujian aktif.`,
+        message: "Layanan email sedang tidak dapat mengirim OTP. Silakan coba lagi.",
       };
     }
   }
