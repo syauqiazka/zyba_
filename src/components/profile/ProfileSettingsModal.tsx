@@ -991,9 +991,7 @@ const PLANS = [
     label: "Bulanan",
     price: "Rp 49.000",
     period: "/ bulan",
-    badge: null,
-    desc: "Fleksibel, batalkan kapan saja",
-    highlight: false,
+    desc: "Fleksibel, bayar manual setiap bulan",
   },
 ] as const;
 
@@ -1009,148 +1007,66 @@ const PLUS_FEATURES = [
 ];
 
 function ZybaPlusTab({ onSuccess }: { onSuccess: (msg: string) => void }) {
-  const [selected] = useState<"monthly">("monthly");
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState("");
+
   const handleCheckout = async () => {
     if (loading) return;
     setLoading(true);
-    setError(null);
-
+    setError("");
     try {
       const res = await fetch("/api/billing/checkout", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ plan: selected }),
+        body: JSON.stringify({ plan: "monthly" }),
       });
-
-      if (!res.ok) {
-        const errData = await res.json().catch(() => ({}));
-        throw new Error(errData.error || "Gagal membuat sesi pembayaran.");
-      }
-
-      const { snapToken, orderId, snapUrl, clientKey } = await res.json();
-
-      // Load Midtrans Snap.js if not already present
-      if (!window.snap) {
-        await new Promise<void>((resolve, reject) => {
-          const script = document.createElement("script");
-          script.src = snapUrl || "https://app.sandbox.midtrans.com/snap/snap.js";
-          script.setAttribute("data-client-key", clientKey || "");
-          script.onload = () => resolve();
-          script.onerror = () => reject(new Error("Gagal memuat gateway Midtrans"));
-          document.body.appendChild(script);
-        });
-      }
-
-      window.snap?.pay(snapToken, {
-        onSuccess: (result) => {
-          console.log("[Payment] Success:", result);
-          window.location.href = `/settings/zyba-plus/success?order_id=${orderId}`;
-        },
-        onPending: (result) => {
-          console.log("[Payment] Pending:", result);
-          window.location.href = `/settings/zyba-plus/success?order_id=${orderId}&status=pending`;
-        },
-        onError: (result) => {
-          console.error("[Payment] Error:", result);
-          setError("Pembayaran gagal atau dibatalkan. Silakan coba lagi.");
-          setLoading(false);
-        },
-        onClose: () => {
-          setLoading(false);
-        },
-      });
-    } catch (err: any) {
-      console.error("[Checkout] Error:", err);
-      setError(err?.message || "Terjadi kesalahan saat memproses checkout.");
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.error || "Gagal membuat pembayaran.");
+      window.location.href = data.redirect;
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Gagal membuat pembayaran.");
       setLoading(false);
     }
   };
 
   return (
     <div className="flex flex-col gap-5">
-      {/* Header */}
-      <div className="bg-gradient-to-br from-orange-100 to-orange-50 rounded-2xl p-6 border border-orange-200 flex flex-col items-center text-center gap-2">
-        <span className="text-4xl">⚡</span>
-        <h3 className="font-display font-extrabold text-lg text-brown-900">Zyba Plus</h3>
-        <p className="text-xs text-brown-700 max-w-xs">
-          Akses penuh ke semua AI model, percakapan tanpa batas, dan analitik wellness mendalam.
-        </p>
-</div>
+      <div className="rounded-2xl border border-orange-200 bg-orange-50 p-6 text-center">
+        <span className="text-4xl">ZYBA</span>
+        <h3 className="mt-2 font-display text-lg font-extrabold text-brown-900">ZYBA Premium</h3>
+        <p className="mx-auto mt-1 max-w-sm text-xs text-brown-700">Akses insight wellness personal dan 60 chat AI per hari.</p>
+      </div>
 
-      {/* Plan cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-        {PLANS.map(plan => (
-          <button
-            key={plan.id}
-            type="button"
-            onClick={() => {}}
-            className={`relative flex flex-col gap-1.5 p-4 rounded-2xl border-2 text-left transition-all ${
-              selected === plan.id
-                ? "border-orange-500 bg-orange-50 shadow-md"
-                : "border-brown-900/10 bg-white hover:border-orange-300"
-            }`}
-          >
-            {plan.badge && (
-              <span className={`absolute -top-2.5 left-1/2 -translate-x-1/2 text-[9px] font-extrabold px-2.5 py-0.5 rounded-full whitespace-nowrap ${
-                plan.highlight ? "bg-orange-500 text-white" : "bg-green-500 text-white"
-              }`}>
-                {plan.badge}
-              </span>
-            )}
+      <div className="grid grid-cols-1 gap-3">
+        {PLANS.map((plan) => (
+          <div key={plan.id} className="rounded-2xl border-2 border-orange-500 bg-orange-50 p-4">
             <div className="flex items-center justify-between">
               <span className="text-xs font-extrabold text-brown-900">{plan.label}</span>
-              {selected === plan.id && <span className="text-orange-500 font-bold text-sm">✓</span>}
+              <span className="text-orange-500">✓</span>
             </div>
-            <div className="flex items-baseline gap-1">
-              <span className="font-display font-extrabold text-xl text-brown-900">{plan.price}</span>
+            <div className="mt-2 flex items-baseline gap-1">
+              <span className="font-display text-xl font-extrabold text-brown-900">{plan.price}</span>
               <span className="text-[10px] text-brown-700">{plan.period}</span>
             </div>
             <span className="text-[10px] text-brown-700">{plan.desc}</span>
-          </button>
+          </div>
         ))}
       </div>
 
-      {error && (
-        <div className="p-3 bg-red-50 border border-red-200 text-red-700 text-xs rounded-xl font-medium">
-          ⚠ {error}
-        </div>
-      )}
+      {error && <div className="rounded-xl border border-red-200 bg-red-50 p-3 text-xs font-medium text-red-700">{error}</div>}
 
-      {/* CTA */}
-      <button
-        type="button"
-        disabled={loading}
-        onClick={handleCheckout}
-        className="w-full py-3.5 rounded-full bg-orange-500 text-white text-sm font-extrabold hover:bg-orange-600 transition-colors shadow-md flex items-center justify-center gap-2 disabled:opacity-50 cursor-pointer"
-      >
-        {loading ? (
-          <>
-            <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-            <span>Menghubungkan ke Midtrans...</span>
-          </>
-        ) : (
-          <span>Mulai dengan paket {PLANS.find(p => p.id === selected)?.label} →</span>
-        )}
+      <button type="button" disabled={loading} onClick={handleCheckout} className="w-full rounded-full bg-orange-500 py-3.5 text-sm font-extrabold text-white shadow-md hover:bg-orange-600 disabled:opacity-50">
+        {loading ? "Menyiapkan pembayaran..." : "Bayar & Upgrade Premium →"}
       </button>
 
-      {/* Features */}
-      <div className="bg-cream/50 rounded-2xl p-5 border border-brown-900/10">
-        <h3 className="text-[11px] font-extrabold uppercase tracking-wider text-brown-700 mb-3">Semua yang kamu dapat</h3>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-1">
-          {PLUS_FEATURES.map(f => (
-            <div key={f} className="flex items-start gap-2 py-1 text-xs text-brown-900">
-              <span className="text-green-500 font-bold mt-0.5 shrink-0">✓</span>
-              <span>{f}</span>
-            </div>
-          ))}
+      <div className="rounded-2xl border border-brown-900/10 bg-cream/50 p-5">
+        <h3 className="mb-3 text-[11px] font-extrabold uppercase tracking-wider text-brown-700">Semua yang kamu dapat</h3>
+        <div className="grid grid-cols-1 gap-1 sm:grid-cols-2">
+          {PLUS_FEATURES.map((feature) => <div key={feature} className="flex items-start gap-2 py-1 text-xs text-brown-900"><span className="mt-0.5 text-green-600">✓</span><span>{feature}</span></div>)}
         </div>
       </div>
 
-      <p className="text-[10px] text-brown-700/60 text-center">
-        Pembayaran aman via Midtrans (GoPay, QRIS, Transfer Bank, Kartu Kredit). Batalkan kapan saja.
-      </p>
+      <p className="text-center text-[10px] text-brown-700/60">Setelah transfer, kirim bukti pembayaran. Premium aktif setelah diverifikasi admin.</p>
     </div>
   );
 }
