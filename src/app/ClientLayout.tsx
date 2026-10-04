@@ -14,6 +14,7 @@ const PROTECTED_PATHS = [
   "/companion",
   "/community",
   "/resources",
+  "/guidebook",
   "/assessment",
   "/settings",
   "/welcome",

@@ -25,6 +25,7 @@ const NAV_ITEMS = [
   { href: "/wellness-journey", label: "Wellness Journey", icon: Heart },
   { href: "/community", label: "Zyba Community", icon: Users },
   { href: "/resources", label: "Resources", icon: BookOpen },
+  { href: "/guidebook", label: "Guidebook", icon: BookOpen },
   { href: "/achievements", label: "Pencapaian", icon: Trophy },
 ];
 
