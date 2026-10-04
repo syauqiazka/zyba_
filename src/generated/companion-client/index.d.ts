@@ -23,6 +23,21 @@ export type Conversation = $Result.DefaultSelection<Prisma.$ConversationPayload>
  * 
  */
 export type Message = $Result.DefaultSelection<Prisma.$MessagePayload>
+/**
+ * Model DailyMessageQuota
+ * 
+ */
+export type DailyMessageQuota = $Result.DefaultSelection<Prisma.$DailyMessageQuotaPayload>
+/**
+ * Model RateLimitBucket
+ * 
+ */
+export type RateLimitBucket = $Result.DefaultSelection<Prisma.$RateLimitBucketPayload>
+/**
+ * Model PremiumInsightCache
+ * 
+ */
+export type PremiumInsightCache = $Result.DefaultSelection<Prisma.$PremiumInsightCachePayload>
 
 /**
  * ##  Prisma Client ʲˢ
@@ -166,6 +181,36 @@ export class PrismaClient<
     * ```
     */
   get message(): Prisma.MessageDelegate<ExtArgs>;
+
+  /**
+   * `prisma.dailyMessageQuota`: Exposes CRUD operations for the **DailyMessageQuota** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more DailyMessageQuotas
+    * const dailyMessageQuotas = await prisma.dailyMessageQuota.findMany()
+    * ```
+    */
+  get dailyMessageQuota(): Prisma.DailyMessageQuotaDelegate<ExtArgs>;
+
+  /**
+   * `prisma.rateLimitBucket`: Exposes CRUD operations for the **RateLimitBucket** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more RateLimitBuckets
+    * const rateLimitBuckets = await prisma.rateLimitBucket.findMany()
+    * ```
+    */
+  get rateLimitBucket(): Prisma.RateLimitBucketDelegate<ExtArgs>;
+
+  /**
+   * `prisma.premiumInsightCache`: Exposes CRUD operations for the **PremiumInsightCache** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more PremiumInsightCaches
+    * const premiumInsightCaches = await prisma.premiumInsightCache.findMany()
+    * ```
+    */
+  get premiumInsightCache(): Prisma.PremiumInsightCacheDelegate<ExtArgs>;
 }
 
 export namespace Prisma {
@@ -608,7 +653,10 @@ export namespace Prisma {
 
   export const ModelName: {
     Conversation: 'Conversation',
-    Message: 'Message'
+    Message: 'Message',
+    DailyMessageQuota: 'DailyMessageQuota',
+    RateLimitBucket: 'RateLimitBucket',
+    PremiumInsightCache: 'PremiumInsightCache'
   };
 
   export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -624,7 +672,7 @@ export namespace Prisma {
 
   export type TypeMap<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, ClientOptions = {}> = {
     meta: {
-      modelProps: "conversation" | "message"
+      modelProps: "conversation" | "message" | "dailyMessageQuota" | "rateLimitBucket" | "premiumInsightCache"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -765,6 +813,216 @@ export namespace Prisma {
           count: {
             args: Prisma.MessageCountArgs<ExtArgs>
             result: $Utils.Optional<MessageCountAggregateOutputType> | number
+          }
+        }
+      }
+      DailyMessageQuota: {
+        payload: Prisma.$DailyMessageQuotaPayload<ExtArgs>
+        fields: Prisma.DailyMessageQuotaFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.DailyMessageQuotaFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DailyMessageQuotaPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.DailyMessageQuotaFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DailyMessageQuotaPayload>
+          }
+          findFirst: {
+            args: Prisma.DailyMessageQuotaFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DailyMessageQuotaPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.DailyMessageQuotaFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DailyMessageQuotaPayload>
+          }
+          findMany: {
+            args: Prisma.DailyMessageQuotaFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DailyMessageQuotaPayload>[]
+          }
+          create: {
+            args: Prisma.DailyMessageQuotaCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DailyMessageQuotaPayload>
+          }
+          createMany: {
+            args: Prisma.DailyMessageQuotaCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.DailyMessageQuotaCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DailyMessageQuotaPayload>[]
+          }
+          delete: {
+            args: Prisma.DailyMessageQuotaDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DailyMessageQuotaPayload>
+          }
+          update: {
+            args: Prisma.DailyMessageQuotaUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DailyMessageQuotaPayload>
+          }
+          deleteMany: {
+            args: Prisma.DailyMessageQuotaDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.DailyMessageQuotaUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.DailyMessageQuotaUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DailyMessageQuotaPayload>
+          }
+          aggregate: {
+            args: Prisma.DailyMessageQuotaAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateDailyMessageQuota>
+          }
+          groupBy: {
+            args: Prisma.DailyMessageQuotaGroupByArgs<ExtArgs>
+            result: $Utils.Optional<DailyMessageQuotaGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.DailyMessageQuotaCountArgs<ExtArgs>
+            result: $Utils.Optional<DailyMessageQuotaCountAggregateOutputType> | number
+          }
+        }
+      }
+      RateLimitBucket: {
+        payload: Prisma.$RateLimitBucketPayload<ExtArgs>
+        fields: Prisma.RateLimitBucketFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.RateLimitBucketFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RateLimitBucketPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.RateLimitBucketFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RateLimitBucketPayload>
+          }
+          findFirst: {
+            args: Prisma.RateLimitBucketFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RateLimitBucketPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.RateLimitBucketFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RateLimitBucketPayload>
+          }
+          findMany: {
+            args: Prisma.RateLimitBucketFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RateLimitBucketPayload>[]
+          }
+          create: {
+            args: Prisma.RateLimitBucketCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RateLimitBucketPayload>
+          }
+          createMany: {
+            args: Prisma.RateLimitBucketCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.RateLimitBucketCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RateLimitBucketPayload>[]
+          }
+          delete: {
+            args: Prisma.RateLimitBucketDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RateLimitBucketPayload>
+          }
+          update: {
+            args: Prisma.RateLimitBucketUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RateLimitBucketPayload>
+          }
+          deleteMany: {
+            args: Prisma.RateLimitBucketDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.RateLimitBucketUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.RateLimitBucketUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RateLimitBucketPayload>
+          }
+          aggregate: {
+            args: Prisma.RateLimitBucketAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateRateLimitBucket>
+          }
+          groupBy: {
+            args: Prisma.RateLimitBucketGroupByArgs<ExtArgs>
+            result: $Utils.Optional<RateLimitBucketGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.RateLimitBucketCountArgs<ExtArgs>
+            result: $Utils.Optional<RateLimitBucketCountAggregateOutputType> | number
+          }
+        }
+      }
+      PremiumInsightCache: {
+        payload: Prisma.$PremiumInsightCachePayload<ExtArgs>
+        fields: Prisma.PremiumInsightCacheFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.PremiumInsightCacheFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PremiumInsightCachePayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.PremiumInsightCacheFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PremiumInsightCachePayload>
+          }
+          findFirst: {
+            args: Prisma.PremiumInsightCacheFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PremiumInsightCachePayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.PremiumInsightCacheFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PremiumInsightCachePayload>
+          }
+          findMany: {
+            args: Prisma.PremiumInsightCacheFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PremiumInsightCachePayload>[]
+          }
+          create: {
+            args: Prisma.PremiumInsightCacheCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PremiumInsightCachePayload>
+          }
+          createMany: {
+            args: Prisma.PremiumInsightCacheCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.PremiumInsightCacheCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PremiumInsightCachePayload>[]
+          }
+          delete: {
+            args: Prisma.PremiumInsightCacheDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PremiumInsightCachePayload>
+          }
+          update: {
+            args: Prisma.PremiumInsightCacheUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PremiumInsightCachePayload>
+          }
+          deleteMany: {
+            args: Prisma.PremiumInsightCacheDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.PremiumInsightCacheUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.PremiumInsightCacheUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PremiumInsightCachePayload>
+          }
+          aggregate: {
+            args: Prisma.PremiumInsightCacheAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregatePremiumInsightCache>
+          }
+          groupBy: {
+            args: Prisma.PremiumInsightCacheGroupByArgs<ExtArgs>
+            result: $Utils.Optional<PremiumInsightCacheGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.PremiumInsightCacheCountArgs<ExtArgs>
+            result: $Utils.Optional<PremiumInsightCacheCountAggregateOutputType> | number
           }
         }
       }
@@ -3007,6 +3265,2756 @@ export namespace Prisma {
 
 
   /**
+   * Model DailyMessageQuota
+   */
+
+  export type AggregateDailyMessageQuota = {
+    _count: DailyMessageQuotaCountAggregateOutputType | null
+    _avg: DailyMessageQuotaAvgAggregateOutputType | null
+    _sum: DailyMessageQuotaSumAggregateOutputType | null
+    _min: DailyMessageQuotaMinAggregateOutputType | null
+    _max: DailyMessageQuotaMaxAggregateOutputType | null
+  }
+
+  export type DailyMessageQuotaAvgAggregateOutputType = {
+    messageCount: number | null
+  }
+
+  export type DailyMessageQuotaSumAggregateOutputType = {
+    messageCount: number | null
+  }
+
+  export type DailyMessageQuotaMinAggregateOutputType = {
+    id: string | null
+    userId: string | null
+    date: string | null
+    messageCount: number | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type DailyMessageQuotaMaxAggregateOutputType = {
+    id: string | null
+    userId: string | null
+    date: string | null
+    messageCount: number | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type DailyMessageQuotaCountAggregateOutputType = {
+    id: number
+    userId: number
+    date: number
+    messageCount: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type DailyMessageQuotaAvgAggregateInputType = {
+    messageCount?: true
+  }
+
+  export type DailyMessageQuotaSumAggregateInputType = {
+    messageCount?: true
+  }
+
+  export type DailyMessageQuotaMinAggregateInputType = {
+    id?: true
+    userId?: true
+    date?: true
+    messageCount?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type DailyMessageQuotaMaxAggregateInputType = {
+    id?: true
+    userId?: true
+    date?: true
+    messageCount?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type DailyMessageQuotaCountAggregateInputType = {
+    id?: true
+    userId?: true
+    date?: true
+    messageCount?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type DailyMessageQuotaAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which DailyMessageQuota to aggregate.
+     */
+    where?: DailyMessageQuotaWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of DailyMessageQuotas to fetch.
+     */
+    orderBy?: DailyMessageQuotaOrderByWithRelationInput | DailyMessageQuotaOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: DailyMessageQuotaWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` DailyMessageQuotas from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` DailyMessageQuotas.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned DailyMessageQuotas
+    **/
+    _count?: true | DailyMessageQuotaCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: DailyMessageQuotaAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: DailyMessageQuotaSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: DailyMessageQuotaMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: DailyMessageQuotaMaxAggregateInputType
+  }
+
+  export type GetDailyMessageQuotaAggregateType<T extends DailyMessageQuotaAggregateArgs> = {
+        [P in keyof T & keyof AggregateDailyMessageQuota]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateDailyMessageQuota[P]>
+      : GetScalarType<T[P], AggregateDailyMessageQuota[P]>
+  }
+
+
+
+
+  export type DailyMessageQuotaGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: DailyMessageQuotaWhereInput
+    orderBy?: DailyMessageQuotaOrderByWithAggregationInput | DailyMessageQuotaOrderByWithAggregationInput[]
+    by: DailyMessageQuotaScalarFieldEnum[] | DailyMessageQuotaScalarFieldEnum
+    having?: DailyMessageQuotaScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: DailyMessageQuotaCountAggregateInputType | true
+    _avg?: DailyMessageQuotaAvgAggregateInputType
+    _sum?: DailyMessageQuotaSumAggregateInputType
+    _min?: DailyMessageQuotaMinAggregateInputType
+    _max?: DailyMessageQuotaMaxAggregateInputType
+  }
+
+  export type DailyMessageQuotaGroupByOutputType = {
+    id: string
+    userId: string
+    date: string
+    messageCount: number
+    createdAt: Date
+    updatedAt: Date
+    _count: DailyMessageQuotaCountAggregateOutputType | null
+    _avg: DailyMessageQuotaAvgAggregateOutputType | null
+    _sum: DailyMessageQuotaSumAggregateOutputType | null
+    _min: DailyMessageQuotaMinAggregateOutputType | null
+    _max: DailyMessageQuotaMaxAggregateOutputType | null
+  }
+
+  type GetDailyMessageQuotaGroupByPayload<T extends DailyMessageQuotaGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<DailyMessageQuotaGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof DailyMessageQuotaGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], DailyMessageQuotaGroupByOutputType[P]>
+            : GetScalarType<T[P], DailyMessageQuotaGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type DailyMessageQuotaSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userId?: boolean
+    date?: boolean
+    messageCount?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }, ExtArgs["result"]["dailyMessageQuota"]>
+
+  export type DailyMessageQuotaSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userId?: boolean
+    date?: boolean
+    messageCount?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }, ExtArgs["result"]["dailyMessageQuota"]>
+
+  export type DailyMessageQuotaSelectScalar = {
+    id?: boolean
+    userId?: boolean
+    date?: boolean
+    messageCount?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+
+  export type $DailyMessageQuotaPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "DailyMessageQuota"
+    objects: {}
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      userId: string
+      date: string
+      messageCount: number
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["dailyMessageQuota"]>
+    composites: {}
+  }
+
+  type DailyMessageQuotaGetPayload<S extends boolean | null | undefined | DailyMessageQuotaDefaultArgs> = $Result.GetResult<Prisma.$DailyMessageQuotaPayload, S>
+
+  type DailyMessageQuotaCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = 
+    Omit<DailyMessageQuotaFindManyArgs, 'select' | 'include' | 'distinct'> & {
+      select?: DailyMessageQuotaCountAggregateInputType | true
+    }
+
+  export interface DailyMessageQuotaDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['DailyMessageQuota'], meta: { name: 'DailyMessageQuota' } }
+    /**
+     * Find zero or one DailyMessageQuota that matches the filter.
+     * @param {DailyMessageQuotaFindUniqueArgs} args - Arguments to find a DailyMessageQuota
+     * @example
+     * // Get one DailyMessageQuota
+     * const dailyMessageQuota = await prisma.dailyMessageQuota.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends DailyMessageQuotaFindUniqueArgs>(args: SelectSubset<T, DailyMessageQuotaFindUniqueArgs<ExtArgs>>): Prisma__DailyMessageQuotaClient<$Result.GetResult<Prisma.$DailyMessageQuotaPayload<ExtArgs>, T, "findUnique"> | null, null, ExtArgs>
+
+    /**
+     * Find one DailyMessageQuota that matches the filter or throw an error with `error.code='P2025'` 
+     * if no matches were found.
+     * @param {DailyMessageQuotaFindUniqueOrThrowArgs} args - Arguments to find a DailyMessageQuota
+     * @example
+     * // Get one DailyMessageQuota
+     * const dailyMessageQuota = await prisma.dailyMessageQuota.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends DailyMessageQuotaFindUniqueOrThrowArgs>(args: SelectSubset<T, DailyMessageQuotaFindUniqueOrThrowArgs<ExtArgs>>): Prisma__DailyMessageQuotaClient<$Result.GetResult<Prisma.$DailyMessageQuotaPayload<ExtArgs>, T, "findUniqueOrThrow">, never, ExtArgs>
+
+    /**
+     * Find the first DailyMessageQuota that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DailyMessageQuotaFindFirstArgs} args - Arguments to find a DailyMessageQuota
+     * @example
+     * // Get one DailyMessageQuota
+     * const dailyMessageQuota = await prisma.dailyMessageQuota.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends DailyMessageQuotaFindFirstArgs>(args?: SelectSubset<T, DailyMessageQuotaFindFirstArgs<ExtArgs>>): Prisma__DailyMessageQuotaClient<$Result.GetResult<Prisma.$DailyMessageQuotaPayload<ExtArgs>, T, "findFirst"> | null, null, ExtArgs>
+
+    /**
+     * Find the first DailyMessageQuota that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DailyMessageQuotaFindFirstOrThrowArgs} args - Arguments to find a DailyMessageQuota
+     * @example
+     * // Get one DailyMessageQuota
+     * const dailyMessageQuota = await prisma.dailyMessageQuota.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends DailyMessageQuotaFindFirstOrThrowArgs>(args?: SelectSubset<T, DailyMessageQuotaFindFirstOrThrowArgs<ExtArgs>>): Prisma__DailyMessageQuotaClient<$Result.GetResult<Prisma.$DailyMessageQuotaPayload<ExtArgs>, T, "findFirstOrThrow">, never, ExtArgs>
+
+    /**
+     * Find zero or more DailyMessageQuotas that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DailyMessageQuotaFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all DailyMessageQuotas
+     * const dailyMessageQuotas = await prisma.dailyMessageQuota.findMany()
+     * 
+     * // Get first 10 DailyMessageQuotas
+     * const dailyMessageQuotas = await prisma.dailyMessageQuota.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const dailyMessageQuotaWithIdOnly = await prisma.dailyMessageQuota.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends DailyMessageQuotaFindManyArgs>(args?: SelectSubset<T, DailyMessageQuotaFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DailyMessageQuotaPayload<ExtArgs>, T, "findMany">>
+
+    /**
+     * Create a DailyMessageQuota.
+     * @param {DailyMessageQuotaCreateArgs} args - Arguments to create a DailyMessageQuota.
+     * @example
+     * // Create one DailyMessageQuota
+     * const DailyMessageQuota = await prisma.dailyMessageQuota.create({
+     *   data: {
+     *     // ... data to create a DailyMessageQuota
+     *   }
+     * })
+     * 
+     */
+    create<T extends DailyMessageQuotaCreateArgs>(args: SelectSubset<T, DailyMessageQuotaCreateArgs<ExtArgs>>): Prisma__DailyMessageQuotaClient<$Result.GetResult<Prisma.$DailyMessageQuotaPayload<ExtArgs>, T, "create">, never, ExtArgs>
+
+    /**
+     * Create many DailyMessageQuotas.
+     * @param {DailyMessageQuotaCreateManyArgs} args - Arguments to create many DailyMessageQuotas.
+     * @example
+     * // Create many DailyMessageQuotas
+     * const dailyMessageQuota = await prisma.dailyMessageQuota.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends DailyMessageQuotaCreateManyArgs>(args?: SelectSubset<T, DailyMessageQuotaCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many DailyMessageQuotas and returns the data saved in the database.
+     * @param {DailyMessageQuotaCreateManyAndReturnArgs} args - Arguments to create many DailyMessageQuotas.
+     * @example
+     * // Create many DailyMessageQuotas
+     * const dailyMessageQuota = await prisma.dailyMessageQuota.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many DailyMessageQuotas and only return the `id`
+     * const dailyMessageQuotaWithIdOnly = await prisma.dailyMessageQuota.createManyAndReturn({ 
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends DailyMessageQuotaCreateManyAndReturnArgs>(args?: SelectSubset<T, DailyMessageQuotaCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DailyMessageQuotaPayload<ExtArgs>, T, "createManyAndReturn">>
+
+    /**
+     * Delete a DailyMessageQuota.
+     * @param {DailyMessageQuotaDeleteArgs} args - Arguments to delete one DailyMessageQuota.
+     * @example
+     * // Delete one DailyMessageQuota
+     * const DailyMessageQuota = await prisma.dailyMessageQuota.delete({
+     *   where: {
+     *     // ... filter to delete one DailyMessageQuota
+     *   }
+     * })
+     * 
+     */
+    delete<T extends DailyMessageQuotaDeleteArgs>(args: SelectSubset<T, DailyMessageQuotaDeleteArgs<ExtArgs>>): Prisma__DailyMessageQuotaClient<$Result.GetResult<Prisma.$DailyMessageQuotaPayload<ExtArgs>, T, "delete">, never, ExtArgs>
+
+    /**
+     * Update one DailyMessageQuota.
+     * @param {DailyMessageQuotaUpdateArgs} args - Arguments to update one DailyMessageQuota.
+     * @example
+     * // Update one DailyMessageQuota
+     * const dailyMessageQuota = await prisma.dailyMessageQuota.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends DailyMessageQuotaUpdateArgs>(args: SelectSubset<T, DailyMessageQuotaUpdateArgs<ExtArgs>>): Prisma__DailyMessageQuotaClient<$Result.GetResult<Prisma.$DailyMessageQuotaPayload<ExtArgs>, T, "update">, never, ExtArgs>
+
+    /**
+     * Delete zero or more DailyMessageQuotas.
+     * @param {DailyMessageQuotaDeleteManyArgs} args - Arguments to filter DailyMessageQuotas to delete.
+     * @example
+     * // Delete a few DailyMessageQuotas
+     * const { count } = await prisma.dailyMessageQuota.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends DailyMessageQuotaDeleteManyArgs>(args?: SelectSubset<T, DailyMessageQuotaDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more DailyMessageQuotas.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DailyMessageQuotaUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many DailyMessageQuotas
+     * const dailyMessageQuota = await prisma.dailyMessageQuota.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends DailyMessageQuotaUpdateManyArgs>(args: SelectSubset<T, DailyMessageQuotaUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one DailyMessageQuota.
+     * @param {DailyMessageQuotaUpsertArgs} args - Arguments to update or create a DailyMessageQuota.
+     * @example
+     * // Update or create a DailyMessageQuota
+     * const dailyMessageQuota = await prisma.dailyMessageQuota.upsert({
+     *   create: {
+     *     // ... data to create a DailyMessageQuota
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the DailyMessageQuota we want to update
+     *   }
+     * })
+     */
+    upsert<T extends DailyMessageQuotaUpsertArgs>(args: SelectSubset<T, DailyMessageQuotaUpsertArgs<ExtArgs>>): Prisma__DailyMessageQuotaClient<$Result.GetResult<Prisma.$DailyMessageQuotaPayload<ExtArgs>, T, "upsert">, never, ExtArgs>
+
+
+    /**
+     * Count the number of DailyMessageQuotas.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DailyMessageQuotaCountArgs} args - Arguments to filter DailyMessageQuotas to count.
+     * @example
+     * // Count the number of DailyMessageQuotas
+     * const count = await prisma.dailyMessageQuota.count({
+     *   where: {
+     *     // ... the filter for the DailyMessageQuotas we want to count
+     *   }
+     * })
+    **/
+    count<T extends DailyMessageQuotaCountArgs>(
+      args?: Subset<T, DailyMessageQuotaCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], DailyMessageQuotaCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a DailyMessageQuota.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DailyMessageQuotaAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends DailyMessageQuotaAggregateArgs>(args: Subset<T, DailyMessageQuotaAggregateArgs>): Prisma.PrismaPromise<GetDailyMessageQuotaAggregateType<T>>
+
+    /**
+     * Group by DailyMessageQuota.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DailyMessageQuotaGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends DailyMessageQuotaGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: DailyMessageQuotaGroupByArgs['orderBy'] }
+        : { orderBy?: DailyMessageQuotaGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, DailyMessageQuotaGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetDailyMessageQuotaGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the DailyMessageQuota model
+   */
+  readonly fields: DailyMessageQuotaFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for DailyMessageQuota.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__DailyMessageQuotaClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the DailyMessageQuota model
+   */ 
+  interface DailyMessageQuotaFieldRefs {
+    readonly id: FieldRef<"DailyMessageQuota", 'String'>
+    readonly userId: FieldRef<"DailyMessageQuota", 'String'>
+    readonly date: FieldRef<"DailyMessageQuota", 'String'>
+    readonly messageCount: FieldRef<"DailyMessageQuota", 'Int'>
+    readonly createdAt: FieldRef<"DailyMessageQuota", 'DateTime'>
+    readonly updatedAt: FieldRef<"DailyMessageQuota", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * DailyMessageQuota findUnique
+   */
+  export type DailyMessageQuotaFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DailyMessageQuota
+     */
+    select?: DailyMessageQuotaSelect<ExtArgs> | null
+    /**
+     * Filter, which DailyMessageQuota to fetch.
+     */
+    where: DailyMessageQuotaWhereUniqueInput
+  }
+
+  /**
+   * DailyMessageQuota findUniqueOrThrow
+   */
+  export type DailyMessageQuotaFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DailyMessageQuota
+     */
+    select?: DailyMessageQuotaSelect<ExtArgs> | null
+    /**
+     * Filter, which DailyMessageQuota to fetch.
+     */
+    where: DailyMessageQuotaWhereUniqueInput
+  }
+
+  /**
+   * DailyMessageQuota findFirst
+   */
+  export type DailyMessageQuotaFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DailyMessageQuota
+     */
+    select?: DailyMessageQuotaSelect<ExtArgs> | null
+    /**
+     * Filter, which DailyMessageQuota to fetch.
+     */
+    where?: DailyMessageQuotaWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of DailyMessageQuotas to fetch.
+     */
+    orderBy?: DailyMessageQuotaOrderByWithRelationInput | DailyMessageQuotaOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for DailyMessageQuotas.
+     */
+    cursor?: DailyMessageQuotaWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` DailyMessageQuotas from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` DailyMessageQuotas.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of DailyMessageQuotas.
+     */
+    distinct?: DailyMessageQuotaScalarFieldEnum | DailyMessageQuotaScalarFieldEnum[]
+  }
+
+  /**
+   * DailyMessageQuota findFirstOrThrow
+   */
+  export type DailyMessageQuotaFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DailyMessageQuota
+     */
+    select?: DailyMessageQuotaSelect<ExtArgs> | null
+    /**
+     * Filter, which DailyMessageQuota to fetch.
+     */
+    where?: DailyMessageQuotaWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of DailyMessageQuotas to fetch.
+     */
+    orderBy?: DailyMessageQuotaOrderByWithRelationInput | DailyMessageQuotaOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for DailyMessageQuotas.
+     */
+    cursor?: DailyMessageQuotaWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` DailyMessageQuotas from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` DailyMessageQuotas.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of DailyMessageQuotas.
+     */
+    distinct?: DailyMessageQuotaScalarFieldEnum | DailyMessageQuotaScalarFieldEnum[]
+  }
+
+  /**
+   * DailyMessageQuota findMany
+   */
+  export type DailyMessageQuotaFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DailyMessageQuota
+     */
+    select?: DailyMessageQuotaSelect<ExtArgs> | null
+    /**
+     * Filter, which DailyMessageQuotas to fetch.
+     */
+    where?: DailyMessageQuotaWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of DailyMessageQuotas to fetch.
+     */
+    orderBy?: DailyMessageQuotaOrderByWithRelationInput | DailyMessageQuotaOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing DailyMessageQuotas.
+     */
+    cursor?: DailyMessageQuotaWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` DailyMessageQuotas from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` DailyMessageQuotas.
+     */
+    skip?: number
+    distinct?: DailyMessageQuotaScalarFieldEnum | DailyMessageQuotaScalarFieldEnum[]
+  }
+
+  /**
+   * DailyMessageQuota create
+   */
+  export type DailyMessageQuotaCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DailyMessageQuota
+     */
+    select?: DailyMessageQuotaSelect<ExtArgs> | null
+    /**
+     * The data needed to create a DailyMessageQuota.
+     */
+    data: XOR<DailyMessageQuotaCreateInput, DailyMessageQuotaUncheckedCreateInput>
+  }
+
+  /**
+   * DailyMessageQuota createMany
+   */
+  export type DailyMessageQuotaCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many DailyMessageQuotas.
+     */
+    data: DailyMessageQuotaCreateManyInput | DailyMessageQuotaCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * DailyMessageQuota createManyAndReturn
+   */
+  export type DailyMessageQuotaCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DailyMessageQuota
+     */
+    select?: DailyMessageQuotaSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * The data used to create many DailyMessageQuotas.
+     */
+    data: DailyMessageQuotaCreateManyInput | DailyMessageQuotaCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * DailyMessageQuota update
+   */
+  export type DailyMessageQuotaUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DailyMessageQuota
+     */
+    select?: DailyMessageQuotaSelect<ExtArgs> | null
+    /**
+     * The data needed to update a DailyMessageQuota.
+     */
+    data: XOR<DailyMessageQuotaUpdateInput, DailyMessageQuotaUncheckedUpdateInput>
+    /**
+     * Choose, which DailyMessageQuota to update.
+     */
+    where: DailyMessageQuotaWhereUniqueInput
+  }
+
+  /**
+   * DailyMessageQuota updateMany
+   */
+  export type DailyMessageQuotaUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update DailyMessageQuotas.
+     */
+    data: XOR<DailyMessageQuotaUpdateManyMutationInput, DailyMessageQuotaUncheckedUpdateManyInput>
+    /**
+     * Filter which DailyMessageQuotas to update
+     */
+    where?: DailyMessageQuotaWhereInput
+  }
+
+  /**
+   * DailyMessageQuota upsert
+   */
+  export type DailyMessageQuotaUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DailyMessageQuota
+     */
+    select?: DailyMessageQuotaSelect<ExtArgs> | null
+    /**
+     * The filter to search for the DailyMessageQuota to update in case it exists.
+     */
+    where: DailyMessageQuotaWhereUniqueInput
+    /**
+     * In case the DailyMessageQuota found by the `where` argument doesn't exist, create a new DailyMessageQuota with this data.
+     */
+    create: XOR<DailyMessageQuotaCreateInput, DailyMessageQuotaUncheckedCreateInput>
+    /**
+     * In case the DailyMessageQuota was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<DailyMessageQuotaUpdateInput, DailyMessageQuotaUncheckedUpdateInput>
+  }
+
+  /**
+   * DailyMessageQuota delete
+   */
+  export type DailyMessageQuotaDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DailyMessageQuota
+     */
+    select?: DailyMessageQuotaSelect<ExtArgs> | null
+    /**
+     * Filter which DailyMessageQuota to delete.
+     */
+    where: DailyMessageQuotaWhereUniqueInput
+  }
+
+  /**
+   * DailyMessageQuota deleteMany
+   */
+  export type DailyMessageQuotaDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which DailyMessageQuotas to delete
+     */
+    where?: DailyMessageQuotaWhereInput
+  }
+
+  /**
+   * DailyMessageQuota without action
+   */
+  export type DailyMessageQuotaDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DailyMessageQuota
+     */
+    select?: DailyMessageQuotaSelect<ExtArgs> | null
+  }
+
+
+  /**
+   * Model RateLimitBucket
+   */
+
+  export type AggregateRateLimitBucket = {
+    _count: RateLimitBucketCountAggregateOutputType | null
+    _avg: RateLimitBucketAvgAggregateOutputType | null
+    _sum: RateLimitBucketSumAggregateOutputType | null
+    _min: RateLimitBucketMinAggregateOutputType | null
+    _max: RateLimitBucketMaxAggregateOutputType | null
+  }
+
+  export type RateLimitBucketAvgAggregateOutputType = {
+    windowMs: number | null
+    hitCount: number | null
+  }
+
+  export type RateLimitBucketSumAggregateOutputType = {
+    windowMs: number | null
+    hitCount: number | null
+  }
+
+  export type RateLimitBucketMinAggregateOutputType = {
+    id: string | null
+    key: string | null
+    windowStart: Date | null
+    windowMs: number | null
+    hitCount: number | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type RateLimitBucketMaxAggregateOutputType = {
+    id: string | null
+    key: string | null
+    windowStart: Date | null
+    windowMs: number | null
+    hitCount: number | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type RateLimitBucketCountAggregateOutputType = {
+    id: number
+    key: number
+    windowStart: number
+    windowMs: number
+    hitCount: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type RateLimitBucketAvgAggregateInputType = {
+    windowMs?: true
+    hitCount?: true
+  }
+
+  export type RateLimitBucketSumAggregateInputType = {
+    windowMs?: true
+    hitCount?: true
+  }
+
+  export type RateLimitBucketMinAggregateInputType = {
+    id?: true
+    key?: true
+    windowStart?: true
+    windowMs?: true
+    hitCount?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type RateLimitBucketMaxAggregateInputType = {
+    id?: true
+    key?: true
+    windowStart?: true
+    windowMs?: true
+    hitCount?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type RateLimitBucketCountAggregateInputType = {
+    id?: true
+    key?: true
+    windowStart?: true
+    windowMs?: true
+    hitCount?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type RateLimitBucketAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which RateLimitBucket to aggregate.
+     */
+    where?: RateLimitBucketWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of RateLimitBuckets to fetch.
+     */
+    orderBy?: RateLimitBucketOrderByWithRelationInput | RateLimitBucketOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: RateLimitBucketWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` RateLimitBuckets from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` RateLimitBuckets.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned RateLimitBuckets
+    **/
+    _count?: true | RateLimitBucketCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: RateLimitBucketAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: RateLimitBucketSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: RateLimitBucketMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: RateLimitBucketMaxAggregateInputType
+  }
+
+  export type GetRateLimitBucketAggregateType<T extends RateLimitBucketAggregateArgs> = {
+        [P in keyof T & keyof AggregateRateLimitBucket]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateRateLimitBucket[P]>
+      : GetScalarType<T[P], AggregateRateLimitBucket[P]>
+  }
+
+
+
+
+  export type RateLimitBucketGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: RateLimitBucketWhereInput
+    orderBy?: RateLimitBucketOrderByWithAggregationInput | RateLimitBucketOrderByWithAggregationInput[]
+    by: RateLimitBucketScalarFieldEnum[] | RateLimitBucketScalarFieldEnum
+    having?: RateLimitBucketScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: RateLimitBucketCountAggregateInputType | true
+    _avg?: RateLimitBucketAvgAggregateInputType
+    _sum?: RateLimitBucketSumAggregateInputType
+    _min?: RateLimitBucketMinAggregateInputType
+    _max?: RateLimitBucketMaxAggregateInputType
+  }
+
+  export type RateLimitBucketGroupByOutputType = {
+    id: string
+    key: string
+    windowStart: Date
+    windowMs: number
+    hitCount: number
+    createdAt: Date
+    updatedAt: Date
+    _count: RateLimitBucketCountAggregateOutputType | null
+    _avg: RateLimitBucketAvgAggregateOutputType | null
+    _sum: RateLimitBucketSumAggregateOutputType | null
+    _min: RateLimitBucketMinAggregateOutputType | null
+    _max: RateLimitBucketMaxAggregateOutputType | null
+  }
+
+  type GetRateLimitBucketGroupByPayload<T extends RateLimitBucketGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<RateLimitBucketGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof RateLimitBucketGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], RateLimitBucketGroupByOutputType[P]>
+            : GetScalarType<T[P], RateLimitBucketGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type RateLimitBucketSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    key?: boolean
+    windowStart?: boolean
+    windowMs?: boolean
+    hitCount?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }, ExtArgs["result"]["rateLimitBucket"]>
+
+  export type RateLimitBucketSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    key?: boolean
+    windowStart?: boolean
+    windowMs?: boolean
+    hitCount?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }, ExtArgs["result"]["rateLimitBucket"]>
+
+  export type RateLimitBucketSelectScalar = {
+    id?: boolean
+    key?: boolean
+    windowStart?: boolean
+    windowMs?: boolean
+    hitCount?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+
+  export type $RateLimitBucketPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "RateLimitBucket"
+    objects: {}
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      key: string
+      windowStart: Date
+      windowMs: number
+      hitCount: number
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["rateLimitBucket"]>
+    composites: {}
+  }
+
+  type RateLimitBucketGetPayload<S extends boolean | null | undefined | RateLimitBucketDefaultArgs> = $Result.GetResult<Prisma.$RateLimitBucketPayload, S>
+
+  type RateLimitBucketCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = 
+    Omit<RateLimitBucketFindManyArgs, 'select' | 'include' | 'distinct'> & {
+      select?: RateLimitBucketCountAggregateInputType | true
+    }
+
+  export interface RateLimitBucketDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['RateLimitBucket'], meta: { name: 'RateLimitBucket' } }
+    /**
+     * Find zero or one RateLimitBucket that matches the filter.
+     * @param {RateLimitBucketFindUniqueArgs} args - Arguments to find a RateLimitBucket
+     * @example
+     * // Get one RateLimitBucket
+     * const rateLimitBucket = await prisma.rateLimitBucket.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends RateLimitBucketFindUniqueArgs>(args: SelectSubset<T, RateLimitBucketFindUniqueArgs<ExtArgs>>): Prisma__RateLimitBucketClient<$Result.GetResult<Prisma.$RateLimitBucketPayload<ExtArgs>, T, "findUnique"> | null, null, ExtArgs>
+
+    /**
+     * Find one RateLimitBucket that matches the filter or throw an error with `error.code='P2025'` 
+     * if no matches were found.
+     * @param {RateLimitBucketFindUniqueOrThrowArgs} args - Arguments to find a RateLimitBucket
+     * @example
+     * // Get one RateLimitBucket
+     * const rateLimitBucket = await prisma.rateLimitBucket.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends RateLimitBucketFindUniqueOrThrowArgs>(args: SelectSubset<T, RateLimitBucketFindUniqueOrThrowArgs<ExtArgs>>): Prisma__RateLimitBucketClient<$Result.GetResult<Prisma.$RateLimitBucketPayload<ExtArgs>, T, "findUniqueOrThrow">, never, ExtArgs>
+
+    /**
+     * Find the first RateLimitBucket that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {RateLimitBucketFindFirstArgs} args - Arguments to find a RateLimitBucket
+     * @example
+     * // Get one RateLimitBucket
+     * const rateLimitBucket = await prisma.rateLimitBucket.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends RateLimitBucketFindFirstArgs>(args?: SelectSubset<T, RateLimitBucketFindFirstArgs<ExtArgs>>): Prisma__RateLimitBucketClient<$Result.GetResult<Prisma.$RateLimitBucketPayload<ExtArgs>, T, "findFirst"> | null, null, ExtArgs>
+
+    /**
+     * Find the first RateLimitBucket that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {RateLimitBucketFindFirstOrThrowArgs} args - Arguments to find a RateLimitBucket
+     * @example
+     * // Get one RateLimitBucket
+     * const rateLimitBucket = await prisma.rateLimitBucket.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends RateLimitBucketFindFirstOrThrowArgs>(args?: SelectSubset<T, RateLimitBucketFindFirstOrThrowArgs<ExtArgs>>): Prisma__RateLimitBucketClient<$Result.GetResult<Prisma.$RateLimitBucketPayload<ExtArgs>, T, "findFirstOrThrow">, never, ExtArgs>
+
+    /**
+     * Find zero or more RateLimitBuckets that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {RateLimitBucketFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all RateLimitBuckets
+     * const rateLimitBuckets = await prisma.rateLimitBucket.findMany()
+     * 
+     * // Get first 10 RateLimitBuckets
+     * const rateLimitBuckets = await prisma.rateLimitBucket.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const rateLimitBucketWithIdOnly = await prisma.rateLimitBucket.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends RateLimitBucketFindManyArgs>(args?: SelectSubset<T, RateLimitBucketFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$RateLimitBucketPayload<ExtArgs>, T, "findMany">>
+
+    /**
+     * Create a RateLimitBucket.
+     * @param {RateLimitBucketCreateArgs} args - Arguments to create a RateLimitBucket.
+     * @example
+     * // Create one RateLimitBucket
+     * const RateLimitBucket = await prisma.rateLimitBucket.create({
+     *   data: {
+     *     // ... data to create a RateLimitBucket
+     *   }
+     * })
+     * 
+     */
+    create<T extends RateLimitBucketCreateArgs>(args: SelectSubset<T, RateLimitBucketCreateArgs<ExtArgs>>): Prisma__RateLimitBucketClient<$Result.GetResult<Prisma.$RateLimitBucketPayload<ExtArgs>, T, "create">, never, ExtArgs>
+
+    /**
+     * Create many RateLimitBuckets.
+     * @param {RateLimitBucketCreateManyArgs} args - Arguments to create many RateLimitBuckets.
+     * @example
+     * // Create many RateLimitBuckets
+     * const rateLimitBucket = await prisma.rateLimitBucket.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends RateLimitBucketCreateManyArgs>(args?: SelectSubset<T, RateLimitBucketCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many RateLimitBuckets and returns the data saved in the database.
+     * @param {RateLimitBucketCreateManyAndReturnArgs} args - Arguments to create many RateLimitBuckets.
+     * @example
+     * // Create many RateLimitBuckets
+     * const rateLimitBucket = await prisma.rateLimitBucket.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many RateLimitBuckets and only return the `id`
+     * const rateLimitBucketWithIdOnly = await prisma.rateLimitBucket.createManyAndReturn({ 
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends RateLimitBucketCreateManyAndReturnArgs>(args?: SelectSubset<T, RateLimitBucketCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$RateLimitBucketPayload<ExtArgs>, T, "createManyAndReturn">>
+
+    /**
+     * Delete a RateLimitBucket.
+     * @param {RateLimitBucketDeleteArgs} args - Arguments to delete one RateLimitBucket.
+     * @example
+     * // Delete one RateLimitBucket
+     * const RateLimitBucket = await prisma.rateLimitBucket.delete({
+     *   where: {
+     *     // ... filter to delete one RateLimitBucket
+     *   }
+     * })
+     * 
+     */
+    delete<T extends RateLimitBucketDeleteArgs>(args: SelectSubset<T, RateLimitBucketDeleteArgs<ExtArgs>>): Prisma__RateLimitBucketClient<$Result.GetResult<Prisma.$RateLimitBucketPayload<ExtArgs>, T, "delete">, never, ExtArgs>
+
+    /**
+     * Update one RateLimitBucket.
+     * @param {RateLimitBucketUpdateArgs} args - Arguments to update one RateLimitBucket.
+     * @example
+     * // Update one RateLimitBucket
+     * const rateLimitBucket = await prisma.rateLimitBucket.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends RateLimitBucketUpdateArgs>(args: SelectSubset<T, RateLimitBucketUpdateArgs<ExtArgs>>): Prisma__RateLimitBucketClient<$Result.GetResult<Prisma.$RateLimitBucketPayload<ExtArgs>, T, "update">, never, ExtArgs>
+
+    /**
+     * Delete zero or more RateLimitBuckets.
+     * @param {RateLimitBucketDeleteManyArgs} args - Arguments to filter RateLimitBuckets to delete.
+     * @example
+     * // Delete a few RateLimitBuckets
+     * const { count } = await prisma.rateLimitBucket.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends RateLimitBucketDeleteManyArgs>(args?: SelectSubset<T, RateLimitBucketDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more RateLimitBuckets.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {RateLimitBucketUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many RateLimitBuckets
+     * const rateLimitBucket = await prisma.rateLimitBucket.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends RateLimitBucketUpdateManyArgs>(args: SelectSubset<T, RateLimitBucketUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one RateLimitBucket.
+     * @param {RateLimitBucketUpsertArgs} args - Arguments to update or create a RateLimitBucket.
+     * @example
+     * // Update or create a RateLimitBucket
+     * const rateLimitBucket = await prisma.rateLimitBucket.upsert({
+     *   create: {
+     *     // ... data to create a RateLimitBucket
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the RateLimitBucket we want to update
+     *   }
+     * })
+     */
+    upsert<T extends RateLimitBucketUpsertArgs>(args: SelectSubset<T, RateLimitBucketUpsertArgs<ExtArgs>>): Prisma__RateLimitBucketClient<$Result.GetResult<Prisma.$RateLimitBucketPayload<ExtArgs>, T, "upsert">, never, ExtArgs>
+
+
+    /**
+     * Count the number of RateLimitBuckets.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {RateLimitBucketCountArgs} args - Arguments to filter RateLimitBuckets to count.
+     * @example
+     * // Count the number of RateLimitBuckets
+     * const count = await prisma.rateLimitBucket.count({
+     *   where: {
+     *     // ... the filter for the RateLimitBuckets we want to count
+     *   }
+     * })
+    **/
+    count<T extends RateLimitBucketCountArgs>(
+      args?: Subset<T, RateLimitBucketCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], RateLimitBucketCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a RateLimitBucket.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {RateLimitBucketAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends RateLimitBucketAggregateArgs>(args: Subset<T, RateLimitBucketAggregateArgs>): Prisma.PrismaPromise<GetRateLimitBucketAggregateType<T>>
+
+    /**
+     * Group by RateLimitBucket.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {RateLimitBucketGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends RateLimitBucketGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: RateLimitBucketGroupByArgs['orderBy'] }
+        : { orderBy?: RateLimitBucketGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, RateLimitBucketGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetRateLimitBucketGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the RateLimitBucket model
+   */
+  readonly fields: RateLimitBucketFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for RateLimitBucket.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__RateLimitBucketClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the RateLimitBucket model
+   */ 
+  interface RateLimitBucketFieldRefs {
+    readonly id: FieldRef<"RateLimitBucket", 'String'>
+    readonly key: FieldRef<"RateLimitBucket", 'String'>
+    readonly windowStart: FieldRef<"RateLimitBucket", 'DateTime'>
+    readonly windowMs: FieldRef<"RateLimitBucket", 'Int'>
+    readonly hitCount: FieldRef<"RateLimitBucket", 'Int'>
+    readonly createdAt: FieldRef<"RateLimitBucket", 'DateTime'>
+    readonly updatedAt: FieldRef<"RateLimitBucket", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * RateLimitBucket findUnique
+   */
+  export type RateLimitBucketFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the RateLimitBucket
+     */
+    select?: RateLimitBucketSelect<ExtArgs> | null
+    /**
+     * Filter, which RateLimitBucket to fetch.
+     */
+    where: RateLimitBucketWhereUniqueInput
+  }
+
+  /**
+   * RateLimitBucket findUniqueOrThrow
+   */
+  export type RateLimitBucketFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the RateLimitBucket
+     */
+    select?: RateLimitBucketSelect<ExtArgs> | null
+    /**
+     * Filter, which RateLimitBucket to fetch.
+     */
+    where: RateLimitBucketWhereUniqueInput
+  }
+
+  /**
+   * RateLimitBucket findFirst
+   */
+  export type RateLimitBucketFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the RateLimitBucket
+     */
+    select?: RateLimitBucketSelect<ExtArgs> | null
+    /**
+     * Filter, which RateLimitBucket to fetch.
+     */
+    where?: RateLimitBucketWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of RateLimitBuckets to fetch.
+     */
+    orderBy?: RateLimitBucketOrderByWithRelationInput | RateLimitBucketOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for RateLimitBuckets.
+     */
+    cursor?: RateLimitBucketWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` RateLimitBuckets from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` RateLimitBuckets.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of RateLimitBuckets.
+     */
+    distinct?: RateLimitBucketScalarFieldEnum | RateLimitBucketScalarFieldEnum[]
+  }
+
+  /**
+   * RateLimitBucket findFirstOrThrow
+   */
+  export type RateLimitBucketFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the RateLimitBucket
+     */
+    select?: RateLimitBucketSelect<ExtArgs> | null
+    /**
+     * Filter, which RateLimitBucket to fetch.
+     */
+    where?: RateLimitBucketWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of RateLimitBuckets to fetch.
+     */
+    orderBy?: RateLimitBucketOrderByWithRelationInput | RateLimitBucketOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for RateLimitBuckets.
+     */
+    cursor?: RateLimitBucketWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` RateLimitBuckets from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` RateLimitBuckets.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of RateLimitBuckets.
+     */
+    distinct?: RateLimitBucketScalarFieldEnum | RateLimitBucketScalarFieldEnum[]
+  }
+
+  /**
+   * RateLimitBucket findMany
+   */
+  export type RateLimitBucketFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the RateLimitBucket
+     */
+    select?: RateLimitBucketSelect<ExtArgs> | null
+    /**
+     * Filter, which RateLimitBuckets to fetch.
+     */
+    where?: RateLimitBucketWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of RateLimitBuckets to fetch.
+     */
+    orderBy?: RateLimitBucketOrderByWithRelationInput | RateLimitBucketOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing RateLimitBuckets.
+     */
+    cursor?: RateLimitBucketWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` RateLimitBuckets from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` RateLimitBuckets.
+     */
+    skip?: number
+    distinct?: RateLimitBucketScalarFieldEnum | RateLimitBucketScalarFieldEnum[]
+  }
+
+  /**
+   * RateLimitBucket create
+   */
+  export type RateLimitBucketCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the RateLimitBucket
+     */
+    select?: RateLimitBucketSelect<ExtArgs> | null
+    /**
+     * The data needed to create a RateLimitBucket.
+     */
+    data: XOR<RateLimitBucketCreateInput, RateLimitBucketUncheckedCreateInput>
+  }
+
+  /**
+   * RateLimitBucket createMany
+   */
+  export type RateLimitBucketCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many RateLimitBuckets.
+     */
+    data: RateLimitBucketCreateManyInput | RateLimitBucketCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * RateLimitBucket createManyAndReturn
+   */
+  export type RateLimitBucketCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the RateLimitBucket
+     */
+    select?: RateLimitBucketSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * The data used to create many RateLimitBuckets.
+     */
+    data: RateLimitBucketCreateManyInput | RateLimitBucketCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * RateLimitBucket update
+   */
+  export type RateLimitBucketUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the RateLimitBucket
+     */
+    select?: RateLimitBucketSelect<ExtArgs> | null
+    /**
+     * The data needed to update a RateLimitBucket.
+     */
+    data: XOR<RateLimitBucketUpdateInput, RateLimitBucketUncheckedUpdateInput>
+    /**
+     * Choose, which RateLimitBucket to update.
+     */
+    where: RateLimitBucketWhereUniqueInput
+  }
+
+  /**
+   * RateLimitBucket updateMany
+   */
+  export type RateLimitBucketUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update RateLimitBuckets.
+     */
+    data: XOR<RateLimitBucketUpdateManyMutationInput, RateLimitBucketUncheckedUpdateManyInput>
+    /**
+     * Filter which RateLimitBuckets to update
+     */
+    where?: RateLimitBucketWhereInput
+  }
+
+  /**
+   * RateLimitBucket upsert
+   */
+  export type RateLimitBucketUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the RateLimitBucket
+     */
+    select?: RateLimitBucketSelect<ExtArgs> | null
+    /**
+     * The filter to search for the RateLimitBucket to update in case it exists.
+     */
+    where: RateLimitBucketWhereUniqueInput
+    /**
+     * In case the RateLimitBucket found by the `where` argument doesn't exist, create a new RateLimitBucket with this data.
+     */
+    create: XOR<RateLimitBucketCreateInput, RateLimitBucketUncheckedCreateInput>
+    /**
+     * In case the RateLimitBucket was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<RateLimitBucketUpdateInput, RateLimitBucketUncheckedUpdateInput>
+  }
+
+  /**
+   * RateLimitBucket delete
+   */
+  export type RateLimitBucketDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the RateLimitBucket
+     */
+    select?: RateLimitBucketSelect<ExtArgs> | null
+    /**
+     * Filter which RateLimitBucket to delete.
+     */
+    where: RateLimitBucketWhereUniqueInput
+  }
+
+  /**
+   * RateLimitBucket deleteMany
+   */
+  export type RateLimitBucketDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which RateLimitBuckets to delete
+     */
+    where?: RateLimitBucketWhereInput
+  }
+
+  /**
+   * RateLimitBucket without action
+   */
+  export type RateLimitBucketDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the RateLimitBucket
+     */
+    select?: RateLimitBucketSelect<ExtArgs> | null
+  }
+
+
+  /**
+   * Model PremiumInsightCache
+   */
+
+  export type AggregatePremiumInsightCache = {
+    _count: PremiumInsightCacheCountAggregateOutputType | null
+    _min: PremiumInsightCacheMinAggregateOutputType | null
+    _max: PremiumInsightCacheMaxAggregateOutputType | null
+  }
+
+  export type PremiumInsightCacheMinAggregateOutputType = {
+    id: string | null
+    userId: string | null
+    expiresAt: Date | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type PremiumInsightCacheMaxAggregateOutputType = {
+    id: string | null
+    userId: string | null
+    expiresAt: Date | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type PremiumInsightCacheCountAggregateOutputType = {
+    id: number
+    userId: number
+    expiresAt: number
+    data: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type PremiumInsightCacheMinAggregateInputType = {
+    id?: true
+    userId?: true
+    expiresAt?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type PremiumInsightCacheMaxAggregateInputType = {
+    id?: true
+    userId?: true
+    expiresAt?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type PremiumInsightCacheCountAggregateInputType = {
+    id?: true
+    userId?: true
+    expiresAt?: true
+    data?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type PremiumInsightCacheAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which PremiumInsightCache to aggregate.
+     */
+    where?: PremiumInsightCacheWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of PremiumInsightCaches to fetch.
+     */
+    orderBy?: PremiumInsightCacheOrderByWithRelationInput | PremiumInsightCacheOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: PremiumInsightCacheWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` PremiumInsightCaches from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` PremiumInsightCaches.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned PremiumInsightCaches
+    **/
+    _count?: true | PremiumInsightCacheCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: PremiumInsightCacheMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: PremiumInsightCacheMaxAggregateInputType
+  }
+
+  export type GetPremiumInsightCacheAggregateType<T extends PremiumInsightCacheAggregateArgs> = {
+        [P in keyof T & keyof AggregatePremiumInsightCache]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregatePremiumInsightCache[P]>
+      : GetScalarType<T[P], AggregatePremiumInsightCache[P]>
+  }
+
+
+
+
+  export type PremiumInsightCacheGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: PremiumInsightCacheWhereInput
+    orderBy?: PremiumInsightCacheOrderByWithAggregationInput | PremiumInsightCacheOrderByWithAggregationInput[]
+    by: PremiumInsightCacheScalarFieldEnum[] | PremiumInsightCacheScalarFieldEnum
+    having?: PremiumInsightCacheScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: PremiumInsightCacheCountAggregateInputType | true
+    _min?: PremiumInsightCacheMinAggregateInputType
+    _max?: PremiumInsightCacheMaxAggregateInputType
+  }
+
+  export type PremiumInsightCacheGroupByOutputType = {
+    id: string
+    userId: string
+    expiresAt: Date
+    data: JsonValue
+    createdAt: Date
+    updatedAt: Date
+    _count: PremiumInsightCacheCountAggregateOutputType | null
+    _min: PremiumInsightCacheMinAggregateOutputType | null
+    _max: PremiumInsightCacheMaxAggregateOutputType | null
+  }
+
+  type GetPremiumInsightCacheGroupByPayload<T extends PremiumInsightCacheGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<PremiumInsightCacheGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof PremiumInsightCacheGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], PremiumInsightCacheGroupByOutputType[P]>
+            : GetScalarType<T[P], PremiumInsightCacheGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type PremiumInsightCacheSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userId?: boolean
+    expiresAt?: boolean
+    data?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }, ExtArgs["result"]["premiumInsightCache"]>
+
+  export type PremiumInsightCacheSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userId?: boolean
+    expiresAt?: boolean
+    data?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }, ExtArgs["result"]["premiumInsightCache"]>
+
+  export type PremiumInsightCacheSelectScalar = {
+    id?: boolean
+    userId?: boolean
+    expiresAt?: boolean
+    data?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+
+  export type $PremiumInsightCachePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "PremiumInsightCache"
+    objects: {}
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      userId: string
+      expiresAt: Date
+      data: Prisma.JsonValue
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["premiumInsightCache"]>
+    composites: {}
+  }
+
+  type PremiumInsightCacheGetPayload<S extends boolean | null | undefined | PremiumInsightCacheDefaultArgs> = $Result.GetResult<Prisma.$PremiumInsightCachePayload, S>
+
+  type PremiumInsightCacheCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = 
+    Omit<PremiumInsightCacheFindManyArgs, 'select' | 'include' | 'distinct'> & {
+      select?: PremiumInsightCacheCountAggregateInputType | true
+    }
+
+  export interface PremiumInsightCacheDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['PremiumInsightCache'], meta: { name: 'PremiumInsightCache' } }
+    /**
+     * Find zero or one PremiumInsightCache that matches the filter.
+     * @param {PremiumInsightCacheFindUniqueArgs} args - Arguments to find a PremiumInsightCache
+     * @example
+     * // Get one PremiumInsightCache
+     * const premiumInsightCache = await prisma.premiumInsightCache.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends PremiumInsightCacheFindUniqueArgs>(args: SelectSubset<T, PremiumInsightCacheFindUniqueArgs<ExtArgs>>): Prisma__PremiumInsightCacheClient<$Result.GetResult<Prisma.$PremiumInsightCachePayload<ExtArgs>, T, "findUnique"> | null, null, ExtArgs>
+
+    /**
+     * Find one PremiumInsightCache that matches the filter or throw an error with `error.code='P2025'` 
+     * if no matches were found.
+     * @param {PremiumInsightCacheFindUniqueOrThrowArgs} args - Arguments to find a PremiumInsightCache
+     * @example
+     * // Get one PremiumInsightCache
+     * const premiumInsightCache = await prisma.premiumInsightCache.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends PremiumInsightCacheFindUniqueOrThrowArgs>(args: SelectSubset<T, PremiumInsightCacheFindUniqueOrThrowArgs<ExtArgs>>): Prisma__PremiumInsightCacheClient<$Result.GetResult<Prisma.$PremiumInsightCachePayload<ExtArgs>, T, "findUniqueOrThrow">, never, ExtArgs>
+
+    /**
+     * Find the first PremiumInsightCache that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PremiumInsightCacheFindFirstArgs} args - Arguments to find a PremiumInsightCache
+     * @example
+     * // Get one PremiumInsightCache
+     * const premiumInsightCache = await prisma.premiumInsightCache.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends PremiumInsightCacheFindFirstArgs>(args?: SelectSubset<T, PremiumInsightCacheFindFirstArgs<ExtArgs>>): Prisma__PremiumInsightCacheClient<$Result.GetResult<Prisma.$PremiumInsightCachePayload<ExtArgs>, T, "findFirst"> | null, null, ExtArgs>
+
+    /**
+     * Find the first PremiumInsightCache that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PremiumInsightCacheFindFirstOrThrowArgs} args - Arguments to find a PremiumInsightCache
+     * @example
+     * // Get one PremiumInsightCache
+     * const premiumInsightCache = await prisma.premiumInsightCache.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends PremiumInsightCacheFindFirstOrThrowArgs>(args?: SelectSubset<T, PremiumInsightCacheFindFirstOrThrowArgs<ExtArgs>>): Prisma__PremiumInsightCacheClient<$Result.GetResult<Prisma.$PremiumInsightCachePayload<ExtArgs>, T, "findFirstOrThrow">, never, ExtArgs>
+
+    /**
+     * Find zero or more PremiumInsightCaches that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PremiumInsightCacheFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all PremiumInsightCaches
+     * const premiumInsightCaches = await prisma.premiumInsightCache.findMany()
+     * 
+     * // Get first 10 PremiumInsightCaches
+     * const premiumInsightCaches = await prisma.premiumInsightCache.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const premiumInsightCacheWithIdOnly = await prisma.premiumInsightCache.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends PremiumInsightCacheFindManyArgs>(args?: SelectSubset<T, PremiumInsightCacheFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PremiumInsightCachePayload<ExtArgs>, T, "findMany">>
+
+    /**
+     * Create a PremiumInsightCache.
+     * @param {PremiumInsightCacheCreateArgs} args - Arguments to create a PremiumInsightCache.
+     * @example
+     * // Create one PremiumInsightCache
+     * const PremiumInsightCache = await prisma.premiumInsightCache.create({
+     *   data: {
+     *     // ... data to create a PremiumInsightCache
+     *   }
+     * })
+     * 
+     */
+    create<T extends PremiumInsightCacheCreateArgs>(args: SelectSubset<T, PremiumInsightCacheCreateArgs<ExtArgs>>): Prisma__PremiumInsightCacheClient<$Result.GetResult<Prisma.$PremiumInsightCachePayload<ExtArgs>, T, "create">, never, ExtArgs>
+
+    /**
+     * Create many PremiumInsightCaches.
+     * @param {PremiumInsightCacheCreateManyArgs} args - Arguments to create many PremiumInsightCaches.
+     * @example
+     * // Create many PremiumInsightCaches
+     * const premiumInsightCache = await prisma.premiumInsightCache.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends PremiumInsightCacheCreateManyArgs>(args?: SelectSubset<T, PremiumInsightCacheCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many PremiumInsightCaches and returns the data saved in the database.
+     * @param {PremiumInsightCacheCreateManyAndReturnArgs} args - Arguments to create many PremiumInsightCaches.
+     * @example
+     * // Create many PremiumInsightCaches
+     * const premiumInsightCache = await prisma.premiumInsightCache.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many PremiumInsightCaches and only return the `id`
+     * const premiumInsightCacheWithIdOnly = await prisma.premiumInsightCache.createManyAndReturn({ 
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends PremiumInsightCacheCreateManyAndReturnArgs>(args?: SelectSubset<T, PremiumInsightCacheCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PremiumInsightCachePayload<ExtArgs>, T, "createManyAndReturn">>
+
+    /**
+     * Delete a PremiumInsightCache.
+     * @param {PremiumInsightCacheDeleteArgs} args - Arguments to delete one PremiumInsightCache.
+     * @example
+     * // Delete one PremiumInsightCache
+     * const PremiumInsightCache = await prisma.premiumInsightCache.delete({
+     *   where: {
+     *     // ... filter to delete one PremiumInsightCache
+     *   }
+     * })
+     * 
+     */
+    delete<T extends PremiumInsightCacheDeleteArgs>(args: SelectSubset<T, PremiumInsightCacheDeleteArgs<ExtArgs>>): Prisma__PremiumInsightCacheClient<$Result.GetResult<Prisma.$PremiumInsightCachePayload<ExtArgs>, T, "delete">, never, ExtArgs>
+
+    /**
+     * Update one PremiumInsightCache.
+     * @param {PremiumInsightCacheUpdateArgs} args - Arguments to update one PremiumInsightCache.
+     * @example
+     * // Update one PremiumInsightCache
+     * const premiumInsightCache = await prisma.premiumInsightCache.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends PremiumInsightCacheUpdateArgs>(args: SelectSubset<T, PremiumInsightCacheUpdateArgs<ExtArgs>>): Prisma__PremiumInsightCacheClient<$Result.GetResult<Prisma.$PremiumInsightCachePayload<ExtArgs>, T, "update">, never, ExtArgs>
+
+    /**
+     * Delete zero or more PremiumInsightCaches.
+     * @param {PremiumInsightCacheDeleteManyArgs} args - Arguments to filter PremiumInsightCaches to delete.
+     * @example
+     * // Delete a few PremiumInsightCaches
+     * const { count } = await prisma.premiumInsightCache.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends PremiumInsightCacheDeleteManyArgs>(args?: SelectSubset<T, PremiumInsightCacheDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more PremiumInsightCaches.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PremiumInsightCacheUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many PremiumInsightCaches
+     * const premiumInsightCache = await prisma.premiumInsightCache.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends PremiumInsightCacheUpdateManyArgs>(args: SelectSubset<T, PremiumInsightCacheUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one PremiumInsightCache.
+     * @param {PremiumInsightCacheUpsertArgs} args - Arguments to update or create a PremiumInsightCache.
+     * @example
+     * // Update or create a PremiumInsightCache
+     * const premiumInsightCache = await prisma.premiumInsightCache.upsert({
+     *   create: {
+     *     // ... data to create a PremiumInsightCache
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the PremiumInsightCache we want to update
+     *   }
+     * })
+     */
+    upsert<T extends PremiumInsightCacheUpsertArgs>(args: SelectSubset<T, PremiumInsightCacheUpsertArgs<ExtArgs>>): Prisma__PremiumInsightCacheClient<$Result.GetResult<Prisma.$PremiumInsightCachePayload<ExtArgs>, T, "upsert">, never, ExtArgs>
+
+
+    /**
+     * Count the number of PremiumInsightCaches.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PremiumInsightCacheCountArgs} args - Arguments to filter PremiumInsightCaches to count.
+     * @example
+     * // Count the number of PremiumInsightCaches
+     * const count = await prisma.premiumInsightCache.count({
+     *   where: {
+     *     // ... the filter for the PremiumInsightCaches we want to count
+     *   }
+     * })
+    **/
+    count<T extends PremiumInsightCacheCountArgs>(
+      args?: Subset<T, PremiumInsightCacheCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], PremiumInsightCacheCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a PremiumInsightCache.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PremiumInsightCacheAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends PremiumInsightCacheAggregateArgs>(args: Subset<T, PremiumInsightCacheAggregateArgs>): Prisma.PrismaPromise<GetPremiumInsightCacheAggregateType<T>>
+
+    /**
+     * Group by PremiumInsightCache.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PremiumInsightCacheGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends PremiumInsightCacheGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: PremiumInsightCacheGroupByArgs['orderBy'] }
+        : { orderBy?: PremiumInsightCacheGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, PremiumInsightCacheGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetPremiumInsightCacheGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the PremiumInsightCache model
+   */
+  readonly fields: PremiumInsightCacheFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for PremiumInsightCache.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__PremiumInsightCacheClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the PremiumInsightCache model
+   */ 
+  interface PremiumInsightCacheFieldRefs {
+    readonly id: FieldRef<"PremiumInsightCache", 'String'>
+    readonly userId: FieldRef<"PremiumInsightCache", 'String'>
+    readonly expiresAt: FieldRef<"PremiumInsightCache", 'DateTime'>
+    readonly data: FieldRef<"PremiumInsightCache", 'Json'>
+    readonly createdAt: FieldRef<"PremiumInsightCache", 'DateTime'>
+    readonly updatedAt: FieldRef<"PremiumInsightCache", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * PremiumInsightCache findUnique
+   */
+  export type PremiumInsightCacheFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PremiumInsightCache
+     */
+    select?: PremiumInsightCacheSelect<ExtArgs> | null
+    /**
+     * Filter, which PremiumInsightCache to fetch.
+     */
+    where: PremiumInsightCacheWhereUniqueInput
+  }
+
+  /**
+   * PremiumInsightCache findUniqueOrThrow
+   */
+  export type PremiumInsightCacheFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PremiumInsightCache
+     */
+    select?: PremiumInsightCacheSelect<ExtArgs> | null
+    /**
+     * Filter, which PremiumInsightCache to fetch.
+     */
+    where: PremiumInsightCacheWhereUniqueInput
+  }
+
+  /**
+   * PremiumInsightCache findFirst
+   */
+  export type PremiumInsightCacheFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PremiumInsightCache
+     */
+    select?: PremiumInsightCacheSelect<ExtArgs> | null
+    /**
+     * Filter, which PremiumInsightCache to fetch.
+     */
+    where?: PremiumInsightCacheWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of PremiumInsightCaches to fetch.
+     */
+    orderBy?: PremiumInsightCacheOrderByWithRelationInput | PremiumInsightCacheOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for PremiumInsightCaches.
+     */
+    cursor?: PremiumInsightCacheWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` PremiumInsightCaches from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` PremiumInsightCaches.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of PremiumInsightCaches.
+     */
+    distinct?: PremiumInsightCacheScalarFieldEnum | PremiumInsightCacheScalarFieldEnum[]
+  }
+
+  /**
+   * PremiumInsightCache findFirstOrThrow
+   */
+  export type PremiumInsightCacheFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PremiumInsightCache
+     */
+    select?: PremiumInsightCacheSelect<ExtArgs> | null
+    /**
+     * Filter, which PremiumInsightCache to fetch.
+     */
+    where?: PremiumInsightCacheWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of PremiumInsightCaches to fetch.
+     */
+    orderBy?: PremiumInsightCacheOrderByWithRelationInput | PremiumInsightCacheOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for PremiumInsightCaches.
+     */
+    cursor?: PremiumInsightCacheWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` PremiumInsightCaches from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` PremiumInsightCaches.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of PremiumInsightCaches.
+     */
+    distinct?: PremiumInsightCacheScalarFieldEnum | PremiumInsightCacheScalarFieldEnum[]
+  }
+
+  /**
+   * PremiumInsightCache findMany
+   */
+  export type PremiumInsightCacheFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PremiumInsightCache
+     */
+    select?: PremiumInsightCacheSelect<ExtArgs> | null
+    /**
+     * Filter, which PremiumInsightCaches to fetch.
+     */
+    where?: PremiumInsightCacheWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of PremiumInsightCaches to fetch.
+     */
+    orderBy?: PremiumInsightCacheOrderByWithRelationInput | PremiumInsightCacheOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing PremiumInsightCaches.
+     */
+    cursor?: PremiumInsightCacheWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` PremiumInsightCaches from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` PremiumInsightCaches.
+     */
+    skip?: number
+    distinct?: PremiumInsightCacheScalarFieldEnum | PremiumInsightCacheScalarFieldEnum[]
+  }
+
+  /**
+   * PremiumInsightCache create
+   */
+  export type PremiumInsightCacheCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PremiumInsightCache
+     */
+    select?: PremiumInsightCacheSelect<ExtArgs> | null
+    /**
+     * The data needed to create a PremiumInsightCache.
+     */
+    data: XOR<PremiumInsightCacheCreateInput, PremiumInsightCacheUncheckedCreateInput>
+  }
+
+  /**
+   * PremiumInsightCache createMany
+   */
+  export type PremiumInsightCacheCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many PremiumInsightCaches.
+     */
+    data: PremiumInsightCacheCreateManyInput | PremiumInsightCacheCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * PremiumInsightCache createManyAndReturn
+   */
+  export type PremiumInsightCacheCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PremiumInsightCache
+     */
+    select?: PremiumInsightCacheSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * The data used to create many PremiumInsightCaches.
+     */
+    data: PremiumInsightCacheCreateManyInput | PremiumInsightCacheCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * PremiumInsightCache update
+   */
+  export type PremiumInsightCacheUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PremiumInsightCache
+     */
+    select?: PremiumInsightCacheSelect<ExtArgs> | null
+    /**
+     * The data needed to update a PremiumInsightCache.
+     */
+    data: XOR<PremiumInsightCacheUpdateInput, PremiumInsightCacheUncheckedUpdateInput>
+    /**
+     * Choose, which PremiumInsightCache to update.
+     */
+    where: PremiumInsightCacheWhereUniqueInput
+  }
+
+  /**
+   * PremiumInsightCache updateMany
+   */
+  export type PremiumInsightCacheUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update PremiumInsightCaches.
+     */
+    data: XOR<PremiumInsightCacheUpdateManyMutationInput, PremiumInsightCacheUncheckedUpdateManyInput>
+    /**
+     * Filter which PremiumInsightCaches to update
+     */
+    where?: PremiumInsightCacheWhereInput
+  }
+
+  /**
+   * PremiumInsightCache upsert
+   */
+  export type PremiumInsightCacheUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PremiumInsightCache
+     */
+    select?: PremiumInsightCacheSelect<ExtArgs> | null
+    /**
+     * The filter to search for the PremiumInsightCache to update in case it exists.
+     */
+    where: PremiumInsightCacheWhereUniqueInput
+    /**
+     * In case the PremiumInsightCache found by the `where` argument doesn't exist, create a new PremiumInsightCache with this data.
+     */
+    create: XOR<PremiumInsightCacheCreateInput, PremiumInsightCacheUncheckedCreateInput>
+    /**
+     * In case the PremiumInsightCache was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<PremiumInsightCacheUpdateInput, PremiumInsightCacheUncheckedUpdateInput>
+  }
+
+  /**
+   * PremiumInsightCache delete
+   */
+  export type PremiumInsightCacheDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PremiumInsightCache
+     */
+    select?: PremiumInsightCacheSelect<ExtArgs> | null
+    /**
+     * Filter which PremiumInsightCache to delete.
+     */
+    where: PremiumInsightCacheWhereUniqueInput
+  }
+
+  /**
+   * PremiumInsightCache deleteMany
+   */
+  export type PremiumInsightCacheDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which PremiumInsightCaches to delete
+     */
+    where?: PremiumInsightCacheWhereInput
+  }
+
+  /**
+   * PremiumInsightCache without action
+   */
+  export type PremiumInsightCacheDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PremiumInsightCache
+     */
+    select?: PremiumInsightCacheSelect<ExtArgs> | null
+  }
+
+
+  /**
    * Enums
    */
 
@@ -3053,12 +6061,56 @@ export namespace Prisma {
   export type MessageScalarFieldEnum = (typeof MessageScalarFieldEnum)[keyof typeof MessageScalarFieldEnum]
 
 
+  export const DailyMessageQuotaScalarFieldEnum: {
+    id: 'id',
+    userId: 'userId',
+    date: 'date',
+    messageCount: 'messageCount',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type DailyMessageQuotaScalarFieldEnum = (typeof DailyMessageQuotaScalarFieldEnum)[keyof typeof DailyMessageQuotaScalarFieldEnum]
+
+
+  export const RateLimitBucketScalarFieldEnum: {
+    id: 'id',
+    key: 'key',
+    windowStart: 'windowStart',
+    windowMs: 'windowMs',
+    hitCount: 'hitCount',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type RateLimitBucketScalarFieldEnum = (typeof RateLimitBucketScalarFieldEnum)[keyof typeof RateLimitBucketScalarFieldEnum]
+
+
+  export const PremiumInsightCacheScalarFieldEnum: {
+    id: 'id',
+    userId: 'userId',
+    expiresAt: 'expiresAt',
+    data: 'data',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type PremiumInsightCacheScalarFieldEnum = (typeof PremiumInsightCacheScalarFieldEnum)[keyof typeof PremiumInsightCacheScalarFieldEnum]
+
+
   export const SortOrder: {
     asc: 'asc',
     desc: 'desc'
   };
 
   export type SortOrder = (typeof SortOrder)[keyof typeof SortOrder]
+
+
+  export const JsonNullValueInput: {
+    JsonNull: typeof JsonNull
+  };
+
+  export type JsonNullValueInput = (typeof JsonNullValueInput)[keyof typeof JsonNullValueInput]
 
 
   export const QueryMode: {
@@ -3075,6 +6127,15 @@ export namespace Prisma {
   };
 
   export type NullsOrder = (typeof NullsOrder)[keyof typeof NullsOrder]
+
+
+  export const JsonNullValueFilter: {
+    DbNull: typeof DbNull,
+    JsonNull: typeof JsonNull,
+    AnyNull: typeof AnyNull
+  };
+
+  export type JsonNullValueFilter = (typeof JsonNullValueFilter)[keyof typeof JsonNullValueFilter]
 
 
   /**
@@ -3128,6 +6189,13 @@ export namespace Prisma {
    * Reference to a field of type 'Boolean'
    */
   export type BooleanFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Boolean'>
+    
+
+
+  /**
+   * Reference to a field of type 'Json'
+   */
+  export type JsonFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Json'>
     
 
 
@@ -3313,6 +6381,187 @@ export namespace Prisma {
     ttsModel?: StringNullableWithAggregatesFilter<"Message"> | string | null
     ttsGeneratedAt?: DateTimeNullableWithAggregatesFilter<"Message"> | Date | string | null
     createdAt?: DateTimeWithAggregatesFilter<"Message"> | Date | string
+  }
+
+  export type DailyMessageQuotaWhereInput = {
+    AND?: DailyMessageQuotaWhereInput | DailyMessageQuotaWhereInput[]
+    OR?: DailyMessageQuotaWhereInput[]
+    NOT?: DailyMessageQuotaWhereInput | DailyMessageQuotaWhereInput[]
+    id?: StringFilter<"DailyMessageQuota"> | string
+    userId?: StringFilter<"DailyMessageQuota"> | string
+    date?: StringFilter<"DailyMessageQuota"> | string
+    messageCount?: IntFilter<"DailyMessageQuota"> | number
+    createdAt?: DateTimeFilter<"DailyMessageQuota"> | Date | string
+    updatedAt?: DateTimeFilter<"DailyMessageQuota"> | Date | string
+  }
+
+  export type DailyMessageQuotaOrderByWithRelationInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    date?: SortOrder
+    messageCount?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type DailyMessageQuotaWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    userId_date?: DailyMessageQuotaUserIdDateCompoundUniqueInput
+    AND?: DailyMessageQuotaWhereInput | DailyMessageQuotaWhereInput[]
+    OR?: DailyMessageQuotaWhereInput[]
+    NOT?: DailyMessageQuotaWhereInput | DailyMessageQuotaWhereInput[]
+    userId?: StringFilter<"DailyMessageQuota"> | string
+    date?: StringFilter<"DailyMessageQuota"> | string
+    messageCount?: IntFilter<"DailyMessageQuota"> | number
+    createdAt?: DateTimeFilter<"DailyMessageQuota"> | Date | string
+    updatedAt?: DateTimeFilter<"DailyMessageQuota"> | Date | string
+  }, "id" | "userId_date">
+
+  export type DailyMessageQuotaOrderByWithAggregationInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    date?: SortOrder
+    messageCount?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: DailyMessageQuotaCountOrderByAggregateInput
+    _avg?: DailyMessageQuotaAvgOrderByAggregateInput
+    _max?: DailyMessageQuotaMaxOrderByAggregateInput
+    _min?: DailyMessageQuotaMinOrderByAggregateInput
+    _sum?: DailyMessageQuotaSumOrderByAggregateInput
+  }
+
+  export type DailyMessageQuotaScalarWhereWithAggregatesInput = {
+    AND?: DailyMessageQuotaScalarWhereWithAggregatesInput | DailyMessageQuotaScalarWhereWithAggregatesInput[]
+    OR?: DailyMessageQuotaScalarWhereWithAggregatesInput[]
+    NOT?: DailyMessageQuotaScalarWhereWithAggregatesInput | DailyMessageQuotaScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"DailyMessageQuota"> | string
+    userId?: StringWithAggregatesFilter<"DailyMessageQuota"> | string
+    date?: StringWithAggregatesFilter<"DailyMessageQuota"> | string
+    messageCount?: IntWithAggregatesFilter<"DailyMessageQuota"> | number
+    createdAt?: DateTimeWithAggregatesFilter<"DailyMessageQuota"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"DailyMessageQuota"> | Date | string
+  }
+
+  export type RateLimitBucketWhereInput = {
+    AND?: RateLimitBucketWhereInput | RateLimitBucketWhereInput[]
+    OR?: RateLimitBucketWhereInput[]
+    NOT?: RateLimitBucketWhereInput | RateLimitBucketWhereInput[]
+    id?: StringFilter<"RateLimitBucket"> | string
+    key?: StringFilter<"RateLimitBucket"> | string
+    windowStart?: DateTimeFilter<"RateLimitBucket"> | Date | string
+    windowMs?: IntFilter<"RateLimitBucket"> | number
+    hitCount?: IntFilter<"RateLimitBucket"> | number
+    createdAt?: DateTimeFilter<"RateLimitBucket"> | Date | string
+    updatedAt?: DateTimeFilter<"RateLimitBucket"> | Date | string
+  }
+
+  export type RateLimitBucketOrderByWithRelationInput = {
+    id?: SortOrder
+    key?: SortOrder
+    windowStart?: SortOrder
+    windowMs?: SortOrder
+    hitCount?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type RateLimitBucketWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    key?: string
+    AND?: RateLimitBucketWhereInput | RateLimitBucketWhereInput[]
+    OR?: RateLimitBucketWhereInput[]
+    NOT?: RateLimitBucketWhereInput | RateLimitBucketWhereInput[]
+    windowStart?: DateTimeFilter<"RateLimitBucket"> | Date | string
+    windowMs?: IntFilter<"RateLimitBucket"> | number
+    hitCount?: IntFilter<"RateLimitBucket"> | number
+    createdAt?: DateTimeFilter<"RateLimitBucket"> | Date | string
+    updatedAt?: DateTimeFilter<"RateLimitBucket"> | Date | string
+  }, "id" | "key">
+
+  export type RateLimitBucketOrderByWithAggregationInput = {
+    id?: SortOrder
+    key?: SortOrder
+    windowStart?: SortOrder
+    windowMs?: SortOrder
+    hitCount?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: RateLimitBucketCountOrderByAggregateInput
+    _avg?: RateLimitBucketAvgOrderByAggregateInput
+    _max?: RateLimitBucketMaxOrderByAggregateInput
+    _min?: RateLimitBucketMinOrderByAggregateInput
+    _sum?: RateLimitBucketSumOrderByAggregateInput
+  }
+
+  export type RateLimitBucketScalarWhereWithAggregatesInput = {
+    AND?: RateLimitBucketScalarWhereWithAggregatesInput | RateLimitBucketScalarWhereWithAggregatesInput[]
+    OR?: RateLimitBucketScalarWhereWithAggregatesInput[]
+    NOT?: RateLimitBucketScalarWhereWithAggregatesInput | RateLimitBucketScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"RateLimitBucket"> | string
+    key?: StringWithAggregatesFilter<"RateLimitBucket"> | string
+    windowStart?: DateTimeWithAggregatesFilter<"RateLimitBucket"> | Date | string
+    windowMs?: IntWithAggregatesFilter<"RateLimitBucket"> | number
+    hitCount?: IntWithAggregatesFilter<"RateLimitBucket"> | number
+    createdAt?: DateTimeWithAggregatesFilter<"RateLimitBucket"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"RateLimitBucket"> | Date | string
+  }
+
+  export type PremiumInsightCacheWhereInput = {
+    AND?: PremiumInsightCacheWhereInput | PremiumInsightCacheWhereInput[]
+    OR?: PremiumInsightCacheWhereInput[]
+    NOT?: PremiumInsightCacheWhereInput | PremiumInsightCacheWhereInput[]
+    id?: StringFilter<"PremiumInsightCache"> | string
+    userId?: StringFilter<"PremiumInsightCache"> | string
+    expiresAt?: DateTimeFilter<"PremiumInsightCache"> | Date | string
+    data?: JsonFilter<"PremiumInsightCache">
+    createdAt?: DateTimeFilter<"PremiumInsightCache"> | Date | string
+    updatedAt?: DateTimeFilter<"PremiumInsightCache"> | Date | string
+  }
+
+  export type PremiumInsightCacheOrderByWithRelationInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    expiresAt?: SortOrder
+    data?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type PremiumInsightCacheWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    userId?: string
+    AND?: PremiumInsightCacheWhereInput | PremiumInsightCacheWhereInput[]
+    OR?: PremiumInsightCacheWhereInput[]
+    NOT?: PremiumInsightCacheWhereInput | PremiumInsightCacheWhereInput[]
+    expiresAt?: DateTimeFilter<"PremiumInsightCache"> | Date | string
+    data?: JsonFilter<"PremiumInsightCache">
+    createdAt?: DateTimeFilter<"PremiumInsightCache"> | Date | string
+    updatedAt?: DateTimeFilter<"PremiumInsightCache"> | Date | string
+  }, "id" | "userId">
+
+  export type PremiumInsightCacheOrderByWithAggregationInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    expiresAt?: SortOrder
+    data?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: PremiumInsightCacheCountOrderByAggregateInput
+    _max?: PremiumInsightCacheMaxOrderByAggregateInput
+    _min?: PremiumInsightCacheMinOrderByAggregateInput
+  }
+
+  export type PremiumInsightCacheScalarWhereWithAggregatesInput = {
+    AND?: PremiumInsightCacheScalarWhereWithAggregatesInput | PremiumInsightCacheScalarWhereWithAggregatesInput[]
+    OR?: PremiumInsightCacheScalarWhereWithAggregatesInput[]
+    NOT?: PremiumInsightCacheScalarWhereWithAggregatesInput | PremiumInsightCacheScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"PremiumInsightCache"> | string
+    userId?: StringWithAggregatesFilter<"PremiumInsightCache"> | string
+    expiresAt?: DateTimeWithAggregatesFilter<"PremiumInsightCache"> | Date | string
+    data?: JsonWithAggregatesFilter<"PremiumInsightCache">
+    createdAt?: DateTimeWithAggregatesFilter<"PremiumInsightCache"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"PremiumInsightCache"> | Date | string
   }
 
   export type ConversationCreateInput = {
@@ -3505,6 +6754,202 @@ export namespace Prisma {
     ttsModel?: NullableStringFieldUpdateOperationsInput | string | null
     ttsGeneratedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type DailyMessageQuotaCreateInput = {
+    id: string
+    userId: string
+    date: string
+    messageCount?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type DailyMessageQuotaUncheckedCreateInput = {
+    id: string
+    userId: string
+    date: string
+    messageCount?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type DailyMessageQuotaUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    date?: StringFieldUpdateOperationsInput | string
+    messageCount?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type DailyMessageQuotaUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    date?: StringFieldUpdateOperationsInput | string
+    messageCount?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type DailyMessageQuotaCreateManyInput = {
+    id: string
+    userId: string
+    date: string
+    messageCount?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type DailyMessageQuotaUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    date?: StringFieldUpdateOperationsInput | string
+    messageCount?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type DailyMessageQuotaUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    date?: StringFieldUpdateOperationsInput | string
+    messageCount?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type RateLimitBucketCreateInput = {
+    id: string
+    key: string
+    windowStart: Date | string
+    windowMs: number
+    hitCount?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type RateLimitBucketUncheckedCreateInput = {
+    id: string
+    key: string
+    windowStart: Date | string
+    windowMs: number
+    hitCount?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type RateLimitBucketUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    key?: StringFieldUpdateOperationsInput | string
+    windowStart?: DateTimeFieldUpdateOperationsInput | Date | string
+    windowMs?: IntFieldUpdateOperationsInput | number
+    hitCount?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type RateLimitBucketUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    key?: StringFieldUpdateOperationsInput | string
+    windowStart?: DateTimeFieldUpdateOperationsInput | Date | string
+    windowMs?: IntFieldUpdateOperationsInput | number
+    hitCount?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type RateLimitBucketCreateManyInput = {
+    id: string
+    key: string
+    windowStart: Date | string
+    windowMs: number
+    hitCount?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type RateLimitBucketUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    key?: StringFieldUpdateOperationsInput | string
+    windowStart?: DateTimeFieldUpdateOperationsInput | Date | string
+    windowMs?: IntFieldUpdateOperationsInput | number
+    hitCount?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type RateLimitBucketUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    key?: StringFieldUpdateOperationsInput | string
+    windowStart?: DateTimeFieldUpdateOperationsInput | Date | string
+    windowMs?: IntFieldUpdateOperationsInput | number
+    hitCount?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type PremiumInsightCacheCreateInput = {
+    id: string
+    userId: string
+    expiresAt: Date | string
+    data: JsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type PremiumInsightCacheUncheckedCreateInput = {
+    id: string
+    userId: string
+    expiresAt: Date | string
+    data: JsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type PremiumInsightCacheUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    data?: JsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type PremiumInsightCacheUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    data?: JsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type PremiumInsightCacheCreateManyInput = {
+    id: string
+    userId: string
+    expiresAt: Date | string
+    data: JsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type PremiumInsightCacheUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    data?: JsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type PremiumInsightCacheUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    data?: JsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type StringFilter<$PrismaModel = never> = {
@@ -3772,6 +7217,185 @@ export namespace Prisma {
     _max?: NestedDateTimeNullableFilter<$PrismaModel>
   }
 
+  export type IntFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel>
+    in?: number[] | ListIntFieldRefInput<$PrismaModel>
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel>
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntFilter<$PrismaModel> | number
+  }
+
+  export type DailyMessageQuotaUserIdDateCompoundUniqueInput = {
+    userId: string
+    date: string
+  }
+
+  export type DailyMessageQuotaCountOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    date?: SortOrder
+    messageCount?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type DailyMessageQuotaAvgOrderByAggregateInput = {
+    messageCount?: SortOrder
+  }
+
+  export type DailyMessageQuotaMaxOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    date?: SortOrder
+    messageCount?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type DailyMessageQuotaMinOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    date?: SortOrder
+    messageCount?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type DailyMessageQuotaSumOrderByAggregateInput = {
+    messageCount?: SortOrder
+  }
+
+  export type IntWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel>
+    in?: number[] | ListIntFieldRefInput<$PrismaModel>
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel>
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntWithAggregatesFilter<$PrismaModel> | number
+    _count?: NestedIntFilter<$PrismaModel>
+    _avg?: NestedFloatFilter<$PrismaModel>
+    _sum?: NestedIntFilter<$PrismaModel>
+    _min?: NestedIntFilter<$PrismaModel>
+    _max?: NestedIntFilter<$PrismaModel>
+  }
+
+  export type RateLimitBucketCountOrderByAggregateInput = {
+    id?: SortOrder
+    key?: SortOrder
+    windowStart?: SortOrder
+    windowMs?: SortOrder
+    hitCount?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type RateLimitBucketAvgOrderByAggregateInput = {
+    windowMs?: SortOrder
+    hitCount?: SortOrder
+  }
+
+  export type RateLimitBucketMaxOrderByAggregateInput = {
+    id?: SortOrder
+    key?: SortOrder
+    windowStart?: SortOrder
+    windowMs?: SortOrder
+    hitCount?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type RateLimitBucketMinOrderByAggregateInput = {
+    id?: SortOrder
+    key?: SortOrder
+    windowStart?: SortOrder
+    windowMs?: SortOrder
+    hitCount?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type RateLimitBucketSumOrderByAggregateInput = {
+    windowMs?: SortOrder
+    hitCount?: SortOrder
+  }
+  export type JsonFilter<$PrismaModel = never> = 
+    | PatchUndefined<
+        Either<Required<JsonFilterBase<$PrismaModel>>, Exclude<keyof Required<JsonFilterBase<$PrismaModel>>, 'path'>>,
+        Required<JsonFilterBase<$PrismaModel>>
+      >
+    | OptionalFlat<Omit<Required<JsonFilterBase<$PrismaModel>>, 'path'>>
+
+  export type JsonFilterBase<$PrismaModel = never> = {
+    equals?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+    path?: string[]
+    string_contains?: string | StringFieldRefInput<$PrismaModel>
+    string_starts_with?: string | StringFieldRefInput<$PrismaModel>
+    string_ends_with?: string | StringFieldRefInput<$PrismaModel>
+    array_contains?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_starts_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_ends_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    lt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    lte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+  }
+
+  export type PremiumInsightCacheCountOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    expiresAt?: SortOrder
+    data?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type PremiumInsightCacheMaxOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    expiresAt?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type PremiumInsightCacheMinOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    expiresAt?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+  export type JsonWithAggregatesFilter<$PrismaModel = never> = 
+    | PatchUndefined<
+        Either<Required<JsonWithAggregatesFilterBase<$PrismaModel>>, Exclude<keyof Required<JsonWithAggregatesFilterBase<$PrismaModel>>, 'path'>>,
+        Required<JsonWithAggregatesFilterBase<$PrismaModel>>
+      >
+    | OptionalFlat<Omit<Required<JsonWithAggregatesFilterBase<$PrismaModel>>, 'path'>>
+
+  export type JsonWithAggregatesFilterBase<$PrismaModel = never> = {
+    equals?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+    path?: string[]
+    string_contains?: string | StringFieldRefInput<$PrismaModel>
+    string_starts_with?: string | StringFieldRefInput<$PrismaModel>
+    string_ends_with?: string | StringFieldRefInput<$PrismaModel>
+    array_contains?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_starts_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_ends_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    lt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    lte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedJsonFilter<$PrismaModel>
+    _max?: NestedJsonFilter<$PrismaModel>
+  }
+
   export type MessageCreateNestedManyWithoutConversationInput = {
     create?: XOR<MessageCreateWithoutConversationInput, MessageUncheckedCreateWithoutConversationInput> | MessageCreateWithoutConversationInput[] | MessageUncheckedCreateWithoutConversationInput[]
     connectOrCreate?: MessageCreateOrConnectWithoutConversationInput | MessageCreateOrConnectWithoutConversationInput[]
@@ -3854,6 +7478,14 @@ export namespace Prisma {
     upsert?: ConversationUpsertWithoutMessagesInput
     connect?: ConversationWhereUniqueInput
     update?: XOR<XOR<ConversationUpdateToOneWithWhereWithoutMessagesInput, ConversationUpdateWithoutMessagesInput>, ConversationUncheckedUpdateWithoutMessagesInput>
+  }
+
+  export type IntFieldUpdateOperationsInput = {
+    set?: number
+    increment?: number
+    decrement?: number
+    multiply?: number
+    divide?: number
   }
 
   export type NestedStringFilter<$PrismaModel = never> = {
@@ -4028,6 +7660,55 @@ export namespace Prisma {
     _count?: NestedIntNullableFilter<$PrismaModel>
     _min?: NestedDateTimeNullableFilter<$PrismaModel>
     _max?: NestedDateTimeNullableFilter<$PrismaModel>
+  }
+
+  export type NestedIntWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel>
+    in?: number[] | ListIntFieldRefInput<$PrismaModel>
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel>
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntWithAggregatesFilter<$PrismaModel> | number
+    _count?: NestedIntFilter<$PrismaModel>
+    _avg?: NestedFloatFilter<$PrismaModel>
+    _sum?: NestedIntFilter<$PrismaModel>
+    _min?: NestedIntFilter<$PrismaModel>
+    _max?: NestedIntFilter<$PrismaModel>
+  }
+
+  export type NestedFloatFilter<$PrismaModel = never> = {
+    equals?: number | FloatFieldRefInput<$PrismaModel>
+    in?: number[] | ListFloatFieldRefInput<$PrismaModel>
+    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel>
+    lt?: number | FloatFieldRefInput<$PrismaModel>
+    lte?: number | FloatFieldRefInput<$PrismaModel>
+    gt?: number | FloatFieldRefInput<$PrismaModel>
+    gte?: number | FloatFieldRefInput<$PrismaModel>
+    not?: NestedFloatFilter<$PrismaModel> | number
+  }
+  export type NestedJsonFilter<$PrismaModel = never> = 
+    | PatchUndefined<
+        Either<Required<NestedJsonFilterBase<$PrismaModel>>, Exclude<keyof Required<NestedJsonFilterBase<$PrismaModel>>, 'path'>>,
+        Required<NestedJsonFilterBase<$PrismaModel>>
+      >
+    | OptionalFlat<Omit<Required<NestedJsonFilterBase<$PrismaModel>>, 'path'>>
+
+  export type NestedJsonFilterBase<$PrismaModel = never> = {
+    equals?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+    path?: string[]
+    string_contains?: string | StringFieldRefInput<$PrismaModel>
+    string_starts_with?: string | StringFieldRefInput<$PrismaModel>
+    string_ends_with?: string | StringFieldRefInput<$PrismaModel>
+    array_contains?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_starts_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_ends_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    lt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    lte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
   }
 
   export type MessageCreateWithoutConversationInput = {
@@ -4248,6 +7929,18 @@ export namespace Prisma {
      * @deprecated Use MessageDefaultArgs instead
      */
     export type MessageArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = MessageDefaultArgs<ExtArgs>
+    /**
+     * @deprecated Use DailyMessageQuotaDefaultArgs instead
+     */
+    export type DailyMessageQuotaArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = DailyMessageQuotaDefaultArgs<ExtArgs>
+    /**
+     * @deprecated Use RateLimitBucketDefaultArgs instead
+     */
+    export type RateLimitBucketArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = RateLimitBucketDefaultArgs<ExtArgs>
+    /**
+     * @deprecated Use PremiumInsightCacheDefaultArgs instead
+     */
+    export type PremiumInsightCacheArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = PremiumInsightCacheDefaultArgs<ExtArgs>
 
   /**
    * Batch Payload for updateMany & deleteMany & createMany

@@ -227,7 +227,12 @@ export async function POST(req: NextRequest) {
     }
 
     // Validate type
-    const resolvedType = type;
+    const resolvedType = type as
+      | "WALKING"
+      | "RUNNING"
+      | "WORKOUT"
+      | "BREATHING"
+      | "SLEEP";
 
     // Save to ActivityLog in database
     const activity = await accountDb.activityLog.create({

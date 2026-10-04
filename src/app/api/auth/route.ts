@@ -194,7 +194,10 @@ export async function POST(request: NextRequest) {
       }
 
       // Security: Hash password dengan bcrypt (AGENTS.md Bagian 8.1)
-      if (!password) {\n        return NextResponse.json({ error: "Password wajib diisi." }, { status: 400 });\n      }\n      const passwordToHash = password;
+      if (!password) {
+        return NextResponse.json({ error: "Password wajib diisi." }, { status: 400 });
+      }
+      const passwordToHash = password;
       const passwordHash = await bcrypt.hash(passwordToHash, 12);
 
       // Create user after OTP verification

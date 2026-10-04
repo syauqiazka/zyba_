@@ -209,7 +209,7 @@ const config = {
       "value": "prisma-client-js"
     },
     "output": {
-      "value": "C:\\Users\\user\\OneDrive\\Documents\\syauqi_nitip\\zyba_\\src\\generated\\community-client",
+      "value": "C:\\Users\\USER\\Documents\\UCUP\\Koding\\zyba_\\src\\generated\\community-client",
       "fromEnvVar": null
     },
     "config": {
@@ -231,12 +231,11 @@ const config = {
       }
     ],
     "previewFeatures": [],
-    "sourceFilePath": "C:\\Users\\user\\OneDrive\\Documents\\syauqi_nitip\\zyba_\\prisma\\community\\schema.prisma",
+    "sourceFilePath": "C:\\Users\\USER\\Documents\\UCUP\\Koding\\zyba_\\prisma\\community\\schema.prisma",
     "isCustomOutput": true
   },
   "relativeEnvPaths": {
-    "rootEnvPath": null,
-    "schemaEnvPath": "../../../.env"
+    "rootEnvPath": null
   },
   "relativePath": "../../../prisma/community",
   "clientVersion": "5.22.0",

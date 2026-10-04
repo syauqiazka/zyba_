@@ -21,6 +21,7 @@ model Conversation {
   messages Message[]
 
   @@index([userId])
+  @@index([userId, updatedAt])
   @@map("conversations")
 }
 
@@ -45,4 +46,42 @@ model Message {
   @@index([conversationId, createdAt])
   @@index([role, createdAt, conversationId])
   @@map("messages")
+}
+
+model DailyMessageQuota {
+  id           String   @id
+  userId       String
+  date         String
+  messageCount Int      @default(0)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@unique([userId, date])
+  @@index([date])
+  @@map("daily_message_quotas")
+}
+
+model RateLimitBucket {
+  id          String   @id
+  key         String   @unique
+  windowStart DateTime
+  windowMs    Int
+  hitCount    Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([windowStart])
+  @@map("rate_limit_buckets")
+}
+
+model PremiumInsightCache {
+  id        String   @id
+  userId    String   @unique
+  expiresAt DateTime
+  data      Json
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([expiresAt])
+  @@map("premium_insight_cache")
 }

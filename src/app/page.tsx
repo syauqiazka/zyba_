@@ -4,6 +4,7 @@ import {
   LandingHero,
   LandingFeatures,
   LandingAbout,
+  LandingTestimonials,
   LandingCta,
 } from "@/components/landing";
 const siteUrl =
@@ -56,6 +57,7 @@ export default function LandingPage() {
         <LandingHero />
         <LandingFeatures />
         <LandingAbout />
+        <LandingTestimonials />
       </main>
 
       <LandingCta />

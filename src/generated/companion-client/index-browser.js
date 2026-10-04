@@ -149,9 +149,41 @@ exports.Prisma.MessageScalarFieldEnum = {
   createdAt: 'createdAt'
 };
 
+exports.Prisma.DailyMessageQuotaScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  date: 'date',
+  messageCount: 'messageCount',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.RateLimitBucketScalarFieldEnum = {
+  id: 'id',
+  key: 'key',
+  windowStart: 'windowStart',
+  windowMs: 'windowMs',
+  hitCount: 'hitCount',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.PremiumInsightCacheScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  expiresAt: 'expiresAt',
+  data: 'data',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
+};
+
+exports.Prisma.JsonNullValueInput = {
+  JsonNull: Prisma.JsonNull
 };
 
 exports.Prisma.QueryMode = {
@@ -164,10 +196,19 @@ exports.Prisma.NullsOrder = {
   last: 'last'
 };
 
+exports.Prisma.JsonNullValueFilter = {
+  DbNull: Prisma.DbNull,
+  JsonNull: Prisma.JsonNull,
+  AnyNull: Prisma.AnyNull
+};
+
 
 exports.Prisma.ModelName = {
   Conversation: 'Conversation',
-  Message: 'Message'
+  Message: 'Message',
+  DailyMessageQuota: 'DailyMessageQuota',
+  RateLimitBucket: 'RateLimitBucket',
+  PremiumInsightCache: 'PremiumInsightCache'
 };
 
 /**

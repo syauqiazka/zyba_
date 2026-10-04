@@ -7,7 +7,7 @@ import { useEffect, useState } from "react";
 const NAV_ITEMS = [
   { label: "Fitur", href: "#fitur" },
   { label: "Cara kerja", href: "#cara-kerja" },
-  { label: "Komunitas", href: "#komunitas" },
+  { label: "Testimoni", href: "#testimoni" },
 ];
 
 export default function LandingHeader() {

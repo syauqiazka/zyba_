@@ -201,6 +201,8 @@ model Resource {
   isPro       Boolean      @default(false)
   createdAt   DateTime     @default(now())
 
+  @@index([type, createdAt])
+  @@index([createdAt])
   @@map("resources")
 }
 
@@ -290,6 +292,7 @@ model UserAchievement {
   seen          Boolean     @default(false)
 
   @@unique([userId, achievementId])
+  @@index([userId])
   @@map("user_achievements")
 }
 
