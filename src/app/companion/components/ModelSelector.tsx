@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useRef, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { AIModelType } from "@/backend/ai/aiModelManager";
 
 interface Props {
@@ -86,22 +87,61 @@ export default function ModelSelector({
   const [isOpen, setIsOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const triggerRef = useRef<HTMLButtonElement>(null);
+  const dropdownPortalRef = useRef<HTMLDivElement>(null);
+  const [dropdownPosition, setDropdownPosition] = useState<{ top?: number; bottom?: number; left: number; width: number } | null>(null);
 
   // Close dropdown when clicked outside (sama persis gender/kota di signup)
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
+      const target = event.target as Node;
       if (
         dropdownRef.current &&
-        !dropdownRef.current.contains(event.target as Node)
+        !dropdownRef.current.contains(target) &&
+        !dropdownPortalRef.current?.contains(target)
       ) {
         setIsOpen(false);
       }
     }
+
+    const updatePosition = () => {
+      const trigger = triggerRef.current;
+      if (!trigger) return;
+      const rect = trigger.getBoundingClientRect();
+      const width = Math.min(320, Math.max(260, window.innerWidth - 16));
+      const left = Math.min(
+        Math.max(8, rect.right - width),
+        Math.max(8, window.innerWidth - width - 8)
+      );
+
+      if (dropDirection === "up") {
+        setDropdownPosition({
+          bottom: Math.max(8, window.innerHeight - rect.top + 8),
+          left,
+          width,
+        });
+      } else {
+        setDropdownPosition({
+          top: Math.min(window.innerHeight - 8, rect.bottom + 8),
+          left,
+          width,
+        });
+      }
+    };
+
     if (isOpen) {
+      updatePosition();
       document.addEventListener("mousedown", handleClickOutside);
+      window.addEventListener("resize", updatePosition);
+      window.addEventListener("scroll", updatePosition, true);
+    } else {
+      setDropdownPosition(null);
     }
+
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
+      window.removeEventListener("resize", updatePosition);
+      window.removeEventListener("scroll", updatePosition, true);
     };
   }, [isOpen]);
 
@@ -122,6 +162,7 @@ export default function ModelSelector({
     <div className="relative inline-block text-left z-[60]" ref={dropdownRef}>
       {/* Trigger Button — Style sama persis dropdown gender/kota di signup ProfileSecurityFlow */}
       <button
+        ref={triggerRef}
         type="button"
         onClick={() => {
           setIsOpen(!isOpen);
@@ -142,9 +183,18 @@ export default function ModelSelector({
       </button>
 
       {/* Popover Dropdown (Membuka ke atas atau bawah sesuai posisi, selalu aman di dalam layar) */}
-      {isOpen && (
-        <div
-          className={`absolute ${
+      {isOpen && dropdownPosition && typeof document !== "undefined" &&
+        createPortal(
+          <div
+          ref={dropdownPortalRef}
+          style={{
+            position: "fixed",
+            top: dropdownPosition?.top,
+            bottom: dropdownPosition?.bottom,
+            left: dropdownPosition?.left,
+            width: dropdownPosition?.width,
+          }}
+          className={`
             dropDirection === "up" ? "bottom-full mb-2" : "top-full mt-2"
           } right-0 sm:right-auto sm:left-0 w-[min(290px,calc(100vw-16px))] max-w-[calc(100vw-16px)] sm:w-80 bg-white border-2 border-brown-900/15 rounded-2xl shadow-2xl z-[100] p-2.5 flex flex-col gap-1.5 animate-in fade-in ${
             dropDirection === "up"
@@ -252,7 +302,10 @@ export default function ModelSelector({
             )}
           </div>
         </div>
-      )}
+,
+          document.body
+        )
+      }
     </div>
   );
 }
