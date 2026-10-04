@@ -454,11 +454,7 @@ function LoginContent({
                   {/* SIGN UP */}
                   {authMode === "SIGN_UP" && (
                     <ProfileSecurityFlow
-                      initialEmail={
-                        email !== "alex@zyba.app"
-                          ? email
-                          : ""
-                      }
+                      initialEmail={email}
                       onSwitchToSignIn={() =>
                         switchMode("SIGN_IN")
                       }
