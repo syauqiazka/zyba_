@@ -265,7 +265,7 @@ export default function ProfileSecurityFlow({
         }),
       });
     } catch {
-      // Ignore network issue in demo
+      // Profile update is best-effort; the verified session remains valid.
     }
     // Redirect to assessment first — user hasn't done assessment yet
     window.location.href = "/assessment";
