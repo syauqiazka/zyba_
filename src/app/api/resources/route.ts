@@ -21,6 +21,8 @@ const getCachedResources = unstable_cache(
   { revalidate: 3600, tags: ["resources"] }
 );
 
+export const dynamic = "force-dynamic";
+
 export async function GET(req: NextRequest) {
   try {
     const { searchParams } = new URL(req.url);
@@ -43,12 +45,12 @@ export async function GET(req: NextRequest) {
     return NextResponse.json(
       {
         success: true,
-        resources,
-        total: resources.length,
+        resources: safeResources,
+        total: safeResources.length,
       },
       {
         headers: {
-          "Cache-Control": "public, s-maxage=3600, stale-while-revalidate=86400",
+          "Cache-Control": "private, no-store, max-age=0",
         },
       }
     );
