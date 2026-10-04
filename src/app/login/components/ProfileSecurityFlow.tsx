@@ -1107,7 +1107,7 @@ export default function ProfileSecurityFlow({
                   </div>
                   <div className="flex flex-col">
                     <span className="text-xs font-bold text-brown-900">
-                      Chatbot Notification
+                      Notifikasi Chatbot
                     </span>
                     <span className="text-[10px] text-brown-700">
                       Pengingat sesi curhat Zyba Companion
@@ -1130,7 +1130,7 @@ export default function ProfileSecurityFlow({
                   </div>
                   <div className="flex flex-col">
                     <span className="text-xs font-bold text-brown-900">
-                      Wellness Notification
+                      Notifikasi Wellness
                     </span>
                     <span className="text-[10px] text-brown-700">
                       Mood check-in harian & breathing tracker
@@ -1153,7 +1153,7 @@ export default function ProfileSecurityFlow({
                   </div>
                   <div className="flex flex-col">
                     <span className="text-xs font-bold text-brown-900">
-                      Community Notification
+                      Notifikasi Komunitas
                     </span>
                     <span className="text-[10px] text-brown-700">
                       Update cerita hangat dari teman ZYBA
@@ -1172,7 +1172,7 @@ export default function ProfileSecurityFlow({
             {/* Tombol Lanjutkan → */}
             <button
               type="button"
-              onClick={() => setStep("COMPILING")}
+              onClick={() => setStep("SELECT_AVATAR")}
               className="mt-2 w-full py-3.5 rounded-full bg-brown-900 text-white font-bold text-xs md:text-sm flex items-center justify-center gap-2 hover:bg-orange-500 transition-all shadow-md active:scale-98"
             >
               <span>Lanjutkan</span>
