@@ -122,26 +122,18 @@ export default function ProfileSecurityFlow({
     if (step !== "PASSWORD_STRENGTH") return;
 
     const siteKey = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY;
-    if (!siteKey || !recaptchaRef.current) {
-      setCaptchaError("reCAPTCHA belum dikonfigurasi. Hubungi administrator.");
+    if (!siteKey) {
+      setCaptchaError("Verifikasi keamanan belum dikonfigurasi.");
       return;
     }
 
     const renderCaptcha = () => {
-      if (!window.grecaptcha || !recaptchaRef.current || recaptchaWidgetId.current !== null) return;
-      recaptchaWidgetId.current = window.grecaptcha.render(recaptchaRef.current, {
-        sitekey: siteKey,
-        callback: (token: string) => {
-          setCaptchaToken(token);
-          setCaptchaError("");
-        },
-        "expired-callback": () => setCaptchaToken(""),
-        "error-callback": () => setCaptchaToken(""),
-      });
+      if (!window.grecaptcha || !siteKey) return;
+      window.grecaptcha.ready(() => {});
     };
 
     if (window.grecaptcha) {
-      window.grecaptcha.ready(renderCaptcha);
+      renderCaptcha();
       return;
     }
 
@@ -152,15 +144,11 @@ export default function ProfileSecurityFlow({
     }
 
     const script = document.createElement("script");
-    script.src = "https://www.google.com/recaptcha/api.js?render=explicit";
+    script.src = "https://www.google.com/recaptcha/api.js?render=" + encodeURIComponent(siteKey);
     script.async = true;
     script.defer = true;
     script.onload = renderCaptcha;
     document.head.appendChild(script);
-
-    return () => {
-      recaptchaWidgetId.current = null;
-    };
   }, [step]);
 
   // Sync initialEmail if changed from parent
@@ -202,11 +190,8 @@ export default function ProfileSecurityFlow({
   const [emailError, setEmailError] = useState("");
   const [isCheckingEmail, setIsCheckingEmail] = useState(false);
   const [passwordError, setPasswordError] = useState("");
-  const [isVerifyingCaptcha, setIsVerifyingCaptcha] = useState(false);
-  const [captchaToken, setCaptchaToken] = useState("");
-  const [captchaError, setCaptchaError] = useState("");
-  const recaptchaRef = React.useRef<HTMLDivElement>(null);
-  const recaptchaWidgetId = React.useRef<number | null>(null);
+  const [isVerifyingCaptcha, setIsVerifyingCaptcha] = useState(false);\n  const [captchaError, setCaptchaError] = useState("");
+
 
   // Biometric state
   const [isFingerprintScanned, setIsFingerprintScanned] = useState(false);
@@ -757,16 +742,10 @@ export default function ProfileSecurityFlow({
               </div>
             )}
 
-            {/* reCAPTCHA + pendaftaran akun */}
-            <div className="mt-2 rounded-2xl border border-brown-900/10 bg-cream/30 p-4">
-              <div ref={recaptchaRef} className="min-h-[78px] flex items-center justify-center" />
-              {captchaError && (
-                <p className="mt-2 text-xs font-bold text-danger">{captchaError}</p>
-              )}
-              <p className="mt-2 text-[10px] leading-4 text-brown-700/60">
-                Verifikasi keamanan ini membantu mencegah pendaftaran otomatis.
-              </p>
-            </div>
+            {/* reCAPTCHA berjalan di background; tidak menampilkan checkbox/UI. */}
+            {captchaError && (
+              <p className="mb-3 text-xs font-medium text-red-500">{captchaError}</p>
+            )}
 
             <button
               type="button"
@@ -778,13 +757,23 @@ export default function ProfileSecurityFlow({
                   setPasswordError("Kata sandi harus minimal 8 karakter.");
                   return;
                 }
-                if (!captchaToken) {
-                  setCaptchaError("Centang reCAPTCHA terlebih dahulu.");
+
+                const siteKey = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY;
+                if (!siteKey || !window.grecaptcha) {
+                  setCaptchaError("Verifikasi keamanan belum siap. Muat ulang halaman lalu coba lagi.");
                   return;
                 }
 
                 setIsVerifyingCaptcha(true);
                 try {
+                  const captchaToken = await new Promise<string>((resolve, reject) => {
+                    window.grecaptcha!.ready(() => {
+                      window.grecaptcha!.execute(siteKey, { action: "signup" })
+                        .then(resolve)
+                        .catch(reject);
+                    });
+                  });
+
                   const res = await fetch("/api/auth", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
@@ -793,27 +782,26 @@ export default function ProfileSecurityFlow({
                       email: email.trim(),
                       name: fullName || undefined,
                       password,
-                      recaptchaToken: captchaToken,
+                      recaptchaToken,
                     }),
                   });
                   const data = await res.json();
                   if (!res.ok) {
                     setCaptchaError(data.error || "Verifikasi keamanan gagal. Silakan coba lagi.");
-                    setCaptchaToken("");
                     return;
                   }
 
                   onSignupSuccess(email.trim());
                   setStep("FINGERPRINT");
                 } catch {
-                  setCaptchaError("Gagal menghubungi server. Silakan coba lagi.");
+                  setCaptchaError("Verifikasi keamanan gagal. Silakan coba lagi.");
                 } finally {
                   setIsVerifyingCaptcha(false);
                 }
               }}
               className="mt-2 w-full py-3.5 rounded-full bg-brown-900 text-white font-bold text-xs md:text-sm flex items-center justify-center gap-2 hover:bg-orange-500 transition-all shadow-md active:scale-98 disabled:opacity-50"
             >
-              {isVerifyingCaptcha ? "Membuat Akun..." : "Buat Akun & Lanjutkan →"}
+              {isVerifyingCaptcha ? "Memverifikasi..." : "Buat Akun & Lanjutkan →"}
             </button>
           </div>
         </div>
