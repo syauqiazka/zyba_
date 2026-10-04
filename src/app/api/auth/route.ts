@@ -1,7 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
 import { userRepository } from "@/backend/auth/userRepository";
-import { generateOTP, sendOTPEmail } from "@/lib/emailService";
-import { COOKIE_NAME, createOtpChallenge, verifyOtpChallenge } from "@/lib/otpChallenge";
 import bcrypt from "bcryptjs";
 import { createSessionToken } from "@/lib/auth";
 import { checkRateLimit, getClientIp, rateLimitResponse } from "@/lib/server/rateLimit";
@@ -11,7 +9,7 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
 
-    const { email, otp, name, password } = body;
+    const { email, otp, name, password, recaptchaToken } = body;
     const action = (body.action || "").toUpperCase();
 
     // =========================
@@ -105,19 +103,39 @@ export async function POST(request: NextRequest) {
       if (!email) {
         return NextResponse.json({ error: "Email wajib diisi." }, { status: 400 });
       }
+      if (!recaptchaToken) {
+        return NextResponse.json({ error: "Verifikasi reCAPTCHA wajib dilakukan." }, { status: 400 });
+      }
+
+      const recaptchaSecret = process.env.RECAPTCHA_SECRET_KEY;
+      if (!recaptchaSecret) {
+        console.error("[auth] RECAPTCHA_SECRET_KEY is not configured");
+        return NextResponse.json({ error: "Verifikasi keamanan belum dikonfigurasi server." }, { status: 503 });
+      }
+
+      const captchaResponse = await fetch("https://www.google.com/recaptcha/api/siteverify", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: new URLSearchParams({
+          secret: recaptchaSecret,
+          response: recaptchaToken,
+          remoteip: clientIp,
+        }),
+        cache: "no-store",
+      });
+      const captchaResult = await captchaResponse.json() as { success?: boolean; score?: number; action?: string; hostname?: string; ["error-codes"]?: string[] };
+
+      if (!captchaResponse.ok || !captchaResult.success) {
+        return NextResponse.json({ error: "Verifikasi reCAPTCHA gagal. Silakan centang kembali." }, { status: 400 });
+      }
 
       const normalized = email.toLowerCase().trim();
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       if (!emailRegex.test(normalized)) {
-        return NextResponse.json(
-          { error: "Format email tidak valid. Masukkan alamat email yang benar." },
-          { status: 400 }
-        );
+        return NextResponse.json({ error: "Format email tidak valid. Masukkan alamat email yang benar." }, { status: 400 });
       }
 
-      // Check if user already exists
       const existingUser = await userRepository.findByEmail(normalized);
-
       if (existingUser) {
         return NextResponse.json(
           { error: "Email ini sudah terdaftar. Silakan masuk ke akun Anda atau gunakan email lain." },
@@ -125,82 +143,11 @@ export async function POST(request: NextRequest) {
         );
       }
 
-      // Generate and deliver OTP. The verification challenge is stored in a
-      // signed HttpOnly cookie so it works consistently behind multiple web containers.
-      const otpCode = generateOTP(normalized);
-      const emailResult = await sendOTPEmail(normalized, otpCode);
-
-      if (!emailResult.delivered) {
-        return NextResponse.json(
-          { error: emailResult.message || "Kode OTP gagal dikirim. Silakan coba lagi." },
-          { status: 502 }
-        );
+      if (!password || password.length < 8) {
+        return NextResponse.json({ error: "Password wajib diisi dan minimal 8 karakter." }, { status: 400 });
       }
 
-      const challenge = createOtpChallenge(normalized, otpCode);
-      const response = NextResponse.json({
-        success: true,
-        delivered: true,
-        message: "Kode OTP telah dikirimkan ke email Anda. Silakan periksa inbox atau folder spam.",
-      });
-
-      response.cookies.set(COOKIE_NAME, challenge.token, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "lax",
-        path: "/",
-        maxAge: challenge.maxAge,
-      });
-
-      return response;
-    }
-
-    if (action === "VERIFY_OTP") {
-      const clientIp = getClientIp(request);
-      const limitCheck = await checkRateLimit(`verify_otp:${clientIp}`, 15, 60);
-      if (!limitCheck.allowed) {
-        return rateLimitResponse(limitCheck.retryAfterSec, "Terlalu banyak percobaan kode OTP.");
-      }
-
-      if (!email || !otp) {
-        return NextResponse.json({ error: "Email dan OTP wajib diisi." }, { status: 400 });
-      }
-
-      const normalized = email.toLowerCase().trim();
-
-      // Cek apakah email sudah terdaftar sebelum membuat user
-      const existingUser = await userRepository.findByEmail(normalized);
-      if (existingUser) {
-        return NextResponse.json(
-          { error: "Akun dengan email ini sudah terdaftar. Silakan masuk ke akun Anda." },
-          { status: 400 }
-        );
-      }
-
-      const challenge = verifyOtpChallenge(
-        request.cookies.get(COOKIE_NAME)?.value,
-        normalized,
-        otp
-      );
-
-      if (!challenge.valid) {
-        const message =
-          challenge.reason === "expired"
-            ? "Kode OTP telah kadaluarsa. Silakan minta kode baru."
-            : challenge.reason === "mismatch"
-              ? "Kode OTP tidak cocok. Periksa kembali email Anda."
-              : "Sesi verifikasi tidak ditemukan. Silakan minta kode OTP baru.";
-        return NextResponse.json({ error: message }, { status: 400 });
-      }
-
-      // Security: Hash password dengan bcrypt (AGENTS.md Bagian 8.1)
-      if (!password) {
-        return NextResponse.json({ error: "Password wajib diisi." }, { status: 400 });
-      }
-      const passwordToHash = password;
-      const passwordHash = await bcrypt.hash(passwordToHash, 12);
-
-      // Create user after OTP verification
+      const passwordHash = await bcrypt.hash(password, 12);
       const user = await userRepository.create({
         email: normalized,
         name: name || normalized.split("@")[0],
@@ -208,13 +155,15 @@ export async function POST(request: NextRequest) {
         onboardingCompleted: false,
       });
 
-      // Security: Ganti token yang mudah ditebak dengan token signed JWT (AGENTS.md Bagian 8.2)
       const sessionToken = await createSessionToken({
         userId: user.id,
         email: user.email,
         name: user.name,
-        onboardingCompleted: false, // baru daftar, belum assessment
+        onboardingCompleted: false,
       });
+
+      invalidateUserMeCache(user.id);
+      invalidateDailyAssessmentCache(user.id);
 
       const response = NextResponse.json({
         success: true,
@@ -222,20 +171,12 @@ export async function POST(request: NextRequest) {
         token: sessionToken,
       });
 
-      // Set auth cookie
       response.cookies.set("auth-token", sessionToken, {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
         sameSite: "lax",
         path: "/",
-        maxAge: 60 * 60 * 24 * 30, // 30 days
-      });
-      response.cookies.set(COOKIE_NAME, "", {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "lax",
-        path: "/",
-        maxAge: 0,
+        maxAge: 60 * 60 * 24 * 30,
       });
 
       return response;
