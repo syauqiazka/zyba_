@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { cookies } from "next/headers";
 import {
   ArrowLeft,
   BookOpen,
@@ -19,7 +20,8 @@ import {
 import { cache } from "react";
 import { unstable_cache } from "next/cache";
 
-export const revalidate = 3600;
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
 
 type ResourcePageProps = {
   params: {
