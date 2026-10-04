@@ -10,11 +10,11 @@ interface AssessmentNavProps {
 
 export default function AssessmentNav({ currentStep, setCurrentStep, steps }: AssessmentNavProps) {
   return (
-    <aside className="w-full lg:col-span-4 glass-card rounded-3xl p-4 sm:p-6 border border-brown-900/10 flex flex-col gap-4 bg-white/60">
+    <aside className="w-full lg:col-span-4 glass-card rounded-3xl p-3 sm:p-6 border border-brown-900/10 flex flex-col gap-4 bg-white/60">
       <div className="flex flex-col gap-1 mb-1">
         <div className="flex items-center justify-between">
           <span className="text-[10px] font-bold uppercase tracking-wider text-brown-700">
-            Progress Assessment
+            Progres Asesmen
           </span>
           <span className="text-xs font-bold text-brown-900">
             {Math.round(((currentStep + 1) / steps.length) * 100)}%
