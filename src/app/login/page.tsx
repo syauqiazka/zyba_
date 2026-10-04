@@ -386,12 +386,9 @@ function LoginContent({
                     </div>
 
                     <div className="flex items-center gap-1 rounded-full border border-brown-900/10 bg-white/70 p-1">
-
                       <button
                         type="button"
-                        onClick={() =>
-                          switchMode("SIGN_IN")
-                        }
+                        onClick={() => switchMode("SIGN_IN")}
                         className={`rounded-full px-4 py-2 text-xs font-bold transition-all ${authMode === "SIGN_IN"
                           ? "bg-brown-900 text-white shadow-sm"
                           : "text-brown-700 hover:text-brown-900"
@@ -399,7 +396,16 @@ function LoginContent({
                       >
                         Masuk
                       </button>
-
+                      <button
+                        type="button"
+                        onClick={() => switchMode("SIGN_UP")}
+                        className={`rounded-full px-4 py-2 text-xs font-bold transition-all ${authMode === "SIGN_UP"
+                          ? "bg-brown-900 text-white shadow-sm"
+                          : "text-brown-700 hover:text-brown-900"
+                          }`}
+                      >
+                        Daftar
+                      </button>
                     </div>
                   </div>
 
