@@ -123,10 +123,27 @@ export async function POST(request: NextRequest) {
         }),
         cache: "no-store",
       });
-      const captchaResult = await captchaResponse.json() as { success?: boolean; score?: number; action?: string; hostname?: string; ["error-codes"]?: string[] };
+      const captchaResult = await captchaResponse.json() as {
+        success?: boolean;
+        score?: number;
+        action?: string;
+        hostname?: string;
+        ["error-codes"]?: string[];
+      };
 
-      if (!captchaResponse.ok || !captchaResult.success) {
-        return NextResponse.json({ error: "Verifikasi reCAPTCHA gagal. Silakan centang kembali." }, { status: 400 });
+      // reCAPTCHA v3 berjalan tanpa checkbox. Hanya izinkan token
+      // yang valid, berasal dari action signup, dan memiliki skor aman.
+      if (
+        !captchaResponse.ok ||
+        !captchaResult.success ||
+        captchaResult.action !== "signup" ||
+        typeof captchaResult.score !== "number" ||
+        captchaResult.score < 0.5
+      ) {
+        return NextResponse.json(
+          { error: "Verifikasi keamanan gagal. Silakan coba lagi." },
+          { status: 400 }
+        );
       }
 
       const normalized = email.toLowerCase().trim();
