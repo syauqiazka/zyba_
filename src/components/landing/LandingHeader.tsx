@@ -4,7 +4,7 @@ import { ArrowUpRight } from "lucide-react";
 const NAV_ITEMS = [
   { label: "Fitur", href: "#fitur" },
   { label: "Cara kerja", href: "#cara-kerja" },
-  { label: "Testimoni", href: "#testimoni" },
+  { label: "Kata Mereka", href: "#testimoni" },
 ];
 
 export default function LandingHeader() {

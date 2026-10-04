@@ -27,9 +27,9 @@ export default function LandingHero() {
           </div>
 
           <h1>
-            Pelan-pelan,
-            <br />
-            tapi <span>tetap jalan.</span>
+            Ceritamu 
+            <br/>
+            layak punya <span>ruang yang aman.</span>
           </h1>
 
           <p className="hero-lead">
