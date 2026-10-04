@@ -63,24 +63,6 @@ export async function generateMetadata({
     if (session?.userId) isPlus = (await getUserPlan(session.userId)) === "PLUS";
   }
 
-  if (resource.isPro && !isPlus) {
-    // Premium content is intentionally not exposed to non-Plus users.
-    return (
-      <>
-        <div className="max-w-4xl mx-auto pb-16">
-          <Link href="/resources" className="inline-flex items-center gap-2 text-sm font-semibold text-brown-700 hover:text-orange-500 transition-colors mb-6">
-            <ArrowLeft size={16} /> Kembali ke Sumber Daya
-          </Link>
-          <div className="glass-card rounded-3xl p-8 sm:p-10 border border-orange-500/20 bg-orange-50/40 text-center">
-            <div className="inline-flex items-center justify-center px-3 py-1.5 rounded-full bg-orange-500 text-white text-xs font-bold mb-4">ZYBA PLUS</div>
-            <h1 className="font-display text-2xl sm:text-3xl font-extrabold text-brown-900">Konten Premium ZYBA</h1>
-            <p className="mt-3 text-sm sm:text-base text-brown-700 leading-7 max-w-xl mx-auto">Artikel ini khusus untuk pengguna ZYBA Plus. Aktifkan Premium untuk membaca materi lengkap.</p>
-            <Link href="/settings/zyba-plus" className="inline-flex items-center justify-center mt-5 min-h-[44px] px-6 rounded-full bg-brown-900 text-white text-sm font-bold hover:bg-orange-500 transition-colors">Aktifkan ZYBA Plus</Link>
-          </div>
-        </div>
-      </>
-    );
-  }
 
   if (!resource) {
     return {
@@ -164,6 +146,40 @@ export default async function ResourceDetailPage({
 
   if (!resource) {
     notFound();
+  }
+
+  const token = cookies().get("auth-token")?.value;
+  let isPlus = false;
+  if (token) {
+    const session = await verifySessionToken(token);
+    if (session?.userId) {
+      isPlus = (await getUserPlan(session.userId)) === "PLUS";
+    }
+  }
+
+  if (resource.isPro && !isPlus) {
+    return (
+      <article className="max-w-4xl mx-auto pb-16">
+        <Link href="/resources" className="inline-flex items-center gap-2 text-sm font-semibold text-brown-700 hover:text-orange-500 transition-colors mb-6">
+          <ArrowLeft size={16} />
+          Kembali ke Sumber Daya
+        </Link>
+        <div className="glass-card rounded-3xl p-8 sm:p-10 border border-orange-500/20 bg-orange-50/40 text-center">
+          <div className="inline-flex items-center justify-center px-3 py-1.5 rounded-full bg-orange-500 text-white text-xs font-bold mb-4">
+            ZYBA PLUS
+          </div>
+          <h1 className="font-display text-2xl sm:text-3xl font-extrabold text-brown-900">
+            Konten Premium ZYBA
+          </h1>
+          <p className="mt-3 text-sm sm:text-base text-brown-700 leading-7 max-w-xl mx-auto">
+            Artikel ini khusus untuk pengguna ZYBA Plus. Aktifkan Premium untuk membaca materi lengkap.
+          </p>
+          <Link href="/settings/zyba-plus" className="inline-flex items-center justify-center mt-5 min-h-[44px] px-6 rounded-full bg-brown-900 text-white text-sm font-bold hover:bg-orange-500 transition-colors">
+            Aktifkan ZYBA Plus
+          </Link>
+        </div>
+      </article>
+    );
   }
 
   const description = resource.isPro
