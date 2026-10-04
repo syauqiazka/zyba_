@@ -775,7 +775,7 @@ export default function ProfileSecurityFlow({
                   });
                   const data = await res.json();
                   if (!res.ok) {
-                    setPasswordError(data.error || "Gagal memproses pendaftaran. Periksa kembali email Anda.");
+                    setPasswordError(`Kode OTP gagal dikirim. ${data.error || "Silakan coba lagi."}`);
                     return;
                   }
 
