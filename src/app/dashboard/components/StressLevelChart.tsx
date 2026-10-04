@@ -406,13 +406,6 @@ export default function StressLevelChart({ initialHistory }: StressLevelChartPro
 
       {/* FOOTER */}
       <div className="flex items-center justify-between text-xs pt-3 border-t border-brown-900/10 text-brown-700">
-        <span>
-          Rata-rata:{" "}
-          {average !== null
-            ? `${average.toFixed(1)} / 5`
-            : "- / 5"}
-        </span>
-
         {hasData && (
           <span>
             {
@@ -425,6 +418,10 @@ export default function StressLevelChart({ initialHistory }: StressLevelChartPro
             hari terisi
           </span>
         )}
+
+        <a href="/daily-assessment" className="text-orange-500 hover:text-orange-600 transition-colors font-bold">
+          Mulai Assessment
+        </a>
       </div>
 
       {/* ERROR */}

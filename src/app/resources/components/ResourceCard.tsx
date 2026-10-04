@@ -176,9 +176,6 @@ export default function ResourceCard({
       </div>
 
       <div className="flex items-center justify-between mt-6 pt-4 border-t border-brown-900/10 text-xs font-bold text-brown-900">
-        <span className="text-brown-700/80 font-medium">
-          Oleh {item.author}
-        </span>
 
         <div className="flex items-center gap-3">
           {!item.isPro && (
