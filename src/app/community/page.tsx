@@ -1,6 +1,6 @@
 ﻿"use client";
 
-import React, { useRef } from "react";
+import React, { useRef, useState } from "react";
 import ComposeBox from "./components/ComposeBox";
 import PostCard from "./components/PostCard";
 import CreatePostModal from "./components/CreatePostModal";
@@ -35,6 +35,7 @@ export default function CommunityPage() {
   } = useCommunity();
 
   const composeRef = useRef<HTMLDivElement>(null);
+  const [feedMenuOpen, setFeedMenuOpen] = useState(false);
 
   return (
     <div className="flex-1 min-w-0 h-full overflow-y-auto flex justify-center py-4 px-3 sm:px-6 relative">
@@ -44,18 +45,48 @@ export default function CommunityPage() {
           <h1 className="font-bold text-base md:text-lg text-brown-900 tracking-tight">
             For you
           </h1>
-          <button
-            type="button"
-            className="text-brown-700/40 hover:text-brown-900 p-1.5 rounded-lg transition-colors"
-            title="Opsi feed"
-            aria-label="Opsi feed"
-          >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-              <circle cx="5" cy="12" r="2" />
-              <circle cx="12" cy="12" r="2" />
-              <circle cx="19" cy="12" r="2" />
-            </svg>
-          </button>
+          <div className="relative">
+            <button
+              type="button"
+              onClick={() => setFeedMenuOpen((open) => !open)}
+              className="min-w-9 min-h-9 flex items-center justify-center text-brown-700/60 hover:text-brown-900 hover:bg-cream p-1.5 rounded-lg transition-colors touch-manipulation"
+              title="Opsi feed"
+              aria-label="Opsi feed"
+              aria-expanded={feedMenuOpen}
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                <circle cx="5" cy="12" r="2" />
+                <circle cx="12" cy="12" r="2" />
+                <circle cx="19" cy="12" r="2" />
+              </svg>
+            </button>
+            {feedMenuOpen && (
+              <div className="absolute right-0 top-full mt-1 z-[70] w-52 rounded-2xl border border-brown-900/10 bg-white p-1.5 shadow-xl">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setFeedMenuOpen(false);
+                    window.location.reload();
+                  }}
+                  className="w-full rounded-xl px-3 py-2.5 text-left text-xs font-semibold text-brown-900 hover:bg-cream"
+                >
+                  Segarkan feed
+                </button>
+                {selectedTag && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      handleTagFilter("");
+                      setFeedMenuOpen(false);
+                    }}
+                    className="w-full rounded-xl px-3 py-2.5 text-left text-xs font-semibold text-brown-900 hover:bg-cream"
+                  >
+                    Hapus filter topik
+                  </button>
+                )}
+              </div>
+            )}
+          </div>
         </div>
 
         {/* Crisis Banner */}
@@ -78,7 +109,7 @@ export default function CommunityPage() {
         </div>
 
         {/* Post list */}
-        <div className="bg-white rounded-2xl border border-brown-900/10 shadow-xs overflow-hidden mb-12 divide-y divide-brown-900/6">
+        <div className="bg-white rounded-2xl border border-brown-900/10 shadow-xs overflow-visible mb-12 divide-y divide-brown-900/6">
           {currentPosts.length === 0 ? (
             <div className="py-16 flex flex-col items-center text-center px-6">
               <div className="w-14 h-14 rounded-2xl bg-green-100 border border-green-200 flex items-center justify-center mb-3 shadow-xs">
