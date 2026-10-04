@@ -10,7 +10,7 @@ import PaywallModal from "./components/PaywallModal";
 const RESOURCES_DATA: ResourceItem[] = [
   {
     id: "r-1",
-    type: "COURSE",
+    type: "AUDIO",
     title: "Pengenalan Meditasi Mindfulness & Pernapasan Sadar",
     author: "dr. Amanda Lee, Sp.KJ",
     duration: "5:55 Menit",
@@ -37,7 +37,7 @@ const RESOURCES_DATA: ResourceItem[] = [
   },
   {
     id: "r-3",
-    type: "COURSE",
+    type: "AUDIO",
     title: "Pemulihan Insomnia & Relaksasi Deep Sleep Alami",
     author: "Institut Kualitas Tidur Nusantara",
     duration: "12:00 Menit",
@@ -80,7 +80,7 @@ const RESOURCES_DATA: ResourceItem[] = [
   },
   {
     id: "r-6",
-    type: "COURSE",
+    type: "AUDIO",
     title: "Latihan Pernapasan Box Breathing 4-4-4-4 Menenangkan",
     author: "Zyba Wellness Audio Lab",
     duration: "4:30 Menit",
@@ -227,18 +227,6 @@ export default function ResourcesPage() {
           >
             <Headphones size={13} />
             <span>Audio Ambient ({resources.filter((r) => r.type === "AUDIO").length})</span>
-          </button>
-          <button
-            type="button"
-            onClick={() => setActiveFilter("COURSE")}
-            className={`min-h-[40px] px-4 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap shrink-0 flex items-center gap-1.5 ${
-              activeFilter === "COURSE"
-                ? "bg-brown-900 text-white shadow-sm"
-                : "text-brown-700 hover:text-brown-900"
-            }`}
-          >
-            <Sparkles size={13} />
-            <span>Kursus ({resources.filter((r) => r.type === "COURSE").length})</span>
           </button>
         </div>
       </div>
