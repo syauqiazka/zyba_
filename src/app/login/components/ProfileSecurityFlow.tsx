@@ -795,7 +795,7 @@ export default function ProfileSecurityFlow({
                 <span>Mengirim Kode OTP ke Email...</span>
               ) : (
                 <>
-                  <span>Lanjutkan</span>
+                  <span>{passwordError.startsWith("Kode OTP") ? "Coba Lagi" : "Lanjutkan"}</span>
                   <span>→</span>
                 </>
               )}
