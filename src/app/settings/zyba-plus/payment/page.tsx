@@ -62,7 +62,7 @@ export default function ManualPaymentPage() {
   const statusText = useMemo(() => {
     if (!payment) return "";
     if (payment.status === "SUCCESS") return "Pembayaran diterima";
-    if (payment.status === "REJECTED") return "Pembayaran ditolak";
+    if (payment.status === "CANCELLED") return "Pembayaran ditolak";
     if (payment.status === "PENDING" && payment.submittedAt) return "Menunggu verifikasi admin";
     return "Menunggu bukti pembayaran";
   }, [payment]);
