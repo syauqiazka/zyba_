@@ -17,6 +17,37 @@ interface CreatePostModalProps {
   onSubmit: (imageUrl?: string | null) => Promise<void> | void;
 }
 
+async function compressCommunityImage(file: File): Promise<File> {
+  if (file.size <= 2 * 1024 * 1024 && file.type !== "image/gif") return file;
+
+  const bitmap = await createImageBitmap(file);
+  const maxDimension = 1600;
+  const scale = Math.min(1, maxDimension / Math.max(bitmap.width, bitmap.height));
+  const canvas = document.createElement("canvas");
+  canvas.width = Math.max(1, Math.round(bitmap.width * scale));
+  canvas.height = Math.max(1, Math.round(bitmap.height * scale));
+
+  const ctx = canvas.getContext("2d");
+  if (!ctx) {
+    bitmap.close();
+    return file;
+  }
+
+  ctx.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
+  bitmap.close();
+
+  const outputType = "image/webp";
+  const blob = await new Promise<Blob | null>((resolve) =>
+    canvas.toBlob(resolve, outputType, 0.82)
+  );
+
+  if (!blob) return file;
+  return new File([blob], file.name.replace(/.[^.]+$/, ".webp"), {
+    type: outputType,
+    lastModified: Date.now(),
+  });
+}
+
 export default function CreatePostModal({
   open,
   newPostContent,
@@ -65,12 +96,12 @@ export default function CreatePostModal({
     if (!file) return;
 
     if (!file.type.startsWith("image/")) {
-      setUploadError("Hanya file gambar (JPG, PNG, WEBP, GIF) yang didukung.");
+      setUploadError("Hanya file gambar JPG, PNG, atau WEBP yang didukung.");
       return;
     }
 
-    if (file.size > 10 * 1024 * 1024) {
-      setUploadError("Ukuran foto maksimal 10MB.");
+    if (file.size > 5 * 1024 * 1024) {
+      setUploadError("Ukuran foto maksimal 5MB.");
       return;
     }
 
@@ -99,8 +130,13 @@ export default function CreatePostModal({
     let uploadedUrl: string | null = null;
     try {
       if (selectedFile) {
+        const optimizedFile = await compressCommunityImage(selectedFile);
+        if (optimizedFile.size > 5 * 1024 * 1024) {
+          throw new Error("Foto masih terlalu besar setelah dikompres. Gunakan foto di bawah 5MB.");
+        }
+
         const formData = new FormData();
-        formData.append("file", selectedFile);
+        formData.append("file", optimizedFile);
 
         const uploadRes = await fetch("/api/upload", {
           method: "POST",
@@ -140,7 +176,7 @@ export default function CreatePostModal({
       <input
         ref={fileInputRef}
         type="file"
-        accept="image/png,image/jpeg,image/webp,image/gif"
+        accept="image/png,image/jpeg,image/webp"
         className="hidden"
         onChange={handleFileChange}
       />
