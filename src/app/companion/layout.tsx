@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { CompanionProvider, useCompanion } from "./context/CompanionContext";
 import CompanionSidebar from "./components/CompanionSidebar";
+import MobileBottomNav from "@/components/ui/MobileBottomNav";
 
 /**
  * Companion Layout — manages sidebar visibility state (hide/show).
@@ -51,6 +52,7 @@ function CompanionLayoutInner({ children }: { children: React.ReactNode }) {
       <main className="flex-1 min-w-0 w-full h-full min-h-0 overflow-hidden flex flex-col p-0 md:p-3 lg:p-6 transition-all duration-300">
         {children}
       </main>
+      <MobileBottomNav />
     </div>
   );
 }
