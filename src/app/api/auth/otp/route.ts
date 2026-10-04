@@ -21,13 +21,13 @@ export async function POST(req: NextRequest) {
     }
 
     if (action === "REQUEST") {
-      const limit = checkRateLimit(`otp_req:${clientIp}`, 5, 300);
+      const limit = await checkRateLimit(`otp_req:${clientIp}`, 5, 300);
       if (!limit.allowed) {
         return rateLimitResponse(limit.retryAfterSec, "Terlalu banyak permintaan OTP.");
       }
 
       const generatedCode = generateOTP(email);
-      await sendOTPEmail(email, generatedCode);
+      const delivery = await sendOTPEmail(email, generatedCode);\n      if (!delivery.delivered) {\n        return NextResponse.json({ error: delivery.message || "OTP gagal dikirim." }, { status: 502 });\n      }
 
 
       // Security: Sesuai AGENTS.md Bagian 8.3, demoCode dihapus dari response API
