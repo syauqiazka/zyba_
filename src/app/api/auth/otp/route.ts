@@ -11,7 +11,6 @@ export async function POST(req: NextRequest) {
       action: "REQUEST" | "VERIFY";
       email: string;
       otp?: string;
-      provider?: "EMAIL" | "GOOGLE";
     };
 
     if (!email) {
