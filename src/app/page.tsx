@@ -3,6 +3,7 @@ import {
   LandingHeader,
   LandingHero,
   LandingFeatures,
+  LandingPartners,
   LandingAbout,
   LandingTestimonials,
   LandingCta,
@@ -56,6 +57,7 @@ export default function LandingPage() {
       <main>
         <LandingHero />
         <LandingFeatures />
+        <LandingPartners />
         <LandingAbout />
         <LandingTestimonials />
       </main>
