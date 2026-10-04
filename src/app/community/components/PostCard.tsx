@@ -515,7 +515,7 @@ export default function PostCard({ post, onToggleLike, onToggleRepost, onAddComm
                     setConfirmMute(false);
                     setConfirmBlock(false);
                   }}
-                  className="text-brown-700/30 hover:text-brown-900 transition-colors opacity-0 group-hover:opacity-100 focus:opacity-100 p-1.5 rounded-lg hover:bg-cream"
+                  className="text-brown-700/30 hover:text-brown-900 transition-colors opacity-100 focus:opacity-100 p-1.5 rounded-lg hover:bg-cream"
                   title="Opsi lainnya"
                   aria-label="Opsi lainnya"
                   aria-expanded={menuOpen}
