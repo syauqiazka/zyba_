@@ -761,19 +761,48 @@ export default function ProfileSecurityFlow({
                 }
 
                 const siteKey = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY;
-                if (!siteKey || !window.grecaptcha) {
-                  setCaptchaError("Verifikasi keamanan belum siap. Muat ulang halaman lalu coba lagi.");
+                if (!siteKey) {
+                  setCaptchaError("Verifikasi keamanan belum dikonfigurasi. Pastikan NEXT_PUBLIC_RECAPTCHA_SITE_KEY sudah diisi di environment production.");
                   return;
                 }
 
                 setIsVerifyingCaptcha(true);
                 try {
                   const captchaToken = await new Promise<string>((resolve, reject) => {
-                    window.grecaptcha!.ready(() => {
-                      window.grecaptcha!.execute(siteKey, { action: "signup" })
-                        .then(resolve)
-                        .catch(reject);
-                    });
+                    const executeCaptcha = () => {
+                      if (!window.grecaptcha) {
+                        reject(new Error("reCAPTCHA belum tersedia"));
+                        return;
+                      }
+                      window.grecaptcha.ready(() => {
+                        window.grecaptcha!.execute(siteKey, { action: "signup" })
+                          .then((token) => {
+                            if (!token) reject(new Error("Token reCAPTCHA kosong"));
+                            else resolve(token);
+                          })
+                          .catch(reject);
+                      });
+                    };
+
+                    if (window.grecaptcha) {
+                      executeCaptcha();
+                      return;
+                    }
+
+                    const existing = document.querySelector('script[src*="google.com/recaptcha/api.js"]') as HTMLScriptElement | null;
+                    if (existing) {
+                      existing.addEventListener("load", executeCaptcha, { once: true });
+                      existing.addEventListener("error", () => reject(new Error("Gagal memuat reCAPTCHA")), { once: true });
+                      return;
+                    }
+
+                    const script = document.createElement("script");
+                    script.src = "https://www.google.com/recaptcha/api.js?render=" + encodeURIComponent(siteKey);
+                    script.async = true;
+                    script.defer = true;
+                    script.onload = executeCaptcha;
+                    script.onerror = () => reject(new Error("Gagal memuat reCAPTCHA"));
+                    document.head.appendChild(script);
                   });
 
                   const res = await fetch("/api/auth", {
