@@ -5,7 +5,7 @@
 
 import nodemailer from "nodemailer";
 
-export function generateOTP(email: string): string {
+export function generateOTP(_email: string): string {
   // Generate a short-lived 4-digit verification code.
   return Math.floor(1000 + Math.random() * 9000).toString();
 }
