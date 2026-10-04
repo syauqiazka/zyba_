@@ -7,89 +7,8 @@ import { useFreshDataSignal } from "@/hooks/useFreshData";
 import ResourcePlayerModal from "./components/ResourcePlayerModal";
 import PaywallModal from "./components/PaywallModal";
 
-const RESOURCES_DATA: ResourceItem[] = [
-  {
-    id: "r-1",
-    type: "AUDIO",
-    title: "Pengenalan Meditasi Mindfulness & Pernapasan Sadar",
-    author: "dr. Amanda Lee, Sp.KJ",
-    duration: "02:21 Menit",
-    category: "Meditasi",
-    isPro: false,
-    iconName: "headphones",
-    desc: "Panduan audio pernapasan mendalam untuk meredakan ketegangan fisik dan pikiran yang dipenuhi beban akademik serta pekerjaan.",
-  },
-  {
-    id: "r-2",
-    type: "ARTICLE",
-    title: "Mengapa Kita Sering Overthinking? Memahami Cara Kerja Otak",
-    author: "Tim Riset Klinis ZYBA",
-    duration: "4 Menit Baca",
-    category: "Psikologi",
-    isPro: false,
-    iconName: "brain",
-    desc: "Memahami mekanisme amigdala saat menghadapi ketidakpastian dan cara mengalihkan fokus ke momen saat ini melalui grounding 5-4-3-2-1.",
-    articleContent: [
-      "Pikiran berlebih (overthinking) bukanlah kegagalan mental, melainkan respons alami evolusi otak ketika mendeteksi ketidakpastian. Amigdala memicu sinyal waspada, sementara korteks prefrontal mencoba menyusun skenario antisipasi secara terus-menerus.",
-      "Kunci menghentikan lingkaran ini adalah teknik Grounding 5-4-3-2-1: Sebutkan 5 hal yang bisa kamu lihat, 4 hal yang bisa kamu sentuh, 3 hal yang bisa kamu dengar, 2 aroma yang bisa kamu cium, dan 1 rasa yang ada di mulutmu.",
-      "Latihan ini memaksa otak sensorik mengambil alih energi dari lingkaran pikiran cemas, membantumu kembali hadir sepenuhnya di detik ini.",
-    ],
-  },
-  {
-    id: "r-3",
-    type: "AUDIO",
-    title: "Pemulihan Insomnia & Relaksasi Deep Sleep Alami",
-    author: "Institut Kualitas Tidur Nusantara",
-    duration: "12:00 Menit",
-    category: "Kualitas Tidur",
-    isPro: true,
-    iconName: "moon",
-    desc: "Teknik gelombang suara Alpha dan relaksasi otot bertahap untuk memandu tubuh masuk ke fase tidur lelap (Deep Sleep) tanpa obat tidur.",
-  },
-  {
-    id: "r-4",
-    type: "ARTICLE",
-    title: "Menghadapi Burnout & Tekanan Akademik Gen Z",
-    author: "Prof. Handoko, M.Psi",
-    duration: "6 Menit Baca",
-    category: "Akademik & Karir",
-    isPro: true,
-    iconName: "graduation",
-    desc: "Strategi manajemen energi dan teknik Pomodoro adaptif yang dirancang khusus untuk ritme belajar mahasiswa dan profesional muda.",
-    articleContent: [
-      "Burnout akademik kerap terjadi bukan karena kurangnya kecerdasan, melainkan karena batas antara jam belajar dan istirahat yang kabur di era digital.",
-      "Gunakan teknik 50/10 Pomodoro Adaptif: 50 menit fokus tanpa notifikasi ponsel, diikuti 10 menit istirahat penuh tanpa menatap layar (jalan kaki singkat, peregangan, minum air).",
-      "Ingatlah bahwa istirahat adalah bagian dari produktivitas itu sendiri, bukan hadiah yang harus kamu tukar dengan kelelahan ekstrem.",
-    ],
-  },
-  {
-    id: "r-5",
-    type: "ARTICLE",
-    title: "Self-Compassion: Berhenti Terlalu Menghakimi Diri Sendiri",
-    author: "Rian Suryadi, M.Psi",
-    duration: "5 Menit Baca",
-    category: "Psikologi",
-    isPro: false,
-    iconName: "heart",
-    desc: "Belajar menerima ketidaksempurnaan dengan kelembutan, serta mengubah suara kritik internal menjadi afirmasi suportif.",
-    articleContent: [
-      "Banyak dari kita terbiasa berbicara kepada diri sendiri dengan kata-kata yang tidak akan pernah kita ucapkan kepada sahabat terbaik.",
-      "Self-compassion bukan berarti menyerah atau membenarkan kesalahan, melainkan memberi diri ruang aman untuk bertumbuh dari kesalahan tanpa rasa malu yang melumpuhkan.",
-      "Latihan sederhana: ketika gagal, letakkan satu tangan di dada, rasakan kehangatannya, dan katakan: 'Ini memang saat yang berat, tapi aku sedang belajar dan aku pantas dihargai.'",
-    ],
-  },
-  {
-    id: "r-6",
-    type: "AUDIO",
-    title: "Latihan Pernapasan Box Breathing 4-4-4-4 Menenangkan",
-    author: "Zyba Wellness Audio Lab",
-    duration: "02:21 Menit",
-    category: "Meditasi",
-    isPro: false,
-    iconName: "headphones",
-    desc: "Metode pernapasan terbukti klinis untuk menurunkan detak jantung dan meredakan kepanikan secara cepat kapan pun dibutuhkan.",
-  },
-];
+const RESOURCES_DATA: ResourceItem[] = [];
+
 
 export default function ResourcesPage() {
   const dataRefreshSignal = useFreshDataSignal();
@@ -100,8 +19,20 @@ export default function ResourcesPage() {
   const [isAudioPlaying, setIsAudioPlaying] = useState(false);
   const [showPaywallModal, setShowPaywallModal] = useState(false);
   const [courseCompleted, setCourseCompleted] = useState(false);
+  const [userPlan, setUserPlan] = useState<"FREE" | "PLUS">("FREE");
 
   useEffect(() => {
+    async function loadUserPlan() {
+      try {
+        const res = await fetch("/api/user/me", { cache: "no-store" });
+        if (res.ok) {
+          const data = await res.json();
+          setUserPlan(data.user?.plan === "PLUS" ? "PLUS" : "FREE");
+        }
+      } catch {}
+    }
+    loadUserPlan();
+
     async function loadResources() {
       try {
         setLoading(true);
@@ -160,7 +91,7 @@ export default function ResourcesPage() {
   );
 
   const handleOpenResource = (r: ResourceItem) => {
-    if (r.isPro) {
+    if (r.isPro && userPlan !== "PLUS") {
       setShowPaywallModal(true);
     } else {
       setActiveResource(r);
