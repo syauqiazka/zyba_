@@ -15,17 +15,18 @@ import {
   Users,
   BookOpen,
   Trophy,
+  Quote,
 } from "lucide-react";
 
 const NAV_ITEMS = [
   { href: "/dashboard", label: "Dashboard", icon: Home },
   { href: "/daily-assessment", label: "Assessment Harian", icon: CalendarCheck },
-  { href: "/companion", label: "Zyba Companion", icon: Bot },
-  { href: "/activity", label: "Smart Activity Planner", icon: Zap },
-  { href: "/wellness-journey", label: "Wellness Journey", icon: Heart },
-  { href: "/community", label: "Zyba Community", icon: Users },
-  { href: "/resources", label: "Resources", icon: BookOpen },
-  { href: "/guidebook", label: "Guidebook", icon: BookOpen },
+  { href: "/companion", label: "Tanya Zyba", icon: Bot },
+  { href: "/activity", label: "Kegiatan Rutin Harian", icon: Zap },
+  { href: "/wellness-journey", label: "Ruang Sehat", icon: Heart },
+  { href: "/community", label: "Komunitas Zyba", icon: Users },
+  { href: "/resources", label: "Wawasan", icon: Quote },
+  { href: "/guidebook", label: "Buku Panduan", icon: BookOpen },
   { href: "/achievements", label: "Pencapaian", icon: Trophy },
 ];
 
