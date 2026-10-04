@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { BookOpen, Headphones, Sparkles, Filter } from "lucide-react";
 import ResourceCard, { ResourceItem } from "./components/ResourceCard";
 import { useFreshDataSignal } from "@/hooks/useFreshData";
@@ -12,6 +13,7 @@ const RESOURCES_DATA: ResourceItem[] = [];
 
 export default function ResourcesPage() {
   const dataRefreshSignal = useFreshDataSignal();
+  const router = useRouter();
   const [activeFilter, setActiveFilter] = useState<"ALL" | "ARTICLE" | "COURSE" | "AUDIO">("ALL");
   const [resources, setResources] = useState<ResourceItem[]>(RESOURCES_DATA);
   const [loading, setLoading] = useState(false);
@@ -193,8 +195,8 @@ export default function ResourcesPage() {
         open={showPaywallModal}
         onClose={() => setShowPaywallModal(false)}
         onUpgrade={() => {
-          alert("Selamat! Kamu berhasil mengaktifkan fitur Zyba Plus.");
           setShowPaywallModal(false);
+          router.push("/settings/zyba-plus");
         }}
       />
     </div>
