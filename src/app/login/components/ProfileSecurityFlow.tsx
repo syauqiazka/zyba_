@@ -326,7 +326,7 @@ export default function ProfileSecurityFlow({
             {/* Tombol Lanjutkan → */}
             <button
               type="button"
-              onClick={() => setStep("SELECT_AVATAR")}
+              onClick={() => setStep("COMPILING")}
               className="w-full py-3.5 rounded-full bg-brown-900 text-white font-bold text-xs md:text-sm flex items-center justify-center gap-2 hover:bg-orange-500 transition-all shadow-md active:scale-98"
             >
               <span>Lanjutkan</span>
@@ -355,7 +355,7 @@ export default function ProfileSecurityFlow({
             </span>
 
             <div className="mt-3 text-center max-w-xs">
-              <p className="text-[11px] text-brown-700/70">Foto profil bisa dipilih di tahap akhir setelah akun berhasil diverifikasi.</p>
+              <p className="text-[11px] text-brown-700/70">Lengkapi data dasar akun untuk melanjutkan.</p>
             </div>
           </div>
 
