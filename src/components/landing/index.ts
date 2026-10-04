@@ -4,3 +4,5 @@ export { default as LandingFeatures } from "./LandingFeatures";
 export { default as LandingAbout } from "./LandingAbout";
 export { default as LandingTestimonials } from "./LandingTestimonials";
 export { default as LandingCta } from "./LandingCta";
+
+export { default as LandingPartners } from "./LandingPartners";
