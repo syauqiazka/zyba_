@@ -7,7 +7,7 @@ export async function POST(req: NextRequest) {
   try {
     const clientIp = getClientIp(req);
     const body = await req.json();
-    const { action, email, otp, provider = "EMAIL" } = body as {
+    const { action, email, otp } = body as {
       action: "REQUEST" | "VERIFY";
       email: string;
       otp?: string;
