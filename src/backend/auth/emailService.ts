@@ -6,8 +6,7 @@
 import nodemailer from "nodemailer";
 
 export function generateOTP(email: string): string {
-  // Generate 4-digit numeric code
-  const otp = Math.floor(1000 + Math.random() * 9000).toString();
+  // Generate a short-lived 4-digit verification code.
   return Math.floor(1000 + Math.random() * 9000).toString();
 }
 
@@ -213,21 +212,9 @@ export async function sendOTPEmail(
     }
   }
 
-  // 3. Fallback bila konfigurasi SMTP / Gmail belum diatur di .env
-  console.log("=================================================");
-  console.log("📧 [ZYBA AUTH BACKEND EMAIL SERVICE - MODE TESTING]");
-  console.log(`Penerima : ${normalizedEmail}`);
-  console.log(`Kode OTP : ${otp}`);
-  console.log("-------------------------------------------------");
-  console.log("💡 TIPS PENGIRIMAN NYATA:");
-  console.log("Untuk mengirim email langsung ke inbox Gmail pengguna, tambahkan di file .env:");
-  console.log("GMAIL_USER=\"email-anda@gmail.com\"");
-  console.log("GMAIL_APP_PASSWORD=\"16-digit-app-password\"");
-  console.log("=================================================");
-
   return {
-    success: true,
+    success: false,
     delivered: false,
-    message: "Konfigurasi SMTP belum diatur di .env. Kode OTP dicatat di konsol server (atau gunakan 0000 untuk demo).",
+    message: "Layanan email belum dikonfigurasi. Silakan coba lagi nanti.",
   };
 }
