@@ -1,9 +1,30 @@
 "use client";
 
 import { Suspense, useState, useEffect } from "react";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import Sidebar from "@/components/ui/Sidebar";
 import NavigationProgress from "@/components/ui/NavigationProgress";
+
+const PROTECTED_PATHS = [
+  "/dashboard",
+  "/wellness-journey",
+  "/daily-assessment",
+  "/mood-check-in",
+  "/activity",
+  "/companion",
+  "/community",
+  "/resources",
+  "/assessment",
+  "/settings",
+  "/welcome",
+  "/achievements",
+  "/pencapaian",
+];
+
+function isProtectedPath(pathname: string | null) {
+  if (!pathname) return false;
+  return PROTECTED_PATHS.some((path) => pathname === path || pathname.startsWith(`${path}/`));
+}
 
 function SidebarSkeleton() {
   return (
@@ -65,8 +86,54 @@ export default function ClientLayout({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
+  const router = useRouter();
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
   const [headerAvatar, setHeaderAvatar] = useState<string>("🦊");
+  const [authStatus, setAuthStatus] = useState<"checking" | "authenticated" | "unauthenticated">("checking");
+
+  useEffect(() => {
+    if (!isProtectedPath(pathname)) {
+      setAuthStatus("authenticated");
+      return;
+    }
+
+    let cancelled = false;
+
+    const verifySession = async () => {
+      try {
+        const res = await fetch("/api/user/me", { cache: "no-store" });
+        if (cancelled) return;
+
+        if (!res.ok) {
+          setAuthStatus("unauthenticated");
+          const redirectUrl = `/login?redirected=true&redirect=${encodeURIComponent(pathname)}`;
+          router.replace(redirectUrl);
+          return;
+        }
+
+        const data = await res.json();
+        if (cancelled) return;
+
+        if (!data?.user) {
+          setAuthStatus("unauthenticated");
+          router.replace(`/login?redirected=true&redirect=${encodeURIComponent(pathname)}`);
+          return;
+        }
+
+        setAuthStatus("authenticated");
+      } catch {
+        if (!cancelled) {
+          setAuthStatus("unauthenticated");
+          router.replace(`/login?redirected=true&redirect=${encodeURIComponent(pathname)}`);
+        }
+      }
+    };
+
+    verifySession();
+    return () => {
+      cancelled = true;
+    };
+  }, [pathname, router]);
 
   // Baca avatar dari localStorage saat mount
   useEffect(() => {
@@ -110,6 +177,37 @@ export default function ClientLayout({
         <Suspense fallback={<PageLoadingFallback />}>
           {children}
         </Suspense>
+      </>
+    );
+  }
+
+  if (isProtectedPath(pathname) && authStatus !== "authenticated") {
+    return (
+      <>
+        <NavigationProgress />
+        <div className="flex min-h-screen items-center justify-center bg-cream px-6 py-10 text-brown-900">
+          <div className="w-full max-w-md rounded-[28px] border border-brown-900/10 bg-white p-8 text-center shadow-[0_24px_60px_rgba(41,35,31,0.08)]">
+            <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-orange-100 text-2xl">
+              🔒
+            </div>
+            <p className="text-[11px] font-extrabold uppercase tracking-[0.16em] text-brown-700/60">
+              Akses dibatasi
+            </p>
+            <h1 className="mt-3 font-display text-3xl font-extrabold tracking-[-0.05em] text-brown-900">
+              Silakan masuk terlebih dahulu
+            </h1>
+            <p className="mt-3 text-sm leading-6 text-brown-700">
+              Halaman ini hanya bisa dibuka setelah akun Anda login.
+            </p>
+            <button
+              type="button"
+              onClick={() => router.push(`/login?redirected=true&redirect=${encodeURIComponent(pathname ?? "/dashboard")}`)}
+              className="mt-6 inline-flex w-full items-center justify-center rounded-2xl bg-brown-900 px-5 py-3 text-sm font-extrabold text-white transition-all hover:bg-orange-500"
+            >
+              {authStatus === "checking" ? "Memeriksa sesi..." : "Masuk ke ZYBA"}
+            </button>
+          </div>
+        </div>
       </>
     );
   }

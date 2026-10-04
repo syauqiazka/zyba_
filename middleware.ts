@@ -6,6 +6,7 @@ const PROTECTED_PATHS = [
   "/dashboard",
   "/wellness-journey",
   "/daily-assessment",
+  "/mood-check-in",
   "/activity",
   "/companion",
   "/community",
@@ -14,6 +15,7 @@ const PROTECTED_PATHS = [
   "/settings",
   "/welcome",
   "/achievements",
+  "/pencapaian",
 ];
 
 /**
@@ -56,6 +58,13 @@ function getRedirectUrl(path: string, request: NextRequest): URL {
   return new URL(path, request.url);
 }
 
+function buildAuthRedirect(request: NextRequest, protectedPath: string) {
+  const url = getRedirectUrl("/login", request);
+  url.searchParams.set("redirected", "true");
+  url.searchParams.set("redirect", protectedPath);
+  return url;
+}
+
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
@@ -82,17 +91,13 @@ export async function middleware(request: NextRequest) {
     const token = request.cookies.get("auth-token");
 
     if (!token || !token.value) {
-      const url = getRedirectUrl("/login", request);
-      url.searchParams.set("redirected", "true");
-      return NextResponse.redirect(url);
+      return NextResponse.redirect(buildAuthRedirect(request, pathname));
     }
 
     // Verifikasi JWT
     const session = await verifySessionToken(token.value);
     if (!session) {
-      const url = getRedirectUrl("/login", request);
-      url.searchParams.set("redirected", "true");
-      const response = NextResponse.redirect(url);
+      const response = NextResponse.redirect(buildAuthRedirect(request, pathname));
       response.cookies.delete("auth-token");
       return response;
     }

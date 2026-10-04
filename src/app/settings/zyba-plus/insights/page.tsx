@@ -1,8 +1,8 @@
-`use client`;
+"use client";
 
-import { useEffect, useState } from `react`;
-import Link from `next/link`;
-import { ArrowLeft, Brain, CheckCircle2, RefreshCw, Sparkles, TrendingUp } from `lucide-react`;
+import { useEffect, useState } from "react";
+import Link from "next/link";
+import { ArrowLeft, Brain, CheckCircle2, RefreshCw, Sparkles, TrendingUp } from "lucide-react";
 
 interface Insights {
   summary: {
@@ -38,9 +38,9 @@ export default function PremiumInsightsPage() {
     setLoading(true);
     setError(false);
     try {
-      const res = await fetch(`/api/premium/insights`, {
-        cache: `no-store`,
-        credentials: `include`,
+      const res = await fetch("/api/premium/insights", {
+        cache: "no-store",
+        credentials: "include",
       });
       if (!res.ok) throw new Error(`Premium required`);
       setData(await res.json());

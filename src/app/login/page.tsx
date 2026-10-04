@@ -73,6 +73,13 @@ function LoginContent({
       window.location.search
     );
 
+    const redirected = params.get("redirected") === "true";
+    if (redirected) {
+      setLoginError(
+        "Halaman ini hanya bisa diakses setelah login. Silakan masuk ke akun Anda terlebih dahulu."
+      );
+    }
+
     const termsRequired =
       params.get("terms_required") === "1";
 
