@@ -145,7 +145,7 @@ export async function POST(request: NextRequest) {
 
     if (action === "SIGNUP") {
       const clientIp = getClientIp(request);
-      const limitCheck = checkRateLimit(`signup:${clientIp}`, 10, 60);
+      const limitCheck = await checkRateLimit(`signup:${clientIp}`, 10, 60);
       if (!limitCheck.allowed) {
         return rateLimitResponse(limitCheck.retryAfterSec, "Terlalu banyak permintaan pendaftaran akun.");
       }
@@ -189,7 +189,7 @@ export async function POST(request: NextRequest) {
 
     if (action === "VERIFY_OTP") {
       const clientIp = getClientIp(request);
-      const limitCheck = checkRateLimit(`verify_otp:${clientIp}`, 15, 60);
+      const limitCheck = await checkRateLimit(`verify_otp:${clientIp}`, 15, 60);
       if (!limitCheck.allowed) {
         return rateLimitResponse(limitCheck.retryAfterSec, "Terlalu banyak percobaan kode OTP.");
       }
@@ -215,7 +215,7 @@ export async function POST(request: NextRequest) {
       }
 
       // Security: Hash password dengan bcrypt (AGENTS.md Bagian 8.1)
-      const passwordToHash = password || "demo_password";
+      if (!password) { return NextResponse.json({ error: "Password wajib diisi." }, { status: 400 }); }\n      const passwordToHash = password;
       const passwordHash = await bcrypt.hash(passwordToHash, 12);
 
       // Create user after OTP verification
@@ -254,7 +254,7 @@ export async function POST(request: NextRequest) {
 
     if (action === "LOGIN") {
       const clientIp = getClientIp(request);
-      const limitCheck = checkRateLimit(`login:${clientIp}`, 10, 60);
+      const limitCheck = await checkRateLimit(`login:${clientIp}`, 10, 60);
       if (!limitCheck.allowed) {
         return rateLimitResponse(limitCheck.retryAfterSec, "Terlalu banyak percobaan masuk yang gagal.");
       }
