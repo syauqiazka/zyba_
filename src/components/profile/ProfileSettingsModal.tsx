@@ -248,8 +248,8 @@ export default function ProfileSettingsModal({ user, isOpen, onClose, onUserUpda
       setAvatarError("Hanya file gambar (JPG, PNG, WEBP, GIF) yang diizinkan.");
       return;
     }
-    if (file.size > 8 * 1024 * 1024) {
-      setAvatarError("Ukuran foto maksimal 8MB.");
+    if (file.size > 5 * 1024 * 1024) {
+      setAvatarError("Ukuran foto maksimal 5MB.");
       return;
     }
 
