@@ -16,7 +16,6 @@ interface SignInCardProps {
   onSubmit: () => Promise<void>;
   onGoogleClick: () => void;
   onForgotPasswordClick: () => void;
-  onSignUpClick: () => void;
   isLoading?: boolean;
 }
 
@@ -58,7 +57,6 @@ export default function SignInCard({
   onSubmit,
   onGoogleClick,
   onForgotPasswordClick,
-  onSignUpClick,
   isLoading = false,
 }: SignInCardProps) {
   const [showPassword, setShowPassword] =
@@ -255,20 +253,6 @@ export default function SignInCard({
         )}
       </button>
 
-      {/* SIGN UP */}
-      <div className="mt-7 border-t border-brown-900/10 pt-5 text-center">
-        <p className="text-xs text-brown-700/75">
-          Belum punya akun?{" "}
-
-          <button
-            type="button"
-            onClick={onSignUpClick}
-            className="font-bold text-orange-500 transition-colors hover:text-brown-900"
-          >
-            Buat akun
-          </button>
-        </p>
-      </div>
     </div>
   );
 }
