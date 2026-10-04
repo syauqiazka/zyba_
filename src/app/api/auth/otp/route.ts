@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { generateOTP, verifyOTP, sendOTPEmail } from "@/lib/emailService";
+import { generateOTP, sendOTPEmail } from "@/lib/emailService";
+import { COOKIE_NAME, createOtpChallenge, verifyOtpChallenge } from "@/lib/otpChallenge";
 import { checkRateLimit, getClientIp, rateLimitResponse } from "@/lib/server/rateLimit";
 
 export async function POST(req: NextRequest) {
@@ -26,15 +27,31 @@ export async function POST(req: NextRequest) {
         return rateLimitResponse(limit.retryAfterSec, "Terlalu banyak permintaan OTP.");
       }
 
-      const generatedCode = generateOTP(email);
-      const delivery = await sendOTPEmail(email, generatedCode);\n      if (!delivery.delivered) {\n        return NextResponse.json({ error: delivery.message || "OTP gagal dikirim." }, { status: 502 });\n      }
+      const normalizedEmail = email.toLowerCase().trim();
+      const generatedCode = generateOTP(normalizedEmail);
+      const delivery = await sendOTPEmail(normalizedEmail, generatedCode);
+      if (!delivery.delivered) {
+        return NextResponse.json(
+          { error: delivery.message || "Kode OTP gagal dikirim. Silakan coba lagi." },
+          { status: 502 }
+        );
+      }
 
-
-      // Security: Sesuai AGENTS.md Bagian 8.3, demoCode dihapus dari response API
-      return NextResponse.json({
+      const challenge = createOtpChallenge(normalizedEmail, generatedCode);
+      const response = NextResponse.json({
         success: true,
-        message: `Kode OTP 4 digit telah dikirimkan ke ${email} (via ${provider} Auth).`,
+        message: "Kode OTP 4 digit telah dikirimkan ke email Anda.",
       });
+
+      response.cookies.set(COOKIE_NAME, challenge.token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "lax",
+        path: "/",
+        maxAge: challenge.maxAge,
+      });
+
+      return response;
     }
 
     if (action === "VERIFY") {
@@ -45,16 +62,35 @@ export async function POST(req: NextRequest) {
         );
       }
 
-      const result = verifyOTP(email, otp);
-      if (!result.success) {
-        return NextResponse.json({ error: result.message }, { status: 400 });
+      const normalizedEmail = email.toLowerCase().trim();
+      const result = verifyOtpChallenge(
+        req.cookies.get(COOKIE_NAME)?.value,
+        normalizedEmail,
+        otp
+      );
+      if (!result.valid) {
+        const message =
+          result.reason === "expired"
+            ? "Kode OTP telah kadaluarsa. Silakan minta kode baru."
+            : result.reason === "mismatch"
+              ? "Kode OTP tidak cocok. Periksa kembali email Anda."
+              : "Sesi verifikasi tidak ditemukan. Silakan minta kode baru.";
+        return NextResponse.json({ error: message }, { status: 400 });
       }
 
-      return NextResponse.json({
+      const response = NextResponse.json({
         success: true,
         message: "Verifikasi OTP berhasil. Silakan lengkapi pendaftaran.",
         otpVerified: true,
       });
+      response.cookies.set(COOKIE_NAME, "", {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "lax",
+        path: "/",
+        maxAge: 0,
+      });
+      return response;
     }
 
     return NextResponse.json({ error: "Action tidak valid." }, { status: 400 });
