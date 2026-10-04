@@ -506,7 +506,7 @@ export default function PostCard({ post, onToggleLike, onToggleRepost, onAddComm
               </button>
 
               {/* Three-dot menu */}
-              <div className="relative" ref={menuRef}>
+              <div className="relative z-40" ref={menuRef}>
                 <button
                   type="button"
                   onClick={() => {
@@ -515,7 +515,7 @@ export default function PostCard({ post, onToggleLike, onToggleRepost, onAddComm
                     setConfirmMute(false);
                     setConfirmBlock(false);
                   }}
-                  className="text-brown-700/30 hover:text-brown-900 transition-colors opacity-100 focus:opacity-100 p-1.5 rounded-lg hover:bg-cream"
+                  className="min-w-9 min-h-9 flex items-center justify-center text-brown-700/60 hover:text-brown-900 transition-colors p-1.5 rounded-lg hover:bg-cream touch-manipulation focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-500"
                   title="Opsi lainnya"
                   aria-label="Opsi lainnya"
                   aria-expanded={menuOpen}
@@ -525,7 +525,7 @@ export default function PostCard({ post, onToggleLike, onToggleRepost, onAddComm
 
                 {menuOpen && (
                   <div
-                    className="absolute right-0 top-full mt-1.5 z-50 w-56 bg-white rounded-2xl shadow-xl border border-brown-900/10 p-1.5 animate-in fade-in slide-in-from-top-1 duration-150"
+                    className="absolute right-0 top-full mt-1.5 z-[80] w-56 max-w-[calc(100vw-24px)] bg-white rounded-2xl shadow-xl border border-brown-900/10 p-1.5 animate-in fade-in slide-in-from-top-1 duration-150"
                     role="menu"
                   >
                     {isOwner ? (
