@@ -22,6 +22,21 @@ const AVATAR_EMOJI_MAP: Record<string, string> = {
   fox: "🦊", panda: "🐼", lion: "🦁", rabbit: "🐰", leaf: "🌿", flower: "🌸",
 };
 
+declare global {
+  interface Window {
+    grecaptcha?: {
+      ready: (callback: () => void) => void;
+      render: (container: HTMLElement, parameters: {
+        sitekey: string;
+        callback: (token: string) => void;
+        "expired-callback"?: () => void;
+        "error-callback"?: () => void;
+      }) => number;
+      reset: (widgetId?: number) => void;
+    };
+  }
+}
+
 export const POPULAR_CITIES = [
   "Jakarta, DKI Jakarta",
   "Surabaya, Jawa Timur",
@@ -77,7 +92,6 @@ export default function ProfileSecurityFlow({
     | "SELECT_AVATAR"
     | "PROFILE_SETUP"
     | "PASSWORD_STRENGTH"
-    | "OTP_VERIFY"
     | "FINGERPRINT"
     | "NOTIFICATIONS"
     | "COMPILING"
@@ -103,6 +117,51 @@ export default function ProfileSecurityFlow({
   const [isLocationOpen, setIsLocationOpen] = useState(false);
   const [locationSearch, setLocationSearch] = useState("");
   const locationDropdownRef = React.useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (step !== "PASSWORD_STRENGTH") return;
+
+    const siteKey = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY;
+    if (!siteKey || !recaptchaRef.current) {
+      setCaptchaError("reCAPTCHA belum dikonfigurasi. Hubungi administrator.");
+      return;
+    }
+
+    const renderCaptcha = () => {
+      if (!window.grecaptcha || !recaptchaRef.current || recaptchaWidgetId.current !== null) return;
+      recaptchaWidgetId.current = window.grecaptcha.render(recaptchaRef.current, {
+        sitekey: siteKey,
+        callback: (token: string) => {
+          setCaptchaToken(token);
+          setCaptchaError("");
+        },
+        "expired-callback": () => setCaptchaToken(""),
+        "error-callback": () => setCaptchaToken(""),
+      });
+    };
+
+    if (window.grecaptcha) {
+      window.grecaptcha.ready(renderCaptcha);
+      return;
+    }
+
+    const existing = document.querySelector('script[src*="google.com/recaptcha/api.js"]');
+    if (existing) {
+      existing.addEventListener("load", renderCaptcha, { once: true });
+      return () => existing.removeEventListener("load", renderCaptcha);
+    }
+
+    const script = document.createElement("script");
+    script.src = "https://www.google.com/recaptcha/api.js?render=explicit";
+    script.async = true;
+    script.defer = true;
+    script.onload = renderCaptcha;
+    document.head.appendChild(script);
+
+    return () => {
+      recaptchaWidgetId.current = null;
+    };
+  }, [step]);
 
   // Sync initialEmail if changed from parent
   useEffect(() => {
@@ -143,14 +202,11 @@ export default function ProfileSecurityFlow({
   const [emailError, setEmailError] = useState("");
   const [isCheckingEmail, setIsCheckingEmail] = useState(false);
   const [passwordError, setPasswordError] = useState("");
-  const [isSendingOtp, setIsSendingOtp] = useState(false);
-  const [otpInfoMessage, setOtpInfoMessage] = useState("");
-  const [isResendingOtp, setIsResendingOtp] = useState(false);
-
-  // OTP State (4 digit)
-  const [otp, setOtp] = useState(["", "", "", ""]);
-  const [otpError, setOtpError] = useState("");
-  const [isVerifyingOtp, setIsVerifyingOtp] = useState(false);
+  const [isVerifyingCaptcha, setIsVerifyingCaptcha] = useState(false);
+  const [captchaToken, setCaptchaToken] = useState("");
+  const [captchaError, setCaptchaError] = useState("");
+  const recaptchaRef = React.useRef<HTMLDivElement>(null);
+  const recaptchaWidgetId = React.useRef<number | null>(null);
 
   // Biometric state
   const [isFingerprintScanned, setIsFingerprintScanned] = useState(false);
@@ -186,60 +242,6 @@ export default function ProfileSecurityFlow({
       return () => clearInterval(interval);
     }
   }, [step]);
-
-  // Handle OTP digit changes (typing / single char)
-  const handleOtpChange = (index: number, val: string) => {
-    const cleanDigits = val.replace(/\D/g, "");
-    if (cleanDigits.length > 1) {
-      // In case multi-digit entered into one box
-      const newOtp = [...otp];
-      for (let i = 0; i < cleanDigits.length && index + i < 4; i++) {
-        newOtp[index + i] = cleanDigits[i];
-      }
-      setOtp(newOtp);
-      const nextIdx = Math.min(index + cleanDigits.length, 3);
-      document.getElementById(`otp-digit-${nextIdx}`)?.focus();
-      return;
-    }
-
-    const updated = [...otp];
-    updated[index] = cleanDigits.slice(-1);
-    setOtp(updated);
-
-    // Auto-focus next input
-    if (cleanDigits && index < 3) {
-      const nextInput = document.getElementById(`otp-digit-${index + 1}`);
-      nextInput?.focus();
-    }
-  };
-
-  // Handle Paste 4 Digits Directly
-  const handleOtpPaste = (e: React.ClipboardEvent<HTMLInputElement>) => {
-    e.preventDefault();
-    const pastedData = e.clipboardData.getData("text").trim();
-    const digits = pastedData.replace(/\D/g, "").slice(0, 4);
-    if (!digits) return;
-
-    const newOtp = ["", "", "", ""];
-    for (let i = 0; i < digits.length; i++) {
-      newOtp[i] = digits[i];
-    }
-    setOtp(newOtp);
-    if (otpError) setOtpError("");
-
-    // Auto focus the next box or the last box
-    const focusIndex = Math.min(digits.length, 3);
-    const targetInput = document.getElementById(`otp-digit-${focusIndex}`);
-    targetInput?.focus();
-  };
-
-  // Handle Backspace navigation
-  const handleOtpKeyDown = (index: number, e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Backspace" && !otp[index] && index > 0) {
-      const prevInput = document.getElementById(`otp-digit-${index - 1}`);
-      prevInput?.focus();
-    }
-  };
 
   const handleScanFingerprint = () => {
     setIsScanning(true);
@@ -755,237 +757,67 @@ export default function ProfileSecurityFlow({
               </div>
             )}
 
-            {/* Tombol Lanjutkan → Request OTP */}
+            {/* reCAPTCHA + pendaftaran akun */}
+            <div className="mt-2 rounded-2xl border border-brown-900/10 bg-cream/30 p-4">
+              <div ref={recaptchaRef} className="min-h-[78px] flex items-center justify-center" />
+              {captchaError && (
+                <p className="mt-2 text-xs font-bold text-danger">{captchaError}</p>
+              )}
+              <p className="mt-2 text-[10px] leading-4 text-brown-700/60">
+                Verifikasi keamanan ini membantu mencegah pendaftaran otomatis.
+              </p>
+            </div>
+
             <button
               type="button"
-              disabled={isSendingOtp}
+              disabled={isVerifyingCaptcha}
               onClick={async () => {
                 setPasswordError("");
+                setCaptchaError("");
                 if (!password || password.length < 8) {
                   setPasswordError("Kata sandi harus minimal 8 karakter.");
                   return;
                 }
-
-                setIsSendingOtp(true);
-                try {
-                  const res = await fetch("/api/auth", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ action: "SIGNUP", email: email.trim() }),
-                  });
-                  const data = await res.json();
-                  if (!res.ok) {
-                    setPasswordError(`Kode OTP gagal dikirim. ${data.error || "Silakan coba lagi."}`);
-                    return;
-                  }
-
-                  setOtpInfoMessage(
-                    data.message || `Kode OTP telah dikirimkan ke kotak masuk ${email.trim()}.`
-                  );
-                  setStep("OTP_VERIFY");
-                } catch {
-                  setPasswordError("Kode OTP gagal dikirim karena server tidak dapat memproses permintaan. Silakan coba lagi.");
-                } finally {
-                  setIsSendingOtp(false);
-                }
-              }}
-              className="mt-2 w-full py-3.5 rounded-full bg-brown-900 text-white font-bold text-xs md:text-sm flex items-center justify-center gap-2 hover:bg-orange-500 transition-all shadow-md active:scale-98 disabled:opacity-50"
-            >
-              {isSendingOtp ? (
-                <span>Mengirim Kode OTP ke Email...</span>
-              ) : (
-                <>
-                  <span>{passwordError.startsWith("Kode OTP") ? "Coba Lagi" : "Lanjutkan"}</span>
-                  <span>→</span>
-                </>
-              )}
-            </button>
-          </div>
-        </div>
-      )}
-
-      {/* ========================================================================= */}
-      {/* 4. OTP SETUP & 4-DIGIT VERIFICATION */}
-      {/* ========================================================================= */}
-      {step === "OTP_VERIFY" && (
-        <div className="flex flex-col">
-          <div className="relative w-full bg-[#E2EBD2] pt-6 pb-8 px-6 flex flex-col items-center">
-            <button
-              type="button"
-              onClick={() => setStep("PASSWORD_STRENGTH")}
-              style={{ position: "absolute" }} className="absolute left-5 top-5 z-20 w-8 h-8 rounded-full bg-white/80 hover:bg-white text-brown-900 flex items-center justify-center text-sm shadow-xs transition-colors"
-            >
-              ←
-            </button>
-            <span className="text-xs font-bold uppercase tracking-widest text-brown-700/70">
-              Langkah 3 dari 6 • Verifikasi
-            </span>
-            <h2 className="font-display font-extrabold text-xl text-brown-900 mt-1">
-              Masukkan Kode OTP 4 Digit
-            </h2>
-          </div>
-
-          <div className="p-4 sm:p-8 flex flex-col items-center gap-6 bg-white -mt-4 rounded-t-3xl z-10 text-center">
-            {/* Ilustrasi Tameng Hijau */}
-            <div className="w-16 h-16 rounded-3xl bg-green-100 border border-green-500/30 flex items-center justify-center text-3xl shadow-sm">
-              🛡️
-            </div>
-
-            <div>
-              <h3 className="font-display font-bold text-sm text-brown-900">
-                Verifikasi Email Anda
-              </h3>
-              <p className="text-xs text-brown-700/90 mt-1.5 max-w-xs leading-relaxed">
-                {otpInfoMessage ? (
-                  <span>{otpInfoMessage}</span>
-                ) : (
-                  <>
-                    Kode verifikasi akun telah dikirim ke{" "}
-                    <strong className="text-brown-900">{email}</strong>. Cek inbox atau folder spam Anda.
-                  </>
-                )}
-              </p>
-            </div>
-
-            <div className="w-full flex flex-col gap-2">
-              <p className="text-[10px] font-semibold text-brown-700/70">Pilih metode verifikasi</p>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                <button
-                  type="button"
-                  className="py-2.5 rounded-xl border-2 border-orange-500 bg-orange-50 text-orange-700 text-xs font-bold"
-                  aria-pressed="true"
-                >
-                  Kode OTP Email
-                </button>
-                <button
-                  type="button"
-                  disabled
-                  className="py-2.5 rounded-xl border border-brown-900/10 bg-cream/60 text-brown-700/50 text-xs font-bold cursor-not-allowed"
-                  title="Verifikasi Google belum dikonfigurasi"
-                >
-                  Google — segera tersedia
-                </button>
-              </div>
-              <div className="text-[10px] text-brown-700/50">Untuk saat ini verifikasi aktif menggunakan kode OTP yang dikirim ke email.</div>
-            </div>
-
-            {/* 4 Kotak Digit Besar */}
-            <div className="flex items-center justify-center gap-3">
-              {[0, 1, 2, 3].map((index) => (
-                <input
-                  key={index}
-                  id={`otp-digit-${index}`}
-                  type="text"
-                  maxLength={1}
-                  value={otp[index]}
-                  onChange={(e) => {
-                    handleOtpChange(index, e.target.value);
-                    if (otpError) setOtpError("");
-                  }}
-                  onPaste={handleOtpPaste}
-                  onKeyDown={(e) => handleOtpKeyDown(index, e)}
-                  autoComplete="one-time-code"
-                  inputMode="numeric"
-                  className="w-12 h-14 text-center text-2xl font-display font-extrabold rounded-2xl border-2 border-brown-900/15 bg-cream/30 text-brown-900 focus:outline-none focus:border-green-500 focus:bg-white transition-all shadow-xs"
-                />
-              ))}
-            </div>
-
-            {otpError && (
-              <span className="text-xs font-bold text-danger bg-orange-100 px-3.5 py-1.5 rounded-full border border-danger/20">
-                {otpError}
-              </span>
-            )}
-
-            <div className="text-xs text-brown-700">
-              Tidak menerima email OTP?{" "}
-              <button
-                type="button"
-                disabled={isResendingOtp}
-                onClick={async () => {
-                  setIsResendingOtp(true);
-                  setOtpError("");
-                  try {
-                    const res = await fetch("/api/auth", {
-                      method: "POST",
-                      headers: { "Content-Type": "application/json" },
-                      body: JSON.stringify({ action: "SIGNUP", email: email.trim() }),
-                    });
-                    const data = await res.json();
-                    if (res.ok) {
-                      setOtpInfoMessage(data.message || "Kode OTP baru telah dikirimkan ke email Anda.");
-                      alert(data.message || "Kode OTP berhasil dikirim ulang ke email Anda.");
-                    } else {
-                      setOtpError(data.error || "Gagal mengirim ulang OTP.");
-                    }
-                  } catch {
-                    setOtpError("Gagal menghubungi server untuk kirim ulang OTP.");
-                  } finally {
-                    setIsResendingOtp(false);
-                  }
-                }}
-                className="text-orange-500 font-bold hover:underline disabled:opacity-50"
-              >
-                {isResendingOtp ? "Mengirim ulang..." : "Kirim Ulang."}
-              </button>
-            </div>
-
-            {/* Tombol Lanjutkan → Verify OTP via Backend */}
-            <button
-              type="button"
-              disabled={isVerifyingOtp}
-              onClick={async () => {
-                const code = otp.join("");
-                if (code.length < 4) {
-                  setOtpError("Masukkan 4 digit kode OTP.");
+                if (!captchaToken) {
+                  setCaptchaError("Centang reCAPTCHA terlebih dahulu.");
                   return;
                 }
-                setIsVerifyingOtp(true);
-                setOtpError("");
+
+                setIsVerifyingCaptcha(true);
                 try {
                   const res = await fetch("/api/auth", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({
-                      action: "VERIFY_OTP",
+                      action: "SIGNUP",
                       email: email.trim(),
-                      otp: code,
                       name: fullName || undefined,
                       password,
+                      recaptchaToken: captchaToken,
                     }),
                   });
                   const data = await res.json();
-                  if (res.ok) {
-                    // Akun sudah berhasil dibuat dan session cookie
-                    // sudah diberikan oleh backend.
-                    // Sekarang wajib menyetujui Terms sebelum lanjut.
-                    onSignupSuccess(email.trim());
-
-                    setStep("FINGERPRINT");
-                  } else {
-                    setOtpError(data.error || "Kode OTP salah atau telah kadaluarsa.");
+                  if (!res.ok) {
+                    setCaptchaError(data.error || "Verifikasi keamanan gagal. Silakan coba lagi.");
+                    setCaptchaToken("");
+                    return;
                   }
-                } catch (err) {
-                  setOtpError("Gagal menghubungi server verifikasi.");
+
+                  onSignupSuccess(email.trim());
+                  setStep("FINGERPRINT");
+                } catch {
+                  setCaptchaError("Gagal menghubungi server. Silakan coba lagi.");
                 } finally {
-                  setIsVerifyingOtp(false);
+                  setIsVerifyingCaptcha(false);
                 }
               }}
-              className="w-full py-3.5 rounded-full bg-brown-900 text-white font-bold text-xs md:text-sm flex items-center justify-center gap-2 hover:bg-orange-500 transition-all shadow-md active:scale-98 disabled:opacity-50"
+              className="mt-2 w-full py-3.5 rounded-full bg-brown-900 text-white font-bold text-xs md:text-sm flex items-center justify-center gap-2 hover:bg-orange-500 transition-all shadow-md active:scale-98 disabled:opacity-50"
             >
-              {isVerifyingOtp ? (
-                <span>Memverifikasi...</span>
-              ) : (
-                <>
-                  <span>Verifikasi & Lanjutkan</span>
-                  <span>→</span>
-                </>
-              )}
+              {isVerifyingCaptcha ? "Membuat Akun..." : "Buat Akun & Lanjutkan →"}
             </button>
           </div>
         </div>
       )}
-
       {/* ========================================================================= */}
       {/* 5. FINGERPRINT SETUP */}
       {/* ========================================================================= */}
@@ -994,7 +826,7 @@ export default function ProfileSecurityFlow({
           <div className="relative w-full bg-[#E2EBD2] pt-6 pb-8 px-6 flex flex-col items-center">
             <button
               type="button"
-              onClick={() => setStep("OTP_VERIFY")}
+              onClick={() => setStep("PASSWORD_STRENGTH")}
               style={{ position: "absolute" }} className="absolute left-5 top-5 z-20 w-8 h-8 rounded-full bg-white/80 hover:bg-white text-brown-900 flex items-center justify-center text-sm shadow-xs transition-colors"
             >
               ←
