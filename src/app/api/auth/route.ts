@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { userRepository } from "@/backend/auth/userRepository";
-import { generateOTP, verifyOTP, sendOTPEmail } from "@/lib/emailService";
+import { generateOTP, sendOTPEmail } from "@/lib/emailService";
+import { COOKIE_NAME, createOtpChallenge, verifyOtpChallenge } from "@/lib/otpChallenge";
 import bcrypt from "bcryptjs";
 import { createSessionToken } from "@/lib/auth";
 import { checkRateLimit, getClientIp, rateLimitResponse } from "@/lib/server/rateLimit";
@@ -41,55 +42,6 @@ export async function POST(request: NextRequest) {
         termsAcceptedAt: acceptedAt.toISOString(),
         termsVersion: "1.0",
       });
-    }
-
-    // =========================
-    // GOOGLE AUTH
-    // =========================
-    if (action === "GOOGLE_AUTH") {
-      // kode Google Auth kamu yang sekarang...
-      const googleEmail = email || "alex.rivera@gmail.com";
-      const googleName = name || "Alex Rivera";
-      const avatarUrl = body.avatarUrl || "🦊";
-
-      let user = await userRepository.findByEmail(googleEmail);
-      let isNewUser = false;
-
-      if (!user) {
-        isNewUser = true;
-        const dummyPasswordHash = await bcrypt.hash(`google_${Date.now()}_oauth`, 12);
-        user = await userRepository.create({
-          email: googleEmail,
-          name: googleName,
-          passwordHash: dummyPasswordHash,
-          avatarUrl,
-          onboardingCompleted: false,
-        });
-      }
-
-      const sessionToken = await createSessionToken({
-        userId: user.id,
-        email: user.email,
-        name: user.name,
-        onboardingCompleted: user.onboardingCompleted ?? false,
-      });
-
-      const response = NextResponse.json({
-        success: true,
-        user: { id: user.id, email: user.email, name: user.name, avatarUrl: user.avatarUrl },
-        token: sessionToken,
-        isNewUser,
-      });
-
-      response.cookies.set("auth-token", sessionToken, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "lax",
-        path: "/",
-        maxAge: 60 * 60 * 24 * 30, // 30 days
-      });
-
-      return response;
     }
 
     // Update Profile after Setup
@@ -173,18 +125,34 @@ export async function POST(request: NextRequest) {
         );
       }
 
-      // Generate OTP and send via email service
+      // Generate and deliver OTP. The verification challenge is stored in a
+      // signed HttpOnly cookie so it works consistently behind multiple web containers.
       const otpCode = generateOTP(normalized);
       const emailResult = await sendOTPEmail(normalized, otpCode);
 
-      // Security: demoCode dihapus dari response API sesuai AGENTS.md Bagian 8.3
-      return NextResponse.json({
+      if (!emailResult.delivered) {
+        return NextResponse.json(
+          { error: emailResult.message || "Kode OTP gagal dikirim. Silakan coba lagi." },
+          { status: 502 }
+        );
+      }
+
+      const challenge = createOtpChallenge(normalized, otpCode);
+      const response = NextResponse.json({
         success: true,
-        delivered: emailResult.delivered,
-        message: emailResult.delivered
-          ? "Kode OTP telah dikirimkan ke kotak masuk email Anda. Silakan periksa inbox atau folder spam."
-          : emailResult.message,
+        delivered: true,
+        message: "Kode OTP telah dikirimkan ke email Anda. Silakan periksa inbox atau folder spam.",
       });
+
+      response.cookies.set(COOKIE_NAME, challenge.token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "lax",
+        path: "/",
+        maxAge: challenge.maxAge,
+      });
+
+      return response;
     }
 
     if (action === "VERIFY_OTP") {
@@ -209,9 +177,20 @@ export async function POST(request: NextRequest) {
         );
       }
 
-      const result = verifyOTP(normalized, otp);
-      if (!result.success) {
-        return NextResponse.json({ error: result.message }, { status: 400 });
+      const challenge = verifyOtpChallenge(
+        request.cookies.get(COOKIE_NAME)?.value,
+        normalized,
+        otp
+      );
+
+      if (!challenge.valid) {
+        const message =
+          challenge.reason === "expired"
+            ? "Kode OTP telah kadaluarsa. Silakan minta kode baru."
+            : challenge.reason === "mismatch"
+              ? "Kode OTP tidak cocok. Periksa kembali email Anda."
+              : "Sesi verifikasi tidak ditemukan. Silakan minta kode OTP baru.";
+        return NextResponse.json({ error: message }, { status: 400 });
       }
 
       // Security: Hash password dengan bcrypt (AGENTS.md Bagian 8.1)
@@ -247,6 +226,13 @@ export async function POST(request: NextRequest) {
         sameSite: "lax",
         path: "/",
         maxAge: 60 * 60 * 24 * 30, // 30 days
+      });
+      response.cookies.set(COOKIE_NAME, "", {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "lax",
+        path: "/",
+        maxAge: 0,
       });
 
       return response;
