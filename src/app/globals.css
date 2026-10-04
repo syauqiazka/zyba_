@@ -3118,3 +3118,148 @@ html {
 .zyba-scrollbar::-webkit-scrollbar-thumb:hover {
   background: rgba(109, 98, 91, 0.65);
 }
+
+
+/* ---------------------------------------------------------
+   PARTNERS / SUPPORT RAIL
+   Quiet brand rail between the feature and journey sections.
+   --------------------------------------------------------- */
+
+.landing-partners {
+  position: relative;
+  padding: 18px 0 118px;
+}
+
+.partners-inner {
+  border-top: 1px solid rgba(59, 42, 32, 0.10);
+  border-bottom: 1px solid rgba(59, 42, 32, 0.10);
+  padding: 30px 0;
+  display: grid;
+  grid-template-columns: minmax(220px, 0.65fr) minmax(0, 1.35fr);
+  align-items: center;
+  gap: 56px;
+}
+
+.partners-intro {
+  min-width: 0;
+}
+
+.partners-kicker {
+  display: block;
+  margin-bottom: 8px;
+  color: rgba(59, 42, 32, 0.78);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.partners-intro p {
+  max-width: 310px;
+  margin: 0;
+  color: rgba(59, 42, 32, 0.52);
+  font-size: 12px;
+  line-height: 1.55;
+}
+
+.partners-list {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  align-items: center;
+  gap: 18px;
+}
+
+.partner-wordmark {
+  min-width: 0;
+  min-height: 54px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  color: rgba(59, 42, 32, 0.72);
+  transition: color 180ms ease, transform 180ms ease;
+}
+
+.partner-wordmark:hover {
+  color: var(--zyba-brown-900);
+  transform: translateY(-1px);
+}
+
+.partner-mark {
+  width: 30px;
+  height: 30px;
+  flex: 0 0 30px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9px;
+  color: white;
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: -0.04em;
+}
+
+.partner-mark-orange {
+  background: #f47e45;
+}
+
+.partner-mark-blue {
+  background: #2362c7;
+}
+
+.partner-mark-dark {
+  background: #3b2a20;
+}
+
+.partner-name {
+  font-size: clamp(11px, 1.05vw, 14px);
+  font-weight: 800;
+  letter-spacing: -0.025em;
+  white-space: nowrap;
+}
+
+@media (max-width: 900px) {
+  .landing-partners {
+    padding: 8px 0 88px;
+  }
+
+  .partners-inner {
+    grid-template-columns: 1fr;
+    gap: 28px;
+    padding: 28px 0;
+  }
+
+  .partners-intro p {
+    max-width: 520px;
+  }
+}
+
+@media (max-width: 560px) {
+  .landing-partners {
+    padding-bottom: 70px;
+  }
+
+  .partners-inner {
+    gap: 22px;
+  }
+
+  .partners-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px 8px;
+  }
+
+  .partner-wordmark {
+    justify-content: flex-start;
+    min-height: 46px;
+  }
+
+  .partner-mark {
+    width: 27px;
+    height: 27px;
+    flex-basis: 27px;
+  }
+
+  .partner-name {
+    font-size: 11px;
+  }
+}
