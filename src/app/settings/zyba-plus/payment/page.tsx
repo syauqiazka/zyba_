@@ -12,7 +12,7 @@ const bankHolder = process.env.NEXT_PUBLIC_PAYMENT_BANK_HOLDER || "ZYBA";
 const QRIS_PAYLOAD = "00020101021126570011ID.DANA.WWW011893600915302463694502090246369450303UMI51440014ID.CO.QRIS.WWW0215ID10265252211840303UMI5204549953033605802ID5908Syausyau6010Kota Depok61051641163049BBC";
 const fallbackQrisUrl = `https://quickchart.io/qr?text=${encodeURIComponent(QRIS_PAYLOAD)}&size=420&margin=2&ecLevel=M`;
 const configuredQrisUrl = process.env.NEXT_PUBLIC_PAYMENT_QRIS_URL || "";
-const qrisUrl = /^https?:\\/\\//i.test(configuredQrisUrl) ? configuredQrisUrl : fallbackQrisUrl;
+const qrisUrl = configuredQrisUrl.startsWith("http://") || configuredQrisUrl.startsWith("https://") ? configuredQrisUrl : fallbackQrisUrl;
 
 type Payment = {
   id: string;
