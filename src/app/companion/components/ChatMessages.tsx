@@ -92,7 +92,7 @@ export default function ChatMessages({
         </div>
 
         {/* Floating Center Input Box — Exact Claude.ai card */}
-        <div className="w-full max-w-2xl bg-white rounded-3xl border border-brown-900/12 shadow-sm p-3.5 sm:p-4 text-left transition-all focus-within:shadow-md focus-within:border-brown-900/25 box-border overflow-hidden">
+        <div className="w-full max-w-2xl bg-white rounded-3xl border border-brown-900/12 shadow-sm p-3.5 sm:p-4 text-left transition-all focus-within:shadow-md focus-within:border-brown-900/25 box-border overflow-visible">
           <textarea
             value={centerInput}
             onChange={(e) => setCenterInput(e.target.value)}
