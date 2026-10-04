@@ -849,6 +849,14 @@ export default function ProfileSecurityFlow({
             </div>
 
             {/* Quick Demo Helper Box */}
+            <div className="w-full flex flex-col gap-2">
+              <p className="text-[10px] font-semibold text-brown-700/70">Pilih metode verifikasi:</p>
+              <button type="button" onClick={() => { window.location.href = "/api/auth/google"; }} className="w-full py-2.5 rounded-xl border border-brown-900/10 bg-white hover:bg-cream text-brown-900 text-xs font-bold transition-colors">
+                Verifikasi dengan Google
+              </button>
+              <div className="text-[10px] text-brown-700/50">Atau lanjutkan dengan kode OTP melalui email di bawah.</div>
+            </div>
+
             {/* 4 Kotak Digit Besar */}
             <div className="flex items-center justify-center gap-3">
               {[0, 1, 2, 3].map((index) => (
