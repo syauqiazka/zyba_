@@ -191,7 +191,8 @@ export default function ProfileSecurityFlow({
   const [emailError, setEmailError] = useState("");
   const [isCheckingEmail, setIsCheckingEmail] = useState(false);
   const [passwordError, setPasswordError] = useState("");
-  const [isVerifyingCaptcha, setIsVerifyingCaptcha] = useState(false);\n  const [captchaError, setCaptchaError] = useState("");
+  const [isVerifyingCaptcha, setIsVerifyingCaptcha] = useState(false);
+  const [captchaError, setCaptchaError] = useState("");
 
 
   // Biometric state
