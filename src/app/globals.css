@@ -1003,7 +1003,7 @@ main select:focus {
    --------------------------------------------------------- */
 
 .feature-section {
-  padding-top: 90px;
+  padding-top: 0px;
 }
 
 .section-heading {
@@ -2348,7 +2348,7 @@ main select:focus {
 /* Hero lebih tenang dan tidak terlalu dekoratif */
 .landing-hero {
   min-height: calc(100vh - 70px);
-  padding: 70px 0 90px;
+  padding: 20px 0 90px;
 }
 
 /* Kurangi dekorasi background */

@@ -56,8 +56,8 @@ export default function LandingPage() {
 
       <main>
         <LandingHero />
-        <LandingFeatures />
         <LandingPartners />
+        <LandingFeatures />
         <LandingAbout />
         <LandingTestimonials />
       </main>
