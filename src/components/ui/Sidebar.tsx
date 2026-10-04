@@ -193,53 +193,8 @@ export default function Sidebar({ onClose }: { onClose?: () => void }) {
         </nav>
       </div>
 
-      {/* Footer Profile & Zyba Plus Badge — always visible, never scrolls away */}
+      {/* Footer Profile */}
       <div className="flex flex-col gap-3 pt-4 border-t border-brown-900/10 shrink-0">
-        <Link
-          href="/settings/zyba-plus"
-          title={currentUser.plan === "PLUS" ? "Zyba Plus" : "Upgrade Pro"}
-          className="bg-white/70 rounded-xl p-2.5 md:p-2 lg:p-3 flex items-center justify-between md:justify-center lg:justify-between border border-brown-900/10 transition-colors hover:bg-white hover:border-orange-500/30"
-        >
-          <div className="flex items-center gap-2">
-            <span className="flex size-8 shrink-0 items-center justify-center rounded-xl bg-orange-100 text-orange-500" aria-hidden="true">
-              <svg className="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M12 3.75l1.42 4.83a2 2 0 001.36 1.36L19.6 11.4l-4.82 1.42a2 2 0 00-1.36 1.36L12 19.02l-1.42-4.84a2 2 0 00-1.36-1.36L4.4 11.4l4.82-1.46a2 2 0 001.36-1.36L12 3.75z" />
-              </svg>
-            </span>
-            <div className="flex flex-col md:hidden lg:flex">
-              <span className="text-xs font-bold text-brown-900">
-                {currentUser.plan === "PLUS" ? "Zyba Plus" : "Upgrade"}
-              </span>
-              <span className="text-[10px] text-brown-700">
-                {currentUser.plan === "PLUS" ? "Fitur AI Unlocked" : "Unlock fitur premium"}
-              </span>
-            </div>
-          </div>
-          {currentUser.plan === "PLUS" ? (
-            <span className="text-[10px] bg-orange-500 text-white font-bold px-2 py-0.5 rounded-full md:hidden lg:inline">
-              PRO
-            </span>
-          ) : (
-            <span className="text-[10px] text-orange-500 font-bold md:hidden lg:inline">
-              →
-            </span>
-          )}
-        </Link>
-
-        {currentUser.plan === "PLUS" && (
-          <div className="rounded-2xl border border-orange-500/20 bg-gradient-to-br from-orange-50 via-white to-green-50 p-3 shadow-sm">
-            <div className="flex items-start gap-2.5">
-              <span className="flex size-8 shrink-0 items-center justify-center rounded-xl bg-orange-500 text-white">
-                <Sparkles size={15} />
-              </span>
-              <div className="min-w-0">
-                <p className="text-xs font-extrabold text-brown-900">🎉 Selamat, ZYBA Plus aktif!</p>
-                <p className="mt-0.5 text-[10px] leading-4 text-brown-700/70">Semua fitur premium sudah terbuka. Selamat menikmati pengalaman ZYBA yang lebih lengkap.</p>
-              </div>
-            </div>
-          </div>
-        )}
-
         {/* Profile User Control Bar */}
         <div className="relative">
           {/* Profile Popover */}
@@ -254,7 +209,15 @@ export default function Sidebar({ onClose }: { onClose?: () => void }) {
             onLogout={handleLogout}
           />
 
-          <div className="bg-white/80 hover:bg-white border border-brown-900/10 rounded-2xl p-1.5 lg:p-2 flex items-center justify-between md:justify-center lg:justify-between transition-colors shadow-xs">
+          <div className={currentUser.plan === "PLUS"
+            ? "relative overflow-hidden rounded-2xl border border-orange-300/70 bg-gradient-to-br from-orange-50 via-white to-green-50 p-1.5 lg:p-2 shadow-[0_8px_24px_-16px_rgba(233,130,85,0.7)]"
+            : "bg-white/80 hover:bg-white border border-brown-900/10 rounded-2xl p-1.5 lg:p-2 flex items-center justify-between md:justify-center lg:justify-between transition-colors shadow-xs"}>
+            {currentUser.plan === "PLUS" && (
+              <div className="absolute right-2 top-2 md:hidden lg:flex items-center gap-1 rounded-full bg-brown-900 px-2 py-0.5 text-[9px] font-extrabold tracking-wide text-white shadow-sm">
+                <Sparkles size={9} /> PLUS
+              </div>
+            )}
+
             {/* Left: User Avatar + Name + Handle (Clicking toggles Profile Popover) */}
             <button
               type="button"
