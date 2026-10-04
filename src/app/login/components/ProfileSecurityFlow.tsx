@@ -784,7 +784,7 @@ export default function ProfileSecurityFlow({
                       email: email.trim(),
                       name: fullName || undefined,
                       password,
-                      recaptchaToken,
+                      recaptchaToken: captchaToken,
                     }),
                   });
                   const data = await res.json();
