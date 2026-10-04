@@ -16,6 +16,7 @@ import {
   BookOpen,
   Trophy,
   Quote,
+  Sparkles,
 } from "lucide-react";
 
 const NAV_ITEMS = [
@@ -78,6 +79,7 @@ export default function Sidebar({ onClose }: { onClose?: () => void }) {
               name: data.user.name || "Pengguna ZYBA",
               email: data.user.email || "user@zyba.app",
               avatarUrl: data.user.avatarUrl || "🦊",
+              plan: data.user.plan || "FREE",
               streak: data.stats?.streak || 1,
               zybaScore: data.stats?.zybaScore || null,
             };
@@ -223,6 +225,20 @@ export default function Sidebar({ onClose }: { onClose?: () => void }) {
             </span>
           )}
         </Link>
+
+        {currentUser.plan === "PLUS" && (
+          <div className="rounded-2xl border border-orange-500/20 bg-gradient-to-br from-orange-50 via-white to-green-50 p-3 shadow-sm">
+            <div className="flex items-start gap-2.5">
+              <span className="flex size-8 shrink-0 items-center justify-center rounded-xl bg-orange-500 text-white">
+                <Sparkles size={15} />
+              </span>
+              <div className="min-w-0">
+                <p className="text-xs font-extrabold text-brown-900">🎉 Selamat, ZYBA Plus aktif!</p>
+                <p className="mt-0.5 text-[10px] leading-4 text-brown-700/70">Semua fitur premium sudah terbuka. Selamat menikmati pengalaman ZYBA yang lebih lengkap.</p>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Profile User Control Bar */}
         <div className="relative">
