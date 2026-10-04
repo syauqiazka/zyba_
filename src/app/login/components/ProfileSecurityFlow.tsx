@@ -281,7 +281,7 @@ export default function ProfileSecurityFlow({
           {/* Header Kubah Organik Hijau */}
           <div className="relative w-full bg-[#E2EBD2] pt-8 pb-10 px-6 flex flex-col items-center">
             <span className="text-xs font-bold uppercase tracking-widest text-brown-700/70">
-              Step 1 of 6 • Pengaturan Profil
+              Langkah 1 dari 6 • Pengaturan Profil
             </span>
             <h2 className="font-display font-extrabold text-xl text-brown-900 mt-1">
               Pilih Avatar
@@ -351,7 +351,7 @@ export default function ProfileSecurityFlow({
               ←
             </button>
             <span className="text-xs font-bold uppercase tracking-widest text-brown-700/70">
-              Step 2 of 6 • Identity
+              Langkah 2 dari 6 • Identitas
             </span>
 
             {/* Avatar bulat di tengah lengkungan */}
@@ -657,7 +657,7 @@ export default function ProfileSecurityFlow({
               ←
             </button>
             <span className="text-xs font-bold uppercase tracking-widest text-brown-700/70">
-              Step 3 of 6 • Security
+              Langkah 3 dari 6 • Security
             </span>
             <h2 className="font-display font-extrabold text-xl text-brown-900 mt-1">
               Pengaturan Kata Sandi
@@ -819,7 +819,7 @@ export default function ProfileSecurityFlow({
               ←
             </button>
             <span className="text-xs font-bold uppercase tracking-widest text-brown-700/70">
-              Step 4 of 6 • Verification
+              Langkah 4 dari 6 • Verification
             </span>
             <h2 className="font-display font-extrabold text-xl text-brown-900 mt-1">
               Enter 4 Digit OTP Code
@@ -980,7 +980,7 @@ export default function ProfileSecurityFlow({
               ←
             </button>
             <span className="text-xs font-bold uppercase tracking-widest text-brown-700/70">
-              Step 5 of 6 • Biometrics
+              Langkah 5 dari 6 • Biometrics
             </span>
             <h2 className="font-display font-extrabold text-xl text-brown-900 mt-1">
               Pengaturan Sidik Jari
@@ -1064,7 +1064,7 @@ export default function ProfileSecurityFlow({
               ←
             </button>
             <span className="text-xs font-bold uppercase tracking-widest text-brown-700/70">
-              Step 6 of 6 • Preferences
+              Langkah 6 dari 6 • Preferensi
             </span>
             <h2 className="font-display font-extrabold text-xl text-brown-900 mt-1">
               Pengaturan Notifikasi
