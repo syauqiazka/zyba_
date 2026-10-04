@@ -9,10 +9,8 @@ const PRICE = 49_000;
 const bankName = process.env.NEXT_PUBLIC_PAYMENT_BANK_NAME || "Bank belum dikonfigurasi";
 const bankAccount = process.env.NEXT_PUBLIC_PAYMENT_BANK_ACCOUNT || "";
 const bankHolder = process.env.NEXT_PUBLIC_PAYMENT_BANK_HOLDER || "ZYBA";
-const QRIS_PAYLOAD = "00020101021126570011ID.DANA.WWW011893600915302463694502090246369450303UMI51440014ID.CO.QRIS.WWW0215ID10265252211840303UMI5204549953033605802ID5908Syausyau6010Kota Depok61051641163049BBC";
-const fallbackQrisUrl = `https://quickchart.io/qr?text=${encodeURIComponent(QRIS_PAYLOAD)}&size=420&margin=2&ecLevel=M`;
-const configuredQrisUrl = process.env.NEXT_PUBLIC_PAYMENT_QRIS_URL || "";
-const qrisUrl = configuredQrisUrl.startsWith("http://") || configuredQrisUrl.startsWith("https://") ? configuredQrisUrl : fallbackQrisUrl;
+const QRIS_BITS_BASE64 = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD+LrhutL+AQVblYyvQQC6xt3RHa6AXWIPQeyXQC6ZUfmVC6AQSB7HV0QQD+qqqqqr+AAH+jHLWAACCpNf1GWcAXBa8zVL9wDztVLWETwARqKXxgLZgC+VFp7cfCAFuyvH8RJQDWi47myW6AVM16plYaQBzrHWJyTyADu6jxl40wB7Mg/mJ9gAVKogsoYIgDHDy4hUR4Acn5i7QxVgCPho/rk/kAFGX9GhrEAC66R691amAVG41G4rGwCf1F/x6fwASNej1gJ9QADl5bKy8eAIlWRtuFTQCzyu97GruAAkaxuQedwAaKVX2TQ2AWo8ETUTLwBSn8SWEVSAXm2nq6QoQCuj32LBWYAfkdRQoRCgBHzAVY/K6AOC001C4IADiumf2E/8AAHRNESZHQD+fda1la0AQRgdHkBGgC6K0P4ifwAXTfIm5laQC6RI9O2aSAQQHMwgemwD+2bskZleAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=";
+const QR_SIZE = 57;
 
 type Payment = {
   id: string;
@@ -171,13 +169,23 @@ export default function ManualPaymentPage() {
               {copied && <p className="mt-2 text-[11px] font-bold text-green-700">Nomor rekening disalin.</p>}
             </div>
 
-            {qrisUrl && (
-              <div className="mt-4 rounded-2xl border border-brown-900/10 bg-white p-4 text-center">
-                <p className="text-xs font-bold text-brown-700">Atau bayar dengan QRIS</p>
-                <img src={qrisUrl} alt="QRIS ZYBA - Syausyau" className="mx-auto mt-3 h-64 w-64 rounded-xl object-contain" />
-                <p className="mt-2 text-[10px] text-brown-700/60">Scan menggunakan aplikasi pembayaran yang mendukung QRIS.</p>
+            <div className="mt-4 rounded-2xl border border-brown-900/10 bg-white p-4 text-center">
+              <p className="text-xs font-bold text-brown-700">Atau bayar dengan QRIS</p>
+              <div className="mx-auto mt-3 h-64 w-64 overflow-hidden rounded-xl bg-white p-2" aria-label="QRIS ZYBA">
+                <svg viewBox={`0 0 ${QR_SIZE} ${QR_SIZE}`} className="h-full w-full" shapeRendering="crispEdges" role="img" aria-label="QRIS ZYBA Syausyau">
+                  <rect width={QR_SIZE} height={QR_SIZE} fill="white" />
+                  {Array.from(atob(QRIS_BITS_BASE64)).flatMap((byte, byteIndex) =>
+                    Array.from({ length: 8 }, (_, bitIndex) => {
+                      const index = byteIndex * 8 + bitIndex;
+                      if (index >= QR_SIZE * QR_SIZE) return null;
+                      const on = (byte.charCodeAt(0) & (1 << (7 - bitIndex))) !== 0;
+                      return on ? <rect key={index} x={index % QR_SIZE} y={Math.floor(index / QR_SIZE)} width="1" height="1" fill="black" /> : null;
+                    })
+                  )}
+                </svg>
               </div>
-            )}
+              <p className="mt-2 text-[10px] text-brown-700/60">Scan menggunakan aplikasi pembayaran yang mendukung QRIS.</p>
+            </div>
 
             <div className="mt-4 flex gap-3 rounded-2xl bg-green-50 p-4">
               <ShieldCheck className="shrink-0 text-green-700" size={18} />
