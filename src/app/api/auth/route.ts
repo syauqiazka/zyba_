@@ -265,19 +265,6 @@ export async function POST(request: NextRequest) {
 
       let user = await userRepository.findByEmail(email);
 
-      // Auto-provision akun demo jika database kosong untuk alex@zyba.app
-      if (!user && (email === "alex@zyba.app" || email === "alex.rivera@gmail.com")) {
-        const demoHash = await bcrypt.hash(password || "demo_password", 12);
-        user = await userRepository.create({
-          email,
-          name: "Alex Rivera",
-          passwordHash: demoHash,
-          avatarUrl: "🦊",
-          onboardingCompleted: true,
-          zybaScore: 80,
-        });
-      }
-
       if (!user) {
         return NextResponse.json(
           { error: "Email tidak terdaftar" },
