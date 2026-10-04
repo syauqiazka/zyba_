@@ -18,8 +18,8 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Hanya file gambar (JPEG, PNG, WEBP, GIF) yang diperbolehkan." }, { status: 400 });
     }
 
-    // Maximum file size: 10MB
-    if (file.size > 10 * 1024 * 1024) {
+    // Maximum file size: 5MB
+    if (file.size > 5 * 1024 * 1024) {
       return NextResponse.json({ error: "Ukuran gambar maksimal 10MB." }, { status: 400 });
     }
 
