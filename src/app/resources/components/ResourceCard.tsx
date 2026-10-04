@@ -194,7 +194,7 @@ export default function ResourceCard({
           )}
 
           <span className="text-orange-500 group-hover:translate-x-1 transition-transform flex items-center gap-1">
-            {item.type === "COURSE"
+            {item.type === "AUDIO"
               ? "Mulai Audio"
               : "Baca Artikel"}
 
