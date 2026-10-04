@@ -143,7 +143,7 @@ export default function ModelSelector({
       window.removeEventListener("resize", updatePosition);
       window.removeEventListener("scroll", updatePosition, true);
     };
-  }, [isOpen]);
+  }, [isOpen, dropDirection]);
 
   const planOptions = MODEL_OPTIONS.filter((m) =>
     plan === "PLUS" ? m.id === "openai-premium" : m.id !== "openai-premium"
