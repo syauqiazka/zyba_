@@ -58,27 +58,6 @@ export default function LandingHero() {
             </a>
           </div>
 
-          <div className="hero-proof">
-            <div
-              className="proof-avatars"
-              aria-hidden="true"
-            >
-              <span>R</span>
-              <span>A</span>
-              <span>N</span>
-              <span>+</span>
-            </div>
-
-            <div>
-              <strong>
-                Ruang untuk cerita sehari-hari
-              </strong>
-
-              <small>
-                Privat · tidak menghakimi · bukan alat diagnosis
-              </small>
-            </div>
-          </div>
         </div>
 
         {/* =========================================
