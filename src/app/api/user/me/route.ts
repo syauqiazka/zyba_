@@ -179,7 +179,9 @@ if (expiredSubscription) {      // Background async update, tidak perlu membloki
         phone: user.phone,
         location: user.location,
         avatarUrl: user.avatarUrl,
-        // Plan selalu berasal dari subscription ACTIVE yang tervalidasi di DB.\n        // Jangan gunakan nilai client/localStorage sebagai sumber kebenaran.\n        plan,
+        // Plan berasal dari subscription ACTIVE yang tervalidasi di DB.
+        // Jangan gunakan nilai client/localStorage sebagai sumber kebenaran.
+        plan,
         onboardingCompleted: user.onboardingCompleted,
 
         // Terms & Agreement
@@ -196,7 +198,8 @@ if (expiredSubscription) {      // Background async update, tidak perlu membloki
         stressLabel,
         streak: dynamicStreak,
         assessment: initialAssessment,
-        latestDailyAssessment: latestDaily,\n        premiumUntil: activeSubscription?.endDate ?? null,
+        latestDailyAssessment: latestDaily,
+        premiumUntil: activeSubscription?.endDate ?? null,
       },
     };
 
