@@ -21,7 +21,7 @@ const STEPS = [
   { title: "Level Stres", desc: "Rating 1 - 5" },
   { title: "Obat & Suplemen", desc: "Konsumsi medis saat ini" },
   { title: "Gejala Mental", desc: "Keluhan kecemasan/fokus" },
-  { title: "Expression Analysis", desc: "Skrining ekspresi & teks" },
+  { title: "Analisis Ekspresi", desc: "Skrining ekspresi & teks" },
 ];
 
 export default function AssessmentPage() {
@@ -210,17 +210,14 @@ export default function AssessmentPage() {
                 Mental Health Assessment
               </h1>
               <p className="text-xs text-brown-700 mt-0.5">
-                Kuisioner awal untuk menyusun rencana kesehatan mental terpersonalisasi.
+                Kuesioner awal untuk menyusun rencana kesehatan mental yang lebih personal.
               </p>
             </div>
-            <span className="text-xs font-bold px-3 py-1 rounded-full bg-orange-100 text-orange-500 self-start sm:self-auto">
-              Langkah {currentStep + 1} dari 10
-            </span>
           </div>
         )}
 
         {/* Multi-step responsive container: flex stack on mobile, 12-col grid on lg */}
-        <div className="flex flex-col lg:grid lg:grid-cols-12 gap-5 lg:gap-8 items-start">
+        <div className="flex flex-col lg:grid lg:grid-cols-12 gap-4 lg:gap-8 items-start">
           {/* Left panel / Mobile top bar: Stepper */}
           {!isCompleted && !isCompiling && (
             <AssessmentNav currentStep={currentStep} setCurrentStep={setCurrentStep} steps={STEPS} />
