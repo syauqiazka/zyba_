@@ -198,34 +198,6 @@ export default function AssessmentPage() {
           </div>
         </div>
 
-        {/* Progress global */}
-        <div className="flex items-center gap-3">
-          <div className="flex items-center gap-2">
-            <div className="w-24 sm:w-32 md:w-40 h-2 rounded-full bg-cream border border-brown-900/10 overflow-hidden">
-              <div
-                className="h-full bg-gradient-to-r from-orange-500 to-green-500 transition-all duration-500 rounded-full"
-                style={{ width: `${isCompleted ? 100 : Math.min(100, Math.round(((currentStep + 1) / 10) * 100))}%` }}
-              />
-            </div>
-            <span className="text-xs font-bold text-brown-700">
-              {isCompleted ? 100 : Math.min(100, Math.round(((currentStep + 1) / 10) * 100))}%
-            </span>
-          </div>
-
-          {/* Lock badge */}
-          {!isCompleted && (
-            <div className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-full bg-cream border border-brown-900/15 text-[10px] sm:text-[11px] font-bold text-brown-700">
-              <svg className="w-3 h-3 shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                <path
-                  fillRule="evenodd"
-                  d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z"
-                  clipRule="evenodd"
-                />
-              </svg>
-              <span>Wajib Selesai</span>
-            </div>
-          )}
-        </div>
       </header>
 
       {/* ===== Main Content ===== */}

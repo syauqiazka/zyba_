@@ -154,9 +154,9 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Hanya file gambar yang diizinkan." }, { status: 400 });
     }
 
-    // Validate file size (max 8MB)
-    if (file.size > 8 * 1024 * 1024) {
-      return NextResponse.json({ error: "Ukuran foto maksimal 8MB." }, { status: 400 });
+    // Validate file size (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      return NextResponse.json({ error: "Ukuran foto maksimal 5MB." }, { status: 400 });
     }
 
     let avatarUrl: string | null = null;

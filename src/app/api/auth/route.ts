@@ -145,7 +145,7 @@ export async function POST(request: NextRequest) {
 
     if (action === "SIGNUP") {
       const clientIp = getClientIp(request);
-      const limitCheck = checkRateLimit(`signup:${clientIp}`, 10, 60);
+      const limitCheck = await checkRateLimit(`signup:${clientIp}`, 10, 60);
       if (!limitCheck.allowed) {
         return rateLimitResponse(limitCheck.retryAfterSec, "Terlalu banyak permintaan pendaftaran akun.");
       }
@@ -189,7 +189,7 @@ export async function POST(request: NextRequest) {
 
     if (action === "VERIFY_OTP") {
       const clientIp = getClientIp(request);
-      const limitCheck = checkRateLimit(`verify_otp:${clientIp}`, 15, 60);
+      const limitCheck = await checkRateLimit(`verify_otp:${clientIp}`, 15, 60);
       if (!limitCheck.allowed) {
         return rateLimitResponse(limitCheck.retryAfterSec, "Terlalu banyak percobaan kode OTP.");
       }
@@ -215,7 +215,7 @@ export async function POST(request: NextRequest) {
       }
 
       // Security: Hash password dengan bcrypt (AGENTS.md Bagian 8.1)
-      const passwordToHash = password || "demo_password";
+      if (!password) { return NextResponse.json({ error: "Password wajib diisi." }, { status: 400 }); }\n      const passwordToHash = password;
       const passwordHash = await bcrypt.hash(passwordToHash, 12);
 
       // Create user after OTP verification
@@ -254,7 +254,7 @@ export async function POST(request: NextRequest) {
 
     if (action === "LOGIN") {
       const clientIp = getClientIp(request);
-      const limitCheck = checkRateLimit(`login:${clientIp}`, 10, 60);
+      const limitCheck = await checkRateLimit(`login:${clientIp}`, 10, 60);
       if (!limitCheck.allowed) {
         return rateLimitResponse(limitCheck.retryAfterSec, "Terlalu banyak percobaan masuk yang gagal.");
       }
@@ -264,19 +264,6 @@ export async function POST(request: NextRequest) {
       }
 
       let user = await userRepository.findByEmail(email);
-
-      // Auto-provision akun demo jika database kosong untuk alex@zyba.app
-      if (!user && (email === "alex@zyba.app" || email === "alex.rivera@gmail.com")) {
-        const demoHash = await bcrypt.hash(password || "demo_password", 12);
-        user = await userRepository.create({
-          email,
-          name: "Alex Rivera",
-          passwordHash: demoHash,
-          avatarUrl: "🦊",
-          onboardingCompleted: true,
-          zybaScore: 80,
-        });
-      }
 
       if (!user) {
         return NextResponse.json(

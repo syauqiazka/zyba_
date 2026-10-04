@@ -82,13 +82,13 @@ export default function ProfileSecurityFlow({
     | "NOTIFICATIONS"
     | "COMPILING"
     | "ALL_SET_UP"
-  >("SELECT_AVATAR");
+  >("PROFILE_SETUP");
 
   // Form State
   const [avatar, setAvatar] = useState("fox"); // stores string key, not raw emoji
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState(
-    initialEmail && initialEmail !== "alex@zyba.app" ? initialEmail : ""
+    initialEmail
   );
   const [password, setPassword] = useState("");
   const [phone, setPhone] = useState("");
@@ -106,7 +106,7 @@ export default function ProfileSecurityFlow({
 
   // Sync initialEmail if changed from parent
   useEffect(() => {
-    if (initialEmail && initialEmail !== "alex@zyba.app") {
+    if (initialEmail) {
       setEmail(initialEmail);
     }
   }, [initialEmail]);
@@ -170,7 +170,7 @@ export default function ProfileSecurityFlow({
   const hasSpecial = /[!@#$%^&*(),.?":{}|<>]/.test(password);
   const strengthScore = (hasMinLength ? 1 : 0) + (hasNumber ? 1 : 0) + (hasSpecial ? 1 : 0);
 
-  // Compiling Data auto-advance
+  // Menyiapkan Akun auto-advance
   useEffect(() => {
     if (step === "COMPILING") {
       const interval = setInterval(() => {
@@ -276,19 +276,19 @@ export default function ProfileSecurityFlow({
       {/* ========================================================================= */}
       {/* 1. SELECT YOUR AVATAR */}
       {/* ========================================================================= */}
-      {step === "SELECT_AVATAR" && (
+      {false && step === "SELECT_AVATAR" && (
         <div className="flex flex-col">
           {/* Header Kubah Organik Hijau */}
           <div className="relative w-full bg-[#E2EBD2] pt-8 pb-10 px-6 flex flex-col items-center">
             <span className="text-xs font-bold uppercase tracking-widest text-brown-700/70">
-              Step 1 of 6 • Profile Setup
+              Langkah 1 dari 6 • Pengaturan Profil
             </span>
             <h2 className="font-display font-extrabold text-xl text-brown-900 mt-1">
-              Select Your Avatar
+              Pilih Avatar
             </h2>
           </div>
 
-          <div className="p-8 flex flex-col items-center gap-6 bg-white -mt-4 rounded-t-3xl z-10 text-center">
+          <div className="p-5 sm:p-8 flex flex-col items-center gap-6 bg-white -mt-4 rounded-t-3xl z-10 text-center">
             {/* Avatar Preview Besar dengan Ring Ornamen khas Figma */}
             <div className="relative w-28 h-28 rounded-full bg-gradient-to-tr from-[#E2EBD2] to-orange-100 border-4 border-white shadow-xl flex items-center justify-center text-5xl">
               <span>{AVATAR_EMOJI_MAP[avatar] || "🦊"}</span>
@@ -299,7 +299,7 @@ export default function ProfileSecurityFlow({
 
             <div>
               <p className="text-xs text-brown-700/80 leading-relaxed max-w-xs">
-                We have a set of customizable avatar. Or choose one of our friendly companions below.
+                Pilih avatar ZYBA yang paling sesuai dengan kamu.
               </p>
             </div>
 
@@ -323,13 +323,13 @@ export default function ProfileSecurityFlow({
               ))}
             </div>
 
-            {/* Tombol Continue → */}
+            {/* Tombol Lanjutkan → */}
             <button
               type="button"
               onClick={() => setStep("PROFILE_SETUP")}
               className="w-full py-3.5 rounded-full bg-brown-900 text-white font-bold text-xs md:text-sm flex items-center justify-center gap-2 hover:bg-orange-500 transition-all shadow-md active:scale-98"
             >
-              <span>Continue</span>
+              <span>Lanjutkan</span>
               <span>→</span>
             </button>
           </div>
@@ -341,17 +341,17 @@ export default function ProfileSecurityFlow({
       {/* ========================================================================= */}
       {step === "PROFILE_SETUP" && (
         <div className="flex flex-col">
-          {/* Header Kubah dengan Avatar Lingkaran di tengah persis Figma Frame Profile Setup */}
+          {/* Header Kubah dengan Avatar Lingkaran di tengah persis Figma Frame Pengaturan Profil */}
           <div className="relative w-full bg-[#E2EBD2] pt-6 pb-12 px-6 flex flex-col items-center">
             <button
               type="button"
-              onClick={() => setStep("SELECT_AVATAR")}
+              onClick={() => setStep("PROFILE_SETUP")}
               style={{ position: "absolute" }} className="absolute left-5 top-5 z-20 w-8 h-8 rounded-full bg-white/80 hover:bg-white text-brown-900 flex items-center justify-center text-sm shadow-xs transition-colors"
             >
               ←
             </button>
             <span className="text-xs font-bold uppercase tracking-widest text-brown-700/70">
-              Step 2 of 6 • Identity
+              Langkah 2 dari 6 • Identitas
             </span>
 
             {/* Avatar bulat di tengah lengkungan */}
@@ -360,10 +360,10 @@ export default function ProfileSecurityFlow({
             </div>
           </div>
 
-          <div className="p-8 flex flex-col gap-4 bg-white -mt-6 rounded-t-3xl z-10">
+          <div className="p-5 sm:p-8 flex flex-col gap-4 bg-white -mt-6 rounded-t-3xl z-10">
             <div className="text-center">
               <h2 className="font-display font-extrabold text-xl text-brown-900">
-                Profile Setup
+                Pengaturan Profil
               </h2>
               <p className="text-xs text-brown-700/80">Lengkapi data akun ZYBA Anda</p>
             </div>
@@ -372,7 +372,7 @@ export default function ProfileSecurityFlow({
             <div className="flex flex-col gap-3">
               <div>
                 <label className="text-xs font-bold text-brown-900 pl-1 block mb-1">
-                  Full Name
+                  Nama Lengkap
                 </label>
                 <input
                   type="text"
@@ -385,7 +385,7 @@ export default function ProfileSecurityFlow({
 
               <div>
                 <label className="text-xs font-bold text-brown-900 pl-1 block mb-1">
-                  Email Address <span className="text-danger">*</span>
+                  Alamat Email <span className="text-danger">*</span>
                 </label>
                 <input
                   type="email"
@@ -591,7 +591,7 @@ export default function ProfileSecurityFlow({
               </div>
             </div>
 
-            {/* Tombol Continue → */}
+            {/* Tombol Lanjutkan → */}
             <button
               type="button"
               disabled={isCheckingEmail}
@@ -634,7 +634,7 @@ export default function ProfileSecurityFlow({
                 <span>Memeriksa Email...</span>
               ) : (
                 <>
-                  <span>Continue</span>
+                  <span>Lanjutkan</span>
                   <span>→</span>
                 </>
               )}
@@ -657,14 +657,14 @@ export default function ProfileSecurityFlow({
               ←
             </button>
             <span className="text-xs font-bold uppercase tracking-widest text-brown-700/70">
-              Step 3 of 6 • Security
+              Langkah 3 dari 6 • Security
             </span>
             <h2 className="font-display font-extrabold text-xl text-brown-900 mt-1">
-              Password Setup
+              Pengaturan Kata Sandi
             </h2>
           </div>
 
-          <div className="p-8 flex flex-col gap-5 bg-white -mt-4 rounded-t-3xl z-10">
+          <div className="p-5 sm:p-8 flex flex-col gap-5 bg-white -mt-4 rounded-t-3xl z-10">
             {/* Input Password */}
             <div className="flex flex-col gap-1.5">
               <label className="text-xs font-bold text-brown-900 pl-1">
@@ -678,11 +678,11 @@ export default function ProfileSecurityFlow({
               />
             </div>
 
-            {/* Password Strength Meter Card (Figma pattern) */}
+            {/* Kekuatan Kata Sandi Meter Card (Figma pattern) */}
             <div className="p-4 rounded-2xl bg-cream/40 border border-brown-900/10 flex flex-col gap-3">
               <div className="flex items-center justify-between">
                 <span className="text-xs font-bold text-brown-900">
-                  Password Strength
+                  Kekuatan Kata Sandi
                 </span>
                 <span
                   className={`text-[11px] font-extrabold ${strengthScore === 3
@@ -756,7 +756,7 @@ export default function ProfileSecurityFlow({
               </div>
             )}
 
-            {/* Tombol Continue → Request OTP */}
+            {/* Tombol Lanjutkan → Request OTP */}
             <button
               type="button"
               disabled={isSendingOtp}
@@ -796,7 +796,7 @@ export default function ProfileSecurityFlow({
                 <span>Mengirim Kode OTP ke Email...</span>
               ) : (
                 <>
-                  <span>Continue</span>
+                  <span>Lanjutkan</span>
                   <span>→</span>
                 </>
               )}
@@ -819,14 +819,14 @@ export default function ProfileSecurityFlow({
               ←
             </button>
             <span className="text-xs font-bold uppercase tracking-widest text-brown-700/70">
-              Step 4 of 6 • Verification
+              Langkah 4 dari 6 • Verification
             </span>
             <h2 className="font-display font-extrabold text-xl text-brown-900 mt-1">
               Enter 4 Digit OTP Code
             </h2>
           </div>
 
-          <div className="p-8 flex flex-col items-center gap-6 bg-white -mt-4 rounded-t-3xl z-10 text-center">
+          <div className="p-5 sm:p-8 flex flex-col items-center gap-6 bg-white -mt-4 rounded-t-3xl z-10 text-center">
             {/* Ilustrasi Tameng Hijau */}
             <div className="w-16 h-16 rounded-3xl bg-green-100 border border-green-500/30 flex items-center justify-center text-3xl shadow-sm">
               🛡️
@@ -849,25 +849,12 @@ export default function ProfileSecurityFlow({
             </div>
 
             {/* Quick Demo Helper Box */}
-            <div className="w-full p-3 rounded-2xl bg-cream/70 border border-brown-900/10 text-left flex items-center justify-between gap-3">
-              <div>
-                <span className="text-[11px] font-bold text-brown-900 block">
-                  Mode Pengujian / Fallback:
-                </span>
-                <span className="text-[10px] text-brown-700 leading-tight block">
-                  Bila SMTP belum diset, gunakan kode demo: <strong className="text-brown-900 font-mono">0000</strong>
-                </span>
-              </div>
-              <button
-                type="button"
-                onClick={() => {
-                  setOtp(["0", "0", "0", "0"]);
-                  setOtpError("");
-                }}
-                className="px-3 py-1.5 rounded-full bg-brown-900 hover:bg-orange-500 text-white font-bold text-[10px] shrink-0 transition-colors shadow-xs"
-              >
-                Isi 0000
+            <div className="w-full flex flex-col gap-2">
+              <p className="text-[10px] font-semibold text-brown-700/70">Pilih metode verifikasi:</p>
+              <button type="button" onClick={() => { window.location.href = "/api/auth/google"; }} className="w-full py-2.5 rounded-xl border border-brown-900/10 bg-white hover:bg-cream text-brown-900 text-xs font-bold transition-colors">
+                Verifikasi dengan Google
               </button>
+              <div className="text-[10px] text-brown-700/50">Atau lanjutkan dengan kode OTP melalui email di bawah.</div>
             </div>
 
             {/* 4 Kotak Digit Besar */}
@@ -931,7 +918,7 @@ export default function ProfileSecurityFlow({
               </button>
             </div>
 
-            {/* Tombol Continue → Verify OTP via Backend */}
+            {/* Tombol Lanjutkan → Verify OTP via Backend */}
             <button
               type="button"
               disabled={isVerifyingOtp}
@@ -978,7 +965,7 @@ export default function ProfileSecurityFlow({
                 <span>Memverifikasi...</span>
               ) : (
                 <>
-                  <span>Verify & Continue</span>
+                  <span>Verify & Lanjutkan</span>
                   <span>→</span>
                 </>
               )}
@@ -1001,14 +988,14 @@ export default function ProfileSecurityFlow({
               ←
             </button>
             <span className="text-xs font-bold uppercase tracking-widest text-brown-700/70">
-              Step 5 of 6 • Biometrics
+              Langkah 5 dari 6 • Biometrics
             </span>
             <h2 className="font-display font-extrabold text-xl text-brown-900 mt-1">
-              Fingerprint Setup
+              Pengaturan Sidik Jari
             </h2>
           </div>
 
-          <div className="p-8 flex flex-col items-center gap-6 bg-white -mt-4 rounded-t-3xl z-10 text-center">
+          <div className="p-5 sm:p-8 flex flex-col items-center gap-6 bg-white -mt-4 rounded-t-3xl z-10 text-center">
             {/* Ikon Sidik Jari Biometrik Besar khas Figma */}
             <button
               type="button"
@@ -1058,13 +1045,13 @@ export default function ProfileSecurityFlow({
               </p>
             </div>
 
-            {/* Tombol Continue → */}
+            {/* Tombol Lanjutkan → */}
             <button
               type="button"
               onClick={() => setStep("NOTIFICATIONS")}
               className="w-full py-3.5 rounded-full bg-brown-900 text-white font-bold text-xs md:text-sm flex items-center justify-center gap-2 hover:bg-orange-500 transition-all shadow-md active:scale-98"
             >
-              <span>{isFingerprintScanned ? "Continue" : "Lewati / Continue"}</span>
+              <span>{isFingerprintScanned ? "Lanjutkan" : "Lewati / Lanjutkan"}</span>
               <span>→</span>
             </button>
           </div>
@@ -1085,14 +1072,14 @@ export default function ProfileSecurityFlow({
               ←
             </button>
             <span className="text-xs font-bold uppercase tracking-widest text-brown-700/70">
-              Step 6 of 6 • Preferences
+              Langkah 6 dari 6 • Preferensi
             </span>
             <h2 className="font-display font-extrabold text-xl text-brown-900 mt-1">
-              Notification Setup
+              Pengaturan Notifikasi
             </h2>
           </div>
 
-          <div className="p-8 flex flex-col gap-5 bg-white -mt-4 rounded-t-3xl z-10">
+          <div className="p-5 sm:p-8 flex flex-col gap-5 bg-white -mt-4 rounded-t-3xl z-10">
             {/* Ilustrasi Yoga/Relaksasi khas Figma */}
             <div className="w-full py-3 flex items-center justify-center bg-cream/40 rounded-2xl border border-brown-900/10">
               <span className="text-4xl">🧘‍♂️</span>
@@ -1170,13 +1157,13 @@ export default function ProfileSecurityFlow({
               </div>
             </div>
 
-            {/* Tombol Continue → */}
+            {/* Tombol Lanjutkan → */}
             <button
               type="button"
               onClick={() => setStep("COMPILING")}
               className="mt-2 w-full py-3.5 rounded-full bg-brown-900 text-white font-bold text-xs md:text-sm flex items-center justify-center gap-2 hover:bg-orange-500 transition-all shadow-md active:scale-98"
             >
-              <span>Continue</span>
+              <span>Lanjutkan</span>
               <span>→</span>
             </button>
           </div>
@@ -1187,7 +1174,7 @@ export default function ProfileSecurityFlow({
       {/* 7. COMPILING DATA... (Orange Screen khas Figma) */}
       {/* ========================================================================= */}
       {step === "COMPILING" && (
-        <div className="w-full min-h-[460px] bg-gradient-to-br from-orange-500 to-[#F2884B] p-8 flex flex-col items-center justify-center text-center text-white relative overflow-hidden">
+        <div className="w-full min-h-[460px] bg-gradient-to-br from-orange-500 to-[#F2884B] p-5 sm:p-8 flex flex-col items-center justify-center text-center text-white relative overflow-hidden">
           {/* Ornamen Lingkaran Halus */}
           <div className="absolute -top-12 -right-12 w-40 h-40 rounded-full bg-white/10 blur-xl pointer-events-none" />
           <div className="absolute -bottom-12 -left-12 w-40 h-40 rounded-full bg-black/10 blur-xl pointer-events-none" />
@@ -1202,7 +1189,7 @@ export default function ProfileSecurityFlow({
           </div>
 
           <h2 className="font-display font-extrabold text-2xl md:text-3xl tracking-tight text-white mb-2">
-            Compiling Data...
+            Menyiapkan Akun...
           </h2>
           <p className="text-xs text-white/90 max-w-xs leading-relaxed mb-6 font-medium">
             Please wait... We&apos;re calculating the data based on your assessment inputs.

@@ -37,8 +37,8 @@ export default function ComposeBox({ onAddPost, onRiskDetected, currentUserIniti
       return;
     }
 
-    if (file.size > 10 * 1024 * 1024) {
-      setUploadError("Ukuran foto maksimal 10MB.");
+    if (file.size > 5 * 1024 * 1024) {
+      setUploadError("Ukuran foto maksimal 5MB.");
       return;
     }
 
