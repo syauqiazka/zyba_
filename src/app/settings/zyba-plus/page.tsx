@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Check, CreditCard, ShieldCheck, Sparkles, Zap } from "lucide-react";
 
@@ -23,6 +23,24 @@ export default function ZybaPlusPage() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [premiumUntil, setPremiumUntil] = useState<string | null>(null);
+  const [planLoading, setPlanLoading] = useState(true);
+  const [isPlus, setIsPlus] = useState(false);
+
+  useEffect(() => {
+    let mounted = true;
+    fetch("/api/user/me", { cache: "no-store" })
+      .then((res) => res.ok ? res.json() : null)
+      .then((data) => {
+        if (!mounted) return;
+        const plus = data?.user?.plan === "PLUS";
+        setIsPlus(plus);
+        setPremiumUntil(data?.stats?.premiumUntil ?? null);
+      })
+      .catch(() => {})
+      .finally(() => mounted && setPlanLoading(false));
+    return () => { mounted = false; };
+  }, []);
 
   const handleUpgrade = async () => {
     if (loading) return;
@@ -56,19 +74,35 @@ export default function ZybaPlusPage() {
           <p className="mx-auto mt-3 max-w-xl text-sm leading-6 text-brown-700">Dapatkan insight wellness personal, pattern detection, rencana personal, dan 60 chat AI per hari.</p>
         </header>
 
-        <section className="mt-7 rounded-3xl border border-orange-200 bg-orange-50 p-5 sm:p-6">
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-            <div>
-              <p className="text-xs font-extrabold text-brown-900">Premium Bulanan</p>
-              <p className="mt-1 font-display text-3xl font-extrabold text-brown-900">{formatPrice(PRICE)} <span className="text-sm font-bold text-brown-700">/ bulan</span></p>
-              <p className="mt-1 text-[11px] text-brown-700/70">Transfer manual. Premium aktif setelah admin memverifikasi pembayaran.</p>
+        {planLoading ? (
+          <section className="mt-7 h-28 animate-pulse rounded-3xl border border-brown-900/10 bg-white" />
+        ) : isPlus ? (
+          <section className="mt-7 overflow-hidden rounded-3xl border border-green-200 bg-gradient-to-br from-green-50 via-white to-orange-50 p-6 sm:p-8">
+            <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
+              <div className="flex items-start gap-4">
+                <div className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-brown-900 text-white shadow-sm"><Sparkles size={20} /></div>
+                <div>
+                  <p className="text-[11px] font-extrabold uppercase tracking-[0.18em] text-green-700">ZYBA PLUS AKTIF</p>
+                  <h2 className="mt-1 font-display text-2xl font-extrabold text-brown-900">Selamat, Premium kamu sudah aktif.</h2>
+                  <p className="mt-1 text-sm leading-6 text-brown-700">Semua fitur Plus yang tersedia untuk akunmu sudah terbuka.</p>
+                  {premiumUntil && <p className="mt-2 text-xs font-semibold text-brown-700/70">Aktif sampai {new Intl.DateTimeFormat("id-ID", { dateStyle: "long" }).format(new Date(premiumUntil))}.</p>}
+                </div>
+              </div>
+              <div className="rounded-2xl bg-white/80 px-4 py-3 text-center shadow-sm border border-green-200/70">
+                <p className="text-[10px] font-bold uppercase tracking-wider text-brown-700/60">Status</p>
+                <p className="mt-1 text-sm font-extrabold text-green-700">● Premium aktif</p>
+              </div>
             </div>
-            <button type="button" onClick={handleUpgrade} disabled={loading} className="inline-flex items-center justify-center gap-2 rounded-2xl bg-orange-500 px-6 py-3.5 text-sm font-extrabold text-white hover:bg-orange-400 disabled:cursor-not-allowed disabled:opacity-50">
-              <CreditCard size={17} /> {loading ? "Menyiapkan pembayaran..." : "Upgrade Premium"}
-            </button>
-          </div>
-          {error && <p className="mt-3 rounded-xl bg-red-50 px-3 py-2 text-xs font-semibold text-red-700">{error}</p>}
-        </section>
+          </section>
+        ) : (
+          <section className="mt-7 rounded-3xl border border-orange-200 bg-orange-50 p-5 sm:p-6">
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+              <div><p className="text-xs font-extrabold text-brown-900">Premium Bulanan</p><p className="mt-1 font-display text-3xl font-extrabold text-brown-900">{formatPrice(PRICE)} <span className="text-sm font-bold text-brown-700">/ bulan</span></p><p className="mt-1 text-[11px] text-brown-700/70">Transfer manual. Premium aktif setelah admin memverifikasi pembayaran.</p></div>
+              <button type="button" onClick={handleUpgrade} disabled={loading} className="inline-flex items-center justify-center gap-2 rounded-2xl bg-orange-500 px-6 py-3.5 text-sm font-extrabold text-white hover:bg-orange-400 disabled:cursor-not-allowed disabled:opacity-50"><CreditCard size={17} /> {loading ? "Menyiapkan pembayaran..." : "Upgrade Premium"}</button>
+            </div>
+            {error && <p className="mt-3 rounded-xl bg-red-50 px-3 py-2 text-xs font-semibold text-red-700">{error}</p>}
+          </section>
+        )}
 
         <section className="mt-4 grid gap-4 lg:grid-cols-[1fr_320px]">
           <div className="rounded-3xl border border-brown-900/10 bg-white p-5 sm:p-7">
