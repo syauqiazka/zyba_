@@ -3121,8 +3121,8 @@ html {
 
 
 /* ---------------------------------------------------------
-   PARTNERS / SUPPORT RAIL
-   Quiet brand rail between the feature and journey sections.
+   PARTNERS / SUPPORT MARQUEE
+   Seamless horizontal partner movement.
    --------------------------------------------------------- */
 
 .landing-partners {
@@ -3162,27 +3162,32 @@ html {
   line-height: 1.55;
 }
 
-.partners-list {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+.partners-marquee {
+  position: relative;
+  min-width: 0;
+  overflow: hidden;
+  mask-image: linear-gradient(to right, transparent, black 8%, black 92%, transparent);
+  -webkit-mask-image: linear-gradient(to right, transparent, black 8%, black 92%, transparent);
+}
+
+.partners-marquee-track {
+  width: max-content;
+  display: flex;
   align-items: center;
   gap: 18px;
+  animation: partners-marquee 20s linear infinite;
+  will-change: transform;
 }
 
 .partner-wordmark {
-  min-width: 0;
+  min-width: 170px;
   min-height: 54px;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 10px;
   color: rgba(59, 42, 32, 0.72);
-  transition: color 180ms ease, transform 180ms ease;
-}
-
-.partner-wordmark:hover {
-  color: var(--zyba-brown-900);
-  transform: translateY(-1px);
+  flex: 0 0 auto;
 }
 
 .partner-mark {
@@ -3199,17 +3204,9 @@ html {
   letter-spacing: -0.04em;
 }
 
-.partner-mark-orange {
-  background: #f47e45;
-}
-
-.partner-mark-blue {
-  background: #2362c7;
-}
-
-.partner-mark-dark {
-  background: #3b2a20;
-}
+.partner-mark-orange { background: #f47e45; }
+.partner-mark-blue { background: #2362c7; }
+.partner-mark-dark { background: #3b2a20; }
 
 .partner-name {
   font-size: clamp(11px, 1.05vw, 14px);
@@ -3218,48 +3215,44 @@ html {
   white-space: nowrap;
 }
 
-@media (max-width: 900px) {
-  .landing-partners {
-    padding: 8px 0 88px;
-  }
+@keyframes partners-marquee {
+  from { transform: translate3d(0, 0, 0); }
+  to { transform: translate3d(calc(-50% - 9px), 0, 0); }
+}
 
+.partners-marquee:hover .partners-marquee-track {
+  animation-play-state: paused;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .partners-marquee-track { animation: none; }
+}
+
+@media (max-width: 900px) {
+  .landing-partners { padding: 8px 0 88px; }
   .partners-inner {
     grid-template-columns: 1fr;
     gap: 28px;
     padding: 28px 0;
   }
-
-  .partners-intro p {
-    max-width: 520px;
-  }
+  .partners-intro p { max-width: 520px; }
 }
 
 @media (max-width: 560px) {
-  .landing-partners {
-    padding-bottom: 70px;
+  .landing-partners { padding-bottom: 70px; }
+  .partners-inner { gap: 22px; }
+  .partners-marquee-track {
+    gap: 12px;
+    animation-duration: 16s;
   }
-
-  .partners-inner {
-    gap: 22px;
-  }
-
-  .partners-list {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 12px 8px;
-  }
-
   .partner-wordmark {
-    justify-content: flex-start;
+    min-width: 150px;
     min-height: 46px;
   }
-
   .partner-mark {
     width: 27px;
     height: 27px;
     flex-basis: 27px;
   }
-
-  .partner-name {
-    font-size: 11px;
-  }
+  .partner-name { font-size: 11px; }
 }
