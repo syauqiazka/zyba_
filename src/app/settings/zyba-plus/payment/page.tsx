@@ -9,7 +9,8 @@ const PRICE = 49_000;
 const bankName = process.env.NEXT_PUBLIC_PAYMENT_BANK_NAME || "Bank belum dikonfigurasi";
 const bankAccount = process.env.NEXT_PUBLIC_PAYMENT_BANK_ACCOUNT || "";
 const bankHolder = process.env.NEXT_PUBLIC_PAYMENT_BANK_HOLDER || "ZYBA";
-const qrisUrl = process.env.NEXT_PUBLIC_PAYMENT_QRIS_URL || "";
+const QRIS_PAYLOAD = "00020101021126570011ID.DANA.WWW011893600915302463694502090246369450303UMI51440014ID.CO.QRIS.WWW0215ID10265252211840303UMI5204549953033605802ID5908Syausyau6010Kota Depok61051641163049BBC";
+const qrisUrl = process.env.NEXT_PUBLIC_PAYMENT_QRIS_URL || `https://quickchart.io/qr?text=${encodeURIComponent(QRIS_PAYLOAD)}&size=420&margin=2&ecLevel=M`;
 
 type Payment = {
   id: string;
@@ -38,6 +39,7 @@ export default function ManualPaymentPage() {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
   const [copied, setCopied] = useState(false);
+  const [justSubmitted, setJustSubmitted] = useState(false);
 
   const canSubmit = Boolean(paymentId && senderName.trim() && proofUrl && !submitting);
 
@@ -113,6 +115,7 @@ export default function ManualPaymentPage() {
       const data = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(data.error || "Gagal mengirim bukti pembayaran.");
       await load();
+      setJustSubmitted(true);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Gagal mengirim bukti pembayaran.");
     } finally {
@@ -167,9 +170,10 @@ export default function ManualPaymentPage() {
             </div>
 
             {qrisUrl && (
-              <div className="mt-4 rounded-2xl border border-brown-900/10 p-4 text-center">
+              <div className="mt-4 rounded-2xl border border-brown-900/10 bg-white p-4 text-center">
                 <p className="text-xs font-bold text-brown-700">Atau bayar dengan QRIS</p>
-                <img src={qrisUrl} alt="QRIS ZYBA" className="mx-auto mt-3 max-h-64 w-auto rounded-xl" />
+                <img src={qrisUrl} alt="QRIS ZYBA - Syausyau" className="mx-auto mt-3 h-64 w-64 rounded-xl object-contain" />
+                <p className="mt-2 text-[10px] text-brown-700/60">Scan menggunakan aplikasi pembayaran yang mendukung QRIS.</p>
               </div>
             )}
 
@@ -203,7 +207,7 @@ export default function ManualPaymentPage() {
 
             {uploading && <p className="mt-2 text-xs text-brown-700">Mengunggah bukti...</p>}
 
-            {payment?.status === "REJECTED" && (
+            {payment?.status === "CANCELLED" && (
               <div className="mt-4 rounded-2xl bg-red-50 p-4">
                 <div className="flex gap-2">
                   <XCircle className="shrink-0 text-red-600" size={18} />
@@ -215,9 +219,27 @@ export default function ManualPaymentPage() {
               </div>
             )}
 
-            <button onClick={submit} disabled={!canSubmit || uploading} className="mt-5 flex w-full items-center justify-center gap-2 rounded-2xl bg-orange-500 px-4 py-3.5 text-sm font-extrabold text-white hover:bg-orange-400 disabled:cursor-not-allowed disabled:opacity-50">
-              <Upload size={17} /> {submitting ? "Mengirim..." : payment?.status === "REJECTED" ? "Kirim Ulang Bukti" : "Kirim untuk Verifikasi"}
-            </button>
+            {payment?.status === "PENDING" && payment.submittedAt ? (
+              <div className="mt-5 rounded-2xl border border-green-200 bg-green-50 p-4">
+                <div className="flex items-start gap-3">
+                  <CheckCircle2 className="mt-0.5 shrink-0 text-green-600" size={22} />
+                  <div>
+                    <p className="text-sm font-extrabold text-green-800">{justSubmitted ? "Bukti pembayaran berhasil diunggah!" : "Bukti pembayaran sudah terkirim"}</p>
+                    <p className="mt-1 text-xs leading-5 text-green-800/80">Pembayaran kamu sudah masuk ke sistem dan sekarang menunggu verifikasi admin. Kamu tidak perlu mengirim ulang selama statusnya masih menunggu.</p>
+                  </div>
+                </div>
+                <div className="mt-4 grid gap-2 text-[11px] text-green-900/80 sm:grid-cols-3">
+                  <div className="rounded-xl bg-white/70 p-3"><span className="font-bold">✓ 1. Bukti diterima</span><br />Sudah masuk</div>
+                  <div className="rounded-xl bg-white/70 p-3"><span className="font-bold">2. Verifikasi admin</span><br />Sedang menunggu</div>
+                  <div className="rounded-xl bg-white/70 p-3"><span className="font-bold">3. Premium aktif</span><br />Setelah disetujui</div>
+                </div>
+                <p className="mt-3 text-[10px] text-green-800/70">Nomor transaksi: {payment.orderId}</p>
+              </div>
+            ) : (
+              <button onClick={submit} disabled={!canSubmit || uploading} className="mt-5 flex w-full items-center justify-center gap-2 rounded-2xl bg-orange-500 px-4 py-3.5 text-sm font-extrabold text-white hover:bg-orange-400 disabled:cursor-not-allowed disabled:opacity-50">
+                <Upload size={17} /> {submitting ? "Mengirim bukti..." : payment?.status === "CANCELLED" ? "Kirim Ulang Bukti" : "Kirim untuk Verifikasi"}
+              </button>
+            )}
 
             <p className="mt-3 text-center text-[10px] leading-4 text-brown-700/50">Status: {statusText}</p>
           </section>
