@@ -210,7 +210,7 @@ export default function Sidebar({ onClose }: { onClose?: () => void }) {
           />
 
           <div className={currentUser.plan === "PLUS"
-            ? "relative overflow-hidden rounded-2xl border border-orange-300/70 bg-gradient-to-br from-orange-50 via-white to-green-50 p-1.5 lg:p-2 shadow-[0_8px_24px_-16px_rgba(233,130,85,0.7)]"
+            ? "relative overflow-hidden flex items-center justify-between md:justify-center lg:justify-between rounded-2xl border border-orange-300/70 bg-gradient-to-br from-orange-50 via-white to-green-50 p-1.5 lg:p-2 shadow-[0_8px_24px_-16px_rgba(233,130,85,0.7)]"
             : "bg-white/80 hover:bg-white border border-brown-900/10 rounded-2xl p-1.5 lg:p-2 flex items-center justify-between md:justify-center lg:justify-between transition-colors shadow-xs"}>
             {currentUser.plan === "PLUS" && (
               <div className="absolute right-2 top-2 md:hidden lg:flex items-center gap-1 rounded-full bg-brown-900 px-2 py-0.5 text-[9px] font-extrabold tracking-wide text-white shadow-sm">
