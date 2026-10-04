@@ -1,8 +1,5 @@
-"use client";
-
 import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
-import { useEffect, useState } from "react";
 
 const NAV_ITEMS = [
   { label: "Fitur", href: "#fitur" },
@@ -11,56 +8,8 @@ const NAV_ITEMS = [
 ];
 
 export default function LandingHeader() {
-  const [scrolled, setScrolled] = useState(false);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      setScrolled(window.scrollY > 24);
-    };
-
-    handleScroll();
-
-    window.addEventListener("scroll", handleScroll, {
-      passive: true,
-    });
-
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-    };
-  }, []);
-
-  const handleNavClick = (
-    e: React.MouseEvent<HTMLAnchorElement>,
-    href: string
-  ) => {
-    e.preventDefault();
-
-    const target = document.querySelector(href);
-
-    if (!target) return;
-
-    const headerOffset = 88;
-
-    const targetTop =
-      target.getBoundingClientRect().top +
-      window.scrollY -
-      headerOffset;
-
-    window.scrollTo({
-      top: targetTop,
-      behavior: "smooth",
-    });
-
-    window.history.replaceState(null, "", href);
-  };
-
   return (
-    <header
-      className={`landing-header ${scrolled
-          ? "landing-header-scrolled"
-          : ""
-        }`}
-    >
+    <header className="landing-header">
       <div className="landing-container landing-nav">
         <Link
           href="/"
@@ -89,12 +38,6 @@ export default function LandingHeader() {
             <a
               key={item.href}
               href={item.href}
-              onClick={(e) =>
-                handleNavClick(
-                  e,
-                  item.href
-                )
-              }
             >
               {item.label}
             </a>

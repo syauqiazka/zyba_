@@ -1,6 +1,8 @@
 import Link from "next/link";
 import {
   ArrowRight,
+  Mail,
+  Phone,
   ShieldCheck,
 } from "lucide-react";
 
@@ -37,6 +39,18 @@ export default function LandingCta() {
             Mulai gratis
             <ArrowRight size={18} />
           </Link>
+        </div>
+
+        <div className="footer-contact">
+          <span className="footer-contact-label">Hubungi kami</span>
+          <a href="https://wa.me/6281281345246">
+            <Phone size={15} />
+            +62 812-8134-5246
+          </a>
+          <a href="mailto:zyba@gmail.com">
+            <Mail size={15} />
+            zyba@gmail.com
+          </a>
         </div>
 
         <div className="footer-bottom">
