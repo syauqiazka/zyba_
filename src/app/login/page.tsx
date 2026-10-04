@@ -400,19 +400,6 @@ function LoginContent({
                         Masuk
                       </button>
 
-                      <button
-                        type="button"
-                        onClick={() =>
-                          switchMode("SIGN_UP")
-                        }
-                        className={`rounded-full px-4 py-2 text-xs font-bold transition-all ${authMode === "SIGN_UP"
-                          ? "bg-brown-900 text-white shadow-sm"
-                          : "text-brown-700 hover:text-brown-900"
-                          }`}
-                      >
-                        Daftar
-                      </button>
-
                     </div>
                   </div>
 
@@ -432,9 +419,6 @@ function LoginContent({
                         switchMode(
                           "FORGOT_PASSWORD"
                         )
-                      }
-                      onSignUpClick={() =>
-                        switchMode("SIGN_UP")
                       }
                       isLoading={isLoading}
                     />
