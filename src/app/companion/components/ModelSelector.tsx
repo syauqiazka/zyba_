@@ -194,13 +194,7 @@ export default function ModelSelector({
             left: dropdownPosition?.left,
             width: dropdownPosition?.width,
           }}
-          className={`
-            dropDirection === "up" ? "bottom-full mb-2" : "top-full mt-2"
-          } right-0 sm:right-auto sm:left-0 w-[min(290px,calc(100vw-16px))] max-w-[calc(100vw-16px)] sm:w-80 bg-white border-2 border-brown-900/15 rounded-2xl shadow-2xl z-[100] p-2.5 flex flex-col gap-1.5 animate-in fade-in ${
-            dropDirection === "up"
-              ? "slide-in-from-bottom-2"
-              : "slide-in-from-top-2"
-          } duration-150`}
+          className="fixed max-h-[min(70vh,520px)] overflow-hidden bg-white border-2 border-brown-900/15 rounded-2xl shadow-2xl z-[100] p-2.5 flex flex-col gap-1.5 animate-in fade-in duration-150"
         >
           {/* Header Popover */}
           <div className="flex items-center justify-between px-2 py-1 border-b border-brown-900/10 mb-1">
