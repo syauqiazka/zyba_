@@ -15,12 +15,12 @@ export async function POST(req: NextRequest) {
 
     // Validate mime type
     if (!file.type.startsWith("image/")) {
-      return NextResponse.json({ error: "Hanya file gambar (JPEG, PNG, WEBP, GIF) yang diperbolehkan." }, { status: 400 });
+      return NextResponse.json({ error: "Hanya file gambar (JPEG, PNG, atau WEBP) yang diperbolehkan." }, { status: 400 });
     }
 
     // Maximum file size: 5MB
     if (file.size > 5 * 1024 * 1024) {
-      return NextResponse.json({ error: "Ukuran gambar maksimal 10MB." }, { status: 400 });
+      return NextResponse.json({ error: "Ukuran gambar maksimal 5MB." }, { status: 400 });
     }
 
     // ── Self-Hosted Filesystem Storage (public/uploads/ & uploads/) ──
