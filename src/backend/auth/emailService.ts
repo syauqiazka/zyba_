@@ -8,7 +8,7 @@ import nodemailer from "nodemailer";
 export function generateOTP(email: string): string {
   // Generate 4-digit numeric code
   const otp = Math.floor(1000 + Math.random() * 9000).toString();
-  return Math.floor(100000 + Math.random() * 900000).toString();
+  return Math.floor(1000 + Math.random() * 9000).toString();
 }
 
 export function verifyOTP(_email: string, _inputOtp: string): { success: boolean; message: string } {
