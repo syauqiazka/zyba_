@@ -3,17 +3,22 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { useCommunity } from "../context/CommunityContext";
-import { Check } from "lucide-react";
+import { Check, X } from "lucide-react";
 import { useUserStatus, UserStatusConfig } from "@/hooks/useUserStatus";
 import UserAvatar from "@/components/ui/UserAvatar";
 import ReportModal from "./ReportModal";
 
+// ─── Types ────────────────────────────────────────────────────────────────────
 export interface CommentItem {
   id: string;
   author: string;
   avatar: string;
   time: string;
   content: string;
+  userId?: string;
+  parentId?: string | null;
+  replyingToAuthor?: string | null;
+  replies?: CommentItem[];
 }
 
 export interface Post {
@@ -41,7 +46,7 @@ interface PostCardProps {
   post: Post;
   onToggleLike: (id: string) => void;
   onToggleRepost?: (id: string) => void;
-  onAddComment?: (postId: string, commentText: string) => void;
+  onAddComment?: (postId: string, commentText: string, parentId?: string | null) => void;
   onTagClick?: (tag: string) => void;
   currentUserId?: string | null;
 }
@@ -87,8 +92,15 @@ function IconMore() {
     </svg>
   );
 }
+function IconReply() {
+  return (
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <polyline points="9 17 4 12 9 7" /><path d="M20 18v-2a4 4 0 0 0-4-4H4" />
+    </svg>
+  );
+}
 
-// ─── Render hashtags ───────────────────────────────────────────────────────────
+// ─── Render hashtags ────────────────────────────────────────────────────────
 const renderContent = (text: string, onTagClick?: (tag: string) => void) =>
   text.split(/(#[a-zA-Z0-9_]+)/g).map((part, i) =>
     part.startsWith("#") ? (
@@ -126,7 +138,7 @@ function AvatarBubble({
   );
 }
 
-// ─── Dropdown Menu Item ────────────────────────────────────────────────────────
+// ─── Dropdown Menu Item ─────────────────────────────────────────────────────
 function MenuItem({
   label,
   sublabel,
@@ -170,7 +182,7 @@ function MenuItem({
   );
 }
 
-// ─── Icon SVGs for menu ────────────────────────────────────────────────────────
+// ─── Icon SVGs for menu ────────────────────────────────────────────────────
 const IcLink = () => <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>;
 const IcBookmark = () => <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>;
 const IcEyeOff = () => <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>;
@@ -182,9 +194,8 @@ const IcEdit = () => <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
 const IcArchive = () => <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="21 8 21 21 3 21 3 8"/><rect x="1" y="3" width="22" height="5"/><line x1="10" y1="12" x2="14" y2="12"/></svg>;
 const IcMessageOff = () => <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h11"/><line x1="1" y1="1" x2="23" y2="23"/></svg>;
 const IcMessage = () => <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>;
-const IcCheck = () => <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>;
 
-// ─── Confirm Dialog inside dropdown ───────────────────────────────────────────
+// ─── Confirm Dialog ────────────────────────────────────────────────────────
 function ConfirmPanel({
   message,
   confirmLabel,
@@ -221,7 +232,7 @@ function ConfirmPanel({
   );
 }
 
-// ─── Edit Modal (inline overlay) ──────────────────────────────────────────────
+// ─── Edit Modal ────────────────────────────────────────────────────────────
 function EditModal({
   post,
   onClose,
@@ -237,7 +248,6 @@ function EditModal({
 
   useEffect(() => {
     textareaRef.current?.focus();
-    // Auto-resize
     const ta = textareaRef.current;
     if (ta) {
       ta.style.height = "auto";
@@ -265,7 +275,6 @@ function EditModal({
       onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
     >
       <div className="w-full max-w-lg bg-white rounded-2xl shadow-2xl overflow-hidden animate-in fade-in slide-in-from-bottom-4 duration-200">
-        {/* Header */}
         <div className="flex items-center justify-between px-5 py-4 border-b border-brown-900/10">
           <h2 className="font-display font-bold text-sm text-brown-900">Edit Postingan</h2>
           <button
@@ -274,11 +283,10 @@ function EditModal({
             className="w-7 h-7 rounded-full hover:bg-cream flex items-center justify-center text-brown-700/50 hover:text-brown-900 transition-colors"
             aria-label="Tutup"
           >
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            <X size={14} />
           </button>
         </div>
 
-        {/* Body */}
         <div className="p-5">
           <textarea
             ref={textareaRef}
@@ -299,7 +307,6 @@ function EditModal({
           </div>
         </div>
 
-        {/* Footer */}
         <div className="flex gap-2 px-5 pb-5">
           <button
             type="button"
@@ -326,6 +333,103 @@ function EditModal({
   );
 }
 
+// ─── Single Comment Row ───────────────────────────────────────────────────────
+function CommentRow({
+  comment,
+  currentUserId,
+  postId,
+  onReply,
+  onDelete,
+  onReport,
+  depth = 0,
+}: {
+  comment: CommentItem;
+  currentUserId?: string | null;
+  postId: string;
+  onReply: (c: CommentItem) => void;
+  onDelete: (commentId: string) => void;
+  onReport: (commentId: string, authorName: string) => void;
+  depth?: number;
+}) {
+  const isOwn = currentUserId && comment.userId && String(currentUserId) === String(comment.userId);
+
+  return (
+    <div className={depth > 0 ? "ml-7 sm:ml-9 pl-3 sm:pl-4 border-l-2 border-orange-200/60" : ""}>
+      <div className="flex gap-2 items-start py-1.5">
+        <div className="shrink-0 mt-0.5">
+          <AvatarBubble initials={comment.avatar} size="sm" />
+        </div>
+        <div className="flex-1 min-w-0">
+          {/* Author + meta */}
+          <div className="flex items-center gap-1.5 mb-0.5 flex-wrap">
+            {comment.replyingToAuthor && depth > 0 && (
+              <span className="text-[10px] text-orange-500 font-semibold flex items-center gap-0.5 shrink-0">
+                <IconReply />
+                @{comment.replyingToAuthor}
+              </span>
+            )}
+            <span className="font-bold text-[12px] text-brown-900 truncate">{comment.author}</span>
+            <span className="text-[10px] text-brown-700/50 shrink-0">· {comment.time}</span>
+          </div>
+
+          {/* Content */}
+          <p className="text-xs text-brown-900 leading-relaxed break-words">{comment.content}</p>
+
+          {/* Actions */}
+          <div className="flex items-center gap-3 mt-1.5">
+            {depth === 0 && (
+              <button
+                type="button"
+                onClick={() => onReply(comment)}
+                className="text-[11px] font-semibold text-brown-700/50 hover:text-orange-500 transition-colors flex items-center gap-1"
+              >
+                <IconReply />
+                Balas
+              </button>
+            )}
+            {!isOwn && (
+              <button
+                type="button"
+                onClick={() => onReport(comment.id, comment.author)}
+                className="text-[11px] font-semibold text-brown-700/40 hover:text-red-500 transition-colors"
+              >
+                Laporkan
+              </button>
+            )}
+            {isOwn && (
+              <button
+                type="button"
+                onClick={() => onDelete(comment.id)}
+                className="text-[11px] font-semibold text-brown-700/40 hover:text-red-500 transition-colors"
+              >
+                Hapus
+              </button>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* Nested replies (1 level only) */}
+      {comment.replies && comment.replies.length > 0 && (
+        <div className="mt-0.5 mb-1">
+          {comment.replies.map((reply) => (
+            <CommentRow
+              key={reply.id}
+              comment={reply}
+              currentUserId={currentUserId}
+              postId={postId}
+              onReply={onReply}
+              onDelete={onDelete}
+              onReport={onReport}
+              depth={1}
+            />
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
 // ─── PostCard ─────────────────────────────────────────────────────────────────
 export default function PostCard({ post, onToggleLike, onToggleRepost, onAddComment, onTagClick, currentUserId }: PostCardProps) {
   const myStatus = useUserStatus();
@@ -342,27 +446,68 @@ export default function PostCard({ post, onToggleLike, onToggleRepost, onAddComm
     setShowCrisisNotice,
     handleToggleComments,
     handleEditPost,
+    currentUserAvatar,
   } = useCommunity();
   const isSaved = savedPostIds.includes(post.id);
 
+  // Comment section state
   const [showComments, setShowComments] = useState(false);
+  const [commentsList, setCommentsList] = useState<CommentItem[]>([]);
+  const [commentsLoading, setCommentsLoading] = useState(false);
+  const [commentsError, setCommentsError] = useState("");
+
+  // Reply state
+  const [replyingTo, setReplyingTo] = useState<{ id: string; author: string } | null>(null);
   const [commentInput, setCommentInput] = useState("");
   const [commentSubmitting, setCommentSubmitting] = useState(false);
+  const commentInputRef = useRef<HTMLInputElement>(null);
+  const commentsScrollRef = useRef<HTMLDivElement>(null);
+
+  // Report for comment
+  const [reportCommentTarget, setReportCommentTarget] = useState<{ id: string; author: string } | null>(null);
+
+  // Post-level state
   const [menuOpen, setMenuOpen] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [confirmMute, setConfirmMute] = useState(false);
   const [confirmBlock, setConfirmBlock] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
   const [reportModalOpen, setReportModalOpen] = useState(false);
-  // Local optimistic state for commentsDisabled
   const [commentsDisabled, setCommentsDisabled] = useState(post.commentsDisabled ?? false);
-  // Local optimistic content after edit
   const [localContent, setLocalContent] = useState(post.content);
   const menuRef = useRef<HTMLDivElement>(null);
 
-  // Sync external prop changes (e.g. context refetch)
+  // Sync external prop changes
   useEffect(() => { setCommentsDisabled(post.commentsDisabled ?? false); }, [post.commentsDisabled]);
   useEffect(() => { setLocalContent(post.content); }, [post.content]);
+
+  // Load comments from API when expanded
+  const loadComments = useCallback(async () => {
+    if (!post.id) return;
+    setCommentsLoading(true);
+    setCommentsError("");
+    try {
+      const res = await fetch(`/api/community/comments?postId=${post.id}`, { cache: "no-store" });
+      const data = await res.json();
+      if (res.ok && data.comments) {
+        setCommentsList(data.comments);
+      } else {
+        // Fallback to post.comments if API unavailable
+        setCommentsList(post.comments || []);
+      }
+    } catch {
+      setCommentsList(post.comments || []);
+      setCommentsError("Gagal memuat komentar.");
+    } finally {
+      setCommentsLoading(false);
+    }
+  }, [post.id, post.comments]);
+
+  useEffect(() => {
+    if (showComments) {
+      loadComments();
+    }
+  }, [showComments, loadComments]);
 
   // Close dropdown on outside click / Escape
   useEffect(() => {
@@ -395,12 +540,77 @@ export default function PostCard({ post, onToggleLike, onToggleRepost, onAddComm
   const handleSendComment = async () => {
     if (!commentInput.trim() || commentSubmitting || commentsDisabled) return;
     setCommentSubmitting(true);
+    const parentId = replyingTo?.id || null;
+    const text = commentInput.trim();
     try {
-      await onAddComment?.(post.id, commentInput.trim());
-      setCommentInput("");
+      const res = await fetch("/api/community/comments", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ postId: post.id, content: text, parentId }),
+      });
+      const data = await res.json();
+      if (res.ok && data.comment) {
+        // Inject into local list without full reload
+        if (parentId) {
+          // Add to replies of parent
+          setCommentsList((prev) =>
+            prev.map((c) =>
+              c.id === parentId
+                ? { ...c, replies: [...(c.replies || []), data.comment] }
+                : c
+            )
+          );
+        } else {
+          setCommentsList((prev) => [...prev, data.comment]);
+        }
+        if (data.isRisk) setShowCrisisNotice?.(true);
+        // Also call parent handler to bump count in context
+        onAddComment?.(post.id, text, parentId);
+      } else {
+        showToast?.(data.error || "Gagal mengirim komentar.", "error");
+      }
+    } catch {
+      showToast?.("Gagal mengirim komentar.", "error");
     } finally {
       setCommentSubmitting(false);
+      setCommentInput("");
+      setReplyingTo(null);
     }
+  };
+
+  const handleDeleteComment = async (commentId: string) => {
+    try {
+      const res = await fetch(`/api/community/comments?commentId=${commentId}`, { method: "DELETE" });
+      if (res.ok) {
+        setCommentsList((prev) => {
+          // Remove from top-level
+          const withoutTop = prev.filter((c) => c.id !== commentId);
+          // Remove from nested replies
+          return withoutTop.map((c) => ({
+            ...c,
+            replies: (c.replies || []).filter((r) => r.id !== commentId),
+          }));
+        });
+        showToast?.("Komentar dihapus.");
+      } else {
+        const data = await res.json().catch(() => ({}));
+        showToast?.(data.error || "Gagal menghapus komentar.", "error");
+      }
+    } catch {
+      showToast?.("Gagal menghapus komentar.", "error");
+    }
+  };
+
+  const startReply = (comment: CommentItem) => {
+    setReplyingTo({ id: comment.id, author: comment.author });
+    commentInputRef.current?.focus();
+    // Scroll input into view
+    setTimeout(() => commentInputRef.current?.scrollIntoView({ behavior: "smooth", block: "nearest" }), 80);
+  };
+
+  const cancelReply = () => {
+    setReplyingTo(null);
+    setCommentInput("");
   };
 
   const fallbackCopyText = (text: string) => {
@@ -433,28 +643,33 @@ export default function PostCard({ post, onToggleLike, onToggleRepost, onAddComm
 
   const handleToggleCommentLocal = async () => {
     const next = !commentsDisabled;
-    setCommentsDisabled(next); // optimistic
+    setCommentsDisabled(next);
     closeMenu();
     try {
       await handleToggleComments?.(post.id, next);
       showToast?.(next ? "✓ Komentar dimatikan untuk postingan ini" : "✓ Komentar diaktifkan kembali");
     } catch {
-      setCommentsDisabled(!next); // rollback
+      setCommentsDisabled(!next);
       showToast?.("Gagal mengubah pengaturan komentar", "error");
     }
   };
 
   const handleEditSave = async (newContent: string) => {
     const old = localContent;
-    setLocalContent(newContent); // optimistic
+    setLocalContent(newContent);
     try {
       await handleEditPost?.(post.id, newContent);
       showToast?.("✓ Postingan berhasil diperbarui");
     } catch {
-      setLocalContent(old); // rollback
+      setLocalContent(old);
       showToast?.("Gagal memperbarui postingan", "error");
     }
   };
+
+  const totalCommentCount = commentsList.reduce(
+    (acc, c) => acc + 1 + (c.replies?.length || 0),
+    0
+  );
 
   return (
     <>
@@ -470,7 +685,7 @@ export default function PostCard({ post, onToggleLike, onToggleRepost, onAddComm
               statusConfig={isOwner ? myStatus : undefined}
             />
           </button>
-          {showComments && post.comments && post.comments.length > 0 && (
+          {showComments && commentsList.length > 0 && (
             <div className="w-0.5 flex-1 bg-brown-900/10 mt-2 mb-1 min-h-[20px] rounded-full" />
           )}
         </div>
@@ -529,7 +744,6 @@ export default function PostCard({ post, onToggleLike, onToggleRepost, onAddComm
                     role="menu"
                   >
                     {isOwner ? (
-                      /* ── OWNER MENU ─────────────────────────── */
                       <>
                         {confirmDelete ? (
                           <ConfirmPanel
@@ -566,7 +780,6 @@ export default function PostCard({ post, onToggleLike, onToggleRepost, onAddComm
                         )}
                       </>
                     ) : (
-                      /* ── VISITOR MENU ───────────────────────── */
                       <>
                         {confirmMute ? (
                           <ConfirmPanel
@@ -734,7 +947,7 @@ export default function PostCard({ post, onToggleLike, onToggleRepost, onAddComm
               <IconShare />
             </button>
 
-            {/* Bookmark / Save — pushed to right */}
+            {/* Bookmark */}
             <button
               type="button"
               onClick={() => {
@@ -754,49 +967,121 @@ export default function PostCard({ post, onToggleLike, onToggleRepost, onAddComm
             </button>
           </div>
 
-          {/* Inline comment thread */}
+          {/* ── Inline comment thread ─────────────────────────────────── */}
           {showComments && !commentsDisabled && (
-            <div className="mt-3 flex flex-col gap-0">
-              {post.comments && post.comments.length > 0 && (
-                <div className="flex flex-col gap-3 pb-3">
-                  {post.comments.map((c) => (
-                    <div key={c.id} className="flex gap-2.5 items-start">
-                      <AvatarBubble initials={c.avatar} size="sm" />
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-1.5 mb-0.5 flex-wrap">
-                          <span className="font-bold text-[12px] text-brown-900 truncate">{c.author}</span>
-                          <span className="text-[10px] text-brown-700/50 shrink-0">· {c.time}</span>
-                        </div>
-                        <p className="text-xs text-brown-900 leading-relaxed break-words">{c.content}</p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
+            <div className="mt-3">
+              {/* Scrollable comment list */}
+              <div
+                ref={commentsScrollRef}
+                className="max-h-[380px] sm:max-h-[440px] overflow-y-auto overscroll-contain pr-1 scroll-smooth"
+                style={{ WebkitOverflowScrolling: "touch" }}
+              >
+                {commentsLoading && (
+                  <div className="flex items-center justify-center py-6">
+                    <svg className="animate-spin w-5 h-5 text-orange-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <circle cx="12" cy="12" r="10" strokeOpacity="0.25"/>
+                      <path d="M12 2a10 10 0 0 1 10 10" />
+                    </svg>
+                    <span className="ml-2 text-xs text-brown-700/50">Memuat komentar...</span>
+                  </div>
+                )}
+
+                {!commentsLoading && commentsError && (
+                  <div className="flex items-center gap-2 py-3 px-1">
+                    <span className="text-xs text-red-500">{commentsError}</span>
+                    <button
+                      type="button"
+                      onClick={loadComments}
+                      className="text-xs font-semibold text-orange-500 hover:underline"
+                    >
+                      Coba lagi
+                    </button>
+                  </div>
+                )}
+
+                {!commentsLoading && !commentsError && commentsList.length === 0 && (
+                  <div className="py-5 text-center">
+                    <p className="text-xs text-brown-700/50">Belum ada komentar. Jadilah yang pertama!</p>
+                  </div>
+                )}
+
+                {!commentsLoading && commentsList.length > 0 && (
+                  <div className="flex flex-col pb-2">
+                    {commentsList.map((c) => (
+                      <CommentRow
+                        key={c.id}
+                        comment={c}
+                        currentUserId={currentUserId}
+                        postId={post.id}
+                        onReply={startReply}
+                        onDelete={handleDeleteComment}
+                        onReport={(commentId, authorName) =>
+                          setReportCommentTarget({ id: commentId, author: authorName })
+                        }
+                      />
+                    ))}
+                  </div>
+                )}
+              </div>
 
               {/* Reply input */}
-              <div className="flex items-center gap-2 pt-2 border-t border-brown-900/8">
-                <div className="w-7 h-7 rounded-full bg-orange-100 border border-orange-200 flex items-center justify-center text-[10px] font-bold text-orange-600 shrink-0">
-                  AL
+              <div className="pt-2.5 border-t border-brown-900/8">
+                {/* Reply-to indicator */}
+                {replyingTo && (
+                  <div className="flex items-center gap-1.5 mb-1.5 px-1">
+                    <span className="text-[11px] text-orange-500 font-semibold flex items-center gap-1">
+                      <IconReply />
+                      Membalas @{replyingTo.author}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={cancelReply}
+                      className="ml-auto text-[10px] text-brown-700/50 hover:text-brown-900 flex items-center gap-0.5 transition-colors"
+                      aria-label="Batalkan balasan"
+                    >
+                      <X size={10} />
+                      Batal
+                    </button>
+                  </div>
+                )}
+
+                <div className="flex items-center gap-2">
+                  {/* Current user mini-avatar */}
+                  <div className="w-7 h-7 rounded-full bg-orange-100 border border-orange-200 flex items-center justify-center text-[10px] font-bold text-orange-600 shrink-0 overflow-hidden">
+                    {currentUserAvatar ? (
+                      <span>{currentUserAvatar}</span>
+                    ) : (
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                    )}
+                  </div>
+
+                  <input
+                    ref={commentInputRef}
+                    type="text"
+                    value={commentInput}
+                    onChange={(e) => setCommentInput(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" && !e.shiftKey) {
+                        e.preventDefault();
+                        handleSendComment();
+                      }
+                      if (e.key === "Escape") cancelReply();
+                    }}
+                    placeholder={replyingTo ? `Balas @${replyingTo.author}...` : "Tulis balasan yang suportif..."}
+                    maxLength={500}
+                    className="flex-1 bg-cream/60 rounded-pill border border-brown-900/8 px-4 py-2 text-xs text-brown-900 placeholder:text-brown-700/40 focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:bg-white transition-all min-w-0"
+                  />
+                  <button
+                    type="button"
+                    onClick={handleSendComment}
+                    disabled={!commentInput.trim() || commentSubmitting}
+                    className="rounded-pill bg-brown-900 text-white text-xs font-semibold px-3 sm:px-4 py-2 hover:bg-orange-500 transition-colors disabled:opacity-30 disabled:cursor-not-allowed shrink-0 flex items-center gap-1"
+                  >
+                    {commentSubmitting ? (
+                      <svg className="animate-spin w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10" strokeOpacity="0.25"/><path d="M12 2a10 10 0 0 1 10 10"/></svg>
+                    ) : "Kirim"}
+                  </button>
                 </div>
-                <input
-                  type="text"
-                  value={commentInput}
-                  onChange={(e) => setCommentInput(e.target.value)}
-                  onKeyDown={(e) => e.key === "Enter" && !e.shiftKey && handleSendComment()}
-                  placeholder="Tulis balasan yang suportif..."
-                  className="flex-1 bg-cream/60 rounded-pill border border-brown-900/8 px-4 py-2 text-xs text-brown-900 placeholder:text-brown-700/40 focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:bg-white transition-all min-w-0"
-                />
-                <button
-                  type="button"
-                  onClick={handleSendComment}
-                  disabled={!commentInput.trim() || commentSubmitting}
-                  className="rounded-pill bg-brown-900 text-white text-xs font-semibold px-3 sm:px-4 py-2 hover:bg-orange-500 transition-colors disabled:opacity-30 disabled:cursor-not-allowed shrink-0 flex items-center gap-1"
-                >
-                  {commentSubmitting ? (
-                    <svg className="animate-spin w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10" strokeOpacity="0.25"/><path d="M12 2a10 10 0 0 1 10 10"/></svg>
-                  ) : "Kirim"}
-                </button>
               </div>
             </div>
           )}
@@ -812,16 +1097,31 @@ export default function PostCard({ post, onToggleLike, onToggleRepost, onAddComm
         />
       )}
 
-      {/* Report Modal */}
+      {/* Post Report Modal */}
       <ReportModal
         open={reportModalOpen}
         postId={post.id}
         authorName={post.author}
+        targetType="POST"
         onClose={() => setReportModalOpen(false)}
         onReportSuccess={(isCrisis, hidePostChoice) => {
           if (hidePostChoice) handleHidePost?.(post.id);
           if (isCrisis) setShowCrisisNotice?.(true);
           showToast?.("✓ Laporan Anda telah diterima dan akan ditinjau tim ZYBA.");
+        }}
+      />
+
+      {/* Comment Report Modal */}
+      <ReportModal
+        open={Boolean(reportCommentTarget)}
+        postId={post.id}
+        commentId={reportCommentTarget?.id}
+        authorName={reportCommentTarget?.author || ""}
+        targetType="COMMENT"
+        onClose={() => setReportCommentTarget(null)}
+        onReportSuccess={(isCrisis) => {
+          if (isCrisis) setShowCrisisNotice?.(true);
+          showToast?.("✓ Komentar dilaporkan dan akan ditinjau tim ZYBA.");
         }}
       />
     </>

@@ -41,7 +41,8 @@ model CommunityComment {
   parentId  String?
   parent    CommunityComment?  @relation("CommentReplies", fields: [parentId], references: [id], onDelete: Cascade)
   replies   CommunityComment[] @relation("CommentReplies")
-  createdAt DateTime      @default(now())
+  isHidden  Boolean            @default(false)
+  createdAt DateTime           @default(now())
 
   @@index([postId, createdAt])
   @@index([userId, createdAt])
@@ -140,3 +141,39 @@ model CommunityNotification {
   @@index([recipientId, readAt])
   @@map("community_notifications")
 }
+
+enum ReportStatus {
+  PENDING
+  REVIEWING
+  ACTION_TAKEN
+  DISMISSED
+}
+
+enum ReportTargetType {
+  POST
+  COMMENT
+}
+
+model CommunityReport {
+  id             String           @id @default(cuid())
+  reporterId     String           // from Account DB
+  targetType     ReportTargetType
+  targetId       String           // postId or commentId
+  postId         String?          // related post id for easy linking
+  reportedUserId String           // author of the post or comment
+  reason         String           // spam, harassment, hate_speech, inappropriate, self_harm, other
+  details        String?          // user explanation
+  status         ReportStatus     @default(PENDING)
+  reviewedBy     String?          // admin userId from Account DB
+  resolutionNote String?
+  resolvedAt     DateTime?
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+
+  @@index([status, createdAt])
+  @@index([targetType, targetId])
+  @@index([reportedUserId, createdAt])
+  @@index([reporterId, createdAt])
+  @@map("community_reports")
+}
+

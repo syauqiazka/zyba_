@@ -23,6 +23,13 @@ model User {
 
   companionPersona CompanionPersona @default(KINA)
   plan             Plan             @default(FREE)
+  role             UserRole         @default(USER)
+
+  isSuspended      Boolean          @default(false)
+  suspendedUntil   DateTime?
+  isBanned         Boolean          @default(false)
+  banReason        String?
+  warningCount     Int              @default(0)
 
   onboardingCompleted Boolean @default(false)
 
@@ -47,6 +54,8 @@ model User {
   subscriptions    Subscription[]
   userAchievements UserAchievement[]
   userBadges       UserBadge[]
+  moderationLogs   ModerationLog[]  @relation("ModeratedUser")
+  adminActions     ModerationLog[]  @relation("ModeratingAdmin")
 
   streakDays         Int?      @default(0)
   lastStreakDate     DateTime?
@@ -325,4 +334,39 @@ model UserBadge {
   @@unique([userId, badgeId])
   @@index([userId])
   @@map("user_badges")
+}
+
+enum UserRole {
+  USER
+  ADMIN
+}
+
+enum ModerationActionType {
+  WARN
+  HIDE_POST
+  HIDE_COMMENT
+  DELETE_POST
+  DELETE_COMMENT
+  SUSPEND
+  BAN
+  LIFT_RESTRICTION
+  DISMISS_REPORT
+}
+
+model ModerationLog {
+  id           String               @id @default(cuid())
+  adminId      String
+  admin        User                 @relation("ModeratingAdmin", fields: [adminId], references: [id], onDelete: Cascade)
+  targetUserId String
+  targetUser   User                 @relation("ModeratedUser", fields: [targetUserId], references: [id], onDelete: Cascade)
+  action       ModerationActionType
+  reason       String
+  durationDays Int?
+  reportId     String?
+  metadata     Json?
+  createdAt    DateTime             @default(now())
+
+  @@index([targetUserId, createdAt])
+  @@index([adminId, createdAt])
+  @@map("moderation_logs")
 }

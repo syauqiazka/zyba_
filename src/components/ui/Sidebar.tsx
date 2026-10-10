@@ -17,6 +17,7 @@ import {
   Trophy,
   Quote,
   Sparkles,
+  Shield,
 } from "lucide-react";
 
 const NAV_ITEMS = [
@@ -37,6 +38,7 @@ export default function Sidebar({ onClose }: { onClose?: () => void }) {
 
   const [isProfilePopoverOpen, setIsProfilePopoverOpen] = useState(false);
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
 
   // Instant hydration from localStorage cache to eliminate any loading delay
   const [currentUser, setCurrentUser] = useState<ProfileUser>(() => {
@@ -84,6 +86,7 @@ export default function Sidebar({ onClose }: { onClose?: () => void }) {
               zybaScore: data.stats?.zybaScore || null,
             };
             setCurrentUser(updatedUser);
+            if (data.user.isAdmin || data.user.role === "ADMIN") setIsAdmin(true);
             try {
               localStorage.setItem(
                 "zyba_user_cache",
@@ -191,6 +194,44 @@ export default function Sidebar({ onClose }: { onClose?: () => void }) {
             );
           })}
         </nav>
+
+        {/* Admin section — only shown for admin users */}
+        {isAdmin && (
+          <div className="mt-1">
+            <div className="px-3 mb-1">
+              <span className="text-[9px] font-extrabold uppercase tracking-[0.18em] text-orange-500/80 md:hidden lg:inline">
+                Admin
+              </span>
+            </div>
+            {[
+              { href: "/admin/moderation", label: "Moderasi", icon: Shield },
+              { href: "/admin/payments", label: "Keuangan", icon: Shield },
+            ].map((item) => {
+              const Icon = item.icon;
+              const isActive = pathname?.startsWith(item.href);
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  onClick={onClose}
+                  title={item.label}
+                  className={`group/link relative px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 flex items-center justify-start md:justify-center lg:justify-start gap-3 ${
+                    isActive
+                      ? "bg-orange-500 text-white shadow-md shadow-orange-500/25 font-semibold"
+                      : "text-orange-600 hover:bg-orange-100/70 hover:text-orange-700"
+                  }`}
+                >
+                  <Icon
+                    size={18}
+                    strokeWidth={isActive ? 2.4 : 2}
+                    className={isActive ? "text-white shrink-0" : "text-orange-500 shrink-0"}
+                  />
+                  <span className="md:hidden lg:inline truncate">{item.label}</span>
+                </Link>
+              );
+            })}
+          </div>
+        )}
       </div>
 
       {/* Footer Profile */}

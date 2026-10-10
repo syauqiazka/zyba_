@@ -134,6 +134,12 @@ exports.Prisma.UserScalarFieldEnum = {
   bio: 'bio',
   companionPersona: 'companionPersona',
   plan: 'plan',
+  role: 'role',
+  isSuspended: 'isSuspended',
+  suspendedUntil: 'suspendedUntil',
+  isBanned: 'isBanned',
+  banReason: 'banReason',
+  warningCount: 'warningCount',
   onboardingCompleted: 'onboardingCompleted',
   termsAcceptedAt: 'termsAcceptedAt',
   termsVersion: 'termsVersion',
@@ -298,6 +304,18 @@ exports.Prisma.UserBadgeScalarFieldEnum = {
   updatedAt: 'updatedAt'
 };
 
+exports.Prisma.ModerationLogScalarFieldEnum = {
+  id: 'id',
+  adminId: 'adminId',
+  targetUserId: 'targetUserId',
+  action: 'action',
+  reason: 'reason',
+  durationDays: 'durationDays',
+  reportId: 'reportId',
+  metadata: 'metadata',
+  createdAt: 'createdAt'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -333,6 +351,11 @@ exports.CompanionPersona = exports.$Enums.CompanionPersona = {
 exports.Plan = exports.$Enums.Plan = {
   FREE: 'FREE',
   PLUS: 'PLUS'
+};
+
+exports.UserRole = exports.$Enums.UserRole = {
+  USER: 'USER',
+  ADMIN: 'ADMIN'
 };
 
 exports.MoodLevel = exports.$Enums.MoodLevel = {
@@ -381,6 +404,18 @@ exports.AchievementCategory = exports.$Enums.AchievementCategory = {
   SPECIAL: 'SPECIAL'
 };
 
+exports.ModerationActionType = exports.$Enums.ModerationActionType = {
+  WARN: 'WARN',
+  HIDE_POST: 'HIDE_POST',
+  HIDE_COMMENT: 'HIDE_COMMENT',
+  DELETE_POST: 'DELETE_POST',
+  DELETE_COMMENT: 'DELETE_COMMENT',
+  SUSPEND: 'SUSPEND',
+  BAN: 'BAN',
+  LIFT_RESTRICTION: 'LIFT_RESTRICTION',
+  DISMISS_REPORT: 'DISMISS_REPORT'
+};
+
 exports.Prisma.ModelName = {
   User: 'User',
   NotificationPref: 'NotificationPref',
@@ -395,7 +430,8 @@ exports.Prisma.ModelName = {
   Achievement: 'Achievement',
   UserAchievement: 'UserAchievement',
   Badge: 'Badge',
-  UserBadge: 'UserBadge'
+  UserBadge: 'UserBadge',
+  ModerationLog: 'ModerationLog'
 };
 
 /**

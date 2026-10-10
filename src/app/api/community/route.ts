@@ -115,6 +115,20 @@ export async function POST(
       }
     }
 
+    // 🔒 SERVER-SIDE MODERATION ENFORCEMENT: Pengguna yang dibatasi (banned atau suspended) dilarang berinteraksi
+    const modStatus = await userRepository.getUserModerationStatus(userId);
+    if (modStatus.restricted) {
+      return NextResponse.json(
+        {
+          error: modStatus.reason || "Akun Anda sedang dibatasi dan tidak dapat melakukan tindakan ini.",
+          isRestricted: true,
+          isBanned: modStatus.isBanned,
+          isSuspended: modStatus.isSuspended,
+        },
+        { status: 403 }
+      );
+    }
+
     const body = await req.json();
 
     const {
@@ -123,6 +137,8 @@ export async function POST(
       imageUrl,
       tag,
       postId,
+      parentId,
+      commentId,
     } = body;
 
     // =========================
@@ -147,7 +163,7 @@ export async function POST(
     }
 
     // =========================
-    // COMMENT
+    // COMMENT / NESTED REPLY
     // =========================
     if (
       action === "COMMENT" &&
@@ -171,27 +187,49 @@ export async function POST(
       const isRisk =
         detectRisk(content);
 
-      const comment =
-        await communityRepository.addComment(
-          postId,
-          {
-            userId,
-            author: authorName,
-            avatar: avatarUrl,
-            content: content.trim(),
-          }
+      try {
+        const comment =
+          await communityRepository.addComment(
+            postId,
+            {
+              userId,
+              author: authorName,
+              avatar: avatarUrl,
+              content: content.trim(),
+              parentId: parentId || null,
+            }
+          );
+
+        invalidateCommunityCache();
+
+        return NextResponse.json({
+          success: true,
+          comment,
+          isRisk,
+          crisisResources: isRisk
+            ? CRISIS_RESOURCES
+            : null,
+        });
+      } catch (err: any) {
+        return NextResponse.json(
+          { error: err?.message || "Gagal mengirim komentar." },
+          { status: 400 }
         );
+      }
+    }
 
+    // =========================
+    // DELETE COMMENT
+    // =========================
+    if (action === "DELETE_COMMENT" && commentId) {
+      const actingUser = await userRepository.findById(userId).catch(() => null);
+      const isAdmin = (actingUser as any)?.role === "ADMIN";
+      const res = await communityRepository.deleteComment(commentId, userId, isAdmin);
+      if (!res.success) {
+        return NextResponse.json({ error: res.error || "Gagal menghapus komentar" }, { status: 400 });
+      }
       invalidateCommunityCache();
-
-      return NextResponse.json({
-        success: true,
-        comment,
-        isRisk,
-        crisisResources: isRisk
-          ? CRISIS_RESOURCES
-          : null,
-      });
+      return NextResponse.json({ success: true });
     }
 
     // =========================

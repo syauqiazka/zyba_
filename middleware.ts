@@ -16,6 +16,7 @@ const PROTECTED_PATHS = [
   "/welcome",
   "/achievements",
   "/pencapaian",
+  "/admin",
 ];
 
 /**
@@ -100,6 +101,21 @@ export async function middleware(request: NextRequest) {
       const response = NextResponse.redirect(buildAuthRedirect(request, pathname));
       response.cookies.delete("auth-token");
       return response;
+    }
+
+    // 🔒 PROTEKSI ADMIN: Hanya user dengan role ADMIN atau terdaftar di ADMIN_EMAILS yang boleh masuk /admin
+    if (pathname.startsWith("/admin")) {
+      const configuredAdmins = (process.env.ADMIN_EMAILS || "")
+        .split(",")
+        .map((e) => e.trim().toLowerCase())
+        .filter(Boolean);
+      const isAdmin =
+        session.role === "ADMIN" ||
+        (session.email && configuredAdmins.includes(session.email.toLowerCase()));
+
+      if (!isAdmin) {
+        return NextResponse.redirect(getRedirectUrl("/dashboard", request));
+      }
     }
 
     const isOnboardingDone = session.onboardingCompleted === true;

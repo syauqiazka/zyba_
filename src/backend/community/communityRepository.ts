@@ -3,16 +3,75 @@ import { accountDb } from "@/backend/db/accountClient";
 import { formatRelativeTime } from "@/lib/dateUtils";
 
 export interface CommentItem {
-  id: string; author: string; avatar: string; time: string; content: string;
+  id: string;
+  userId?: string;
+  author: string;
+  avatar: string;
+  time: string;
+  content: string;
+  parentId?: string | null;
+  replyingToAuthor?: string | null;
+  replies?: CommentItem[];
+  createdAt?: string;
 }
 
 export interface CommunityPostItem {
-  id: string; userId?: string; author: string; avatar: string;
-  isVerified: boolean; time: string; tag: string; content: string;
-  imageUrl?: string | null; likes: number; commentsCount: number;
-  repostsCount: number; userLiked?: boolean; userReposted?: boolean;
+  id: string;
+  userId?: string;
+  author: string;
+  avatar: string;
+  isVerified: boolean;
+  time: string;
+  tag: string;
+  content: string;
+  imageUrl?: string | null;
+  likes: number;
+  commentsCount: number;
+  repostsCount: number;
+  userLiked?: boolean;
+  userReposted?: boolean;
   commentsDisabled: boolean;
-  comments: CommentItem[]; createdAt: string;
+  comments: CommentItem[];
+  createdAt: string;
+}
+
+function buildCommentTree(rawComments: any[], umap: Map<string, any>): CommentItem[] {
+  const itemMap = new Map<string, CommentItem>();
+  const topLevel: CommentItem[] = [];
+
+  for (const c of rawComments) {
+    const cu = umap.get(c.userId);
+    const item: CommentItem = {
+      id: c.id,
+      userId: c.userId,
+      author: cu?.name ?? "Pengguna ZYBA",
+      avatar: cu?.avatarUrl ?? "fox",
+      time: formatRelativeTime(c.createdAt),
+      content: c.content ?? "",
+      parentId: c.parentId || null,
+      replies: [],
+      createdAt: c.createdAt instanceof Date ? c.createdAt.toISOString() : String(c.createdAt),
+    };
+    itemMap.set(c.id, item);
+  }
+
+  for (const c of rawComments) {
+    const item = itemMap.get(c.id)!;
+    if (c.parentId && itemMap.has(c.parentId)) {
+      const parent = itemMap.get(c.parentId)!;
+      item.replyingToAuthor = parent.author;
+      // Flatten deeper replies to single indentation under top root so mobile UI stays readable
+      if (parent.parentId && itemMap.has(parent.parentId)) {
+        itemMap.get(parent.parentId)!.replies!.push(item);
+      } else {
+        parent.replies!.push(item);
+      }
+    } else {
+      topLevel.push(item);
+    }
+  }
+
+  return topLevel;
 }
 
 async function handleMentions(content: string, actorId: string, postId: string, commentId?: string) {
@@ -174,18 +233,19 @@ export const communityRepository = {
       take,
       ...(cursor && { skip: 1, cursor: { id: cursor } }),
       orderBy: { createdAt: "desc" },
-include: {
-  comments: {
-    take: 10,
-    orderBy: { createdAt: "asc" },
-  },
-  _count: {
-    select: {
-      comments: true,
-      likes: true,
-    },
-  },
-},
+      include: {
+        comments: {
+          where: { isHidden: false },
+          take: 60,
+          orderBy: { createdAt: "asc" },
+        },
+        _count: {
+          select: {
+            comments: { where: { isHidden: false } },
+            likes: true,
+          },
+        },
+      },
     });
 
     // Auto-clean test junk posts from database in background
@@ -217,22 +277,13 @@ include: {
         tag: "Sharing",
         content: p.content ?? "",
         imageUrl: p.imageUrl,
-likes: p._count.likes,
-commentsCount: p._count.comments,
+        likes: p._count.likes,
+        commentsCount: p._count.comments,
         repostsCount: 0,
         userLiked: false,
         userReposted: false,
         commentsDisabled: p.commentsDisabled,
-        comments: p.comments.map((c) => {
-          const cu = umap.get(c.userId);
-          return {
-            id: c.id,
-            author: cu?.name ?? "Pengguna ZYBA",
-            avatar: cu?.avatarUrl ?? "fox",
-            time: formatRelativeTime(c.createdAt),
-            content: c.content ?? "",
-          };
-        }),
+        comments: buildCommentTree(p.comments, umap),
         createdAt: p.createdAt.toISOString(),
       };
     });
@@ -282,26 +333,62 @@ commentsCount: p._count.comments,
     };
   },
 
-  async addComment(postId: string, data: { userId: string; author: string; avatar: string; content: string }): Promise<CommentItem> {
+  async addComment(
+    postId: string,
+    data: { userId: string; author: string; avatar: string; content: string; parentId?: string | null }
+  ): Promise<CommentItem> {
+    const post = await communityDb.communityPost.findUnique({
+      where: { id: postId },
+      select: { id: true, userId: true, commentsDisabled: true, isHidden: true },
+    });
+    if (!post || post.isHidden) {
+      throw new Error("Postingan tidak ditemukan atau telah dihapus.");
+    }
+    if (post.commentsDisabled) {
+      throw new Error("Komentar telah dimatikan pada postingan ini.");
+    }
+
+    let parentComment: any = null;
+    let replyingToAuthor: string | null = null;
+
+    if (data.parentId) {
+      parentComment = await communityDb.communityComment.findUnique({
+        where: { id: data.parentId },
+        select: { id: true, postId: true, userId: true, isHidden: true },
+      });
+      if (!parentComment || parentComment.postId !== postId || parentComment.isHidden) {
+        throw new Error("Komentar yang ingin Anda balas tidak ditemukan pada postingan ini.");
+      }
+      try {
+        const parentUser = await accountDb.user.findUnique({
+          where: { id: parentComment.userId },
+          select: { name: true },
+        });
+        if (parentUser) replyingToAuthor = parentUser.name;
+      } catch {}
+    }
+
     const saved = await communityDb.communityComment.create({
-      data: { postId, userId: data.userId, content: data.content }
+      data: {
+        postId,
+        userId: data.userId,
+        content: data.content,
+        parentId: data.parentId || null,
+      },
     });
 
     // Handle mentions in comment
     handleMentions(data.content, data.userId, postId, saved.id);
 
-    // Notify post owner if not self
+    // Notify post owner or parent comment author if not self
     try {
-      const post = await communityDb.communityPost.findUnique({
-        where: { id: postId },
-        select: { userId: true },
-      });
-      if (post && post.userId !== data.userId) {
+      const recipientId = parentComment ? parentComment.userId : post.userId;
+      if (recipientId && recipientId !== data.userId) {
         await communityDb.communityNotification.create({
           data: {
-            recipientId: post.userId,
+            recipientId,
             actorId: data.userId,
-            type: "reply",
+            type: parentComment ? "reply" : "comment",
             postId,
             commentId: saved.id,
           },
@@ -311,7 +398,18 @@ commentsCount: p._count.comments,
       console.warn("[addComment Notification] warning:", err);
     }
 
-    return { id: saved.id, author: data.author, avatar: data.avatar, time: "Baru saja", content: saved.content ?? "" };
+    return {
+      id: saved.id,
+      userId: data.userId,
+      author: data.author,
+      avatar: data.avatar,
+      time: "Baru saja",
+      content: saved.content ?? "",
+      parentId: saved.parentId,
+      replyingToAuthor,
+      replies: [],
+      createdAt: saved.createdAt.toISOString(),
+    };
   },
 
   async toggleLike(postId: string, userId: string): Promise<boolean> {
@@ -437,12 +535,13 @@ commentsCount: p._count.comments,
       orderBy: { createdAt: "desc" },
       include: {
         comments: {
-          take: 10,
+          where: { isHidden: false },
+          take: 60,
           orderBy: { createdAt: "asc" },
         },
         _count: {
           select: {
-            comments: true,
+            comments: { where: { isHidden: false } },
             likes: true,
           },
         },
@@ -459,7 +558,8 @@ commentsCount: p._count.comments,
     return posts.map(p => {
       const au = umap.get(p.userId);
       return {
-        id: p.id, userId: p.userId,
+        id: p.id,
+        userId: p.userId,
         author: au?.name ?? "Pengguna ZYBA",
         avatar: au?.avatarUrl ?? "fox",
         isVerified: true,
@@ -469,20 +569,53 @@ commentsCount: p._count.comments,
         imageUrl: p.imageUrl,
         likes: p._count.likes,
         commentsCount: p._count.comments,
-        repostsCount: 0, userLiked: false, userReposted: false,
+        repostsCount: 0,
+        userLiked: false,
+        userReposted: false,
         commentsDisabled: p.commentsDisabled,
-        comments: p.comments.map(c => {
-          const cu = umap.get(c.userId);
-          return {
-            id: c.id,
-            author: cu?.name ?? "Pengguna ZYBA",
-            avatar: cu?.avatarUrl ?? "fox",
-            time: formatRelativeTime(c.createdAt),
-            content: c.content ?? ""
-          };
-        }),
+        comments: buildCommentTree(p.comments, umap),
         createdAt: p.createdAt.toISOString(),
       };
     });
+  },
+
+  async getCommentsByPost(postId: string): Promise<CommentItem[]> {
+    const rawComments = await communityDb.communityComment.findMany({
+      where: { postId, isHidden: false },
+      orderBy: { createdAt: "asc" },
+      take: 100,
+    });
+
+    const userIds = [...new Set(rawComments.map((c) => c.userId))];
+    const users = await accountDb.user.findMany({
+      where: { id: { in: userIds } },
+      select: { id: true, name: true, avatarUrl: true },
+    });
+    const umap = new Map(users.map((u) => [u.id, u]));
+
+    return buildCommentTree(rawComments, umap);
+  },
+
+  async deleteComment(
+    commentId: string,
+    requestingUserId: string,
+    isAdmin = false
+  ): Promise<{ success: boolean; error?: string }> {
+    try {
+      const comment = await communityDb.communityComment.findUnique({
+        where: { id: commentId },
+        select: { id: true, userId: true, postId: true },
+      });
+      if (!comment) return { success: false, error: "Komentar tidak ditemukan" };
+      if (!isAdmin && comment.userId !== requestingUserId) {
+        return { success: false, error: "Akses ditolak" };
+      }
+
+      await communityDb.communityComment.delete({ where: { id: commentId } });
+      return { success: true };
+    } catch (err: any) {
+      console.error("[deleteComment]:", err);
+      return { success: false, error: err.message };
+    }
   },
 };

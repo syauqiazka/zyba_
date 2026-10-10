@@ -58,6 +58,42 @@ export type CommunityBookmark = $Result.DefaultSelection<Prisma.$CommunityBookma
  * 
  */
 export type CommunityNotification = $Result.DefaultSelection<Prisma.$CommunityNotificationPayload>
+/**
+ * Model CommunityReport
+ * 
+ */
+export type CommunityReport = $Result.DefaultSelection<Prisma.$CommunityReportPayload>
+
+/**
+ * Enums
+ */
+export namespace $Enums {
+  export const ReportTargetType: {
+  POST: 'POST',
+  COMMENT: 'COMMENT'
+};
+
+export type ReportTargetType = (typeof ReportTargetType)[keyof typeof ReportTargetType]
+
+
+export const ReportStatus: {
+  PENDING: 'PENDING',
+  REVIEWING: 'REVIEWING',
+  ACTION_TAKEN: 'ACTION_TAKEN',
+  DISMISSED: 'DISMISSED'
+};
+
+export type ReportStatus = (typeof ReportStatus)[keyof typeof ReportStatus]
+
+}
+
+export type ReportTargetType = $Enums.ReportTargetType
+
+export const ReportTargetType: typeof $Enums.ReportTargetType
+
+export type ReportStatus = $Enums.ReportStatus
+
+export const ReportStatus: typeof $Enums.ReportStatus
 
 /**
  * ##  Prisma Client ʲˢ
@@ -271,6 +307,16 @@ export class PrismaClient<
     * ```
     */
   get communityNotification(): Prisma.CommunityNotificationDelegate<ExtArgs>;
+
+  /**
+   * `prisma.communityReport`: Exposes CRUD operations for the **CommunityReport** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more CommunityReports
+    * const communityReports = await prisma.communityReport.findMany()
+    * ```
+    */
+  get communityReport(): Prisma.CommunityReportDelegate<ExtArgs>;
 }
 
 export namespace Prisma {
@@ -720,7 +766,8 @@ export namespace Prisma {
     DirectMessage: 'DirectMessage',
     CommunityFollow: 'CommunityFollow',
     CommunityBookmark: 'CommunityBookmark',
-    CommunityNotification: 'CommunityNotification'
+    CommunityNotification: 'CommunityNotification',
+    CommunityReport: 'CommunityReport'
   };
 
   export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -736,7 +783,7 @@ export namespace Prisma {
 
   export type TypeMap<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, ClientOptions = {}> = {
     meta: {
-      modelProps: "communityPost" | "communityComment" | "communityLike" | "directConversation" | "directParticipant" | "directMessage" | "communityFollow" | "communityBookmark" | "communityNotification"
+      modelProps: "communityPost" | "communityComment" | "communityLike" | "directConversation" | "directParticipant" | "directMessage" | "communityFollow" | "communityBookmark" | "communityNotification" | "communityReport"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -1367,6 +1414,76 @@ export namespace Prisma {
           count: {
             args: Prisma.CommunityNotificationCountArgs<ExtArgs>
             result: $Utils.Optional<CommunityNotificationCountAggregateOutputType> | number
+          }
+        }
+      }
+      CommunityReport: {
+        payload: Prisma.$CommunityReportPayload<ExtArgs>
+        fields: Prisma.CommunityReportFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.CommunityReportFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CommunityReportPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.CommunityReportFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CommunityReportPayload>
+          }
+          findFirst: {
+            args: Prisma.CommunityReportFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CommunityReportPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.CommunityReportFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CommunityReportPayload>
+          }
+          findMany: {
+            args: Prisma.CommunityReportFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CommunityReportPayload>[]
+          }
+          create: {
+            args: Prisma.CommunityReportCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CommunityReportPayload>
+          }
+          createMany: {
+            args: Prisma.CommunityReportCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.CommunityReportCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CommunityReportPayload>[]
+          }
+          delete: {
+            args: Prisma.CommunityReportDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CommunityReportPayload>
+          }
+          update: {
+            args: Prisma.CommunityReportUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CommunityReportPayload>
+          }
+          deleteMany: {
+            args: Prisma.CommunityReportDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.CommunityReportUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.CommunityReportUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CommunityReportPayload>
+          }
+          aggregate: {
+            args: Prisma.CommunityReportAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateCommunityReport>
+          }
+          groupBy: {
+            args: Prisma.CommunityReportGroupByArgs<ExtArgs>
+            result: $Utils.Optional<CommunityReportGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.CommunityReportCountArgs<ExtArgs>
+            result: $Utils.Optional<CommunityReportCountAggregateOutputType> | number
           }
         }
       }
@@ -2736,6 +2853,7 @@ export namespace Prisma {
     content: string | null
     stickerId: string | null
     parentId: string | null
+    isHidden: boolean | null
     createdAt: Date | null
   }
 
@@ -2746,6 +2864,7 @@ export namespace Prisma {
     content: string | null
     stickerId: string | null
     parentId: string | null
+    isHidden: boolean | null
     createdAt: Date | null
   }
 
@@ -2756,6 +2875,7 @@ export namespace Prisma {
     content: number
     stickerId: number
     parentId: number
+    isHidden: number
     createdAt: number
     _all: number
   }
@@ -2768,6 +2888,7 @@ export namespace Prisma {
     content?: true
     stickerId?: true
     parentId?: true
+    isHidden?: true
     createdAt?: true
   }
 
@@ -2778,6 +2899,7 @@ export namespace Prisma {
     content?: true
     stickerId?: true
     parentId?: true
+    isHidden?: true
     createdAt?: true
   }
 
@@ -2788,6 +2910,7 @@ export namespace Prisma {
     content?: true
     stickerId?: true
     parentId?: true
+    isHidden?: true
     createdAt?: true
     _all?: true
   }
@@ -2871,6 +2994,7 @@ export namespace Prisma {
     content: string | null
     stickerId: string | null
     parentId: string | null
+    isHidden: boolean
     createdAt: Date
     _count: CommunityCommentCountAggregateOutputType | null
     _min: CommunityCommentMinAggregateOutputType | null
@@ -2898,6 +3022,7 @@ export namespace Prisma {
     content?: boolean
     stickerId?: boolean
     parentId?: boolean
+    isHidden?: boolean
     createdAt?: boolean
     post?: boolean | CommunityPostDefaultArgs<ExtArgs>
     parent?: boolean | CommunityComment$parentArgs<ExtArgs>
@@ -2912,6 +3037,7 @@ export namespace Prisma {
     content?: boolean
     stickerId?: boolean
     parentId?: boolean
+    isHidden?: boolean
     createdAt?: boolean
     post?: boolean | CommunityPostDefaultArgs<ExtArgs>
     parent?: boolean | CommunityComment$parentArgs<ExtArgs>
@@ -2924,6 +3050,7 @@ export namespace Prisma {
     content?: boolean
     stickerId?: boolean
     parentId?: boolean
+    isHidden?: boolean
     createdAt?: boolean
   }
 
@@ -2952,6 +3079,7 @@ export namespace Prisma {
       content: string | null
       stickerId: string | null
       parentId: string | null
+      isHidden: boolean
       createdAt: Date
     }, ExtArgs["result"]["communityComment"]>
     composites: {}
@@ -3355,6 +3483,7 @@ export namespace Prisma {
     readonly content: FieldRef<"CommunityComment", 'String'>
     readonly stickerId: FieldRef<"CommunityComment", 'String'>
     readonly parentId: FieldRef<"CommunityComment", 'String'>
+    readonly isHidden: FieldRef<"CommunityComment", 'Boolean'>
     readonly createdAt: FieldRef<"CommunityComment", 'DateTime'>
   }
     
@@ -10129,6 +10258,992 @@ export namespace Prisma {
 
 
   /**
+   * Model CommunityReport
+   */
+
+  export type AggregateCommunityReport = {
+    _count: CommunityReportCountAggregateOutputType | null
+    _min: CommunityReportMinAggregateOutputType | null
+    _max: CommunityReportMaxAggregateOutputType | null
+  }
+
+  export type CommunityReportMinAggregateOutputType = {
+    id: string | null
+    reporterId: string | null
+    targetType: $Enums.ReportTargetType | null
+    targetId: string | null
+    postId: string | null
+    reportedUserId: string | null
+    reason: string | null
+    details: string | null
+    status: $Enums.ReportStatus | null
+    reviewedBy: string | null
+    resolutionNote: string | null
+    resolvedAt: Date | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type CommunityReportMaxAggregateOutputType = {
+    id: string | null
+    reporterId: string | null
+    targetType: $Enums.ReportTargetType | null
+    targetId: string | null
+    postId: string | null
+    reportedUserId: string | null
+    reason: string | null
+    details: string | null
+    status: $Enums.ReportStatus | null
+    reviewedBy: string | null
+    resolutionNote: string | null
+    resolvedAt: Date | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type CommunityReportCountAggregateOutputType = {
+    id: number
+    reporterId: number
+    targetType: number
+    targetId: number
+    postId: number
+    reportedUserId: number
+    reason: number
+    details: number
+    status: number
+    reviewedBy: number
+    resolutionNote: number
+    resolvedAt: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type CommunityReportMinAggregateInputType = {
+    id?: true
+    reporterId?: true
+    targetType?: true
+    targetId?: true
+    postId?: true
+    reportedUserId?: true
+    reason?: true
+    details?: true
+    status?: true
+    reviewedBy?: true
+    resolutionNote?: true
+    resolvedAt?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type CommunityReportMaxAggregateInputType = {
+    id?: true
+    reporterId?: true
+    targetType?: true
+    targetId?: true
+    postId?: true
+    reportedUserId?: true
+    reason?: true
+    details?: true
+    status?: true
+    reviewedBy?: true
+    resolutionNote?: true
+    resolvedAt?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type CommunityReportCountAggregateInputType = {
+    id?: true
+    reporterId?: true
+    targetType?: true
+    targetId?: true
+    postId?: true
+    reportedUserId?: true
+    reason?: true
+    details?: true
+    status?: true
+    reviewedBy?: true
+    resolutionNote?: true
+    resolvedAt?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type CommunityReportAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which CommunityReport to aggregate.
+     */
+    where?: CommunityReportWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of CommunityReports to fetch.
+     */
+    orderBy?: CommunityReportOrderByWithRelationInput | CommunityReportOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: CommunityReportWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` CommunityReports from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` CommunityReports.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned CommunityReports
+    **/
+    _count?: true | CommunityReportCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: CommunityReportMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: CommunityReportMaxAggregateInputType
+  }
+
+  export type GetCommunityReportAggregateType<T extends CommunityReportAggregateArgs> = {
+        [P in keyof T & keyof AggregateCommunityReport]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateCommunityReport[P]>
+      : GetScalarType<T[P], AggregateCommunityReport[P]>
+  }
+
+
+
+
+  export type CommunityReportGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: CommunityReportWhereInput
+    orderBy?: CommunityReportOrderByWithAggregationInput | CommunityReportOrderByWithAggregationInput[]
+    by: CommunityReportScalarFieldEnum[] | CommunityReportScalarFieldEnum
+    having?: CommunityReportScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: CommunityReportCountAggregateInputType | true
+    _min?: CommunityReportMinAggregateInputType
+    _max?: CommunityReportMaxAggregateInputType
+  }
+
+  export type CommunityReportGroupByOutputType = {
+    id: string
+    reporterId: string
+    targetType: $Enums.ReportTargetType
+    targetId: string
+    postId: string | null
+    reportedUserId: string
+    reason: string
+    details: string | null
+    status: $Enums.ReportStatus
+    reviewedBy: string | null
+    resolutionNote: string | null
+    resolvedAt: Date | null
+    createdAt: Date
+    updatedAt: Date
+    _count: CommunityReportCountAggregateOutputType | null
+    _min: CommunityReportMinAggregateOutputType | null
+    _max: CommunityReportMaxAggregateOutputType | null
+  }
+
+  type GetCommunityReportGroupByPayload<T extends CommunityReportGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<CommunityReportGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof CommunityReportGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], CommunityReportGroupByOutputType[P]>
+            : GetScalarType<T[P], CommunityReportGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type CommunityReportSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    reporterId?: boolean
+    targetType?: boolean
+    targetId?: boolean
+    postId?: boolean
+    reportedUserId?: boolean
+    reason?: boolean
+    details?: boolean
+    status?: boolean
+    reviewedBy?: boolean
+    resolutionNote?: boolean
+    resolvedAt?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }, ExtArgs["result"]["communityReport"]>
+
+  export type CommunityReportSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    reporterId?: boolean
+    targetType?: boolean
+    targetId?: boolean
+    postId?: boolean
+    reportedUserId?: boolean
+    reason?: boolean
+    details?: boolean
+    status?: boolean
+    reviewedBy?: boolean
+    resolutionNote?: boolean
+    resolvedAt?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }, ExtArgs["result"]["communityReport"]>
+
+  export type CommunityReportSelectScalar = {
+    id?: boolean
+    reporterId?: boolean
+    targetType?: boolean
+    targetId?: boolean
+    postId?: boolean
+    reportedUserId?: boolean
+    reason?: boolean
+    details?: boolean
+    status?: boolean
+    reviewedBy?: boolean
+    resolutionNote?: boolean
+    resolvedAt?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+
+  export type $CommunityReportPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "CommunityReport"
+    objects: {}
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      reporterId: string
+      targetType: $Enums.ReportTargetType
+      targetId: string
+      postId: string | null
+      reportedUserId: string
+      reason: string
+      details: string | null
+      status: $Enums.ReportStatus
+      reviewedBy: string | null
+      resolutionNote: string | null
+      resolvedAt: Date | null
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["communityReport"]>
+    composites: {}
+  }
+
+  type CommunityReportGetPayload<S extends boolean | null | undefined | CommunityReportDefaultArgs> = $Result.GetResult<Prisma.$CommunityReportPayload, S>
+
+  type CommunityReportCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = 
+    Omit<CommunityReportFindManyArgs, 'select' | 'include' | 'distinct'> & {
+      select?: CommunityReportCountAggregateInputType | true
+    }
+
+  export interface CommunityReportDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['CommunityReport'], meta: { name: 'CommunityReport' } }
+    /**
+     * Find zero or one CommunityReport that matches the filter.
+     * @param {CommunityReportFindUniqueArgs} args - Arguments to find a CommunityReport
+     * @example
+     * // Get one CommunityReport
+     * const communityReport = await prisma.communityReport.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends CommunityReportFindUniqueArgs>(args: SelectSubset<T, CommunityReportFindUniqueArgs<ExtArgs>>): Prisma__CommunityReportClient<$Result.GetResult<Prisma.$CommunityReportPayload<ExtArgs>, T, "findUnique"> | null, null, ExtArgs>
+
+    /**
+     * Find one CommunityReport that matches the filter or throw an error with `error.code='P2025'` 
+     * if no matches were found.
+     * @param {CommunityReportFindUniqueOrThrowArgs} args - Arguments to find a CommunityReport
+     * @example
+     * // Get one CommunityReport
+     * const communityReport = await prisma.communityReport.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends CommunityReportFindUniqueOrThrowArgs>(args: SelectSubset<T, CommunityReportFindUniqueOrThrowArgs<ExtArgs>>): Prisma__CommunityReportClient<$Result.GetResult<Prisma.$CommunityReportPayload<ExtArgs>, T, "findUniqueOrThrow">, never, ExtArgs>
+
+    /**
+     * Find the first CommunityReport that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CommunityReportFindFirstArgs} args - Arguments to find a CommunityReport
+     * @example
+     * // Get one CommunityReport
+     * const communityReport = await prisma.communityReport.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends CommunityReportFindFirstArgs>(args?: SelectSubset<T, CommunityReportFindFirstArgs<ExtArgs>>): Prisma__CommunityReportClient<$Result.GetResult<Prisma.$CommunityReportPayload<ExtArgs>, T, "findFirst"> | null, null, ExtArgs>
+
+    /**
+     * Find the first CommunityReport that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CommunityReportFindFirstOrThrowArgs} args - Arguments to find a CommunityReport
+     * @example
+     * // Get one CommunityReport
+     * const communityReport = await prisma.communityReport.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends CommunityReportFindFirstOrThrowArgs>(args?: SelectSubset<T, CommunityReportFindFirstOrThrowArgs<ExtArgs>>): Prisma__CommunityReportClient<$Result.GetResult<Prisma.$CommunityReportPayload<ExtArgs>, T, "findFirstOrThrow">, never, ExtArgs>
+
+    /**
+     * Find zero or more CommunityReports that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CommunityReportFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all CommunityReports
+     * const communityReports = await prisma.communityReport.findMany()
+     * 
+     * // Get first 10 CommunityReports
+     * const communityReports = await prisma.communityReport.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const communityReportWithIdOnly = await prisma.communityReport.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends CommunityReportFindManyArgs>(args?: SelectSubset<T, CommunityReportFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CommunityReportPayload<ExtArgs>, T, "findMany">>
+
+    /**
+     * Create a CommunityReport.
+     * @param {CommunityReportCreateArgs} args - Arguments to create a CommunityReport.
+     * @example
+     * // Create one CommunityReport
+     * const CommunityReport = await prisma.communityReport.create({
+     *   data: {
+     *     // ... data to create a CommunityReport
+     *   }
+     * })
+     * 
+     */
+    create<T extends CommunityReportCreateArgs>(args: SelectSubset<T, CommunityReportCreateArgs<ExtArgs>>): Prisma__CommunityReportClient<$Result.GetResult<Prisma.$CommunityReportPayload<ExtArgs>, T, "create">, never, ExtArgs>
+
+    /**
+     * Create many CommunityReports.
+     * @param {CommunityReportCreateManyArgs} args - Arguments to create many CommunityReports.
+     * @example
+     * // Create many CommunityReports
+     * const communityReport = await prisma.communityReport.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends CommunityReportCreateManyArgs>(args?: SelectSubset<T, CommunityReportCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many CommunityReports and returns the data saved in the database.
+     * @param {CommunityReportCreateManyAndReturnArgs} args - Arguments to create many CommunityReports.
+     * @example
+     * // Create many CommunityReports
+     * const communityReport = await prisma.communityReport.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many CommunityReports and only return the `id`
+     * const communityReportWithIdOnly = await prisma.communityReport.createManyAndReturn({ 
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends CommunityReportCreateManyAndReturnArgs>(args?: SelectSubset<T, CommunityReportCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CommunityReportPayload<ExtArgs>, T, "createManyAndReturn">>
+
+    /**
+     * Delete a CommunityReport.
+     * @param {CommunityReportDeleteArgs} args - Arguments to delete one CommunityReport.
+     * @example
+     * // Delete one CommunityReport
+     * const CommunityReport = await prisma.communityReport.delete({
+     *   where: {
+     *     // ... filter to delete one CommunityReport
+     *   }
+     * })
+     * 
+     */
+    delete<T extends CommunityReportDeleteArgs>(args: SelectSubset<T, CommunityReportDeleteArgs<ExtArgs>>): Prisma__CommunityReportClient<$Result.GetResult<Prisma.$CommunityReportPayload<ExtArgs>, T, "delete">, never, ExtArgs>
+
+    /**
+     * Update one CommunityReport.
+     * @param {CommunityReportUpdateArgs} args - Arguments to update one CommunityReport.
+     * @example
+     * // Update one CommunityReport
+     * const communityReport = await prisma.communityReport.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends CommunityReportUpdateArgs>(args: SelectSubset<T, CommunityReportUpdateArgs<ExtArgs>>): Prisma__CommunityReportClient<$Result.GetResult<Prisma.$CommunityReportPayload<ExtArgs>, T, "update">, never, ExtArgs>
+
+    /**
+     * Delete zero or more CommunityReports.
+     * @param {CommunityReportDeleteManyArgs} args - Arguments to filter CommunityReports to delete.
+     * @example
+     * // Delete a few CommunityReports
+     * const { count } = await prisma.communityReport.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends CommunityReportDeleteManyArgs>(args?: SelectSubset<T, CommunityReportDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more CommunityReports.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CommunityReportUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many CommunityReports
+     * const communityReport = await prisma.communityReport.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends CommunityReportUpdateManyArgs>(args: SelectSubset<T, CommunityReportUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one CommunityReport.
+     * @param {CommunityReportUpsertArgs} args - Arguments to update or create a CommunityReport.
+     * @example
+     * // Update or create a CommunityReport
+     * const communityReport = await prisma.communityReport.upsert({
+     *   create: {
+     *     // ... data to create a CommunityReport
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the CommunityReport we want to update
+     *   }
+     * })
+     */
+    upsert<T extends CommunityReportUpsertArgs>(args: SelectSubset<T, CommunityReportUpsertArgs<ExtArgs>>): Prisma__CommunityReportClient<$Result.GetResult<Prisma.$CommunityReportPayload<ExtArgs>, T, "upsert">, never, ExtArgs>
+
+
+    /**
+     * Count the number of CommunityReports.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CommunityReportCountArgs} args - Arguments to filter CommunityReports to count.
+     * @example
+     * // Count the number of CommunityReports
+     * const count = await prisma.communityReport.count({
+     *   where: {
+     *     // ... the filter for the CommunityReports we want to count
+     *   }
+     * })
+    **/
+    count<T extends CommunityReportCountArgs>(
+      args?: Subset<T, CommunityReportCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], CommunityReportCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a CommunityReport.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CommunityReportAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends CommunityReportAggregateArgs>(args: Subset<T, CommunityReportAggregateArgs>): Prisma.PrismaPromise<GetCommunityReportAggregateType<T>>
+
+    /**
+     * Group by CommunityReport.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CommunityReportGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends CommunityReportGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: CommunityReportGroupByArgs['orderBy'] }
+        : { orderBy?: CommunityReportGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, CommunityReportGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetCommunityReportGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the CommunityReport model
+   */
+  readonly fields: CommunityReportFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for CommunityReport.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__CommunityReportClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the CommunityReport model
+   */ 
+  interface CommunityReportFieldRefs {
+    readonly id: FieldRef<"CommunityReport", 'String'>
+    readonly reporterId: FieldRef<"CommunityReport", 'String'>
+    readonly targetType: FieldRef<"CommunityReport", 'ReportTargetType'>
+    readonly targetId: FieldRef<"CommunityReport", 'String'>
+    readonly postId: FieldRef<"CommunityReport", 'String'>
+    readonly reportedUserId: FieldRef<"CommunityReport", 'String'>
+    readonly reason: FieldRef<"CommunityReport", 'String'>
+    readonly details: FieldRef<"CommunityReport", 'String'>
+    readonly status: FieldRef<"CommunityReport", 'ReportStatus'>
+    readonly reviewedBy: FieldRef<"CommunityReport", 'String'>
+    readonly resolutionNote: FieldRef<"CommunityReport", 'String'>
+    readonly resolvedAt: FieldRef<"CommunityReport", 'DateTime'>
+    readonly createdAt: FieldRef<"CommunityReport", 'DateTime'>
+    readonly updatedAt: FieldRef<"CommunityReport", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * CommunityReport findUnique
+   */
+  export type CommunityReportFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CommunityReport
+     */
+    select?: CommunityReportSelect<ExtArgs> | null
+    /**
+     * Filter, which CommunityReport to fetch.
+     */
+    where: CommunityReportWhereUniqueInput
+  }
+
+  /**
+   * CommunityReport findUniqueOrThrow
+   */
+  export type CommunityReportFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CommunityReport
+     */
+    select?: CommunityReportSelect<ExtArgs> | null
+    /**
+     * Filter, which CommunityReport to fetch.
+     */
+    where: CommunityReportWhereUniqueInput
+  }
+
+  /**
+   * CommunityReport findFirst
+   */
+  export type CommunityReportFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CommunityReport
+     */
+    select?: CommunityReportSelect<ExtArgs> | null
+    /**
+     * Filter, which CommunityReport to fetch.
+     */
+    where?: CommunityReportWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of CommunityReports to fetch.
+     */
+    orderBy?: CommunityReportOrderByWithRelationInput | CommunityReportOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for CommunityReports.
+     */
+    cursor?: CommunityReportWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` CommunityReports from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` CommunityReports.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of CommunityReports.
+     */
+    distinct?: CommunityReportScalarFieldEnum | CommunityReportScalarFieldEnum[]
+  }
+
+  /**
+   * CommunityReport findFirstOrThrow
+   */
+  export type CommunityReportFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CommunityReport
+     */
+    select?: CommunityReportSelect<ExtArgs> | null
+    /**
+     * Filter, which CommunityReport to fetch.
+     */
+    where?: CommunityReportWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of CommunityReports to fetch.
+     */
+    orderBy?: CommunityReportOrderByWithRelationInput | CommunityReportOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for CommunityReports.
+     */
+    cursor?: CommunityReportWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` CommunityReports from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` CommunityReports.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of CommunityReports.
+     */
+    distinct?: CommunityReportScalarFieldEnum | CommunityReportScalarFieldEnum[]
+  }
+
+  /**
+   * CommunityReport findMany
+   */
+  export type CommunityReportFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CommunityReport
+     */
+    select?: CommunityReportSelect<ExtArgs> | null
+    /**
+     * Filter, which CommunityReports to fetch.
+     */
+    where?: CommunityReportWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of CommunityReports to fetch.
+     */
+    orderBy?: CommunityReportOrderByWithRelationInput | CommunityReportOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing CommunityReports.
+     */
+    cursor?: CommunityReportWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` CommunityReports from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` CommunityReports.
+     */
+    skip?: number
+    distinct?: CommunityReportScalarFieldEnum | CommunityReportScalarFieldEnum[]
+  }
+
+  /**
+   * CommunityReport create
+   */
+  export type CommunityReportCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CommunityReport
+     */
+    select?: CommunityReportSelect<ExtArgs> | null
+    /**
+     * The data needed to create a CommunityReport.
+     */
+    data: XOR<CommunityReportCreateInput, CommunityReportUncheckedCreateInput>
+  }
+
+  /**
+   * CommunityReport createMany
+   */
+  export type CommunityReportCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many CommunityReports.
+     */
+    data: CommunityReportCreateManyInput | CommunityReportCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * CommunityReport createManyAndReturn
+   */
+  export type CommunityReportCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CommunityReport
+     */
+    select?: CommunityReportSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * The data used to create many CommunityReports.
+     */
+    data: CommunityReportCreateManyInput | CommunityReportCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * CommunityReport update
+   */
+  export type CommunityReportUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CommunityReport
+     */
+    select?: CommunityReportSelect<ExtArgs> | null
+    /**
+     * The data needed to update a CommunityReport.
+     */
+    data: XOR<CommunityReportUpdateInput, CommunityReportUncheckedUpdateInput>
+    /**
+     * Choose, which CommunityReport to update.
+     */
+    where: CommunityReportWhereUniqueInput
+  }
+
+  /**
+   * CommunityReport updateMany
+   */
+  export type CommunityReportUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update CommunityReports.
+     */
+    data: XOR<CommunityReportUpdateManyMutationInput, CommunityReportUncheckedUpdateManyInput>
+    /**
+     * Filter which CommunityReports to update
+     */
+    where?: CommunityReportWhereInput
+  }
+
+  /**
+   * CommunityReport upsert
+   */
+  export type CommunityReportUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CommunityReport
+     */
+    select?: CommunityReportSelect<ExtArgs> | null
+    /**
+     * The filter to search for the CommunityReport to update in case it exists.
+     */
+    where: CommunityReportWhereUniqueInput
+    /**
+     * In case the CommunityReport found by the `where` argument doesn't exist, create a new CommunityReport with this data.
+     */
+    create: XOR<CommunityReportCreateInput, CommunityReportUncheckedCreateInput>
+    /**
+     * In case the CommunityReport was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<CommunityReportUpdateInput, CommunityReportUncheckedUpdateInput>
+  }
+
+  /**
+   * CommunityReport delete
+   */
+  export type CommunityReportDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CommunityReport
+     */
+    select?: CommunityReportSelect<ExtArgs> | null
+    /**
+     * Filter which CommunityReport to delete.
+     */
+    where: CommunityReportWhereUniqueInput
+  }
+
+  /**
+   * CommunityReport deleteMany
+   */
+  export type CommunityReportDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which CommunityReports to delete
+     */
+    where?: CommunityReportWhereInput
+  }
+
+  /**
+   * CommunityReport without action
+   */
+  export type CommunityReportDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CommunityReport
+     */
+    select?: CommunityReportSelect<ExtArgs> | null
+  }
+
+
+  /**
    * Enums
    */
 
@@ -10166,6 +11281,7 @@ export namespace Prisma {
     content: 'content',
     stickerId: 'stickerId',
     parentId: 'parentId',
+    isHidden: 'isHidden',
     createdAt: 'createdAt'
   };
 
@@ -10249,6 +11365,26 @@ export namespace Prisma {
   export type CommunityNotificationScalarFieldEnum = (typeof CommunityNotificationScalarFieldEnum)[keyof typeof CommunityNotificationScalarFieldEnum]
 
 
+  export const CommunityReportScalarFieldEnum: {
+    id: 'id',
+    reporterId: 'reporterId',
+    targetType: 'targetType',
+    targetId: 'targetId',
+    postId: 'postId',
+    reportedUserId: 'reportedUserId',
+    reason: 'reason',
+    details: 'details',
+    status: 'status',
+    reviewedBy: 'reviewedBy',
+    resolutionNote: 'resolutionNote',
+    resolvedAt: 'resolvedAt',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type CommunityReportScalarFieldEnum = (typeof CommunityReportScalarFieldEnum)[keyof typeof CommunityReportScalarFieldEnum]
+
+
   export const SortOrder: {
     asc: 'asc',
     desc: 'desc'
@@ -10324,6 +11460,34 @@ export namespace Prisma {
    * Reference to a field of type 'DateTime[]'
    */
   export type ListDateTimeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DateTime[]'>
+    
+
+
+  /**
+   * Reference to a field of type 'ReportTargetType'
+   */
+  export type EnumReportTargetTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ReportTargetType'>
+    
+
+
+  /**
+   * Reference to a field of type 'ReportTargetType[]'
+   */
+  export type ListEnumReportTargetTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ReportTargetType[]'>
+    
+
+
+  /**
+   * Reference to a field of type 'ReportStatus'
+   */
+  export type EnumReportStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ReportStatus'>
+    
+
+
+  /**
+   * Reference to a field of type 'ReportStatus[]'
+   */
+  export type ListEnumReportStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ReportStatus[]'>
     
 
 
@@ -10444,6 +11608,7 @@ export namespace Prisma {
     content?: StringNullableFilter<"CommunityComment"> | string | null
     stickerId?: StringNullableFilter<"CommunityComment"> | string | null
     parentId?: StringNullableFilter<"CommunityComment"> | string | null
+    isHidden?: BoolFilter<"CommunityComment"> | boolean
     createdAt?: DateTimeFilter<"CommunityComment"> | Date | string
     post?: XOR<CommunityPostRelationFilter, CommunityPostWhereInput>
     parent?: XOR<CommunityCommentNullableRelationFilter, CommunityCommentWhereInput> | null
@@ -10457,6 +11622,7 @@ export namespace Prisma {
     content?: SortOrderInput | SortOrder
     stickerId?: SortOrderInput | SortOrder
     parentId?: SortOrderInput | SortOrder
+    isHidden?: SortOrder
     createdAt?: SortOrder
     post?: CommunityPostOrderByWithRelationInput
     parent?: CommunityCommentOrderByWithRelationInput
@@ -10473,6 +11639,7 @@ export namespace Prisma {
     content?: StringNullableFilter<"CommunityComment"> | string | null
     stickerId?: StringNullableFilter<"CommunityComment"> | string | null
     parentId?: StringNullableFilter<"CommunityComment"> | string | null
+    isHidden?: BoolFilter<"CommunityComment"> | boolean
     createdAt?: DateTimeFilter<"CommunityComment"> | Date | string
     post?: XOR<CommunityPostRelationFilter, CommunityPostWhereInput>
     parent?: XOR<CommunityCommentNullableRelationFilter, CommunityCommentWhereInput> | null
@@ -10486,6 +11653,7 @@ export namespace Prisma {
     content?: SortOrderInput | SortOrder
     stickerId?: SortOrderInput | SortOrder
     parentId?: SortOrderInput | SortOrder
+    isHidden?: SortOrder
     createdAt?: SortOrder
     _count?: CommunityCommentCountOrderByAggregateInput
     _max?: CommunityCommentMaxOrderByAggregateInput
@@ -10502,6 +11670,7 @@ export namespace Prisma {
     content?: StringNullableWithAggregatesFilter<"CommunityComment"> | string | null
     stickerId?: StringNullableWithAggregatesFilter<"CommunityComment"> | string | null
     parentId?: StringNullableWithAggregatesFilter<"CommunityComment"> | string | null
+    isHidden?: BoolWithAggregatesFilter<"CommunityComment"> | boolean
     createdAt?: DateTimeWithAggregatesFilter<"CommunityComment"> | Date | string
   }
 
@@ -10888,6 +12057,103 @@ export namespace Prisma {
     createdAt?: DateTimeWithAggregatesFilter<"CommunityNotification"> | Date | string
   }
 
+  export type CommunityReportWhereInput = {
+    AND?: CommunityReportWhereInput | CommunityReportWhereInput[]
+    OR?: CommunityReportWhereInput[]
+    NOT?: CommunityReportWhereInput | CommunityReportWhereInput[]
+    id?: StringFilter<"CommunityReport"> | string
+    reporterId?: StringFilter<"CommunityReport"> | string
+    targetType?: EnumReportTargetTypeFilter<"CommunityReport"> | $Enums.ReportTargetType
+    targetId?: StringFilter<"CommunityReport"> | string
+    postId?: StringNullableFilter<"CommunityReport"> | string | null
+    reportedUserId?: StringFilter<"CommunityReport"> | string
+    reason?: StringFilter<"CommunityReport"> | string
+    details?: StringNullableFilter<"CommunityReport"> | string | null
+    status?: EnumReportStatusFilter<"CommunityReport"> | $Enums.ReportStatus
+    reviewedBy?: StringNullableFilter<"CommunityReport"> | string | null
+    resolutionNote?: StringNullableFilter<"CommunityReport"> | string | null
+    resolvedAt?: DateTimeNullableFilter<"CommunityReport"> | Date | string | null
+    createdAt?: DateTimeFilter<"CommunityReport"> | Date | string
+    updatedAt?: DateTimeFilter<"CommunityReport"> | Date | string
+  }
+
+  export type CommunityReportOrderByWithRelationInput = {
+    id?: SortOrder
+    reporterId?: SortOrder
+    targetType?: SortOrder
+    targetId?: SortOrder
+    postId?: SortOrderInput | SortOrder
+    reportedUserId?: SortOrder
+    reason?: SortOrder
+    details?: SortOrderInput | SortOrder
+    status?: SortOrder
+    reviewedBy?: SortOrderInput | SortOrder
+    resolutionNote?: SortOrderInput | SortOrder
+    resolvedAt?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type CommunityReportWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: CommunityReportWhereInput | CommunityReportWhereInput[]
+    OR?: CommunityReportWhereInput[]
+    NOT?: CommunityReportWhereInput | CommunityReportWhereInput[]
+    reporterId?: StringFilter<"CommunityReport"> | string
+    targetType?: EnumReportTargetTypeFilter<"CommunityReport"> | $Enums.ReportTargetType
+    targetId?: StringFilter<"CommunityReport"> | string
+    postId?: StringNullableFilter<"CommunityReport"> | string | null
+    reportedUserId?: StringFilter<"CommunityReport"> | string
+    reason?: StringFilter<"CommunityReport"> | string
+    details?: StringNullableFilter<"CommunityReport"> | string | null
+    status?: EnumReportStatusFilter<"CommunityReport"> | $Enums.ReportStatus
+    reviewedBy?: StringNullableFilter<"CommunityReport"> | string | null
+    resolutionNote?: StringNullableFilter<"CommunityReport"> | string | null
+    resolvedAt?: DateTimeNullableFilter<"CommunityReport"> | Date | string | null
+    createdAt?: DateTimeFilter<"CommunityReport"> | Date | string
+    updatedAt?: DateTimeFilter<"CommunityReport"> | Date | string
+  }, "id">
+
+  export type CommunityReportOrderByWithAggregationInput = {
+    id?: SortOrder
+    reporterId?: SortOrder
+    targetType?: SortOrder
+    targetId?: SortOrder
+    postId?: SortOrderInput | SortOrder
+    reportedUserId?: SortOrder
+    reason?: SortOrder
+    details?: SortOrderInput | SortOrder
+    status?: SortOrder
+    reviewedBy?: SortOrderInput | SortOrder
+    resolutionNote?: SortOrderInput | SortOrder
+    resolvedAt?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: CommunityReportCountOrderByAggregateInput
+    _max?: CommunityReportMaxOrderByAggregateInput
+    _min?: CommunityReportMinOrderByAggregateInput
+  }
+
+  export type CommunityReportScalarWhereWithAggregatesInput = {
+    AND?: CommunityReportScalarWhereWithAggregatesInput | CommunityReportScalarWhereWithAggregatesInput[]
+    OR?: CommunityReportScalarWhereWithAggregatesInput[]
+    NOT?: CommunityReportScalarWhereWithAggregatesInput | CommunityReportScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"CommunityReport"> | string
+    reporterId?: StringWithAggregatesFilter<"CommunityReport"> | string
+    targetType?: EnumReportTargetTypeWithAggregatesFilter<"CommunityReport"> | $Enums.ReportTargetType
+    targetId?: StringWithAggregatesFilter<"CommunityReport"> | string
+    postId?: StringNullableWithAggregatesFilter<"CommunityReport"> | string | null
+    reportedUserId?: StringWithAggregatesFilter<"CommunityReport"> | string
+    reason?: StringWithAggregatesFilter<"CommunityReport"> | string
+    details?: StringNullableWithAggregatesFilter<"CommunityReport"> | string | null
+    status?: EnumReportStatusWithAggregatesFilter<"CommunityReport"> | $Enums.ReportStatus
+    reviewedBy?: StringNullableWithAggregatesFilter<"CommunityReport"> | string | null
+    resolutionNote?: StringNullableWithAggregatesFilter<"CommunityReport"> | string | null
+    resolvedAt?: DateTimeNullableWithAggregatesFilter<"CommunityReport"> | Date | string | null
+    createdAt?: DateTimeWithAggregatesFilter<"CommunityReport"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"CommunityReport"> | Date | string
+  }
+
   export type CommunityPostCreateInput = {
     id?: string
     userId: string
@@ -10999,6 +12265,7 @@ export namespace Prisma {
     userId: string
     content?: string | null
     stickerId?: string | null
+    isHidden?: boolean
     createdAt?: Date | string
     post: CommunityPostCreateNestedOneWithoutCommentsInput
     parent?: CommunityCommentCreateNestedOneWithoutRepliesInput
@@ -11012,6 +12279,7 @@ export namespace Prisma {
     content?: string | null
     stickerId?: string | null
     parentId?: string | null
+    isHidden?: boolean
     createdAt?: Date | string
     replies?: CommunityCommentUncheckedCreateNestedManyWithoutParentInput
   }
@@ -11021,6 +12289,7 @@ export namespace Prisma {
     userId?: StringFieldUpdateOperationsInput | string
     content?: NullableStringFieldUpdateOperationsInput | string | null
     stickerId?: NullableStringFieldUpdateOperationsInput | string | null
+    isHidden?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     post?: CommunityPostUpdateOneRequiredWithoutCommentsNestedInput
     parent?: CommunityCommentUpdateOneWithoutRepliesNestedInput
@@ -11034,6 +12303,7 @@ export namespace Prisma {
     content?: NullableStringFieldUpdateOperationsInput | string | null
     stickerId?: NullableStringFieldUpdateOperationsInput | string | null
     parentId?: NullableStringFieldUpdateOperationsInput | string | null
+    isHidden?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     replies?: CommunityCommentUncheckedUpdateManyWithoutParentNestedInput
   }
@@ -11045,6 +12315,7 @@ export namespace Prisma {
     content?: string | null
     stickerId?: string | null
     parentId?: string | null
+    isHidden?: boolean
     createdAt?: Date | string
   }
 
@@ -11053,6 +12324,7 @@ export namespace Prisma {
     userId?: StringFieldUpdateOperationsInput | string
     content?: NullableStringFieldUpdateOperationsInput | string | null
     stickerId?: NullableStringFieldUpdateOperationsInput | string | null
+    isHidden?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -11063,6 +12335,7 @@ export namespace Prisma {
     content?: NullableStringFieldUpdateOperationsInput | string | null
     stickerId?: NullableStringFieldUpdateOperationsInput | string | null
     parentId?: NullableStringFieldUpdateOperationsInput | string | null
+    isHidden?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -11463,6 +12736,125 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type CommunityReportCreateInput = {
+    id?: string
+    reporterId: string
+    targetType: $Enums.ReportTargetType
+    targetId: string
+    postId?: string | null
+    reportedUserId: string
+    reason: string
+    details?: string | null
+    status?: $Enums.ReportStatus
+    reviewedBy?: string | null
+    resolutionNote?: string | null
+    resolvedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type CommunityReportUncheckedCreateInput = {
+    id?: string
+    reporterId: string
+    targetType: $Enums.ReportTargetType
+    targetId: string
+    postId?: string | null
+    reportedUserId: string
+    reason: string
+    details?: string | null
+    status?: $Enums.ReportStatus
+    reviewedBy?: string | null
+    resolutionNote?: string | null
+    resolvedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type CommunityReportUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    reporterId?: StringFieldUpdateOperationsInput | string
+    targetType?: EnumReportTargetTypeFieldUpdateOperationsInput | $Enums.ReportTargetType
+    targetId?: StringFieldUpdateOperationsInput | string
+    postId?: NullableStringFieldUpdateOperationsInput | string | null
+    reportedUserId?: StringFieldUpdateOperationsInput | string
+    reason?: StringFieldUpdateOperationsInput | string
+    details?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumReportStatusFieldUpdateOperationsInput | $Enums.ReportStatus
+    reviewedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    resolutionNote?: NullableStringFieldUpdateOperationsInput | string | null
+    resolvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type CommunityReportUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    reporterId?: StringFieldUpdateOperationsInput | string
+    targetType?: EnumReportTargetTypeFieldUpdateOperationsInput | $Enums.ReportTargetType
+    targetId?: StringFieldUpdateOperationsInput | string
+    postId?: NullableStringFieldUpdateOperationsInput | string | null
+    reportedUserId?: StringFieldUpdateOperationsInput | string
+    reason?: StringFieldUpdateOperationsInput | string
+    details?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumReportStatusFieldUpdateOperationsInput | $Enums.ReportStatus
+    reviewedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    resolutionNote?: NullableStringFieldUpdateOperationsInput | string | null
+    resolvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type CommunityReportCreateManyInput = {
+    id?: string
+    reporterId: string
+    targetType: $Enums.ReportTargetType
+    targetId: string
+    postId?: string | null
+    reportedUserId: string
+    reason: string
+    details?: string | null
+    status?: $Enums.ReportStatus
+    reviewedBy?: string | null
+    resolutionNote?: string | null
+    resolvedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type CommunityReportUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    reporterId?: StringFieldUpdateOperationsInput | string
+    targetType?: EnumReportTargetTypeFieldUpdateOperationsInput | $Enums.ReportTargetType
+    targetId?: StringFieldUpdateOperationsInput | string
+    postId?: NullableStringFieldUpdateOperationsInput | string | null
+    reportedUserId?: StringFieldUpdateOperationsInput | string
+    reason?: StringFieldUpdateOperationsInput | string
+    details?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumReportStatusFieldUpdateOperationsInput | $Enums.ReportStatus
+    reviewedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    resolutionNote?: NullableStringFieldUpdateOperationsInput | string | null
+    resolvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type CommunityReportUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    reporterId?: StringFieldUpdateOperationsInput | string
+    targetType?: EnumReportTargetTypeFieldUpdateOperationsInput | $Enums.ReportTargetType
+    targetId?: StringFieldUpdateOperationsInput | string
+    postId?: NullableStringFieldUpdateOperationsInput | string | null
+    reportedUserId?: StringFieldUpdateOperationsInput | string
+    reason?: StringFieldUpdateOperationsInput | string
+    details?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumReportStatusFieldUpdateOperationsInput | $Enums.ReportStatus
+    reviewedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    resolutionNote?: NullableStringFieldUpdateOperationsInput | string | null
+    resolvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type StringFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel>
     in?: string[] | ListStringFieldRefInput<$PrismaModel>
@@ -11686,6 +13078,7 @@ export namespace Prisma {
     content?: SortOrder
     stickerId?: SortOrder
     parentId?: SortOrder
+    isHidden?: SortOrder
     createdAt?: SortOrder
   }
 
@@ -11696,6 +13089,7 @@ export namespace Prisma {
     content?: SortOrder
     stickerId?: SortOrder
     parentId?: SortOrder
+    isHidden?: SortOrder
     createdAt?: SortOrder
   }
 
@@ -11706,6 +13100,7 @@ export namespace Prisma {
     content?: SortOrder
     stickerId?: SortOrder
     parentId?: SortOrder
+    isHidden?: SortOrder
     createdAt?: SortOrder
   }
 
@@ -11945,6 +13340,91 @@ export namespace Prisma {
     conversationId?: SortOrder
     readAt?: SortOrder
     createdAt?: SortOrder
+  }
+
+  export type EnumReportTargetTypeFilter<$PrismaModel = never> = {
+    equals?: $Enums.ReportTargetType | EnumReportTargetTypeFieldRefInput<$PrismaModel>
+    in?: $Enums.ReportTargetType[] | ListEnumReportTargetTypeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.ReportTargetType[] | ListEnumReportTargetTypeFieldRefInput<$PrismaModel>
+    not?: NestedEnumReportTargetTypeFilter<$PrismaModel> | $Enums.ReportTargetType
+  }
+
+  export type EnumReportStatusFilter<$PrismaModel = never> = {
+    equals?: $Enums.ReportStatus | EnumReportStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.ReportStatus[] | ListEnumReportStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.ReportStatus[] | ListEnumReportStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumReportStatusFilter<$PrismaModel> | $Enums.ReportStatus
+  }
+
+  export type CommunityReportCountOrderByAggregateInput = {
+    id?: SortOrder
+    reporterId?: SortOrder
+    targetType?: SortOrder
+    targetId?: SortOrder
+    postId?: SortOrder
+    reportedUserId?: SortOrder
+    reason?: SortOrder
+    details?: SortOrder
+    status?: SortOrder
+    reviewedBy?: SortOrder
+    resolutionNote?: SortOrder
+    resolvedAt?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type CommunityReportMaxOrderByAggregateInput = {
+    id?: SortOrder
+    reporterId?: SortOrder
+    targetType?: SortOrder
+    targetId?: SortOrder
+    postId?: SortOrder
+    reportedUserId?: SortOrder
+    reason?: SortOrder
+    details?: SortOrder
+    status?: SortOrder
+    reviewedBy?: SortOrder
+    resolutionNote?: SortOrder
+    resolvedAt?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type CommunityReportMinOrderByAggregateInput = {
+    id?: SortOrder
+    reporterId?: SortOrder
+    targetType?: SortOrder
+    targetId?: SortOrder
+    postId?: SortOrder
+    reportedUserId?: SortOrder
+    reason?: SortOrder
+    details?: SortOrder
+    status?: SortOrder
+    reviewedBy?: SortOrder
+    resolutionNote?: SortOrder
+    resolvedAt?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type EnumReportTargetTypeWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.ReportTargetType | EnumReportTargetTypeFieldRefInput<$PrismaModel>
+    in?: $Enums.ReportTargetType[] | ListEnumReportTargetTypeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.ReportTargetType[] | ListEnumReportTargetTypeFieldRefInput<$PrismaModel>
+    not?: NestedEnumReportTargetTypeWithAggregatesFilter<$PrismaModel> | $Enums.ReportTargetType
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumReportTargetTypeFilter<$PrismaModel>
+    _max?: NestedEnumReportTargetTypeFilter<$PrismaModel>
+  }
+
+  export type EnumReportStatusWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.ReportStatus | EnumReportStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.ReportStatus[] | ListEnumReportStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.ReportStatus[] | ListEnumReportStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumReportStatusWithAggregatesFilter<$PrismaModel> | $Enums.ReportStatus
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumReportStatusFilter<$PrismaModel>
+    _max?: NestedEnumReportStatusFilter<$PrismaModel>
   }
 
   export type CommunityCommentCreateNestedManyWithoutPostInput = {
@@ -12257,6 +13737,14 @@ export namespace Prisma {
     update?: XOR<XOR<DirectConversationUpdateToOneWithWhereWithoutMessagesInput, DirectConversationUpdateWithoutMessagesInput>, DirectConversationUncheckedUpdateWithoutMessagesInput>
   }
 
+  export type EnumReportTargetTypeFieldUpdateOperationsInput = {
+    set?: $Enums.ReportTargetType
+  }
+
+  export type EnumReportStatusFieldUpdateOperationsInput = {
+    set?: $Enums.ReportStatus
+  }
+
   export type NestedStringFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel>
     in?: string[] | ListStringFieldRefInput<$PrismaModel>
@@ -12431,11 +13919,46 @@ export namespace Prisma {
     _max?: NestedDateTimeNullableFilter<$PrismaModel>
   }
 
+  export type NestedEnumReportTargetTypeFilter<$PrismaModel = never> = {
+    equals?: $Enums.ReportTargetType | EnumReportTargetTypeFieldRefInput<$PrismaModel>
+    in?: $Enums.ReportTargetType[] | ListEnumReportTargetTypeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.ReportTargetType[] | ListEnumReportTargetTypeFieldRefInput<$PrismaModel>
+    not?: NestedEnumReportTargetTypeFilter<$PrismaModel> | $Enums.ReportTargetType
+  }
+
+  export type NestedEnumReportStatusFilter<$PrismaModel = never> = {
+    equals?: $Enums.ReportStatus | EnumReportStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.ReportStatus[] | ListEnumReportStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.ReportStatus[] | ListEnumReportStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumReportStatusFilter<$PrismaModel> | $Enums.ReportStatus
+  }
+
+  export type NestedEnumReportTargetTypeWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.ReportTargetType | EnumReportTargetTypeFieldRefInput<$PrismaModel>
+    in?: $Enums.ReportTargetType[] | ListEnumReportTargetTypeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.ReportTargetType[] | ListEnumReportTargetTypeFieldRefInput<$PrismaModel>
+    not?: NestedEnumReportTargetTypeWithAggregatesFilter<$PrismaModel> | $Enums.ReportTargetType
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumReportTargetTypeFilter<$PrismaModel>
+    _max?: NestedEnumReportTargetTypeFilter<$PrismaModel>
+  }
+
+  export type NestedEnumReportStatusWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.ReportStatus | EnumReportStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.ReportStatus[] | ListEnumReportStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.ReportStatus[] | ListEnumReportStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumReportStatusWithAggregatesFilter<$PrismaModel> | $Enums.ReportStatus
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumReportStatusFilter<$PrismaModel>
+    _max?: NestedEnumReportStatusFilter<$PrismaModel>
+  }
+
   export type CommunityCommentCreateWithoutPostInput = {
     id?: string
     userId: string
     content?: string | null
     stickerId?: string | null
+    isHidden?: boolean
     createdAt?: Date | string
     parent?: CommunityCommentCreateNestedOneWithoutRepliesInput
     replies?: CommunityCommentCreateNestedManyWithoutParentInput
@@ -12447,6 +13970,7 @@ export namespace Prisma {
     content?: string | null
     stickerId?: string | null
     parentId?: string | null
+    isHidden?: boolean
     createdAt?: Date | string
     replies?: CommunityCommentUncheckedCreateNestedManyWithoutParentInput
   }
@@ -12509,6 +14033,7 @@ export namespace Prisma {
     content?: StringNullableFilter<"CommunityComment"> | string | null
     stickerId?: StringNullableFilter<"CommunityComment"> | string | null
     parentId?: StringNullableFilter<"CommunityComment"> | string | null
+    isHidden?: BoolFilter<"CommunityComment"> | boolean
     createdAt?: DateTimeFilter<"CommunityComment"> | Date | string
   }
 
@@ -12578,6 +14103,7 @@ export namespace Prisma {
     userId: string
     content?: string | null
     stickerId?: string | null
+    isHidden?: boolean
     createdAt?: Date | string
     post: CommunityPostCreateNestedOneWithoutCommentsInput
     parent?: CommunityCommentCreateNestedOneWithoutRepliesInput
@@ -12590,6 +14116,7 @@ export namespace Prisma {
     content?: string | null
     stickerId?: string | null
     parentId?: string | null
+    isHidden?: boolean
     createdAt?: Date | string
   }
 
@@ -12603,6 +14130,7 @@ export namespace Prisma {
     userId: string
     content?: string | null
     stickerId?: string | null
+    isHidden?: boolean
     createdAt?: Date | string
     post: CommunityPostCreateNestedOneWithoutCommentsInput
     replies?: CommunityCommentCreateNestedManyWithoutParentInput
@@ -12614,6 +14142,7 @@ export namespace Prisma {
     userId: string
     content?: string | null
     stickerId?: string | null
+    isHidden?: boolean
     createdAt?: Date | string
     replies?: CommunityCommentUncheckedCreateNestedManyWithoutParentInput
   }
@@ -12685,6 +14214,7 @@ export namespace Prisma {
     userId?: StringFieldUpdateOperationsInput | string
     content?: NullableStringFieldUpdateOperationsInput | string | null
     stickerId?: NullableStringFieldUpdateOperationsInput | string | null
+    isHidden?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     post?: CommunityPostUpdateOneRequiredWithoutCommentsNestedInput
     parent?: CommunityCommentUpdateOneWithoutRepliesNestedInput
@@ -12697,6 +14227,7 @@ export namespace Prisma {
     content?: NullableStringFieldUpdateOperationsInput | string | null
     stickerId?: NullableStringFieldUpdateOperationsInput | string | null
     parentId?: NullableStringFieldUpdateOperationsInput | string | null
+    isHidden?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -12996,6 +14527,7 @@ export namespace Prisma {
     content?: string | null
     stickerId?: string | null
     parentId?: string | null
+    isHidden?: boolean
     createdAt?: Date | string
   }
 
@@ -13010,6 +14542,7 @@ export namespace Prisma {
     userId?: StringFieldUpdateOperationsInput | string
     content?: NullableStringFieldUpdateOperationsInput | string | null
     stickerId?: NullableStringFieldUpdateOperationsInput | string | null
+    isHidden?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     parent?: CommunityCommentUpdateOneWithoutRepliesNestedInput
     replies?: CommunityCommentUpdateManyWithoutParentNestedInput
@@ -13021,6 +14554,7 @@ export namespace Prisma {
     content?: NullableStringFieldUpdateOperationsInput | string | null
     stickerId?: NullableStringFieldUpdateOperationsInput | string | null
     parentId?: NullableStringFieldUpdateOperationsInput | string | null
+    isHidden?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     replies?: CommunityCommentUncheckedUpdateManyWithoutParentNestedInput
   }
@@ -13031,6 +14565,7 @@ export namespace Prisma {
     content?: NullableStringFieldUpdateOperationsInput | string | null
     stickerId?: NullableStringFieldUpdateOperationsInput | string | null
     parentId?: NullableStringFieldUpdateOperationsInput | string | null
+    isHidden?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -13058,6 +14593,7 @@ export namespace Prisma {
     userId: string
     content?: string | null
     stickerId?: string | null
+    isHidden?: boolean
     createdAt?: Date | string
   }
 
@@ -13066,6 +14602,7 @@ export namespace Prisma {
     userId?: StringFieldUpdateOperationsInput | string
     content?: NullableStringFieldUpdateOperationsInput | string | null
     stickerId?: NullableStringFieldUpdateOperationsInput | string | null
+    isHidden?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     post?: CommunityPostUpdateOneRequiredWithoutCommentsNestedInput
     replies?: CommunityCommentUpdateManyWithoutParentNestedInput
@@ -13077,6 +14614,7 @@ export namespace Prisma {
     userId?: StringFieldUpdateOperationsInput | string
     content?: NullableStringFieldUpdateOperationsInput | string | null
     stickerId?: NullableStringFieldUpdateOperationsInput | string | null
+    isHidden?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     replies?: CommunityCommentUncheckedUpdateManyWithoutParentNestedInput
   }
@@ -13087,6 +14625,7 @@ export namespace Prisma {
     userId?: StringFieldUpdateOperationsInput | string
     content?: NullableStringFieldUpdateOperationsInput | string | null
     stickerId?: NullableStringFieldUpdateOperationsInput | string | null
+    isHidden?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -13199,6 +14738,10 @@ export namespace Prisma {
      * @deprecated Use CommunityNotificationDefaultArgs instead
      */
     export type CommunityNotificationArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = CommunityNotificationDefaultArgs<ExtArgs>
+    /**
+     * @deprecated Use CommunityReportDefaultArgs instead
+     */
+    export type CommunityReportArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = CommunityReportDefaultArgs<ExtArgs>
 
   /**
    * Batch Payload for updateMany & deleteMany & createMany

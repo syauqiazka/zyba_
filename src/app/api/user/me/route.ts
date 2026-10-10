@@ -182,6 +182,12 @@ if (expiredSubscription) {      // Background async update, tidak perlu membloki
         // Plan berasal dari subscription ACTIVE yang tervalidasi di DB.
         // Jangan gunakan nilai client/localStorage sebagai sumber kebenaran.
         plan,
+        role: user.role || "USER",
+        isAdmin: user.role === "ADMIN" || (process.env.ADMIN_EMAILS || "").toLowerCase().split(",").map(e => e.trim()).includes(user.email.toLowerCase()),
+        isSuspended: Boolean(user.isSuspended),
+        suspendedUntil: user.suspendedUntil || null,
+        isBanned: Boolean(user.isBanned),
+        warningCount: user.warningCount || 0,
         onboardingCompleted: user.onboardingCompleted,
 
         // Terms & Agreement

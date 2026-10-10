@@ -20,6 +20,12 @@ export interface StoredUser {
 
   communicationStyle?: string;
   plan?: "FREE" | "PLUS";
+  role?: "USER" | "ADMIN";
+  isSuspended?: boolean;
+  suspendedUntil?: string | null;
+  isBanned?: boolean;
+  banReason?: string | null;
+  warningCount?: number;
   onboardingCompleted: boolean;
   zybaScore?: number | null;
   stressLevel?: number | null;
@@ -141,10 +147,16 @@ function dbToStored(user: any): StoredUser {
     bio: user.bio,
     communicationStyle: user.companionPersona as any,
     plan: user.plan as any,
+    role: (user.role as any) || "USER",
+    isSuspended: Boolean(user.isSuspended),
+    suspendedUntil: user.suspendedUntil ? (typeof user.suspendedUntil === "string" ? user.suspendedUntil : user.suspendedUntil.toISOString()) : null,
+    isBanned: Boolean(user.isBanned),
+    banReason: user.banReason ?? null,
+    warningCount: typeof user.warningCount === "number" ? user.warningCount : 0,
     onboardingCompleted: user.onboardingCompleted,
 
     termsAcceptedAt: user.termsAcceptedAt
-      ? user.termsAcceptedAt.toISOString()
+      ? (typeof user.termsAcceptedAt === "string" ? user.termsAcceptedAt : user.termsAcceptedAt.toISOString())
       : null,
 
     termsVersion: user.termsVersion ?? null,
@@ -156,8 +168,8 @@ function dbToStored(user: any): StoredUser {
         ? user.lastAvatarChangeAt
         : user.lastAvatarChangeAt.toISOString()
       : null,
-    createdAt: user.createdAt.toISOString(),
-    updatedAt: user.updatedAt.toISOString(),
+    createdAt: typeof user.createdAt === "string" ? user.createdAt : user.createdAt.toISOString(),
+    updatedAt: typeof user.updatedAt === "string" ? user.updatedAt : user.updatedAt.toISOString(),
   };
 }
 
@@ -581,5 +593,222 @@ export const userRepository = {
       if (!a) return null;
       return { id: a.id, userId: a.userId, calculatedScore: a.stressLevel ?? 0, createdAt: a.createdAt.toISOString() };
     } catch { return null; }
+  },
+
+  // =====================================================
+  // MODERASI & ROLE-BASED ACCESS CONTROL
+  // =====================================================
+
+  async getUserModerationStatus(userId: string): Promise<{
+    restricted: boolean;
+    isBanned: boolean;
+    isSuspended: boolean;
+    suspendedUntil?: string | null;
+    reason?: string | null;
+    warningCount: number;
+  }> {
+    const user = await this.findById(userId);
+    if (!user) {
+      return { restricted: false, isBanned: false, isSuspended: false, warningCount: 0 };
+    }
+
+    const warningCount = user.warningCount || 0;
+
+    // 1. Cek Ban permanen
+    if (user.isBanned) {
+      return {
+        restricted: true,
+        isBanned: true,
+        isSuspended: false,
+        reason: user.banReason || "Akun Anda telah dinonaktifkan secara permanen karena pelanggaran pedoman komunitas ZYBA.",
+        warningCount,
+      };
+    }
+
+    // 2. Cek Suspensi sementara
+    if (user.isSuspended && user.suspendedUntil) {
+      const expiry = new Date(user.suspendedUntil);
+      const now = new Date();
+
+      if (now >= expiry) {
+        // Otomatis kedaluwarsa — cabut pembatasan secara mandiri tanpa harus admin manual
+        await this.liftRestrictions(userId, "SYSTEM_AUTO_EXPIRY", "Masa pembatasan sementara telah selesai.");
+        return { restricted: false, isBanned: false, isSuspended: false, warningCount };
+      }
+
+      const formattedExpiry = new Intl.DateTimeFormat("id-ID", {
+        dateStyle: "medium",
+        timeStyle: "short",
+      }).format(expiry);
+
+      return {
+        restricted: true,
+        isBanned: false,
+        isSuspended: true,
+        suspendedUntil: user.suspendedUntil,
+        reason: `Akun Anda sedang dibatasi sementara hingga ${formattedExpiry}. Anda tidak dapat membuat postingan, komentar, atau pesan.`,
+        warningCount,
+      };
+    }
+
+    return { restricted: false, isBanned: false, isSuspended: false, warningCount };
+  },
+
+  async recordModerationLog(data: {
+    adminId: string;
+    targetUserId: string;
+    action: "WARN" | "HIDE_POST" | "HIDE_COMMENT" | "DELETE_POST" | "DELETE_COMMENT" | "SUSPEND" | "BAN" | "LIFT_RESTRICTION" | "DISMISS_REPORT";
+    reason: string;
+    durationDays?: number;
+    reportId?: string;
+    metadata?: any;
+  }) {
+    try {
+      return await accountDb.moderationLog.create({
+        data: {
+          adminId: data.adminId,
+          targetUserId: data.targetUserId,
+          action: data.action,
+          reason: data.reason,
+          durationDays: data.durationDays,
+          reportId: data.reportId,
+          metadata: data.metadata ?? undefined,
+        },
+      });
+    } catch (err: any) {
+      console.warn("[userRepo] recordModerationLog DB write fallback:", err?.message);
+      return null;
+    }
+  },
+
+  async warnUser(userId: string, reason: string, adminId: string, reportId?: string) {
+    const user = await this.findById(userId);
+    const nextCount = (user?.warningCount || 0) + 1;
+
+    try {
+      await accountDb.user.update({
+        where: { id: userId },
+        data: { warningCount: { increment: 1 } },
+      });
+    } catch {
+      await this.update(userId, { warningCount: nextCount });
+    }
+
+    await this.recordModerationLog({
+      adminId,
+      targetUserId: userId,
+      action: "WARN",
+      reason,
+      reportId,
+      metadata: { warningNumber: nextCount },
+    });
+
+    return { success: true, warningCount: nextCount };
+  },
+
+  async suspendUser(userId: string, durationDays: number, reason: string, adminId: string, reportId?: string) {
+    const expiry = new Date(Date.now() + durationDays * 24 * 60 * 60 * 1000);
+
+    try {
+      await accountDb.user.update({
+        where: { id: userId },
+        data: {
+          isSuspended: true,
+          suspendedUntil: expiry,
+        },
+      });
+    } catch {
+      await this.update(userId, {
+        isSuspended: true,
+        suspendedUntil: expiry.toISOString(),
+      });
+    }
+
+    await this.recordModerationLog({
+      adminId,
+      targetUserId: userId,
+      action: "SUSPEND",
+      reason,
+      durationDays,
+      reportId,
+      metadata: { expiresAt: expiry.toISOString() },
+    });
+
+    return { success: true, suspendedUntil: expiry.toISOString() };
+  },
+
+  async banUser(userId: string, reason: string, adminId: string, reportId?: string) {
+    try {
+      await accountDb.user.update({
+        where: { id: userId },
+        data: {
+          isBanned: true,
+          banReason: reason,
+          isSuspended: false,
+          suspendedUntil: null,
+        },
+      });
+    } catch {
+      await this.update(userId, {
+        isBanned: true,
+        banReason: reason,
+        isSuspended: false,
+        suspendedUntil: null,
+      });
+    }
+
+    await this.recordModerationLog({
+      adminId,
+      targetUserId: userId,
+      action: "BAN",
+      reason,
+      reportId,
+    });
+
+    return { success: true };
+  },
+
+  async liftRestrictions(userId: string, adminId: string, reason = "Pembatasan dicabut oleh moderator.") {
+    try {
+      await accountDb.user.update({
+        where: { id: userId },
+        data: {
+          isBanned: false,
+          banReason: null,
+          isSuspended: false,
+          suspendedUntil: null,
+        },
+      });
+    } catch {
+      await this.update(userId, {
+        isBanned: false,
+        banReason: null,
+        isSuspended: false,
+        suspendedUntil: null,
+      });
+    }
+
+    if (adminId !== "SYSTEM_AUTO_EXPIRY") {
+      await this.recordModerationLog({
+        adminId,
+        targetUserId: userId,
+        action: "LIFT_RESTRICTION",
+        reason,
+      });
+    }
+
+    return { success: true };
+  },
+
+  async getModerationLogsForUser(userId: string) {
+    try {
+      return await accountDb.moderationLog.findMany({
+        where: { targetUserId: userId },
+        orderBy: { createdAt: "desc" },
+        take: 20,
+      });
+    } catch {
+      return [];
+    }
   },
 };

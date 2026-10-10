@@ -5,17 +5,17 @@ import { CRISIS_RESOURCES } from "@/lib/crisisDetection";
 
 export async function POST(
   req: NextRequest,
-  { params }: { params: { postId: string } }
+  { params }: { params: { commentId: string } }
 ) {
   try {
-    const postId = params.postId;
-    if (!postId) {
-      return NextResponse.json({ error: "Post ID diperlukan" }, { status: 400 });
+    const commentId = params.commentId;
+    if (!commentId) {
+      return NextResponse.json({ error: "Comment ID diperlukan" }, { status: 400 });
     }
 
     const token = req.cookies.get("auth-token")?.value;
     if (!token) {
-      return NextResponse.json({ error: "Silakan masuk untuk melaporkan konten." }, { status: 401 });
+      return NextResponse.json({ error: "Silakan masuk untuk melaporkan komentar." }, { status: 401 });
     }
 
     const session = await verifySessionToken(token);
@@ -28,8 +28,8 @@ export async function POST(
 
     const result = await reportRepository.createReport({
       reporterId: session.userId,
-      targetType: "POST",
-      targetId: postId,
+      targetType: "COMMENT",
+      targetId: commentId,
       reason: String(reason).trim(),
       details: typeof details === "string" ? details.trim() : undefined,
     });
@@ -46,17 +46,16 @@ export async function POST(
       isCrisis,
       crisisResources: isCrisis ? CRISIS_RESOURCES : null,
       message: result.alreadyReported
-        ? "Anda sudah melaporkan postingan ini sebelumnya. Tim moderator sedang meninjaunya."
+        ? "Anda sudah melaporkan komentar ini sebelumnya. Tim moderator sedang meninjaunya."
         : isCrisis
-        ? "Laporan telah dicatat dengan prioritas darurat. Jika Anda atau seseorang yang Anda kenal dalam bahaya, mohon segera hubungi hotline krisis."
-        : "Terima kasih, laporan Anda telah diterima dan akan ditinjau secara berkala oleh tim moderator ZYBA.",
+        ? "Laporan telah dicatat dengan prioritas darurat. Jika Anda atau seseorang dalam bahaya, mohon hubungi hotline krisis."
+        : "Terima kasih, laporan komentar Anda telah diterima dan akan ditinjau oleh tim moderator ZYBA.",
     });
   } catch (error: any) {
-    console.error("[Post Report API Error]:", error);
+    console.error("[Comment Report API Error]:", error);
     return NextResponse.json(
-      { error: error?.message || "Gagal mengirim laporan" },
+      { error: error?.message || "Gagal mengirim laporan komentar" },
       { status: 500 }
     );
   }
 }
-

@@ -143,6 +143,7 @@ exports.Prisma.CommunityCommentScalarFieldEnum = {
   content: 'content',
   stickerId: 'stickerId',
   parentId: 'parentId',
+  isHidden: 'isHidden',
   createdAt: 'createdAt'
 };
 
@@ -202,6 +203,23 @@ exports.Prisma.CommunityNotificationScalarFieldEnum = {
   createdAt: 'createdAt'
 };
 
+exports.Prisma.CommunityReportScalarFieldEnum = {
+  id: 'id',
+  reporterId: 'reporterId',
+  targetType: 'targetType',
+  targetId: 'targetId',
+  postId: 'postId',
+  reportedUserId: 'reportedUserId',
+  reason: 'reason',
+  details: 'details',
+  status: 'status',
+  reviewedBy: 'reviewedBy',
+  resolutionNote: 'resolutionNote',
+  resolvedAt: 'resolvedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -216,7 +234,17 @@ exports.Prisma.NullsOrder = {
   first: 'first',
   last: 'last'
 };
+exports.ReportTargetType = exports.$Enums.ReportTargetType = {
+  POST: 'POST',
+  COMMENT: 'COMMENT'
+};
 
+exports.ReportStatus = exports.$Enums.ReportStatus = {
+  PENDING: 'PENDING',
+  REVIEWING: 'REVIEWING',
+  ACTION_TAKEN: 'ACTION_TAKEN',
+  DISMISSED: 'DISMISSED'
+};
 
 exports.Prisma.ModelName = {
   CommunityPost: 'CommunityPost',
@@ -227,7 +255,8 @@ exports.Prisma.ModelName = {
   DirectMessage: 'DirectMessage',
   CommunityFollow: 'CommunityFollow',
   CommunityBookmark: 'CommunityBookmark',
-  CommunityNotification: 'CommunityNotification'
+  CommunityNotification: 'CommunityNotification',
+  CommunityReport: 'CommunityReport'
 };
 
 /**

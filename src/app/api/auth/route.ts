@@ -176,6 +176,7 @@ export async function POST(request: NextRequest) {
         userId: user.id,
         email: user.email,
         name: user.name,
+        role: (user.role as any) || "USER",
         onboardingCompleted: false,
       });
 
@@ -244,6 +245,7 @@ export async function POST(request: NextRequest) {
         userId: user.id,
         email: user.email,
         name: user.name,
+        role: (user.role as any) || "USER",
         onboardingCompleted: user.onboardingCompleted ?? false,
       });
 
@@ -256,6 +258,7 @@ export async function POST(request: NextRequest) {
           id: user.id,
           email: user.email,
           name: user.name,
+          role: (user.role as any) || "USER",
           zybaScore: user.zybaScore,
           termsAcceptedAt: user.termsAcceptedAt,
           termsVersion: user.termsVersion,

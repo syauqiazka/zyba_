@@ -116,7 +116,7 @@ interface CommunityContextType {
   handleAddPost: (content: string, tag: string, imageUrl?: string | null) => Promise<void>;
   handleToggleLike: (id: string) => Promise<void>;
   handleToggleRepost: (id: string) => void;
-  handleAddComment: (postId: string, commentText: string) => Promise<void>;
+  handleAddComment: (postId: string, commentText: string, parentId?: string | null) => Promise<void>;
   currentUserId: string | null;
   currentUserName: string | null;
   currentUserAvatar: string | null;
@@ -563,37 +563,22 @@ export function CommunityProvider({ children }: { children: React.ReactNode }) {
     setFollowingPosts(updater);
   };
 
-  const handleAddComment = async (postId: string, commentText: string) => {
+  const handleAddComment = async (postId: string, commentText: string, parentId?: string | null) => {
     const isRisk = detectRisk(commentText);
     if (isRisk) {
       setShowCrisisNotice(true);
     }
 
-    try {
-      const res = await fetch("/api/community", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ action: "COMMENT", postId, content: commentText }),
+    // Bump commentsCount in context (actual comment data managed in PostCard via /api/community/comments)
+    const updater = (prev: Post[]) =>
+      prev.map((p) => {
+        if (p.id === postId) {
+          return { ...p, commentsCount: p.commentsCount + 1 };
+        }
+        return p;
       });
-      const data = await res.json();
-      if (data.comment) {
-        const updater = (prev: Post[]) =>
-          prev.map((p) => {
-            if (p.id === postId) {
-              return {
-                ...p,
-                commentsCount: p.commentsCount + 1,
-                comments: [...(p.comments || []), data.comment],
-              };
-            }
-            return p;
-          });
-        setPosts(updater);
-        setFollowingPosts(updater);
-      }
-    } catch (err) {
-      console.error("Add comment error:", err);
-    }
+    setPosts(updater);
+    setFollowingPosts(updater);
   };
 
   const handleAddPost = async (content: string, tag: string, imageUrl?: string | null) => {

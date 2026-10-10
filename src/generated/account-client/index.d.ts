@@ -83,6 +83,11 @@ export type Badge = $Result.DefaultSelection<Prisma.$BadgePayload>
  * 
  */
 export type UserBadge = $Result.DefaultSelection<Prisma.$UserBadgePayload>
+/**
+ * Model ModerationLog
+ * 
+ */
+export type ModerationLog = $Result.DefaultSelection<Prisma.$ModerationLogPayload>
 
 /**
  * Enums
@@ -104,6 +109,14 @@ export const Plan: {
 };
 
 export type Plan = (typeof Plan)[keyof typeof Plan]
+
+
+export const UserRole: {
+  USER: 'USER',
+  ADMIN: 'ADMIN'
+};
+
+export type UserRole = (typeof UserRole)[keyof typeof UserRole]
 
 
 export const MoodLevel: {
@@ -169,6 +182,21 @@ export const AchievementCategory: {
 
 export type AchievementCategory = (typeof AchievementCategory)[keyof typeof AchievementCategory]
 
+
+export const ModerationActionType: {
+  WARN: 'WARN',
+  HIDE_POST: 'HIDE_POST',
+  HIDE_COMMENT: 'HIDE_COMMENT',
+  DELETE_POST: 'DELETE_POST',
+  DELETE_COMMENT: 'DELETE_COMMENT',
+  SUSPEND: 'SUSPEND',
+  BAN: 'BAN',
+  LIFT_RESTRICTION: 'LIFT_RESTRICTION',
+  DISMISS_REPORT: 'DISMISS_REPORT'
+};
+
+export type ModerationActionType = (typeof ModerationActionType)[keyof typeof ModerationActionType]
+
 }
 
 export type CompanionPersona = $Enums.CompanionPersona
@@ -178,6 +206,10 @@ export const CompanionPersona: typeof $Enums.CompanionPersona
 export type Plan = $Enums.Plan
 
 export const Plan: typeof $Enums.Plan
+
+export type UserRole = $Enums.UserRole
+
+export const UserRole: typeof $Enums.UserRole
 
 export type MoodLevel = $Enums.MoodLevel
 
@@ -202,6 +234,10 @@ export const PaymentStatus: typeof $Enums.PaymentStatus
 export type AchievementCategory = $Enums.AchievementCategory
 
 export const AchievementCategory: typeof $Enums.AchievementCategory
+
+export type ModerationActionType = $Enums.ModerationActionType
+
+export const ModerationActionType: typeof $Enums.ModerationActionType
 
 /**
  * ##  Prisma Client ʲˢ
@@ -465,6 +501,16 @@ export class PrismaClient<
     * ```
     */
   get userBadge(): Prisma.UserBadgeDelegate<ExtArgs>;
+
+  /**
+   * `prisma.moderationLog`: Exposes CRUD operations for the **ModerationLog** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more ModerationLogs
+    * const moderationLogs = await prisma.moderationLog.findMany()
+    * ```
+    */
+  get moderationLog(): Prisma.ModerationLogDelegate<ExtArgs>;
 }
 
 export namespace Prisma {
@@ -919,7 +965,8 @@ export namespace Prisma {
     Achievement: 'Achievement',
     UserAchievement: 'UserAchievement',
     Badge: 'Badge',
-    UserBadge: 'UserBadge'
+    UserBadge: 'UserBadge',
+    ModerationLog: 'ModerationLog'
   };
 
   export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -935,7 +982,7 @@ export namespace Prisma {
 
   export type TypeMap<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, ClientOptions = {}> = {
     meta: {
-      modelProps: "user" | "notificationPref" | "assessment" | "moodEntry" | "dailyAssessment" | "journalEntry" | "activityLog" | "resource" | "subscription" | "payment" | "achievement" | "userAchievement" | "badge" | "userBadge"
+      modelProps: "user" | "notificationPref" | "assessment" | "moodEntry" | "dailyAssessment" | "journalEntry" | "activityLog" | "resource" | "subscription" | "payment" | "achievement" | "userAchievement" | "badge" | "userBadge" | "moderationLog"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -1919,6 +1966,76 @@ export namespace Prisma {
           }
         }
       }
+      ModerationLog: {
+        payload: Prisma.$ModerationLogPayload<ExtArgs>
+        fields: Prisma.ModerationLogFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.ModerationLogFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ModerationLogPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.ModerationLogFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ModerationLogPayload>
+          }
+          findFirst: {
+            args: Prisma.ModerationLogFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ModerationLogPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.ModerationLogFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ModerationLogPayload>
+          }
+          findMany: {
+            args: Prisma.ModerationLogFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ModerationLogPayload>[]
+          }
+          create: {
+            args: Prisma.ModerationLogCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ModerationLogPayload>
+          }
+          createMany: {
+            args: Prisma.ModerationLogCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.ModerationLogCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ModerationLogPayload>[]
+          }
+          delete: {
+            args: Prisma.ModerationLogDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ModerationLogPayload>
+          }
+          update: {
+            args: Prisma.ModerationLogUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ModerationLogPayload>
+          }
+          deleteMany: {
+            args: Prisma.ModerationLogDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.ModerationLogUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.ModerationLogUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ModerationLogPayload>
+          }
+          aggregate: {
+            args: Prisma.ModerationLogAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateModerationLog>
+          }
+          groupBy: {
+            args: Prisma.ModerationLogGroupByArgs<ExtArgs>
+            result: $Utils.Optional<ModerationLogGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.ModerationLogCountArgs<ExtArgs>
+            result: $Utils.Optional<ModerationLogCountAggregateOutputType> | number
+          }
+        }
+      }
     }
   } & {
     other: {
@@ -2087,6 +2204,8 @@ export namespace Prisma {
     subscriptions: number
     userAchievements: number
     userBadges: number
+    moderationLogs: number
+    adminActions: number
   }
 
   export type UserCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -2097,6 +2216,8 @@ export namespace Prisma {
     subscriptions?: boolean | UserCountOutputTypeCountSubscriptionsArgs
     userAchievements?: boolean | UserCountOutputTypeCountUserAchievementsArgs
     userBadges?: boolean | UserCountOutputTypeCountUserBadgesArgs
+    moderationLogs?: boolean | UserCountOutputTypeCountModerationLogsArgs
+    adminActions?: boolean | UserCountOutputTypeCountAdminActionsArgs
   }
 
   // Custom InputTypes
@@ -2157,6 +2278,20 @@ export namespace Prisma {
    */
   export type UserCountOutputTypeCountUserBadgesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: UserBadgeWhereInput
+  }
+
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountModerationLogsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ModerationLogWhereInput
+  }
+
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountAdminActionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ModerationLogWhereInput
   }
 
 
@@ -2270,6 +2405,7 @@ export namespace Prisma {
   }
 
   export type UserAvgAggregateOutputType = {
+    warningCount: number | null
     zybaScore: number | null
     stressLevel: number | null
     streak: number | null
@@ -2277,6 +2413,7 @@ export namespace Prisma {
   }
 
   export type UserSumAggregateOutputType = {
+    warningCount: number | null
     zybaScore: number | null
     stressLevel: number | null
     streak: number | null
@@ -2295,6 +2432,12 @@ export namespace Prisma {
     bio: string | null
     companionPersona: $Enums.CompanionPersona | null
     plan: $Enums.Plan | null
+    role: $Enums.UserRole | null
+    isSuspended: boolean | null
+    suspendedUntil: Date | null
+    isBanned: boolean | null
+    banReason: string | null
+    warningCount: number | null
     onboardingCompleted: boolean | null
     termsAcceptedAt: Date | null
     termsVersion: string | null
@@ -2322,6 +2465,12 @@ export namespace Prisma {
     bio: string | null
     companionPersona: $Enums.CompanionPersona | null
     plan: $Enums.Plan | null
+    role: $Enums.UserRole | null
+    isSuspended: boolean | null
+    suspendedUntil: Date | null
+    isBanned: boolean | null
+    banReason: string | null
+    warningCount: number | null
     onboardingCompleted: boolean | null
     termsAcceptedAt: Date | null
     termsVersion: string | null
@@ -2349,6 +2498,12 @@ export namespace Prisma {
     bio: number
     companionPersona: number
     plan: number
+    role: number
+    isSuspended: number
+    suspendedUntil: number
+    isBanned: number
+    banReason: number
+    warningCount: number
     onboardingCompleted: number
     termsAcceptedAt: number
     termsVersion: number
@@ -2367,6 +2522,7 @@ export namespace Prisma {
 
 
   export type UserAvgAggregateInputType = {
+    warningCount?: true
     zybaScore?: true
     stressLevel?: true
     streak?: true
@@ -2374,6 +2530,7 @@ export namespace Prisma {
   }
 
   export type UserSumAggregateInputType = {
+    warningCount?: true
     zybaScore?: true
     stressLevel?: true
     streak?: true
@@ -2392,6 +2549,12 @@ export namespace Prisma {
     bio?: true
     companionPersona?: true
     plan?: true
+    role?: true
+    isSuspended?: true
+    suspendedUntil?: true
+    isBanned?: true
+    banReason?: true
+    warningCount?: true
     onboardingCompleted?: true
     termsAcceptedAt?: true
     termsVersion?: true
@@ -2419,6 +2582,12 @@ export namespace Prisma {
     bio?: true
     companionPersona?: true
     plan?: true
+    role?: true
+    isSuspended?: true
+    suspendedUntil?: true
+    isBanned?: true
+    banReason?: true
+    warningCount?: true
     onboardingCompleted?: true
     termsAcceptedAt?: true
     termsVersion?: true
@@ -2446,6 +2615,12 @@ export namespace Prisma {
     bio?: true
     companionPersona?: true
     plan?: true
+    role?: true
+    isSuspended?: true
+    suspendedUntil?: true
+    isBanned?: true
+    banReason?: true
+    warningCount?: true
     onboardingCompleted?: true
     termsAcceptedAt?: true
     termsVersion?: true
@@ -2560,6 +2735,12 @@ export namespace Prisma {
     bio: string | null
     companionPersona: $Enums.CompanionPersona
     plan: $Enums.Plan
+    role: $Enums.UserRole
+    isSuspended: boolean
+    suspendedUntil: Date | null
+    isBanned: boolean
+    banReason: string | null
+    warningCount: number
     onboardingCompleted: boolean
     termsAcceptedAt: Date | null
     termsVersion: string | null
@@ -2606,6 +2787,12 @@ export namespace Prisma {
     bio?: boolean
     companionPersona?: boolean
     plan?: boolean
+    role?: boolean
+    isSuspended?: boolean
+    suspendedUntil?: boolean
+    isBanned?: boolean
+    banReason?: boolean
+    warningCount?: boolean
     onboardingCompleted?: boolean
     termsAcceptedAt?: boolean
     termsVersion?: boolean
@@ -2628,6 +2815,8 @@ export namespace Prisma {
     subscriptions?: boolean | User$subscriptionsArgs<ExtArgs>
     userAchievements?: boolean | User$userAchievementsArgs<ExtArgs>
     userBadges?: boolean | User$userBadgesArgs<ExtArgs>
+    moderationLogs?: boolean | User$moderationLogsArgs<ExtArgs>
+    adminActions?: boolean | User$adminActionsArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["user"]>
 
@@ -2643,6 +2832,12 @@ export namespace Prisma {
     bio?: boolean
     companionPersona?: boolean
     plan?: boolean
+    role?: boolean
+    isSuspended?: boolean
+    suspendedUntil?: boolean
+    isBanned?: boolean
+    banReason?: boolean
+    warningCount?: boolean
     onboardingCompleted?: boolean
     termsAcceptedAt?: boolean
     termsVersion?: boolean
@@ -2670,6 +2865,12 @@ export namespace Prisma {
     bio?: boolean
     companionPersona?: boolean
     plan?: boolean
+    role?: boolean
+    isSuspended?: boolean
+    suspendedUntil?: boolean
+    isBanned?: boolean
+    banReason?: boolean
+    warningCount?: boolean
     onboardingCompleted?: boolean
     termsAcceptedAt?: boolean
     termsVersion?: boolean
@@ -2695,6 +2896,8 @@ export namespace Prisma {
     subscriptions?: boolean | User$subscriptionsArgs<ExtArgs>
     userAchievements?: boolean | User$userAchievementsArgs<ExtArgs>
     userBadges?: boolean | User$userBadgesArgs<ExtArgs>
+    moderationLogs?: boolean | User$moderationLogsArgs<ExtArgs>
+    adminActions?: boolean | User$adminActionsArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type UserIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
@@ -2711,6 +2914,8 @@ export namespace Prisma {
       subscriptions: Prisma.$SubscriptionPayload<ExtArgs>[]
       userAchievements: Prisma.$UserAchievementPayload<ExtArgs>[]
       userBadges: Prisma.$UserBadgePayload<ExtArgs>[]
+      moderationLogs: Prisma.$ModerationLogPayload<ExtArgs>[]
+      adminActions: Prisma.$ModerationLogPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -2724,6 +2929,12 @@ export namespace Prisma {
       bio: string | null
       companionPersona: $Enums.CompanionPersona
       plan: $Enums.Plan
+      role: $Enums.UserRole
+      isSuspended: boolean
+      suspendedUntil: Date | null
+      isBanned: boolean
+      banReason: string | null
+      warningCount: number
       onboardingCompleted: boolean
       termsAcceptedAt: Date | null
       termsVersion: string | null
@@ -3110,6 +3321,8 @@ export namespace Prisma {
     subscriptions<T extends User$subscriptionsArgs<ExtArgs> = {}>(args?: Subset<T, User$subscriptionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SubscriptionPayload<ExtArgs>, T, "findMany"> | Null>
     userAchievements<T extends User$userAchievementsArgs<ExtArgs> = {}>(args?: Subset<T, User$userAchievementsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UserAchievementPayload<ExtArgs>, T, "findMany"> | Null>
     userBadges<T extends User$userBadgesArgs<ExtArgs> = {}>(args?: Subset<T, User$userBadgesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UserBadgePayload<ExtArgs>, T, "findMany"> | Null>
+    moderationLogs<T extends User$moderationLogsArgs<ExtArgs> = {}>(args?: Subset<T, User$moderationLogsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ModerationLogPayload<ExtArgs>, T, "findMany"> | Null>
+    adminActions<T extends User$adminActionsArgs<ExtArgs> = {}>(args?: Subset<T, User$adminActionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ModerationLogPayload<ExtArgs>, T, "findMany"> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -3150,6 +3363,12 @@ export namespace Prisma {
     readonly bio: FieldRef<"User", 'String'>
     readonly companionPersona: FieldRef<"User", 'CompanionPersona'>
     readonly plan: FieldRef<"User", 'Plan'>
+    readonly role: FieldRef<"User", 'UserRole'>
+    readonly isSuspended: FieldRef<"User", 'Boolean'>
+    readonly suspendedUntil: FieldRef<"User", 'DateTime'>
+    readonly isBanned: FieldRef<"User", 'Boolean'>
+    readonly banReason: FieldRef<"User", 'String'>
+    readonly warningCount: FieldRef<"User", 'Int'>
     readonly onboardingCompleted: FieldRef<"User", 'Boolean'>
     readonly termsAcceptedAt: FieldRef<"User", 'DateTime'>
     readonly termsVersion: FieldRef<"User", 'String'>
@@ -3644,6 +3863,46 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: UserBadgeScalarFieldEnum | UserBadgeScalarFieldEnum[]
+  }
+
+  /**
+   * User.moderationLogs
+   */
+  export type User$moderationLogsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ModerationLog
+     */
+    select?: ModerationLogSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ModerationLogInclude<ExtArgs> | null
+    where?: ModerationLogWhereInput
+    orderBy?: ModerationLogOrderByWithRelationInput | ModerationLogOrderByWithRelationInput[]
+    cursor?: ModerationLogWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: ModerationLogScalarFieldEnum | ModerationLogScalarFieldEnum[]
+  }
+
+  /**
+   * User.adminActions
+   */
+  export type User$adminActionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ModerationLog
+     */
+    select?: ModerationLogSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ModerationLogInclude<ExtArgs> | null
+    where?: ModerationLogWhereInput
+    orderBy?: ModerationLogOrderByWithRelationInput | ModerationLogOrderByWithRelationInput[]
+    cursor?: ModerationLogWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: ModerationLogScalarFieldEnum | ModerationLogScalarFieldEnum[]
   }
 
   /**
@@ -16666,6 +16925,1023 @@ export namespace Prisma {
 
 
   /**
+   * Model ModerationLog
+   */
+
+  export type AggregateModerationLog = {
+    _count: ModerationLogCountAggregateOutputType | null
+    _avg: ModerationLogAvgAggregateOutputType | null
+    _sum: ModerationLogSumAggregateOutputType | null
+    _min: ModerationLogMinAggregateOutputType | null
+    _max: ModerationLogMaxAggregateOutputType | null
+  }
+
+  export type ModerationLogAvgAggregateOutputType = {
+    durationDays: number | null
+  }
+
+  export type ModerationLogSumAggregateOutputType = {
+    durationDays: number | null
+  }
+
+  export type ModerationLogMinAggregateOutputType = {
+    id: string | null
+    adminId: string | null
+    targetUserId: string | null
+    action: $Enums.ModerationActionType | null
+    reason: string | null
+    durationDays: number | null
+    reportId: string | null
+    createdAt: Date | null
+  }
+
+  export type ModerationLogMaxAggregateOutputType = {
+    id: string | null
+    adminId: string | null
+    targetUserId: string | null
+    action: $Enums.ModerationActionType | null
+    reason: string | null
+    durationDays: number | null
+    reportId: string | null
+    createdAt: Date | null
+  }
+
+  export type ModerationLogCountAggregateOutputType = {
+    id: number
+    adminId: number
+    targetUserId: number
+    action: number
+    reason: number
+    durationDays: number
+    reportId: number
+    metadata: number
+    createdAt: number
+    _all: number
+  }
+
+
+  export type ModerationLogAvgAggregateInputType = {
+    durationDays?: true
+  }
+
+  export type ModerationLogSumAggregateInputType = {
+    durationDays?: true
+  }
+
+  export type ModerationLogMinAggregateInputType = {
+    id?: true
+    adminId?: true
+    targetUserId?: true
+    action?: true
+    reason?: true
+    durationDays?: true
+    reportId?: true
+    createdAt?: true
+  }
+
+  export type ModerationLogMaxAggregateInputType = {
+    id?: true
+    adminId?: true
+    targetUserId?: true
+    action?: true
+    reason?: true
+    durationDays?: true
+    reportId?: true
+    createdAt?: true
+  }
+
+  export type ModerationLogCountAggregateInputType = {
+    id?: true
+    adminId?: true
+    targetUserId?: true
+    action?: true
+    reason?: true
+    durationDays?: true
+    reportId?: true
+    metadata?: true
+    createdAt?: true
+    _all?: true
+  }
+
+  export type ModerationLogAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which ModerationLog to aggregate.
+     */
+    where?: ModerationLogWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ModerationLogs to fetch.
+     */
+    orderBy?: ModerationLogOrderByWithRelationInput | ModerationLogOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: ModerationLogWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ModerationLogs from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ModerationLogs.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned ModerationLogs
+    **/
+    _count?: true | ModerationLogCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: ModerationLogAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: ModerationLogSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: ModerationLogMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: ModerationLogMaxAggregateInputType
+  }
+
+  export type GetModerationLogAggregateType<T extends ModerationLogAggregateArgs> = {
+        [P in keyof T & keyof AggregateModerationLog]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateModerationLog[P]>
+      : GetScalarType<T[P], AggregateModerationLog[P]>
+  }
+
+
+
+
+  export type ModerationLogGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ModerationLogWhereInput
+    orderBy?: ModerationLogOrderByWithAggregationInput | ModerationLogOrderByWithAggregationInput[]
+    by: ModerationLogScalarFieldEnum[] | ModerationLogScalarFieldEnum
+    having?: ModerationLogScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: ModerationLogCountAggregateInputType | true
+    _avg?: ModerationLogAvgAggregateInputType
+    _sum?: ModerationLogSumAggregateInputType
+    _min?: ModerationLogMinAggregateInputType
+    _max?: ModerationLogMaxAggregateInputType
+  }
+
+  export type ModerationLogGroupByOutputType = {
+    id: string
+    adminId: string
+    targetUserId: string
+    action: $Enums.ModerationActionType
+    reason: string
+    durationDays: number | null
+    reportId: string | null
+    metadata: JsonValue | null
+    createdAt: Date
+    _count: ModerationLogCountAggregateOutputType | null
+    _avg: ModerationLogAvgAggregateOutputType | null
+    _sum: ModerationLogSumAggregateOutputType | null
+    _min: ModerationLogMinAggregateOutputType | null
+    _max: ModerationLogMaxAggregateOutputType | null
+  }
+
+  type GetModerationLogGroupByPayload<T extends ModerationLogGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<ModerationLogGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof ModerationLogGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], ModerationLogGroupByOutputType[P]>
+            : GetScalarType<T[P], ModerationLogGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type ModerationLogSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    adminId?: boolean
+    targetUserId?: boolean
+    action?: boolean
+    reason?: boolean
+    durationDays?: boolean
+    reportId?: boolean
+    metadata?: boolean
+    createdAt?: boolean
+    admin?: boolean | UserDefaultArgs<ExtArgs>
+    targetUser?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["moderationLog"]>
+
+  export type ModerationLogSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    adminId?: boolean
+    targetUserId?: boolean
+    action?: boolean
+    reason?: boolean
+    durationDays?: boolean
+    reportId?: boolean
+    metadata?: boolean
+    createdAt?: boolean
+    admin?: boolean | UserDefaultArgs<ExtArgs>
+    targetUser?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["moderationLog"]>
+
+  export type ModerationLogSelectScalar = {
+    id?: boolean
+    adminId?: boolean
+    targetUserId?: boolean
+    action?: boolean
+    reason?: boolean
+    durationDays?: boolean
+    reportId?: boolean
+    metadata?: boolean
+    createdAt?: boolean
+  }
+
+  export type ModerationLogInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    admin?: boolean | UserDefaultArgs<ExtArgs>
+    targetUser?: boolean | UserDefaultArgs<ExtArgs>
+  }
+  export type ModerationLogIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    admin?: boolean | UserDefaultArgs<ExtArgs>
+    targetUser?: boolean | UserDefaultArgs<ExtArgs>
+  }
+
+  export type $ModerationLogPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "ModerationLog"
+    objects: {
+      admin: Prisma.$UserPayload<ExtArgs>
+      targetUser: Prisma.$UserPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      adminId: string
+      targetUserId: string
+      action: $Enums.ModerationActionType
+      reason: string
+      durationDays: number | null
+      reportId: string | null
+      metadata: Prisma.JsonValue | null
+      createdAt: Date
+    }, ExtArgs["result"]["moderationLog"]>
+    composites: {}
+  }
+
+  type ModerationLogGetPayload<S extends boolean | null | undefined | ModerationLogDefaultArgs> = $Result.GetResult<Prisma.$ModerationLogPayload, S>
+
+  type ModerationLogCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = 
+    Omit<ModerationLogFindManyArgs, 'select' | 'include' | 'distinct'> & {
+      select?: ModerationLogCountAggregateInputType | true
+    }
+
+  export interface ModerationLogDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['ModerationLog'], meta: { name: 'ModerationLog' } }
+    /**
+     * Find zero or one ModerationLog that matches the filter.
+     * @param {ModerationLogFindUniqueArgs} args - Arguments to find a ModerationLog
+     * @example
+     * // Get one ModerationLog
+     * const moderationLog = await prisma.moderationLog.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends ModerationLogFindUniqueArgs>(args: SelectSubset<T, ModerationLogFindUniqueArgs<ExtArgs>>): Prisma__ModerationLogClient<$Result.GetResult<Prisma.$ModerationLogPayload<ExtArgs>, T, "findUnique"> | null, null, ExtArgs>
+
+    /**
+     * Find one ModerationLog that matches the filter or throw an error with `error.code='P2025'` 
+     * if no matches were found.
+     * @param {ModerationLogFindUniqueOrThrowArgs} args - Arguments to find a ModerationLog
+     * @example
+     * // Get one ModerationLog
+     * const moderationLog = await prisma.moderationLog.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends ModerationLogFindUniqueOrThrowArgs>(args: SelectSubset<T, ModerationLogFindUniqueOrThrowArgs<ExtArgs>>): Prisma__ModerationLogClient<$Result.GetResult<Prisma.$ModerationLogPayload<ExtArgs>, T, "findUniqueOrThrow">, never, ExtArgs>
+
+    /**
+     * Find the first ModerationLog that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ModerationLogFindFirstArgs} args - Arguments to find a ModerationLog
+     * @example
+     * // Get one ModerationLog
+     * const moderationLog = await prisma.moderationLog.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends ModerationLogFindFirstArgs>(args?: SelectSubset<T, ModerationLogFindFirstArgs<ExtArgs>>): Prisma__ModerationLogClient<$Result.GetResult<Prisma.$ModerationLogPayload<ExtArgs>, T, "findFirst"> | null, null, ExtArgs>
+
+    /**
+     * Find the first ModerationLog that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ModerationLogFindFirstOrThrowArgs} args - Arguments to find a ModerationLog
+     * @example
+     * // Get one ModerationLog
+     * const moderationLog = await prisma.moderationLog.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends ModerationLogFindFirstOrThrowArgs>(args?: SelectSubset<T, ModerationLogFindFirstOrThrowArgs<ExtArgs>>): Prisma__ModerationLogClient<$Result.GetResult<Prisma.$ModerationLogPayload<ExtArgs>, T, "findFirstOrThrow">, never, ExtArgs>
+
+    /**
+     * Find zero or more ModerationLogs that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ModerationLogFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all ModerationLogs
+     * const moderationLogs = await prisma.moderationLog.findMany()
+     * 
+     * // Get first 10 ModerationLogs
+     * const moderationLogs = await prisma.moderationLog.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const moderationLogWithIdOnly = await prisma.moderationLog.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends ModerationLogFindManyArgs>(args?: SelectSubset<T, ModerationLogFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ModerationLogPayload<ExtArgs>, T, "findMany">>
+
+    /**
+     * Create a ModerationLog.
+     * @param {ModerationLogCreateArgs} args - Arguments to create a ModerationLog.
+     * @example
+     * // Create one ModerationLog
+     * const ModerationLog = await prisma.moderationLog.create({
+     *   data: {
+     *     // ... data to create a ModerationLog
+     *   }
+     * })
+     * 
+     */
+    create<T extends ModerationLogCreateArgs>(args: SelectSubset<T, ModerationLogCreateArgs<ExtArgs>>): Prisma__ModerationLogClient<$Result.GetResult<Prisma.$ModerationLogPayload<ExtArgs>, T, "create">, never, ExtArgs>
+
+    /**
+     * Create many ModerationLogs.
+     * @param {ModerationLogCreateManyArgs} args - Arguments to create many ModerationLogs.
+     * @example
+     * // Create many ModerationLogs
+     * const moderationLog = await prisma.moderationLog.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends ModerationLogCreateManyArgs>(args?: SelectSubset<T, ModerationLogCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many ModerationLogs and returns the data saved in the database.
+     * @param {ModerationLogCreateManyAndReturnArgs} args - Arguments to create many ModerationLogs.
+     * @example
+     * // Create many ModerationLogs
+     * const moderationLog = await prisma.moderationLog.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many ModerationLogs and only return the `id`
+     * const moderationLogWithIdOnly = await prisma.moderationLog.createManyAndReturn({ 
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends ModerationLogCreateManyAndReturnArgs>(args?: SelectSubset<T, ModerationLogCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ModerationLogPayload<ExtArgs>, T, "createManyAndReturn">>
+
+    /**
+     * Delete a ModerationLog.
+     * @param {ModerationLogDeleteArgs} args - Arguments to delete one ModerationLog.
+     * @example
+     * // Delete one ModerationLog
+     * const ModerationLog = await prisma.moderationLog.delete({
+     *   where: {
+     *     // ... filter to delete one ModerationLog
+     *   }
+     * })
+     * 
+     */
+    delete<T extends ModerationLogDeleteArgs>(args: SelectSubset<T, ModerationLogDeleteArgs<ExtArgs>>): Prisma__ModerationLogClient<$Result.GetResult<Prisma.$ModerationLogPayload<ExtArgs>, T, "delete">, never, ExtArgs>
+
+    /**
+     * Update one ModerationLog.
+     * @param {ModerationLogUpdateArgs} args - Arguments to update one ModerationLog.
+     * @example
+     * // Update one ModerationLog
+     * const moderationLog = await prisma.moderationLog.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends ModerationLogUpdateArgs>(args: SelectSubset<T, ModerationLogUpdateArgs<ExtArgs>>): Prisma__ModerationLogClient<$Result.GetResult<Prisma.$ModerationLogPayload<ExtArgs>, T, "update">, never, ExtArgs>
+
+    /**
+     * Delete zero or more ModerationLogs.
+     * @param {ModerationLogDeleteManyArgs} args - Arguments to filter ModerationLogs to delete.
+     * @example
+     * // Delete a few ModerationLogs
+     * const { count } = await prisma.moderationLog.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends ModerationLogDeleteManyArgs>(args?: SelectSubset<T, ModerationLogDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more ModerationLogs.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ModerationLogUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many ModerationLogs
+     * const moderationLog = await prisma.moderationLog.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends ModerationLogUpdateManyArgs>(args: SelectSubset<T, ModerationLogUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one ModerationLog.
+     * @param {ModerationLogUpsertArgs} args - Arguments to update or create a ModerationLog.
+     * @example
+     * // Update or create a ModerationLog
+     * const moderationLog = await prisma.moderationLog.upsert({
+     *   create: {
+     *     // ... data to create a ModerationLog
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the ModerationLog we want to update
+     *   }
+     * })
+     */
+    upsert<T extends ModerationLogUpsertArgs>(args: SelectSubset<T, ModerationLogUpsertArgs<ExtArgs>>): Prisma__ModerationLogClient<$Result.GetResult<Prisma.$ModerationLogPayload<ExtArgs>, T, "upsert">, never, ExtArgs>
+
+
+    /**
+     * Count the number of ModerationLogs.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ModerationLogCountArgs} args - Arguments to filter ModerationLogs to count.
+     * @example
+     * // Count the number of ModerationLogs
+     * const count = await prisma.moderationLog.count({
+     *   where: {
+     *     // ... the filter for the ModerationLogs we want to count
+     *   }
+     * })
+    **/
+    count<T extends ModerationLogCountArgs>(
+      args?: Subset<T, ModerationLogCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], ModerationLogCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a ModerationLog.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ModerationLogAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends ModerationLogAggregateArgs>(args: Subset<T, ModerationLogAggregateArgs>): Prisma.PrismaPromise<GetModerationLogAggregateType<T>>
+
+    /**
+     * Group by ModerationLog.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ModerationLogGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends ModerationLogGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: ModerationLogGroupByArgs['orderBy'] }
+        : { orderBy?: ModerationLogGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, ModerationLogGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetModerationLogGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the ModerationLog model
+   */
+  readonly fields: ModerationLogFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for ModerationLog.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__ModerationLogClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    admin<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
+    targetUser<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the ModerationLog model
+   */ 
+  interface ModerationLogFieldRefs {
+    readonly id: FieldRef<"ModerationLog", 'String'>
+    readonly adminId: FieldRef<"ModerationLog", 'String'>
+    readonly targetUserId: FieldRef<"ModerationLog", 'String'>
+    readonly action: FieldRef<"ModerationLog", 'ModerationActionType'>
+    readonly reason: FieldRef<"ModerationLog", 'String'>
+    readonly durationDays: FieldRef<"ModerationLog", 'Int'>
+    readonly reportId: FieldRef<"ModerationLog", 'String'>
+    readonly metadata: FieldRef<"ModerationLog", 'Json'>
+    readonly createdAt: FieldRef<"ModerationLog", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * ModerationLog findUnique
+   */
+  export type ModerationLogFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ModerationLog
+     */
+    select?: ModerationLogSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ModerationLogInclude<ExtArgs> | null
+    /**
+     * Filter, which ModerationLog to fetch.
+     */
+    where: ModerationLogWhereUniqueInput
+  }
+
+  /**
+   * ModerationLog findUniqueOrThrow
+   */
+  export type ModerationLogFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ModerationLog
+     */
+    select?: ModerationLogSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ModerationLogInclude<ExtArgs> | null
+    /**
+     * Filter, which ModerationLog to fetch.
+     */
+    where: ModerationLogWhereUniqueInput
+  }
+
+  /**
+   * ModerationLog findFirst
+   */
+  export type ModerationLogFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ModerationLog
+     */
+    select?: ModerationLogSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ModerationLogInclude<ExtArgs> | null
+    /**
+     * Filter, which ModerationLog to fetch.
+     */
+    where?: ModerationLogWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ModerationLogs to fetch.
+     */
+    orderBy?: ModerationLogOrderByWithRelationInput | ModerationLogOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for ModerationLogs.
+     */
+    cursor?: ModerationLogWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ModerationLogs from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ModerationLogs.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of ModerationLogs.
+     */
+    distinct?: ModerationLogScalarFieldEnum | ModerationLogScalarFieldEnum[]
+  }
+
+  /**
+   * ModerationLog findFirstOrThrow
+   */
+  export type ModerationLogFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ModerationLog
+     */
+    select?: ModerationLogSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ModerationLogInclude<ExtArgs> | null
+    /**
+     * Filter, which ModerationLog to fetch.
+     */
+    where?: ModerationLogWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ModerationLogs to fetch.
+     */
+    orderBy?: ModerationLogOrderByWithRelationInput | ModerationLogOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for ModerationLogs.
+     */
+    cursor?: ModerationLogWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ModerationLogs from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ModerationLogs.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of ModerationLogs.
+     */
+    distinct?: ModerationLogScalarFieldEnum | ModerationLogScalarFieldEnum[]
+  }
+
+  /**
+   * ModerationLog findMany
+   */
+  export type ModerationLogFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ModerationLog
+     */
+    select?: ModerationLogSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ModerationLogInclude<ExtArgs> | null
+    /**
+     * Filter, which ModerationLogs to fetch.
+     */
+    where?: ModerationLogWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ModerationLogs to fetch.
+     */
+    orderBy?: ModerationLogOrderByWithRelationInput | ModerationLogOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing ModerationLogs.
+     */
+    cursor?: ModerationLogWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ModerationLogs from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ModerationLogs.
+     */
+    skip?: number
+    distinct?: ModerationLogScalarFieldEnum | ModerationLogScalarFieldEnum[]
+  }
+
+  /**
+   * ModerationLog create
+   */
+  export type ModerationLogCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ModerationLog
+     */
+    select?: ModerationLogSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ModerationLogInclude<ExtArgs> | null
+    /**
+     * The data needed to create a ModerationLog.
+     */
+    data: XOR<ModerationLogCreateInput, ModerationLogUncheckedCreateInput>
+  }
+
+  /**
+   * ModerationLog createMany
+   */
+  export type ModerationLogCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many ModerationLogs.
+     */
+    data: ModerationLogCreateManyInput | ModerationLogCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * ModerationLog createManyAndReturn
+   */
+  export type ModerationLogCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ModerationLog
+     */
+    select?: ModerationLogSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * The data used to create many ModerationLogs.
+     */
+    data: ModerationLogCreateManyInput | ModerationLogCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ModerationLogIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * ModerationLog update
+   */
+  export type ModerationLogUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ModerationLog
+     */
+    select?: ModerationLogSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ModerationLogInclude<ExtArgs> | null
+    /**
+     * The data needed to update a ModerationLog.
+     */
+    data: XOR<ModerationLogUpdateInput, ModerationLogUncheckedUpdateInput>
+    /**
+     * Choose, which ModerationLog to update.
+     */
+    where: ModerationLogWhereUniqueInput
+  }
+
+  /**
+   * ModerationLog updateMany
+   */
+  export type ModerationLogUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update ModerationLogs.
+     */
+    data: XOR<ModerationLogUpdateManyMutationInput, ModerationLogUncheckedUpdateManyInput>
+    /**
+     * Filter which ModerationLogs to update
+     */
+    where?: ModerationLogWhereInput
+  }
+
+  /**
+   * ModerationLog upsert
+   */
+  export type ModerationLogUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ModerationLog
+     */
+    select?: ModerationLogSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ModerationLogInclude<ExtArgs> | null
+    /**
+     * The filter to search for the ModerationLog to update in case it exists.
+     */
+    where: ModerationLogWhereUniqueInput
+    /**
+     * In case the ModerationLog found by the `where` argument doesn't exist, create a new ModerationLog with this data.
+     */
+    create: XOR<ModerationLogCreateInput, ModerationLogUncheckedCreateInput>
+    /**
+     * In case the ModerationLog was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<ModerationLogUpdateInput, ModerationLogUncheckedUpdateInput>
+  }
+
+  /**
+   * ModerationLog delete
+   */
+  export type ModerationLogDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ModerationLog
+     */
+    select?: ModerationLogSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ModerationLogInclude<ExtArgs> | null
+    /**
+     * Filter which ModerationLog to delete.
+     */
+    where: ModerationLogWhereUniqueInput
+  }
+
+  /**
+   * ModerationLog deleteMany
+   */
+  export type ModerationLogDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which ModerationLogs to delete
+     */
+    where?: ModerationLogWhereInput
+  }
+
+  /**
+   * ModerationLog without action
+   */
+  export type ModerationLogDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ModerationLog
+     */
+    select?: ModerationLogSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ModerationLogInclude<ExtArgs> | null
+  }
+
+
+  /**
    * Enums
    */
 
@@ -16691,6 +17967,12 @@ export namespace Prisma {
     bio: 'bio',
     companionPersona: 'companionPersona',
     plan: 'plan',
+    role: 'role',
+    isSuspended: 'isSuspended',
+    suspendedUntil: 'suspendedUntil',
+    isBanned: 'isBanned',
+    banReason: 'banReason',
+    warningCount: 'warningCount',
     onboardingCompleted: 'onboardingCompleted',
     termsAcceptedAt: 'termsAcceptedAt',
     termsVersion: 'termsVersion',
@@ -16897,6 +18179,21 @@ export namespace Prisma {
   export type UserBadgeScalarFieldEnum = (typeof UserBadgeScalarFieldEnum)[keyof typeof UserBadgeScalarFieldEnum]
 
 
+  export const ModerationLogScalarFieldEnum: {
+    id: 'id',
+    adminId: 'adminId',
+    targetUserId: 'targetUserId',
+    action: 'action',
+    reason: 'reason',
+    durationDays: 'durationDays',
+    reportId: 'reportId',
+    metadata: 'metadata',
+    createdAt: 'createdAt'
+  };
+
+  export type ModerationLogScalarFieldEnum = (typeof ModerationLogScalarFieldEnum)[keyof typeof ModerationLogScalarFieldEnum]
+
+
   export const SortOrder: {
     asc: 'asc',
     desc: 'desc'
@@ -16982,6 +18279,20 @@ export namespace Prisma {
    * Reference to a field of type 'Plan[]'
    */
   export type ListEnumPlanFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Plan[]'>
+    
+
+
+  /**
+   * Reference to a field of type 'UserRole'
+   */
+  export type EnumUserRoleFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'UserRole'>
+    
+
+
+  /**
+   * Reference to a field of type 'UserRole[]'
+   */
+  export type ListEnumUserRoleFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'UserRole[]'>
     
 
 
@@ -17123,6 +18434,20 @@ export namespace Prisma {
    */
   export type ListEnumAchievementCategoryFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'AchievementCategory[]'>
     
+
+
+  /**
+   * Reference to a field of type 'ModerationActionType'
+   */
+  export type EnumModerationActionTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ModerationActionType'>
+    
+
+
+  /**
+   * Reference to a field of type 'ModerationActionType[]'
+   */
+  export type ListEnumModerationActionTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ModerationActionType[]'>
+    
   /**
    * Deep Input Types
    */
@@ -17143,6 +18468,12 @@ export namespace Prisma {
     bio?: StringNullableFilter<"User"> | string | null
     companionPersona?: EnumCompanionPersonaFilter<"User"> | $Enums.CompanionPersona
     plan?: EnumPlanFilter<"User"> | $Enums.Plan
+    role?: EnumUserRoleFilter<"User"> | $Enums.UserRole
+    isSuspended?: BoolFilter<"User"> | boolean
+    suspendedUntil?: DateTimeNullableFilter<"User"> | Date | string | null
+    isBanned?: BoolFilter<"User"> | boolean
+    banReason?: StringNullableFilter<"User"> | string | null
+    warningCount?: IntFilter<"User"> | number
     onboardingCompleted?: BoolFilter<"User"> | boolean
     termsAcceptedAt?: DateTimeNullableFilter<"User"> | Date | string | null
     termsVersion?: StringNullableFilter<"User"> | string | null
@@ -17165,6 +18496,8 @@ export namespace Prisma {
     subscriptions?: SubscriptionListRelationFilter
     userAchievements?: UserAchievementListRelationFilter
     userBadges?: UserBadgeListRelationFilter
+    moderationLogs?: ModerationLogListRelationFilter
+    adminActions?: ModerationLogListRelationFilter
   }
 
   export type UserOrderByWithRelationInput = {
@@ -17179,6 +18512,12 @@ export namespace Prisma {
     bio?: SortOrderInput | SortOrder
     companionPersona?: SortOrder
     plan?: SortOrder
+    role?: SortOrder
+    isSuspended?: SortOrder
+    suspendedUntil?: SortOrderInput | SortOrder
+    isBanned?: SortOrder
+    banReason?: SortOrderInput | SortOrder
+    warningCount?: SortOrder
     onboardingCompleted?: SortOrder
     termsAcceptedAt?: SortOrderInput | SortOrder
     termsVersion?: SortOrderInput | SortOrder
@@ -17201,6 +18540,8 @@ export namespace Prisma {
     subscriptions?: SubscriptionOrderByRelationAggregateInput
     userAchievements?: UserAchievementOrderByRelationAggregateInput
     userBadges?: UserBadgeOrderByRelationAggregateInput
+    moderationLogs?: ModerationLogOrderByRelationAggregateInput
+    adminActions?: ModerationLogOrderByRelationAggregateInput
   }
 
   export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -17218,6 +18559,12 @@ export namespace Prisma {
     bio?: StringNullableFilter<"User"> | string | null
     companionPersona?: EnumCompanionPersonaFilter<"User"> | $Enums.CompanionPersona
     plan?: EnumPlanFilter<"User"> | $Enums.Plan
+    role?: EnumUserRoleFilter<"User"> | $Enums.UserRole
+    isSuspended?: BoolFilter<"User"> | boolean
+    suspendedUntil?: DateTimeNullableFilter<"User"> | Date | string | null
+    isBanned?: BoolFilter<"User"> | boolean
+    banReason?: StringNullableFilter<"User"> | string | null
+    warningCount?: IntFilter<"User"> | number
     onboardingCompleted?: BoolFilter<"User"> | boolean
     termsAcceptedAt?: DateTimeNullableFilter<"User"> | Date | string | null
     termsVersion?: StringNullableFilter<"User"> | string | null
@@ -17240,6 +18587,8 @@ export namespace Prisma {
     subscriptions?: SubscriptionListRelationFilter
     userAchievements?: UserAchievementListRelationFilter
     userBadges?: UserBadgeListRelationFilter
+    moderationLogs?: ModerationLogListRelationFilter
+    adminActions?: ModerationLogListRelationFilter
   }, "id" | "email" | "username">
 
   export type UserOrderByWithAggregationInput = {
@@ -17254,6 +18603,12 @@ export namespace Prisma {
     bio?: SortOrderInput | SortOrder
     companionPersona?: SortOrder
     plan?: SortOrder
+    role?: SortOrder
+    isSuspended?: SortOrder
+    suspendedUntil?: SortOrderInput | SortOrder
+    isBanned?: SortOrder
+    banReason?: SortOrderInput | SortOrder
+    warningCount?: SortOrder
     onboardingCompleted?: SortOrder
     termsAcceptedAt?: SortOrderInput | SortOrder
     termsVersion?: SortOrderInput | SortOrder
@@ -17289,6 +18644,12 @@ export namespace Prisma {
     bio?: StringNullableWithAggregatesFilter<"User"> | string | null
     companionPersona?: EnumCompanionPersonaWithAggregatesFilter<"User"> | $Enums.CompanionPersona
     plan?: EnumPlanWithAggregatesFilter<"User"> | $Enums.Plan
+    role?: EnumUserRoleWithAggregatesFilter<"User"> | $Enums.UserRole
+    isSuspended?: BoolWithAggregatesFilter<"User"> | boolean
+    suspendedUntil?: DateTimeNullableWithAggregatesFilter<"User"> | Date | string | null
+    isBanned?: BoolWithAggregatesFilter<"User"> | boolean
+    banReason?: StringNullableWithAggregatesFilter<"User"> | string | null
+    warningCount?: IntWithAggregatesFilter<"User"> | number
     onboardingCompleted?: BoolWithAggregatesFilter<"User"> | boolean
     termsAcceptedAt?: DateTimeNullableWithAggregatesFilter<"User"> | Date | string | null
     termsVersion?: StringNullableWithAggregatesFilter<"User"> | string | null
@@ -18271,6 +19632,86 @@ export namespace Prisma {
     updatedAt?: DateTimeWithAggregatesFilter<"UserBadge"> | Date | string
   }
 
+  export type ModerationLogWhereInput = {
+    AND?: ModerationLogWhereInput | ModerationLogWhereInput[]
+    OR?: ModerationLogWhereInput[]
+    NOT?: ModerationLogWhereInput | ModerationLogWhereInput[]
+    id?: StringFilter<"ModerationLog"> | string
+    adminId?: StringFilter<"ModerationLog"> | string
+    targetUserId?: StringFilter<"ModerationLog"> | string
+    action?: EnumModerationActionTypeFilter<"ModerationLog"> | $Enums.ModerationActionType
+    reason?: StringFilter<"ModerationLog"> | string
+    durationDays?: IntNullableFilter<"ModerationLog"> | number | null
+    reportId?: StringNullableFilter<"ModerationLog"> | string | null
+    metadata?: JsonNullableFilter<"ModerationLog">
+    createdAt?: DateTimeFilter<"ModerationLog"> | Date | string
+    admin?: XOR<UserRelationFilter, UserWhereInput>
+    targetUser?: XOR<UserRelationFilter, UserWhereInput>
+  }
+
+  export type ModerationLogOrderByWithRelationInput = {
+    id?: SortOrder
+    adminId?: SortOrder
+    targetUserId?: SortOrder
+    action?: SortOrder
+    reason?: SortOrder
+    durationDays?: SortOrderInput | SortOrder
+    reportId?: SortOrderInput | SortOrder
+    metadata?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    admin?: UserOrderByWithRelationInput
+    targetUser?: UserOrderByWithRelationInput
+  }
+
+  export type ModerationLogWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: ModerationLogWhereInput | ModerationLogWhereInput[]
+    OR?: ModerationLogWhereInput[]
+    NOT?: ModerationLogWhereInput | ModerationLogWhereInput[]
+    adminId?: StringFilter<"ModerationLog"> | string
+    targetUserId?: StringFilter<"ModerationLog"> | string
+    action?: EnumModerationActionTypeFilter<"ModerationLog"> | $Enums.ModerationActionType
+    reason?: StringFilter<"ModerationLog"> | string
+    durationDays?: IntNullableFilter<"ModerationLog"> | number | null
+    reportId?: StringNullableFilter<"ModerationLog"> | string | null
+    metadata?: JsonNullableFilter<"ModerationLog">
+    createdAt?: DateTimeFilter<"ModerationLog"> | Date | string
+    admin?: XOR<UserRelationFilter, UserWhereInput>
+    targetUser?: XOR<UserRelationFilter, UserWhereInput>
+  }, "id">
+
+  export type ModerationLogOrderByWithAggregationInput = {
+    id?: SortOrder
+    adminId?: SortOrder
+    targetUserId?: SortOrder
+    action?: SortOrder
+    reason?: SortOrder
+    durationDays?: SortOrderInput | SortOrder
+    reportId?: SortOrderInput | SortOrder
+    metadata?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    _count?: ModerationLogCountOrderByAggregateInput
+    _avg?: ModerationLogAvgOrderByAggregateInput
+    _max?: ModerationLogMaxOrderByAggregateInput
+    _min?: ModerationLogMinOrderByAggregateInput
+    _sum?: ModerationLogSumOrderByAggregateInput
+  }
+
+  export type ModerationLogScalarWhereWithAggregatesInput = {
+    AND?: ModerationLogScalarWhereWithAggregatesInput | ModerationLogScalarWhereWithAggregatesInput[]
+    OR?: ModerationLogScalarWhereWithAggregatesInput[]
+    NOT?: ModerationLogScalarWhereWithAggregatesInput | ModerationLogScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"ModerationLog"> | string
+    adminId?: StringWithAggregatesFilter<"ModerationLog"> | string
+    targetUserId?: StringWithAggregatesFilter<"ModerationLog"> | string
+    action?: EnumModerationActionTypeWithAggregatesFilter<"ModerationLog"> | $Enums.ModerationActionType
+    reason?: StringWithAggregatesFilter<"ModerationLog"> | string
+    durationDays?: IntNullableWithAggregatesFilter<"ModerationLog"> | number | null
+    reportId?: StringNullableWithAggregatesFilter<"ModerationLog"> | string | null
+    metadata?: JsonNullableWithAggregatesFilter<"ModerationLog">
+    createdAt?: DateTimeWithAggregatesFilter<"ModerationLog"> | Date | string
+  }
+
   export type UserCreateInput = {
     id?: string
     email: string
@@ -18283,6 +19724,12 @@ export namespace Prisma {
     bio?: string | null
     companionPersona?: $Enums.CompanionPersona
     plan?: $Enums.Plan
+    role?: $Enums.UserRole
+    isSuspended?: boolean
+    suspendedUntil?: Date | string | null
+    isBanned?: boolean
+    banReason?: string | null
+    warningCount?: number
     onboardingCompleted?: boolean
     termsAcceptedAt?: Date | string | null
     termsVersion?: string | null
@@ -18305,6 +19752,8 @@ export namespace Prisma {
     subscriptions?: SubscriptionCreateNestedManyWithoutUserInput
     userAchievements?: UserAchievementCreateNestedManyWithoutUserInput
     userBadges?: UserBadgeCreateNestedManyWithoutUserInput
+    moderationLogs?: ModerationLogCreateNestedManyWithoutTargetUserInput
+    adminActions?: ModerationLogCreateNestedManyWithoutAdminInput
   }
 
   export type UserUncheckedCreateInput = {
@@ -18319,6 +19768,12 @@ export namespace Prisma {
     bio?: string | null
     companionPersona?: $Enums.CompanionPersona
     plan?: $Enums.Plan
+    role?: $Enums.UserRole
+    isSuspended?: boolean
+    suspendedUntil?: Date | string | null
+    isBanned?: boolean
+    banReason?: string | null
+    warningCount?: number
     onboardingCompleted?: boolean
     termsAcceptedAt?: Date | string | null
     termsVersion?: string | null
@@ -18341,6 +19796,8 @@ export namespace Prisma {
     subscriptions?: SubscriptionUncheckedCreateNestedManyWithoutUserInput
     userAchievements?: UserAchievementUncheckedCreateNestedManyWithoutUserInput
     userBadges?: UserBadgeUncheckedCreateNestedManyWithoutUserInput
+    moderationLogs?: ModerationLogUncheckedCreateNestedManyWithoutTargetUserInput
+    adminActions?: ModerationLogUncheckedCreateNestedManyWithoutAdminInput
   }
 
   export type UserUpdateInput = {
@@ -18355,6 +19812,12 @@ export namespace Prisma {
     bio?: NullableStringFieldUpdateOperationsInput | string | null
     companionPersona?: EnumCompanionPersonaFieldUpdateOperationsInput | $Enums.CompanionPersona
     plan?: EnumPlanFieldUpdateOperationsInput | $Enums.Plan
+    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    isSuspended?: BoolFieldUpdateOperationsInput | boolean
+    suspendedUntil?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    isBanned?: BoolFieldUpdateOperationsInput | boolean
+    banReason?: NullableStringFieldUpdateOperationsInput | string | null
+    warningCount?: IntFieldUpdateOperationsInput | number
     onboardingCompleted?: BoolFieldUpdateOperationsInput | boolean
     termsAcceptedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     termsVersion?: NullableStringFieldUpdateOperationsInput | string | null
@@ -18377,6 +19840,8 @@ export namespace Prisma {
     subscriptions?: SubscriptionUpdateManyWithoutUserNestedInput
     userAchievements?: UserAchievementUpdateManyWithoutUserNestedInput
     userBadges?: UserBadgeUpdateManyWithoutUserNestedInput
+    moderationLogs?: ModerationLogUpdateManyWithoutTargetUserNestedInput
+    adminActions?: ModerationLogUpdateManyWithoutAdminNestedInput
   }
 
   export type UserUncheckedUpdateInput = {
@@ -18391,6 +19856,12 @@ export namespace Prisma {
     bio?: NullableStringFieldUpdateOperationsInput | string | null
     companionPersona?: EnumCompanionPersonaFieldUpdateOperationsInput | $Enums.CompanionPersona
     plan?: EnumPlanFieldUpdateOperationsInput | $Enums.Plan
+    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    isSuspended?: BoolFieldUpdateOperationsInput | boolean
+    suspendedUntil?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    isBanned?: BoolFieldUpdateOperationsInput | boolean
+    banReason?: NullableStringFieldUpdateOperationsInput | string | null
+    warningCount?: IntFieldUpdateOperationsInput | number
     onboardingCompleted?: BoolFieldUpdateOperationsInput | boolean
     termsAcceptedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     termsVersion?: NullableStringFieldUpdateOperationsInput | string | null
@@ -18413,6 +19884,8 @@ export namespace Prisma {
     subscriptions?: SubscriptionUncheckedUpdateManyWithoutUserNestedInput
     userAchievements?: UserAchievementUncheckedUpdateManyWithoutUserNestedInput
     userBadges?: UserBadgeUncheckedUpdateManyWithoutUserNestedInput
+    moderationLogs?: ModerationLogUncheckedUpdateManyWithoutTargetUserNestedInput
+    adminActions?: ModerationLogUncheckedUpdateManyWithoutAdminNestedInput
   }
 
   export type UserCreateManyInput = {
@@ -18427,6 +19900,12 @@ export namespace Prisma {
     bio?: string | null
     companionPersona?: $Enums.CompanionPersona
     plan?: $Enums.Plan
+    role?: $Enums.UserRole
+    isSuspended?: boolean
+    suspendedUntil?: Date | string | null
+    isBanned?: boolean
+    banReason?: string | null
+    warningCount?: number
     onboardingCompleted?: boolean
     termsAcceptedAt?: Date | string | null
     termsVersion?: string | null
@@ -18454,6 +19933,12 @@ export namespace Prisma {
     bio?: NullableStringFieldUpdateOperationsInput | string | null
     companionPersona?: EnumCompanionPersonaFieldUpdateOperationsInput | $Enums.CompanionPersona
     plan?: EnumPlanFieldUpdateOperationsInput | $Enums.Plan
+    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    isSuspended?: BoolFieldUpdateOperationsInput | boolean
+    suspendedUntil?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    isBanned?: BoolFieldUpdateOperationsInput | boolean
+    banReason?: NullableStringFieldUpdateOperationsInput | string | null
+    warningCount?: IntFieldUpdateOperationsInput | number
     onboardingCompleted?: BoolFieldUpdateOperationsInput | boolean
     termsAcceptedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     termsVersion?: NullableStringFieldUpdateOperationsInput | string | null
@@ -18481,6 +19966,12 @@ export namespace Prisma {
     bio?: NullableStringFieldUpdateOperationsInput | string | null
     companionPersona?: EnumCompanionPersonaFieldUpdateOperationsInput | $Enums.CompanionPersona
     plan?: EnumPlanFieldUpdateOperationsInput | $Enums.Plan
+    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    isSuspended?: BoolFieldUpdateOperationsInput | boolean
+    suspendedUntil?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    isBanned?: BoolFieldUpdateOperationsInput | boolean
+    banReason?: NullableStringFieldUpdateOperationsInput | string | null
+    warningCount?: IntFieldUpdateOperationsInput | number
     onboardingCompleted?: BoolFieldUpdateOperationsInput | boolean
     termsAcceptedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     termsVersion?: NullableStringFieldUpdateOperationsInput | string | null
@@ -19539,6 +21030,88 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type ModerationLogCreateInput = {
+    id?: string
+    action: $Enums.ModerationActionType
+    reason: string
+    durationDays?: number | null
+    reportId?: string | null
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    admin: UserCreateNestedOneWithoutAdminActionsInput
+    targetUser: UserCreateNestedOneWithoutModerationLogsInput
+  }
+
+  export type ModerationLogUncheckedCreateInput = {
+    id?: string
+    adminId: string
+    targetUserId: string
+    action: $Enums.ModerationActionType
+    reason: string
+    durationDays?: number | null
+    reportId?: string | null
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+  }
+
+  export type ModerationLogUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    action?: EnumModerationActionTypeFieldUpdateOperationsInput | $Enums.ModerationActionType
+    reason?: StringFieldUpdateOperationsInput | string
+    durationDays?: NullableIntFieldUpdateOperationsInput | number | null
+    reportId?: NullableStringFieldUpdateOperationsInput | string | null
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    admin?: UserUpdateOneRequiredWithoutAdminActionsNestedInput
+    targetUser?: UserUpdateOneRequiredWithoutModerationLogsNestedInput
+  }
+
+  export type ModerationLogUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    adminId?: StringFieldUpdateOperationsInput | string
+    targetUserId?: StringFieldUpdateOperationsInput | string
+    action?: EnumModerationActionTypeFieldUpdateOperationsInput | $Enums.ModerationActionType
+    reason?: StringFieldUpdateOperationsInput | string
+    durationDays?: NullableIntFieldUpdateOperationsInput | number | null
+    reportId?: NullableStringFieldUpdateOperationsInput | string | null
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ModerationLogCreateManyInput = {
+    id?: string
+    adminId: string
+    targetUserId: string
+    action: $Enums.ModerationActionType
+    reason: string
+    durationDays?: number | null
+    reportId?: string | null
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+  }
+
+  export type ModerationLogUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    action?: EnumModerationActionTypeFieldUpdateOperationsInput | $Enums.ModerationActionType
+    reason?: StringFieldUpdateOperationsInput | string
+    durationDays?: NullableIntFieldUpdateOperationsInput | number | null
+    reportId?: NullableStringFieldUpdateOperationsInput | string | null
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ModerationLogUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    adminId?: StringFieldUpdateOperationsInput | string
+    targetUserId?: StringFieldUpdateOperationsInput | string
+    action?: EnumModerationActionTypeFieldUpdateOperationsInput | $Enums.ModerationActionType
+    reason?: StringFieldUpdateOperationsInput | string
+    durationDays?: NullableIntFieldUpdateOperationsInput | number | null
+    reportId?: NullableStringFieldUpdateOperationsInput | string | null
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type StringFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel>
     in?: string[] | ListStringFieldRefInput<$PrismaModel>
@@ -19583,6 +21156,13 @@ export namespace Prisma {
     not?: NestedEnumPlanFilter<$PrismaModel> | $Enums.Plan
   }
 
+  export type EnumUserRoleFilter<$PrismaModel = never> = {
+    equals?: $Enums.UserRole | EnumUserRoleFieldRefInput<$PrismaModel>
+    in?: $Enums.UserRole[] | ListEnumUserRoleFieldRefInput<$PrismaModel>
+    notIn?: $Enums.UserRole[] | ListEnumUserRoleFieldRefInput<$PrismaModel>
+    not?: NestedEnumUserRoleFilter<$PrismaModel> | $Enums.UserRole
+  }
+
   export type BoolFilter<$PrismaModel = never> = {
     equals?: boolean | BooleanFieldRefInput<$PrismaModel>
     not?: NestedBoolFilter<$PrismaModel> | boolean
@@ -19597,6 +21177,17 @@ export namespace Prisma {
     gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     not?: NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
+  }
+
+  export type IntFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel>
+    in?: number[] | ListIntFieldRefInput<$PrismaModel>
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel>
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntFilter<$PrismaModel> | number
   }
 
   export type IntNullableFilter<$PrismaModel = never> = {
@@ -19673,6 +21264,12 @@ export namespace Prisma {
     none?: UserBadgeWhereInput
   }
 
+  export type ModerationLogListRelationFilter = {
+    every?: ModerationLogWhereInput
+    some?: ModerationLogWhereInput
+    none?: ModerationLogWhereInput
+  }
+
   export type SortOrderInput = {
     sort: SortOrder
     nulls?: NullsOrder
@@ -19706,6 +21303,10 @@ export namespace Prisma {
     _count?: SortOrder
   }
 
+  export type ModerationLogOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
   export type UserCountOrderByAggregateInput = {
     id?: SortOrder
     email?: SortOrder
@@ -19718,6 +21319,12 @@ export namespace Prisma {
     bio?: SortOrder
     companionPersona?: SortOrder
     plan?: SortOrder
+    role?: SortOrder
+    isSuspended?: SortOrder
+    suspendedUntil?: SortOrder
+    isBanned?: SortOrder
+    banReason?: SortOrder
+    warningCount?: SortOrder
     onboardingCompleted?: SortOrder
     termsAcceptedAt?: SortOrder
     termsVersion?: SortOrder
@@ -19734,6 +21341,7 @@ export namespace Prisma {
   }
 
   export type UserAvgOrderByAggregateInput = {
+    warningCount?: SortOrder
     zybaScore?: SortOrder
     stressLevel?: SortOrder
     streak?: SortOrder
@@ -19752,6 +21360,12 @@ export namespace Prisma {
     bio?: SortOrder
     companionPersona?: SortOrder
     plan?: SortOrder
+    role?: SortOrder
+    isSuspended?: SortOrder
+    suspendedUntil?: SortOrder
+    isBanned?: SortOrder
+    banReason?: SortOrder
+    warningCount?: SortOrder
     onboardingCompleted?: SortOrder
     termsAcceptedAt?: SortOrder
     termsVersion?: SortOrder
@@ -19779,6 +21393,12 @@ export namespace Prisma {
     bio?: SortOrder
     companionPersona?: SortOrder
     plan?: SortOrder
+    role?: SortOrder
+    isSuspended?: SortOrder
+    suspendedUntil?: SortOrder
+    isBanned?: SortOrder
+    banReason?: SortOrder
+    warningCount?: SortOrder
     onboardingCompleted?: SortOrder
     termsAcceptedAt?: SortOrder
     termsVersion?: SortOrder
@@ -19795,6 +21415,7 @@ export namespace Prisma {
   }
 
   export type UserSumOrderByAggregateInput = {
+    warningCount?: SortOrder
     zybaScore?: SortOrder
     stressLevel?: SortOrder
     streak?: SortOrder
@@ -19857,6 +21478,16 @@ export namespace Prisma {
     _max?: NestedEnumPlanFilter<$PrismaModel>
   }
 
+  export type EnumUserRoleWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.UserRole | EnumUserRoleFieldRefInput<$PrismaModel>
+    in?: $Enums.UserRole[] | ListEnumUserRoleFieldRefInput<$PrismaModel>
+    notIn?: $Enums.UserRole[] | ListEnumUserRoleFieldRefInput<$PrismaModel>
+    not?: NestedEnumUserRoleWithAggregatesFilter<$PrismaModel> | $Enums.UserRole
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumUserRoleFilter<$PrismaModel>
+    _max?: NestedEnumUserRoleFilter<$PrismaModel>
+  }
+
   export type BoolWithAggregatesFilter<$PrismaModel = never> = {
     equals?: boolean | BooleanFieldRefInput<$PrismaModel>
     not?: NestedBoolWithAggregatesFilter<$PrismaModel> | boolean
@@ -19877,6 +21508,22 @@ export namespace Prisma {
     _count?: NestedIntNullableFilter<$PrismaModel>
     _min?: NestedDateTimeNullableFilter<$PrismaModel>
     _max?: NestedDateTimeNullableFilter<$PrismaModel>
+  }
+
+  export type IntWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel>
+    in?: number[] | ListIntFieldRefInput<$PrismaModel>
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel>
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntWithAggregatesFilter<$PrismaModel> | number
+    _count?: NestedIntFilter<$PrismaModel>
+    _avg?: NestedFloatFilter<$PrismaModel>
+    _sum?: NestedIntFilter<$PrismaModel>
+    _min?: NestedIntFilter<$PrismaModel>
+    _max?: NestedIntFilter<$PrismaModel>
   }
 
   export type IntNullableWithAggregatesFilter<$PrismaModel = never> = {
@@ -20392,17 +22039,6 @@ export namespace Prisma {
     _max?: NestedEnumSubscriptionStatusFilter<$PrismaModel>
   }
 
-  export type IntFilter<$PrismaModel = never> = {
-    equals?: number | IntFieldRefInput<$PrismaModel>
-    in?: number[] | ListIntFieldRefInput<$PrismaModel>
-    notIn?: number[] | ListIntFieldRefInput<$PrismaModel>
-    lt?: number | IntFieldRefInput<$PrismaModel>
-    lte?: number | IntFieldRefInput<$PrismaModel>
-    gt?: number | IntFieldRefInput<$PrismaModel>
-    gte?: number | IntFieldRefInput<$PrismaModel>
-    not?: NestedIntFilter<$PrismaModel> | number
-  }
-
   export type EnumPaymentStatusFilter<$PrismaModel = never> = {
     equals?: $Enums.PaymentStatus | EnumPaymentStatusFieldRefInput<$PrismaModel>
     in?: $Enums.PaymentStatus[] | ListEnumPaymentStatusFieldRefInput<$PrismaModel>
@@ -20486,22 +22122,6 @@ export namespace Prisma {
 
   export type PaymentSumOrderByAggregateInput = {
     amount?: SortOrder
-  }
-
-  export type IntWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: number | IntFieldRefInput<$PrismaModel>
-    in?: number[] | ListIntFieldRefInput<$PrismaModel>
-    notIn?: number[] | ListIntFieldRefInput<$PrismaModel>
-    lt?: number | IntFieldRefInput<$PrismaModel>
-    lte?: number | IntFieldRefInput<$PrismaModel>
-    gt?: number | IntFieldRefInput<$PrismaModel>
-    gte?: number | IntFieldRefInput<$PrismaModel>
-    not?: NestedIntWithAggregatesFilter<$PrismaModel> | number
-    _count?: NestedIntFilter<$PrismaModel>
-    _avg?: NestedFloatFilter<$PrismaModel>
-    _sum?: NestedIntFilter<$PrismaModel>
-    _min?: NestedIntFilter<$PrismaModel>
-    _max?: NestedIntFilter<$PrismaModel>
   }
 
   export type EnumPaymentStatusWithAggregatesFilter<$PrismaModel = never> = {
@@ -20722,6 +22342,65 @@ export namespace Prisma {
     slot?: SortOrder
   }
 
+  export type EnumModerationActionTypeFilter<$PrismaModel = never> = {
+    equals?: $Enums.ModerationActionType | EnumModerationActionTypeFieldRefInput<$PrismaModel>
+    in?: $Enums.ModerationActionType[] | ListEnumModerationActionTypeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.ModerationActionType[] | ListEnumModerationActionTypeFieldRefInput<$PrismaModel>
+    not?: NestedEnumModerationActionTypeFilter<$PrismaModel> | $Enums.ModerationActionType
+  }
+
+  export type ModerationLogCountOrderByAggregateInput = {
+    id?: SortOrder
+    adminId?: SortOrder
+    targetUserId?: SortOrder
+    action?: SortOrder
+    reason?: SortOrder
+    durationDays?: SortOrder
+    reportId?: SortOrder
+    metadata?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type ModerationLogAvgOrderByAggregateInput = {
+    durationDays?: SortOrder
+  }
+
+  export type ModerationLogMaxOrderByAggregateInput = {
+    id?: SortOrder
+    adminId?: SortOrder
+    targetUserId?: SortOrder
+    action?: SortOrder
+    reason?: SortOrder
+    durationDays?: SortOrder
+    reportId?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type ModerationLogMinOrderByAggregateInput = {
+    id?: SortOrder
+    adminId?: SortOrder
+    targetUserId?: SortOrder
+    action?: SortOrder
+    reason?: SortOrder
+    durationDays?: SortOrder
+    reportId?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type ModerationLogSumOrderByAggregateInput = {
+    durationDays?: SortOrder
+  }
+
+  export type EnumModerationActionTypeWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.ModerationActionType | EnumModerationActionTypeFieldRefInput<$PrismaModel>
+    in?: $Enums.ModerationActionType[] | ListEnumModerationActionTypeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.ModerationActionType[] | ListEnumModerationActionTypeFieldRefInput<$PrismaModel>
+    not?: NestedEnumModerationActionTypeWithAggregatesFilter<$PrismaModel> | $Enums.ModerationActionType
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumModerationActionTypeFilter<$PrismaModel>
+    _max?: NestedEnumModerationActionTypeFilter<$PrismaModel>
+  }
+
   export type AssessmentCreateNestedOneWithoutUserInput = {
     create?: XOR<AssessmentCreateWithoutUserInput, AssessmentUncheckedCreateWithoutUserInput>
     connectOrCreate?: AssessmentCreateOrConnectWithoutUserInput
@@ -20781,6 +22460,20 @@ export namespace Prisma {
     connectOrCreate?: UserBadgeCreateOrConnectWithoutUserInput | UserBadgeCreateOrConnectWithoutUserInput[]
     createMany?: UserBadgeCreateManyUserInputEnvelope
     connect?: UserBadgeWhereUniqueInput | UserBadgeWhereUniqueInput[]
+  }
+
+  export type ModerationLogCreateNestedManyWithoutTargetUserInput = {
+    create?: XOR<ModerationLogCreateWithoutTargetUserInput, ModerationLogUncheckedCreateWithoutTargetUserInput> | ModerationLogCreateWithoutTargetUserInput[] | ModerationLogUncheckedCreateWithoutTargetUserInput[]
+    connectOrCreate?: ModerationLogCreateOrConnectWithoutTargetUserInput | ModerationLogCreateOrConnectWithoutTargetUserInput[]
+    createMany?: ModerationLogCreateManyTargetUserInputEnvelope
+    connect?: ModerationLogWhereUniqueInput | ModerationLogWhereUniqueInput[]
+  }
+
+  export type ModerationLogCreateNestedManyWithoutAdminInput = {
+    create?: XOR<ModerationLogCreateWithoutAdminInput, ModerationLogUncheckedCreateWithoutAdminInput> | ModerationLogCreateWithoutAdminInput[] | ModerationLogUncheckedCreateWithoutAdminInput[]
+    connectOrCreate?: ModerationLogCreateOrConnectWithoutAdminInput | ModerationLogCreateOrConnectWithoutAdminInput[]
+    createMany?: ModerationLogCreateManyAdminInputEnvelope
+    connect?: ModerationLogWhereUniqueInput | ModerationLogWhereUniqueInput[]
   }
 
   export type AssessmentUncheckedCreateNestedOneWithoutUserInput = {
@@ -20844,6 +22537,20 @@ export namespace Prisma {
     connect?: UserBadgeWhereUniqueInput | UserBadgeWhereUniqueInput[]
   }
 
+  export type ModerationLogUncheckedCreateNestedManyWithoutTargetUserInput = {
+    create?: XOR<ModerationLogCreateWithoutTargetUserInput, ModerationLogUncheckedCreateWithoutTargetUserInput> | ModerationLogCreateWithoutTargetUserInput[] | ModerationLogUncheckedCreateWithoutTargetUserInput[]
+    connectOrCreate?: ModerationLogCreateOrConnectWithoutTargetUserInput | ModerationLogCreateOrConnectWithoutTargetUserInput[]
+    createMany?: ModerationLogCreateManyTargetUserInputEnvelope
+    connect?: ModerationLogWhereUniqueInput | ModerationLogWhereUniqueInput[]
+  }
+
+  export type ModerationLogUncheckedCreateNestedManyWithoutAdminInput = {
+    create?: XOR<ModerationLogCreateWithoutAdminInput, ModerationLogUncheckedCreateWithoutAdminInput> | ModerationLogCreateWithoutAdminInput[] | ModerationLogUncheckedCreateWithoutAdminInput[]
+    connectOrCreate?: ModerationLogCreateOrConnectWithoutAdminInput | ModerationLogCreateOrConnectWithoutAdminInput[]
+    createMany?: ModerationLogCreateManyAdminInputEnvelope
+    connect?: ModerationLogWhereUniqueInput | ModerationLogWhereUniqueInput[]
+  }
+
   export type StringFieldUpdateOperationsInput = {
     set?: string
   }
@@ -20860,12 +22567,24 @@ export namespace Prisma {
     set?: $Enums.Plan
   }
 
+  export type EnumUserRoleFieldUpdateOperationsInput = {
+    set?: $Enums.UserRole
+  }
+
   export type BoolFieldUpdateOperationsInput = {
     set?: boolean
   }
 
   export type NullableDateTimeFieldUpdateOperationsInput = {
     set?: Date | string | null
+  }
+
+  export type IntFieldUpdateOperationsInput = {
+    set?: number
+    increment?: number
+    decrement?: number
+    multiply?: number
+    divide?: number
   }
 
   export type NullableIntFieldUpdateOperationsInput = {
@@ -20998,6 +22717,34 @@ export namespace Prisma {
     deleteMany?: UserBadgeScalarWhereInput | UserBadgeScalarWhereInput[]
   }
 
+  export type ModerationLogUpdateManyWithoutTargetUserNestedInput = {
+    create?: XOR<ModerationLogCreateWithoutTargetUserInput, ModerationLogUncheckedCreateWithoutTargetUserInput> | ModerationLogCreateWithoutTargetUserInput[] | ModerationLogUncheckedCreateWithoutTargetUserInput[]
+    connectOrCreate?: ModerationLogCreateOrConnectWithoutTargetUserInput | ModerationLogCreateOrConnectWithoutTargetUserInput[]
+    upsert?: ModerationLogUpsertWithWhereUniqueWithoutTargetUserInput | ModerationLogUpsertWithWhereUniqueWithoutTargetUserInput[]
+    createMany?: ModerationLogCreateManyTargetUserInputEnvelope
+    set?: ModerationLogWhereUniqueInput | ModerationLogWhereUniqueInput[]
+    disconnect?: ModerationLogWhereUniqueInput | ModerationLogWhereUniqueInput[]
+    delete?: ModerationLogWhereUniqueInput | ModerationLogWhereUniqueInput[]
+    connect?: ModerationLogWhereUniqueInput | ModerationLogWhereUniqueInput[]
+    update?: ModerationLogUpdateWithWhereUniqueWithoutTargetUserInput | ModerationLogUpdateWithWhereUniqueWithoutTargetUserInput[]
+    updateMany?: ModerationLogUpdateManyWithWhereWithoutTargetUserInput | ModerationLogUpdateManyWithWhereWithoutTargetUserInput[]
+    deleteMany?: ModerationLogScalarWhereInput | ModerationLogScalarWhereInput[]
+  }
+
+  export type ModerationLogUpdateManyWithoutAdminNestedInput = {
+    create?: XOR<ModerationLogCreateWithoutAdminInput, ModerationLogUncheckedCreateWithoutAdminInput> | ModerationLogCreateWithoutAdminInput[] | ModerationLogUncheckedCreateWithoutAdminInput[]
+    connectOrCreate?: ModerationLogCreateOrConnectWithoutAdminInput | ModerationLogCreateOrConnectWithoutAdminInput[]
+    upsert?: ModerationLogUpsertWithWhereUniqueWithoutAdminInput | ModerationLogUpsertWithWhereUniqueWithoutAdminInput[]
+    createMany?: ModerationLogCreateManyAdminInputEnvelope
+    set?: ModerationLogWhereUniqueInput | ModerationLogWhereUniqueInput[]
+    disconnect?: ModerationLogWhereUniqueInput | ModerationLogWhereUniqueInput[]
+    delete?: ModerationLogWhereUniqueInput | ModerationLogWhereUniqueInput[]
+    connect?: ModerationLogWhereUniqueInput | ModerationLogWhereUniqueInput[]
+    update?: ModerationLogUpdateWithWhereUniqueWithoutAdminInput | ModerationLogUpdateWithWhereUniqueWithoutAdminInput[]
+    updateMany?: ModerationLogUpdateManyWithWhereWithoutAdminInput | ModerationLogUpdateManyWithWhereWithoutAdminInput[]
+    deleteMany?: ModerationLogScalarWhereInput | ModerationLogScalarWhereInput[]
+  }
+
   export type AssessmentUncheckedUpdateOneWithoutUserNestedInput = {
     create?: XOR<AssessmentCreateWithoutUserInput, AssessmentUncheckedCreateWithoutUserInput>
     connectOrCreate?: AssessmentCreateOrConnectWithoutUserInput
@@ -21114,6 +22861,34 @@ export namespace Prisma {
     update?: UserBadgeUpdateWithWhereUniqueWithoutUserInput | UserBadgeUpdateWithWhereUniqueWithoutUserInput[]
     updateMany?: UserBadgeUpdateManyWithWhereWithoutUserInput | UserBadgeUpdateManyWithWhereWithoutUserInput[]
     deleteMany?: UserBadgeScalarWhereInput | UserBadgeScalarWhereInput[]
+  }
+
+  export type ModerationLogUncheckedUpdateManyWithoutTargetUserNestedInput = {
+    create?: XOR<ModerationLogCreateWithoutTargetUserInput, ModerationLogUncheckedCreateWithoutTargetUserInput> | ModerationLogCreateWithoutTargetUserInput[] | ModerationLogUncheckedCreateWithoutTargetUserInput[]
+    connectOrCreate?: ModerationLogCreateOrConnectWithoutTargetUserInput | ModerationLogCreateOrConnectWithoutTargetUserInput[]
+    upsert?: ModerationLogUpsertWithWhereUniqueWithoutTargetUserInput | ModerationLogUpsertWithWhereUniqueWithoutTargetUserInput[]
+    createMany?: ModerationLogCreateManyTargetUserInputEnvelope
+    set?: ModerationLogWhereUniqueInput | ModerationLogWhereUniqueInput[]
+    disconnect?: ModerationLogWhereUniqueInput | ModerationLogWhereUniqueInput[]
+    delete?: ModerationLogWhereUniqueInput | ModerationLogWhereUniqueInput[]
+    connect?: ModerationLogWhereUniqueInput | ModerationLogWhereUniqueInput[]
+    update?: ModerationLogUpdateWithWhereUniqueWithoutTargetUserInput | ModerationLogUpdateWithWhereUniqueWithoutTargetUserInput[]
+    updateMany?: ModerationLogUpdateManyWithWhereWithoutTargetUserInput | ModerationLogUpdateManyWithWhereWithoutTargetUserInput[]
+    deleteMany?: ModerationLogScalarWhereInput | ModerationLogScalarWhereInput[]
+  }
+
+  export type ModerationLogUncheckedUpdateManyWithoutAdminNestedInput = {
+    create?: XOR<ModerationLogCreateWithoutAdminInput, ModerationLogUncheckedCreateWithoutAdminInput> | ModerationLogCreateWithoutAdminInput[] | ModerationLogUncheckedCreateWithoutAdminInput[]
+    connectOrCreate?: ModerationLogCreateOrConnectWithoutAdminInput | ModerationLogCreateOrConnectWithoutAdminInput[]
+    upsert?: ModerationLogUpsertWithWhereUniqueWithoutAdminInput | ModerationLogUpsertWithWhereUniqueWithoutAdminInput[]
+    createMany?: ModerationLogCreateManyAdminInputEnvelope
+    set?: ModerationLogWhereUniqueInput | ModerationLogWhereUniqueInput[]
+    disconnect?: ModerationLogWhereUniqueInput | ModerationLogWhereUniqueInput[]
+    delete?: ModerationLogWhereUniqueInput | ModerationLogWhereUniqueInput[]
+    connect?: ModerationLogWhereUniqueInput | ModerationLogWhereUniqueInput[]
+    update?: ModerationLogUpdateWithWhereUniqueWithoutAdminInput | ModerationLogUpdateWithWhereUniqueWithoutAdminInput[]
+    updateMany?: ModerationLogUpdateManyWithWhereWithoutAdminInput | ModerationLogUpdateManyWithWhereWithoutAdminInput[]
+    deleteMany?: ModerationLogScalarWhereInput | ModerationLogScalarWhereInput[]
   }
 
   export type UserCreateNestedOneWithoutNotificationPrefInput = {
@@ -21321,14 +23096,6 @@ export namespace Prisma {
     connect?: SubscriptionWhereUniqueInput
   }
 
-  export type IntFieldUpdateOperationsInput = {
-    set?: number
-    increment?: number
-    decrement?: number
-    multiply?: number
-    divide?: number
-  }
-
   export type EnumPaymentStatusFieldUpdateOperationsInput = {
     set?: $Enums.PaymentStatus
   }
@@ -21485,6 +23252,38 @@ export namespace Prisma {
     update?: XOR<XOR<BadgeUpdateToOneWithWhereWithoutUserBadgesInput, BadgeUpdateWithoutUserBadgesInput>, BadgeUncheckedUpdateWithoutUserBadgesInput>
   }
 
+  export type UserCreateNestedOneWithoutAdminActionsInput = {
+    create?: XOR<UserCreateWithoutAdminActionsInput, UserUncheckedCreateWithoutAdminActionsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutAdminActionsInput
+    connect?: UserWhereUniqueInput
+  }
+
+  export type UserCreateNestedOneWithoutModerationLogsInput = {
+    create?: XOR<UserCreateWithoutModerationLogsInput, UserUncheckedCreateWithoutModerationLogsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutModerationLogsInput
+    connect?: UserWhereUniqueInput
+  }
+
+  export type EnumModerationActionTypeFieldUpdateOperationsInput = {
+    set?: $Enums.ModerationActionType
+  }
+
+  export type UserUpdateOneRequiredWithoutAdminActionsNestedInput = {
+    create?: XOR<UserCreateWithoutAdminActionsInput, UserUncheckedCreateWithoutAdminActionsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutAdminActionsInput
+    upsert?: UserUpsertWithoutAdminActionsInput
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutAdminActionsInput, UserUpdateWithoutAdminActionsInput>, UserUncheckedUpdateWithoutAdminActionsInput>
+  }
+
+  export type UserUpdateOneRequiredWithoutModerationLogsNestedInput = {
+    create?: XOR<UserCreateWithoutModerationLogsInput, UserUncheckedCreateWithoutModerationLogsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutModerationLogsInput
+    upsert?: UserUpsertWithoutModerationLogsInput
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutModerationLogsInput, UserUpdateWithoutModerationLogsInput>, UserUncheckedUpdateWithoutModerationLogsInput>
+  }
+
   export type NestedStringFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel>
     in?: string[] | ListStringFieldRefInput<$PrismaModel>
@@ -21527,6 +23326,13 @@ export namespace Prisma {
     not?: NestedEnumPlanFilter<$PrismaModel> | $Enums.Plan
   }
 
+  export type NestedEnumUserRoleFilter<$PrismaModel = never> = {
+    equals?: $Enums.UserRole | EnumUserRoleFieldRefInput<$PrismaModel>
+    in?: $Enums.UserRole[] | ListEnumUserRoleFieldRefInput<$PrismaModel>
+    notIn?: $Enums.UserRole[] | ListEnumUserRoleFieldRefInput<$PrismaModel>
+    not?: NestedEnumUserRoleFilter<$PrismaModel> | $Enums.UserRole
+  }
+
   export type NestedBoolFilter<$PrismaModel = never> = {
     equals?: boolean | BooleanFieldRefInput<$PrismaModel>
     not?: NestedBoolFilter<$PrismaModel> | boolean
@@ -21541,6 +23347,17 @@ export namespace Prisma {
     gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     not?: NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
+  }
+
+  export type NestedIntFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel>
+    in?: number[] | ListIntFieldRefInput<$PrismaModel>
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel>
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntFilter<$PrismaModel> | number
   }
 
   export type NestedIntNullableFilter<$PrismaModel = never> = {
@@ -21582,17 +23399,6 @@ export namespace Prisma {
     _max?: NestedStringFilter<$PrismaModel>
   }
 
-  export type NestedIntFilter<$PrismaModel = never> = {
-    equals?: number | IntFieldRefInput<$PrismaModel>
-    in?: number[] | ListIntFieldRefInput<$PrismaModel>
-    notIn?: number[] | ListIntFieldRefInput<$PrismaModel>
-    lt?: number | IntFieldRefInput<$PrismaModel>
-    lte?: number | IntFieldRefInput<$PrismaModel>
-    gt?: number | IntFieldRefInput<$PrismaModel>
-    gte?: number | IntFieldRefInput<$PrismaModel>
-    not?: NestedIntFilter<$PrismaModel> | number
-  }
-
   export type NestedStringNullableWithAggregatesFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel> | null
     in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
@@ -21630,6 +23436,16 @@ export namespace Prisma {
     _max?: NestedEnumPlanFilter<$PrismaModel>
   }
 
+  export type NestedEnumUserRoleWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.UserRole | EnumUserRoleFieldRefInput<$PrismaModel>
+    in?: $Enums.UserRole[] | ListEnumUserRoleFieldRefInput<$PrismaModel>
+    notIn?: $Enums.UserRole[] | ListEnumUserRoleFieldRefInput<$PrismaModel>
+    not?: NestedEnumUserRoleWithAggregatesFilter<$PrismaModel> | $Enums.UserRole
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumUserRoleFilter<$PrismaModel>
+    _max?: NestedEnumUserRoleFilter<$PrismaModel>
+  }
+
   export type NestedBoolWithAggregatesFilter<$PrismaModel = never> = {
     equals?: boolean | BooleanFieldRefInput<$PrismaModel>
     not?: NestedBoolWithAggregatesFilter<$PrismaModel> | boolean
@@ -21650,6 +23466,33 @@ export namespace Prisma {
     _count?: NestedIntNullableFilter<$PrismaModel>
     _min?: NestedDateTimeNullableFilter<$PrismaModel>
     _max?: NestedDateTimeNullableFilter<$PrismaModel>
+  }
+
+  export type NestedIntWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel>
+    in?: number[] | ListIntFieldRefInput<$PrismaModel>
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel>
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntWithAggregatesFilter<$PrismaModel> | number
+    _count?: NestedIntFilter<$PrismaModel>
+    _avg?: NestedFloatFilter<$PrismaModel>
+    _sum?: NestedIntFilter<$PrismaModel>
+    _min?: NestedIntFilter<$PrismaModel>
+    _max?: NestedIntFilter<$PrismaModel>
+  }
+
+  export type NestedFloatFilter<$PrismaModel = never> = {
+    equals?: number | FloatFieldRefInput<$PrismaModel>
+    in?: number[] | ListFloatFieldRefInput<$PrismaModel>
+    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel>
+    lt?: number | FloatFieldRefInput<$PrismaModel>
+    lte?: number | FloatFieldRefInput<$PrismaModel>
+    gt?: number | FloatFieldRefInput<$PrismaModel>
+    gte?: number | FloatFieldRefInput<$PrismaModel>
+    not?: NestedFloatFilter<$PrismaModel> | number
   }
 
   export type NestedIntNullableWithAggregatesFilter<$PrismaModel = never> = {
@@ -21814,33 +23657,6 @@ export namespace Prisma {
     not?: NestedEnumPaymentStatusFilter<$PrismaModel> | $Enums.PaymentStatus
   }
 
-  export type NestedIntWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: number | IntFieldRefInput<$PrismaModel>
-    in?: number[] | ListIntFieldRefInput<$PrismaModel>
-    notIn?: number[] | ListIntFieldRefInput<$PrismaModel>
-    lt?: number | IntFieldRefInput<$PrismaModel>
-    lte?: number | IntFieldRefInput<$PrismaModel>
-    gt?: number | IntFieldRefInput<$PrismaModel>
-    gte?: number | IntFieldRefInput<$PrismaModel>
-    not?: NestedIntWithAggregatesFilter<$PrismaModel> | number
-    _count?: NestedIntFilter<$PrismaModel>
-    _avg?: NestedFloatFilter<$PrismaModel>
-    _sum?: NestedIntFilter<$PrismaModel>
-    _min?: NestedIntFilter<$PrismaModel>
-    _max?: NestedIntFilter<$PrismaModel>
-  }
-
-  export type NestedFloatFilter<$PrismaModel = never> = {
-    equals?: number | FloatFieldRefInput<$PrismaModel>
-    in?: number[] | ListFloatFieldRefInput<$PrismaModel>
-    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel>
-    lt?: number | FloatFieldRefInput<$PrismaModel>
-    lte?: number | FloatFieldRefInput<$PrismaModel>
-    gt?: number | FloatFieldRefInput<$PrismaModel>
-    gte?: number | FloatFieldRefInput<$PrismaModel>
-    not?: NestedFloatFilter<$PrismaModel> | number
-  }
-
   export type NestedEnumPaymentStatusWithAggregatesFilter<$PrismaModel = never> = {
     equals?: $Enums.PaymentStatus | EnumPaymentStatusFieldRefInput<$PrismaModel>
     in?: $Enums.PaymentStatus[] | ListEnumPaymentStatusFieldRefInput<$PrismaModel>
@@ -21888,6 +23704,23 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedEnumAchievementCategoryFilter<$PrismaModel>
     _max?: NestedEnumAchievementCategoryFilter<$PrismaModel>
+  }
+
+  export type NestedEnumModerationActionTypeFilter<$PrismaModel = never> = {
+    equals?: $Enums.ModerationActionType | EnumModerationActionTypeFieldRefInput<$PrismaModel>
+    in?: $Enums.ModerationActionType[] | ListEnumModerationActionTypeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.ModerationActionType[] | ListEnumModerationActionTypeFieldRefInput<$PrismaModel>
+    not?: NestedEnumModerationActionTypeFilter<$PrismaModel> | $Enums.ModerationActionType
+  }
+
+  export type NestedEnumModerationActionTypeWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.ModerationActionType | EnumModerationActionTypeFieldRefInput<$PrismaModel>
+    in?: $Enums.ModerationActionType[] | ListEnumModerationActionTypeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.ModerationActionType[] | ListEnumModerationActionTypeFieldRefInput<$PrismaModel>
+    not?: NestedEnumModerationActionTypeWithAggregatesFilter<$PrismaModel> | $Enums.ModerationActionType
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumModerationActionTypeFilter<$PrismaModel>
+    _max?: NestedEnumModerationActionTypeFilter<$PrismaModel>
   }
 
   export type AssessmentCreateWithoutUserInput = {
@@ -22149,6 +23982,70 @@ export namespace Prisma {
 
   export type UserBadgeCreateManyUserInputEnvelope = {
     data: UserBadgeCreateManyUserInput | UserBadgeCreateManyUserInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type ModerationLogCreateWithoutTargetUserInput = {
+    id?: string
+    action: $Enums.ModerationActionType
+    reason: string
+    durationDays?: number | null
+    reportId?: string | null
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    admin: UserCreateNestedOneWithoutAdminActionsInput
+  }
+
+  export type ModerationLogUncheckedCreateWithoutTargetUserInput = {
+    id?: string
+    adminId: string
+    action: $Enums.ModerationActionType
+    reason: string
+    durationDays?: number | null
+    reportId?: string | null
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+  }
+
+  export type ModerationLogCreateOrConnectWithoutTargetUserInput = {
+    where: ModerationLogWhereUniqueInput
+    create: XOR<ModerationLogCreateWithoutTargetUserInput, ModerationLogUncheckedCreateWithoutTargetUserInput>
+  }
+
+  export type ModerationLogCreateManyTargetUserInputEnvelope = {
+    data: ModerationLogCreateManyTargetUserInput | ModerationLogCreateManyTargetUserInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type ModerationLogCreateWithoutAdminInput = {
+    id?: string
+    action: $Enums.ModerationActionType
+    reason: string
+    durationDays?: number | null
+    reportId?: string | null
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    targetUser: UserCreateNestedOneWithoutModerationLogsInput
+  }
+
+  export type ModerationLogUncheckedCreateWithoutAdminInput = {
+    id?: string
+    targetUserId: string
+    action: $Enums.ModerationActionType
+    reason: string
+    durationDays?: number | null
+    reportId?: string | null
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+  }
+
+  export type ModerationLogCreateOrConnectWithoutAdminInput = {
+    where: ModerationLogWhereUniqueInput
+    create: XOR<ModerationLogCreateWithoutAdminInput, ModerationLogUncheckedCreateWithoutAdminInput>
+  }
+
+  export type ModerationLogCreateManyAdminInputEnvelope = {
+    data: ModerationLogCreateManyAdminInput | ModerationLogCreateManyAdminInput[]
     skipDuplicates?: boolean
   }
 
@@ -22429,6 +24326,53 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter<"UserBadge"> | Date | string
   }
 
+  export type ModerationLogUpsertWithWhereUniqueWithoutTargetUserInput = {
+    where: ModerationLogWhereUniqueInput
+    update: XOR<ModerationLogUpdateWithoutTargetUserInput, ModerationLogUncheckedUpdateWithoutTargetUserInput>
+    create: XOR<ModerationLogCreateWithoutTargetUserInput, ModerationLogUncheckedCreateWithoutTargetUserInput>
+  }
+
+  export type ModerationLogUpdateWithWhereUniqueWithoutTargetUserInput = {
+    where: ModerationLogWhereUniqueInput
+    data: XOR<ModerationLogUpdateWithoutTargetUserInput, ModerationLogUncheckedUpdateWithoutTargetUserInput>
+  }
+
+  export type ModerationLogUpdateManyWithWhereWithoutTargetUserInput = {
+    where: ModerationLogScalarWhereInput
+    data: XOR<ModerationLogUpdateManyMutationInput, ModerationLogUncheckedUpdateManyWithoutTargetUserInput>
+  }
+
+  export type ModerationLogScalarWhereInput = {
+    AND?: ModerationLogScalarWhereInput | ModerationLogScalarWhereInput[]
+    OR?: ModerationLogScalarWhereInput[]
+    NOT?: ModerationLogScalarWhereInput | ModerationLogScalarWhereInput[]
+    id?: StringFilter<"ModerationLog"> | string
+    adminId?: StringFilter<"ModerationLog"> | string
+    targetUserId?: StringFilter<"ModerationLog"> | string
+    action?: EnumModerationActionTypeFilter<"ModerationLog"> | $Enums.ModerationActionType
+    reason?: StringFilter<"ModerationLog"> | string
+    durationDays?: IntNullableFilter<"ModerationLog"> | number | null
+    reportId?: StringNullableFilter<"ModerationLog"> | string | null
+    metadata?: JsonNullableFilter<"ModerationLog">
+    createdAt?: DateTimeFilter<"ModerationLog"> | Date | string
+  }
+
+  export type ModerationLogUpsertWithWhereUniqueWithoutAdminInput = {
+    where: ModerationLogWhereUniqueInput
+    update: XOR<ModerationLogUpdateWithoutAdminInput, ModerationLogUncheckedUpdateWithoutAdminInput>
+    create: XOR<ModerationLogCreateWithoutAdminInput, ModerationLogUncheckedCreateWithoutAdminInput>
+  }
+
+  export type ModerationLogUpdateWithWhereUniqueWithoutAdminInput = {
+    where: ModerationLogWhereUniqueInput
+    data: XOR<ModerationLogUpdateWithoutAdminInput, ModerationLogUncheckedUpdateWithoutAdminInput>
+  }
+
+  export type ModerationLogUpdateManyWithWhereWithoutAdminInput = {
+    where: ModerationLogScalarWhereInput
+    data: XOR<ModerationLogUpdateManyMutationInput, ModerationLogUncheckedUpdateManyWithoutAdminInput>
+  }
+
   export type UserCreateWithoutNotificationPrefInput = {
     id?: string
     email: string
@@ -22441,6 +24385,12 @@ export namespace Prisma {
     bio?: string | null
     companionPersona?: $Enums.CompanionPersona
     plan?: $Enums.Plan
+    role?: $Enums.UserRole
+    isSuspended?: boolean
+    suspendedUntil?: Date | string | null
+    isBanned?: boolean
+    banReason?: string | null
+    warningCount?: number
     onboardingCompleted?: boolean
     termsAcceptedAt?: Date | string | null
     termsVersion?: string | null
@@ -22462,6 +24412,8 @@ export namespace Prisma {
     subscriptions?: SubscriptionCreateNestedManyWithoutUserInput
     userAchievements?: UserAchievementCreateNestedManyWithoutUserInput
     userBadges?: UserBadgeCreateNestedManyWithoutUserInput
+    moderationLogs?: ModerationLogCreateNestedManyWithoutTargetUserInput
+    adminActions?: ModerationLogCreateNestedManyWithoutAdminInput
   }
 
   export type UserUncheckedCreateWithoutNotificationPrefInput = {
@@ -22476,6 +24428,12 @@ export namespace Prisma {
     bio?: string | null
     companionPersona?: $Enums.CompanionPersona
     plan?: $Enums.Plan
+    role?: $Enums.UserRole
+    isSuspended?: boolean
+    suspendedUntil?: Date | string | null
+    isBanned?: boolean
+    banReason?: string | null
+    warningCount?: number
     onboardingCompleted?: boolean
     termsAcceptedAt?: Date | string | null
     termsVersion?: string | null
@@ -22497,6 +24455,8 @@ export namespace Prisma {
     subscriptions?: SubscriptionUncheckedCreateNestedManyWithoutUserInput
     userAchievements?: UserAchievementUncheckedCreateNestedManyWithoutUserInput
     userBadges?: UserBadgeUncheckedCreateNestedManyWithoutUserInput
+    moderationLogs?: ModerationLogUncheckedCreateNestedManyWithoutTargetUserInput
+    adminActions?: ModerationLogUncheckedCreateNestedManyWithoutAdminInput
   }
 
   export type UserCreateOrConnectWithoutNotificationPrefInput = {
@@ -22527,6 +24487,12 @@ export namespace Prisma {
     bio?: NullableStringFieldUpdateOperationsInput | string | null
     companionPersona?: EnumCompanionPersonaFieldUpdateOperationsInput | $Enums.CompanionPersona
     plan?: EnumPlanFieldUpdateOperationsInput | $Enums.Plan
+    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    isSuspended?: BoolFieldUpdateOperationsInput | boolean
+    suspendedUntil?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    isBanned?: BoolFieldUpdateOperationsInput | boolean
+    banReason?: NullableStringFieldUpdateOperationsInput | string | null
+    warningCount?: IntFieldUpdateOperationsInput | number
     onboardingCompleted?: BoolFieldUpdateOperationsInput | boolean
     termsAcceptedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     termsVersion?: NullableStringFieldUpdateOperationsInput | string | null
@@ -22548,6 +24514,8 @@ export namespace Prisma {
     subscriptions?: SubscriptionUpdateManyWithoutUserNestedInput
     userAchievements?: UserAchievementUpdateManyWithoutUserNestedInput
     userBadges?: UserBadgeUpdateManyWithoutUserNestedInput
+    moderationLogs?: ModerationLogUpdateManyWithoutTargetUserNestedInput
+    adminActions?: ModerationLogUpdateManyWithoutAdminNestedInput
   }
 
   export type UserUncheckedUpdateWithoutNotificationPrefInput = {
@@ -22562,6 +24530,12 @@ export namespace Prisma {
     bio?: NullableStringFieldUpdateOperationsInput | string | null
     companionPersona?: EnumCompanionPersonaFieldUpdateOperationsInput | $Enums.CompanionPersona
     plan?: EnumPlanFieldUpdateOperationsInput | $Enums.Plan
+    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    isSuspended?: BoolFieldUpdateOperationsInput | boolean
+    suspendedUntil?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    isBanned?: BoolFieldUpdateOperationsInput | boolean
+    banReason?: NullableStringFieldUpdateOperationsInput | string | null
+    warningCount?: IntFieldUpdateOperationsInput | number
     onboardingCompleted?: BoolFieldUpdateOperationsInput | boolean
     termsAcceptedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     termsVersion?: NullableStringFieldUpdateOperationsInput | string | null
@@ -22583,6 +24557,8 @@ export namespace Prisma {
     subscriptions?: SubscriptionUncheckedUpdateManyWithoutUserNestedInput
     userAchievements?: UserAchievementUncheckedUpdateManyWithoutUserNestedInput
     userBadges?: UserBadgeUncheckedUpdateManyWithoutUserNestedInput
+    moderationLogs?: ModerationLogUncheckedUpdateManyWithoutTargetUserNestedInput
+    adminActions?: ModerationLogUncheckedUpdateManyWithoutAdminNestedInput
   }
 
   export type UserCreateWithoutAssessmentInput = {
@@ -22597,6 +24573,12 @@ export namespace Prisma {
     bio?: string | null
     companionPersona?: $Enums.CompanionPersona
     plan?: $Enums.Plan
+    role?: $Enums.UserRole
+    isSuspended?: boolean
+    suspendedUntil?: Date | string | null
+    isBanned?: boolean
+    banReason?: string | null
+    warningCount?: number
     onboardingCompleted?: boolean
     termsAcceptedAt?: Date | string | null
     termsVersion?: string | null
@@ -22618,6 +24600,8 @@ export namespace Prisma {
     subscriptions?: SubscriptionCreateNestedManyWithoutUserInput
     userAchievements?: UserAchievementCreateNestedManyWithoutUserInput
     userBadges?: UserBadgeCreateNestedManyWithoutUserInput
+    moderationLogs?: ModerationLogCreateNestedManyWithoutTargetUserInput
+    adminActions?: ModerationLogCreateNestedManyWithoutAdminInput
   }
 
   export type UserUncheckedCreateWithoutAssessmentInput = {
@@ -22632,6 +24616,12 @@ export namespace Prisma {
     bio?: string | null
     companionPersona?: $Enums.CompanionPersona
     plan?: $Enums.Plan
+    role?: $Enums.UserRole
+    isSuspended?: boolean
+    suspendedUntil?: Date | string | null
+    isBanned?: boolean
+    banReason?: string | null
+    warningCount?: number
     onboardingCompleted?: boolean
     termsAcceptedAt?: Date | string | null
     termsVersion?: string | null
@@ -22653,6 +24643,8 @@ export namespace Prisma {
     subscriptions?: SubscriptionUncheckedCreateNestedManyWithoutUserInput
     userAchievements?: UserAchievementUncheckedCreateNestedManyWithoutUserInput
     userBadges?: UserBadgeUncheckedCreateNestedManyWithoutUserInput
+    moderationLogs?: ModerationLogUncheckedCreateNestedManyWithoutTargetUserInput
+    adminActions?: ModerationLogUncheckedCreateNestedManyWithoutAdminInput
   }
 
   export type UserCreateOrConnectWithoutAssessmentInput = {
@@ -22683,6 +24675,12 @@ export namespace Prisma {
     bio?: NullableStringFieldUpdateOperationsInput | string | null
     companionPersona?: EnumCompanionPersonaFieldUpdateOperationsInput | $Enums.CompanionPersona
     plan?: EnumPlanFieldUpdateOperationsInput | $Enums.Plan
+    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    isSuspended?: BoolFieldUpdateOperationsInput | boolean
+    suspendedUntil?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    isBanned?: BoolFieldUpdateOperationsInput | boolean
+    banReason?: NullableStringFieldUpdateOperationsInput | string | null
+    warningCount?: IntFieldUpdateOperationsInput | number
     onboardingCompleted?: BoolFieldUpdateOperationsInput | boolean
     termsAcceptedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     termsVersion?: NullableStringFieldUpdateOperationsInput | string | null
@@ -22704,6 +24702,8 @@ export namespace Prisma {
     subscriptions?: SubscriptionUpdateManyWithoutUserNestedInput
     userAchievements?: UserAchievementUpdateManyWithoutUserNestedInput
     userBadges?: UserBadgeUpdateManyWithoutUserNestedInput
+    moderationLogs?: ModerationLogUpdateManyWithoutTargetUserNestedInput
+    adminActions?: ModerationLogUpdateManyWithoutAdminNestedInput
   }
 
   export type UserUncheckedUpdateWithoutAssessmentInput = {
@@ -22718,6 +24718,12 @@ export namespace Prisma {
     bio?: NullableStringFieldUpdateOperationsInput | string | null
     companionPersona?: EnumCompanionPersonaFieldUpdateOperationsInput | $Enums.CompanionPersona
     plan?: EnumPlanFieldUpdateOperationsInput | $Enums.Plan
+    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    isSuspended?: BoolFieldUpdateOperationsInput | boolean
+    suspendedUntil?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    isBanned?: BoolFieldUpdateOperationsInput | boolean
+    banReason?: NullableStringFieldUpdateOperationsInput | string | null
+    warningCount?: IntFieldUpdateOperationsInput | number
     onboardingCompleted?: BoolFieldUpdateOperationsInput | boolean
     termsAcceptedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     termsVersion?: NullableStringFieldUpdateOperationsInput | string | null
@@ -22739,6 +24745,8 @@ export namespace Prisma {
     subscriptions?: SubscriptionUncheckedUpdateManyWithoutUserNestedInput
     userAchievements?: UserAchievementUncheckedUpdateManyWithoutUserNestedInput
     userBadges?: UserBadgeUncheckedUpdateManyWithoutUserNestedInput
+    moderationLogs?: ModerationLogUncheckedUpdateManyWithoutTargetUserNestedInput
+    adminActions?: ModerationLogUncheckedUpdateManyWithoutAdminNestedInput
   }
 
   export type UserCreateWithoutMoodEntriesInput = {
@@ -22753,6 +24761,12 @@ export namespace Prisma {
     bio?: string | null
     companionPersona?: $Enums.CompanionPersona
     plan?: $Enums.Plan
+    role?: $Enums.UserRole
+    isSuspended?: boolean
+    suspendedUntil?: Date | string | null
+    isBanned?: boolean
+    banReason?: string | null
+    warningCount?: number
     onboardingCompleted?: boolean
     termsAcceptedAt?: Date | string | null
     termsVersion?: string | null
@@ -22774,6 +24788,8 @@ export namespace Prisma {
     subscriptions?: SubscriptionCreateNestedManyWithoutUserInput
     userAchievements?: UserAchievementCreateNestedManyWithoutUserInput
     userBadges?: UserBadgeCreateNestedManyWithoutUserInput
+    moderationLogs?: ModerationLogCreateNestedManyWithoutTargetUserInput
+    adminActions?: ModerationLogCreateNestedManyWithoutAdminInput
   }
 
   export type UserUncheckedCreateWithoutMoodEntriesInput = {
@@ -22788,6 +24804,12 @@ export namespace Prisma {
     bio?: string | null
     companionPersona?: $Enums.CompanionPersona
     plan?: $Enums.Plan
+    role?: $Enums.UserRole
+    isSuspended?: boolean
+    suspendedUntil?: Date | string | null
+    isBanned?: boolean
+    banReason?: string | null
+    warningCount?: number
     onboardingCompleted?: boolean
     termsAcceptedAt?: Date | string | null
     termsVersion?: string | null
@@ -22809,6 +24831,8 @@ export namespace Prisma {
     subscriptions?: SubscriptionUncheckedCreateNestedManyWithoutUserInput
     userAchievements?: UserAchievementUncheckedCreateNestedManyWithoutUserInput
     userBadges?: UserBadgeUncheckedCreateNestedManyWithoutUserInput
+    moderationLogs?: ModerationLogUncheckedCreateNestedManyWithoutTargetUserInput
+    adminActions?: ModerationLogUncheckedCreateNestedManyWithoutAdminInput
   }
 
   export type UserCreateOrConnectWithoutMoodEntriesInput = {
@@ -22839,6 +24863,12 @@ export namespace Prisma {
     bio?: NullableStringFieldUpdateOperationsInput | string | null
     companionPersona?: EnumCompanionPersonaFieldUpdateOperationsInput | $Enums.CompanionPersona
     plan?: EnumPlanFieldUpdateOperationsInput | $Enums.Plan
+    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    isSuspended?: BoolFieldUpdateOperationsInput | boolean
+    suspendedUntil?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    isBanned?: BoolFieldUpdateOperationsInput | boolean
+    banReason?: NullableStringFieldUpdateOperationsInput | string | null
+    warningCount?: IntFieldUpdateOperationsInput | number
     onboardingCompleted?: BoolFieldUpdateOperationsInput | boolean
     termsAcceptedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     termsVersion?: NullableStringFieldUpdateOperationsInput | string | null
@@ -22860,6 +24890,8 @@ export namespace Prisma {
     subscriptions?: SubscriptionUpdateManyWithoutUserNestedInput
     userAchievements?: UserAchievementUpdateManyWithoutUserNestedInput
     userBadges?: UserBadgeUpdateManyWithoutUserNestedInput
+    moderationLogs?: ModerationLogUpdateManyWithoutTargetUserNestedInput
+    adminActions?: ModerationLogUpdateManyWithoutAdminNestedInput
   }
 
   export type UserUncheckedUpdateWithoutMoodEntriesInput = {
@@ -22874,6 +24906,12 @@ export namespace Prisma {
     bio?: NullableStringFieldUpdateOperationsInput | string | null
     companionPersona?: EnumCompanionPersonaFieldUpdateOperationsInput | $Enums.CompanionPersona
     plan?: EnumPlanFieldUpdateOperationsInput | $Enums.Plan
+    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    isSuspended?: BoolFieldUpdateOperationsInput | boolean
+    suspendedUntil?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    isBanned?: BoolFieldUpdateOperationsInput | boolean
+    banReason?: NullableStringFieldUpdateOperationsInput | string | null
+    warningCount?: IntFieldUpdateOperationsInput | number
     onboardingCompleted?: BoolFieldUpdateOperationsInput | boolean
     termsAcceptedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     termsVersion?: NullableStringFieldUpdateOperationsInput | string | null
@@ -22895,6 +24933,8 @@ export namespace Prisma {
     subscriptions?: SubscriptionUncheckedUpdateManyWithoutUserNestedInput
     userAchievements?: UserAchievementUncheckedUpdateManyWithoutUserNestedInput
     userBadges?: UserBadgeUncheckedUpdateManyWithoutUserNestedInput
+    moderationLogs?: ModerationLogUncheckedUpdateManyWithoutTargetUserNestedInput
+    adminActions?: ModerationLogUncheckedUpdateManyWithoutAdminNestedInput
   }
 
   export type UserCreateWithoutDailyAssessmentsInput = {
@@ -22909,6 +24949,12 @@ export namespace Prisma {
     bio?: string | null
     companionPersona?: $Enums.CompanionPersona
     plan?: $Enums.Plan
+    role?: $Enums.UserRole
+    isSuspended?: boolean
+    suspendedUntil?: Date | string | null
+    isBanned?: boolean
+    banReason?: string | null
+    warningCount?: number
     onboardingCompleted?: boolean
     termsAcceptedAt?: Date | string | null
     termsVersion?: string | null
@@ -22930,6 +24976,8 @@ export namespace Prisma {
     subscriptions?: SubscriptionCreateNestedManyWithoutUserInput
     userAchievements?: UserAchievementCreateNestedManyWithoutUserInput
     userBadges?: UserBadgeCreateNestedManyWithoutUserInput
+    moderationLogs?: ModerationLogCreateNestedManyWithoutTargetUserInput
+    adminActions?: ModerationLogCreateNestedManyWithoutAdminInput
   }
 
   export type UserUncheckedCreateWithoutDailyAssessmentsInput = {
@@ -22944,6 +24992,12 @@ export namespace Prisma {
     bio?: string | null
     companionPersona?: $Enums.CompanionPersona
     plan?: $Enums.Plan
+    role?: $Enums.UserRole
+    isSuspended?: boolean
+    suspendedUntil?: Date | string | null
+    isBanned?: boolean
+    banReason?: string | null
+    warningCount?: number
     onboardingCompleted?: boolean
     termsAcceptedAt?: Date | string | null
     termsVersion?: string | null
@@ -22965,6 +25019,8 @@ export namespace Prisma {
     subscriptions?: SubscriptionUncheckedCreateNestedManyWithoutUserInput
     userAchievements?: UserAchievementUncheckedCreateNestedManyWithoutUserInput
     userBadges?: UserBadgeUncheckedCreateNestedManyWithoutUserInput
+    moderationLogs?: ModerationLogUncheckedCreateNestedManyWithoutTargetUserInput
+    adminActions?: ModerationLogUncheckedCreateNestedManyWithoutAdminInput
   }
 
   export type UserCreateOrConnectWithoutDailyAssessmentsInput = {
@@ -22995,6 +25051,12 @@ export namespace Prisma {
     bio?: NullableStringFieldUpdateOperationsInput | string | null
     companionPersona?: EnumCompanionPersonaFieldUpdateOperationsInput | $Enums.CompanionPersona
     plan?: EnumPlanFieldUpdateOperationsInput | $Enums.Plan
+    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    isSuspended?: BoolFieldUpdateOperationsInput | boolean
+    suspendedUntil?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    isBanned?: BoolFieldUpdateOperationsInput | boolean
+    banReason?: NullableStringFieldUpdateOperationsInput | string | null
+    warningCount?: IntFieldUpdateOperationsInput | number
     onboardingCompleted?: BoolFieldUpdateOperationsInput | boolean
     termsAcceptedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     termsVersion?: NullableStringFieldUpdateOperationsInput | string | null
@@ -23016,6 +25078,8 @@ export namespace Prisma {
     subscriptions?: SubscriptionUpdateManyWithoutUserNestedInput
     userAchievements?: UserAchievementUpdateManyWithoutUserNestedInput
     userBadges?: UserBadgeUpdateManyWithoutUserNestedInput
+    moderationLogs?: ModerationLogUpdateManyWithoutTargetUserNestedInput
+    adminActions?: ModerationLogUpdateManyWithoutAdminNestedInput
   }
 
   export type UserUncheckedUpdateWithoutDailyAssessmentsInput = {
@@ -23030,6 +25094,12 @@ export namespace Prisma {
     bio?: NullableStringFieldUpdateOperationsInput | string | null
     companionPersona?: EnumCompanionPersonaFieldUpdateOperationsInput | $Enums.CompanionPersona
     plan?: EnumPlanFieldUpdateOperationsInput | $Enums.Plan
+    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    isSuspended?: BoolFieldUpdateOperationsInput | boolean
+    suspendedUntil?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    isBanned?: BoolFieldUpdateOperationsInput | boolean
+    banReason?: NullableStringFieldUpdateOperationsInput | string | null
+    warningCount?: IntFieldUpdateOperationsInput | number
     onboardingCompleted?: BoolFieldUpdateOperationsInput | boolean
     termsAcceptedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     termsVersion?: NullableStringFieldUpdateOperationsInput | string | null
@@ -23051,6 +25121,8 @@ export namespace Prisma {
     subscriptions?: SubscriptionUncheckedUpdateManyWithoutUserNestedInput
     userAchievements?: UserAchievementUncheckedUpdateManyWithoutUserNestedInput
     userBadges?: UserBadgeUncheckedUpdateManyWithoutUserNestedInput
+    moderationLogs?: ModerationLogUncheckedUpdateManyWithoutTargetUserNestedInput
+    adminActions?: ModerationLogUncheckedUpdateManyWithoutAdminNestedInput
   }
 
   export type UserCreateWithoutJournalEntriesInput = {
@@ -23065,6 +25137,12 @@ export namespace Prisma {
     bio?: string | null
     companionPersona?: $Enums.CompanionPersona
     plan?: $Enums.Plan
+    role?: $Enums.UserRole
+    isSuspended?: boolean
+    suspendedUntil?: Date | string | null
+    isBanned?: boolean
+    banReason?: string | null
+    warningCount?: number
     onboardingCompleted?: boolean
     termsAcceptedAt?: Date | string | null
     termsVersion?: string | null
@@ -23086,6 +25164,8 @@ export namespace Prisma {
     subscriptions?: SubscriptionCreateNestedManyWithoutUserInput
     userAchievements?: UserAchievementCreateNestedManyWithoutUserInput
     userBadges?: UserBadgeCreateNestedManyWithoutUserInput
+    moderationLogs?: ModerationLogCreateNestedManyWithoutTargetUserInput
+    adminActions?: ModerationLogCreateNestedManyWithoutAdminInput
   }
 
   export type UserUncheckedCreateWithoutJournalEntriesInput = {
@@ -23100,6 +25180,12 @@ export namespace Prisma {
     bio?: string | null
     companionPersona?: $Enums.CompanionPersona
     plan?: $Enums.Plan
+    role?: $Enums.UserRole
+    isSuspended?: boolean
+    suspendedUntil?: Date | string | null
+    isBanned?: boolean
+    banReason?: string | null
+    warningCount?: number
     onboardingCompleted?: boolean
     termsAcceptedAt?: Date | string | null
     termsVersion?: string | null
@@ -23121,6 +25207,8 @@ export namespace Prisma {
     subscriptions?: SubscriptionUncheckedCreateNestedManyWithoutUserInput
     userAchievements?: UserAchievementUncheckedCreateNestedManyWithoutUserInput
     userBadges?: UserBadgeUncheckedCreateNestedManyWithoutUserInput
+    moderationLogs?: ModerationLogUncheckedCreateNestedManyWithoutTargetUserInput
+    adminActions?: ModerationLogUncheckedCreateNestedManyWithoutAdminInput
   }
 
   export type UserCreateOrConnectWithoutJournalEntriesInput = {
@@ -23151,6 +25239,12 @@ export namespace Prisma {
     bio?: NullableStringFieldUpdateOperationsInput | string | null
     companionPersona?: EnumCompanionPersonaFieldUpdateOperationsInput | $Enums.CompanionPersona
     plan?: EnumPlanFieldUpdateOperationsInput | $Enums.Plan
+    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    isSuspended?: BoolFieldUpdateOperationsInput | boolean
+    suspendedUntil?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    isBanned?: BoolFieldUpdateOperationsInput | boolean
+    banReason?: NullableStringFieldUpdateOperationsInput | string | null
+    warningCount?: IntFieldUpdateOperationsInput | number
     onboardingCompleted?: BoolFieldUpdateOperationsInput | boolean
     termsAcceptedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     termsVersion?: NullableStringFieldUpdateOperationsInput | string | null
@@ -23172,6 +25266,8 @@ export namespace Prisma {
     subscriptions?: SubscriptionUpdateManyWithoutUserNestedInput
     userAchievements?: UserAchievementUpdateManyWithoutUserNestedInput
     userBadges?: UserBadgeUpdateManyWithoutUserNestedInput
+    moderationLogs?: ModerationLogUpdateManyWithoutTargetUserNestedInput
+    adminActions?: ModerationLogUpdateManyWithoutAdminNestedInput
   }
 
   export type UserUncheckedUpdateWithoutJournalEntriesInput = {
@@ -23186,6 +25282,12 @@ export namespace Prisma {
     bio?: NullableStringFieldUpdateOperationsInput | string | null
     companionPersona?: EnumCompanionPersonaFieldUpdateOperationsInput | $Enums.CompanionPersona
     plan?: EnumPlanFieldUpdateOperationsInput | $Enums.Plan
+    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    isSuspended?: BoolFieldUpdateOperationsInput | boolean
+    suspendedUntil?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    isBanned?: BoolFieldUpdateOperationsInput | boolean
+    banReason?: NullableStringFieldUpdateOperationsInput | string | null
+    warningCount?: IntFieldUpdateOperationsInput | number
     onboardingCompleted?: BoolFieldUpdateOperationsInput | boolean
     termsAcceptedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     termsVersion?: NullableStringFieldUpdateOperationsInput | string | null
@@ -23207,6 +25309,8 @@ export namespace Prisma {
     subscriptions?: SubscriptionUncheckedUpdateManyWithoutUserNestedInput
     userAchievements?: UserAchievementUncheckedUpdateManyWithoutUserNestedInput
     userBadges?: UserBadgeUncheckedUpdateManyWithoutUserNestedInput
+    moderationLogs?: ModerationLogUncheckedUpdateManyWithoutTargetUserNestedInput
+    adminActions?: ModerationLogUncheckedUpdateManyWithoutAdminNestedInput
   }
 
   export type UserCreateWithoutActivitiesInput = {
@@ -23221,6 +25325,12 @@ export namespace Prisma {
     bio?: string | null
     companionPersona?: $Enums.CompanionPersona
     plan?: $Enums.Plan
+    role?: $Enums.UserRole
+    isSuspended?: boolean
+    suspendedUntil?: Date | string | null
+    isBanned?: boolean
+    banReason?: string | null
+    warningCount?: number
     onboardingCompleted?: boolean
     termsAcceptedAt?: Date | string | null
     termsVersion?: string | null
@@ -23242,6 +25352,8 @@ export namespace Prisma {
     subscriptions?: SubscriptionCreateNestedManyWithoutUserInput
     userAchievements?: UserAchievementCreateNestedManyWithoutUserInput
     userBadges?: UserBadgeCreateNestedManyWithoutUserInput
+    moderationLogs?: ModerationLogCreateNestedManyWithoutTargetUserInput
+    adminActions?: ModerationLogCreateNestedManyWithoutAdminInput
   }
 
   export type UserUncheckedCreateWithoutActivitiesInput = {
@@ -23256,6 +25368,12 @@ export namespace Prisma {
     bio?: string | null
     companionPersona?: $Enums.CompanionPersona
     plan?: $Enums.Plan
+    role?: $Enums.UserRole
+    isSuspended?: boolean
+    suspendedUntil?: Date | string | null
+    isBanned?: boolean
+    banReason?: string | null
+    warningCount?: number
     onboardingCompleted?: boolean
     termsAcceptedAt?: Date | string | null
     termsVersion?: string | null
@@ -23277,6 +25395,8 @@ export namespace Prisma {
     subscriptions?: SubscriptionUncheckedCreateNestedManyWithoutUserInput
     userAchievements?: UserAchievementUncheckedCreateNestedManyWithoutUserInput
     userBadges?: UserBadgeUncheckedCreateNestedManyWithoutUserInput
+    moderationLogs?: ModerationLogUncheckedCreateNestedManyWithoutTargetUserInput
+    adminActions?: ModerationLogUncheckedCreateNestedManyWithoutAdminInput
   }
 
   export type UserCreateOrConnectWithoutActivitiesInput = {
@@ -23307,6 +25427,12 @@ export namespace Prisma {
     bio?: NullableStringFieldUpdateOperationsInput | string | null
     companionPersona?: EnumCompanionPersonaFieldUpdateOperationsInput | $Enums.CompanionPersona
     plan?: EnumPlanFieldUpdateOperationsInput | $Enums.Plan
+    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    isSuspended?: BoolFieldUpdateOperationsInput | boolean
+    suspendedUntil?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    isBanned?: BoolFieldUpdateOperationsInput | boolean
+    banReason?: NullableStringFieldUpdateOperationsInput | string | null
+    warningCount?: IntFieldUpdateOperationsInput | number
     onboardingCompleted?: BoolFieldUpdateOperationsInput | boolean
     termsAcceptedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     termsVersion?: NullableStringFieldUpdateOperationsInput | string | null
@@ -23328,6 +25454,8 @@ export namespace Prisma {
     subscriptions?: SubscriptionUpdateManyWithoutUserNestedInput
     userAchievements?: UserAchievementUpdateManyWithoutUserNestedInput
     userBadges?: UserBadgeUpdateManyWithoutUserNestedInput
+    moderationLogs?: ModerationLogUpdateManyWithoutTargetUserNestedInput
+    adminActions?: ModerationLogUpdateManyWithoutAdminNestedInput
   }
 
   export type UserUncheckedUpdateWithoutActivitiesInput = {
@@ -23342,6 +25470,12 @@ export namespace Prisma {
     bio?: NullableStringFieldUpdateOperationsInput | string | null
     companionPersona?: EnumCompanionPersonaFieldUpdateOperationsInput | $Enums.CompanionPersona
     plan?: EnumPlanFieldUpdateOperationsInput | $Enums.Plan
+    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    isSuspended?: BoolFieldUpdateOperationsInput | boolean
+    suspendedUntil?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    isBanned?: BoolFieldUpdateOperationsInput | boolean
+    banReason?: NullableStringFieldUpdateOperationsInput | string | null
+    warningCount?: IntFieldUpdateOperationsInput | number
     onboardingCompleted?: BoolFieldUpdateOperationsInput | boolean
     termsAcceptedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     termsVersion?: NullableStringFieldUpdateOperationsInput | string | null
@@ -23363,6 +25497,8 @@ export namespace Prisma {
     subscriptions?: SubscriptionUncheckedUpdateManyWithoutUserNestedInput
     userAchievements?: UserAchievementUncheckedUpdateManyWithoutUserNestedInput
     userBadges?: UserBadgeUncheckedUpdateManyWithoutUserNestedInput
+    moderationLogs?: ModerationLogUncheckedUpdateManyWithoutTargetUserNestedInput
+    adminActions?: ModerationLogUncheckedUpdateManyWithoutAdminNestedInput
   }
 
   export type UserCreateWithoutSubscriptionsInput = {
@@ -23377,6 +25513,12 @@ export namespace Prisma {
     bio?: string | null
     companionPersona?: $Enums.CompanionPersona
     plan?: $Enums.Plan
+    role?: $Enums.UserRole
+    isSuspended?: boolean
+    suspendedUntil?: Date | string | null
+    isBanned?: boolean
+    banReason?: string | null
+    warningCount?: number
     onboardingCompleted?: boolean
     termsAcceptedAt?: Date | string | null
     termsVersion?: string | null
@@ -23398,6 +25540,8 @@ export namespace Prisma {
     notificationPref?: NotificationPrefCreateNestedOneWithoutUserInput
     userAchievements?: UserAchievementCreateNestedManyWithoutUserInput
     userBadges?: UserBadgeCreateNestedManyWithoutUserInput
+    moderationLogs?: ModerationLogCreateNestedManyWithoutTargetUserInput
+    adminActions?: ModerationLogCreateNestedManyWithoutAdminInput
   }
 
   export type UserUncheckedCreateWithoutSubscriptionsInput = {
@@ -23412,6 +25556,12 @@ export namespace Prisma {
     bio?: string | null
     companionPersona?: $Enums.CompanionPersona
     plan?: $Enums.Plan
+    role?: $Enums.UserRole
+    isSuspended?: boolean
+    suspendedUntil?: Date | string | null
+    isBanned?: boolean
+    banReason?: string | null
+    warningCount?: number
     onboardingCompleted?: boolean
     termsAcceptedAt?: Date | string | null
     termsVersion?: string | null
@@ -23433,6 +25583,8 @@ export namespace Prisma {
     notificationPref?: NotificationPrefUncheckedCreateNestedOneWithoutUserInput
     userAchievements?: UserAchievementUncheckedCreateNestedManyWithoutUserInput
     userBadges?: UserBadgeUncheckedCreateNestedManyWithoutUserInput
+    moderationLogs?: ModerationLogUncheckedCreateNestedManyWithoutTargetUserInput
+    adminActions?: ModerationLogUncheckedCreateNestedManyWithoutAdminInput
   }
 
   export type UserCreateOrConnectWithoutSubscriptionsInput = {
@@ -23501,6 +25653,12 @@ export namespace Prisma {
     bio?: NullableStringFieldUpdateOperationsInput | string | null
     companionPersona?: EnumCompanionPersonaFieldUpdateOperationsInput | $Enums.CompanionPersona
     plan?: EnumPlanFieldUpdateOperationsInput | $Enums.Plan
+    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    isSuspended?: BoolFieldUpdateOperationsInput | boolean
+    suspendedUntil?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    isBanned?: BoolFieldUpdateOperationsInput | boolean
+    banReason?: NullableStringFieldUpdateOperationsInput | string | null
+    warningCount?: IntFieldUpdateOperationsInput | number
     onboardingCompleted?: BoolFieldUpdateOperationsInput | boolean
     termsAcceptedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     termsVersion?: NullableStringFieldUpdateOperationsInput | string | null
@@ -23522,6 +25680,8 @@ export namespace Prisma {
     notificationPref?: NotificationPrefUpdateOneWithoutUserNestedInput
     userAchievements?: UserAchievementUpdateManyWithoutUserNestedInput
     userBadges?: UserBadgeUpdateManyWithoutUserNestedInput
+    moderationLogs?: ModerationLogUpdateManyWithoutTargetUserNestedInput
+    adminActions?: ModerationLogUpdateManyWithoutAdminNestedInput
   }
 
   export type UserUncheckedUpdateWithoutSubscriptionsInput = {
@@ -23536,6 +25696,12 @@ export namespace Prisma {
     bio?: NullableStringFieldUpdateOperationsInput | string | null
     companionPersona?: EnumCompanionPersonaFieldUpdateOperationsInput | $Enums.CompanionPersona
     plan?: EnumPlanFieldUpdateOperationsInput | $Enums.Plan
+    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    isSuspended?: BoolFieldUpdateOperationsInput | boolean
+    suspendedUntil?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    isBanned?: BoolFieldUpdateOperationsInput | boolean
+    banReason?: NullableStringFieldUpdateOperationsInput | string | null
+    warningCount?: IntFieldUpdateOperationsInput | number
     onboardingCompleted?: BoolFieldUpdateOperationsInput | boolean
     termsAcceptedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     termsVersion?: NullableStringFieldUpdateOperationsInput | string | null
@@ -23557,6 +25723,8 @@ export namespace Prisma {
     notificationPref?: NotificationPrefUncheckedUpdateOneWithoutUserNestedInput
     userAchievements?: UserAchievementUncheckedUpdateManyWithoutUserNestedInput
     userBadges?: UserBadgeUncheckedUpdateManyWithoutUserNestedInput
+    moderationLogs?: ModerationLogUncheckedUpdateManyWithoutTargetUserNestedInput
+    adminActions?: ModerationLogUncheckedUpdateManyWithoutAdminNestedInput
   }
 
   export type PaymentUpsertWithWhereUniqueWithoutSubscriptionInput = {
@@ -23701,6 +25869,12 @@ export namespace Prisma {
     bio?: string | null
     companionPersona?: $Enums.CompanionPersona
     plan?: $Enums.Plan
+    role?: $Enums.UserRole
+    isSuspended?: boolean
+    suspendedUntil?: Date | string | null
+    isBanned?: boolean
+    banReason?: string | null
+    warningCount?: number
     onboardingCompleted?: boolean
     termsAcceptedAt?: Date | string | null
     termsVersion?: string | null
@@ -23722,6 +25896,8 @@ export namespace Prisma {
     notificationPref?: NotificationPrefCreateNestedOneWithoutUserInput
     subscriptions?: SubscriptionCreateNestedManyWithoutUserInput
     userBadges?: UserBadgeCreateNestedManyWithoutUserInput
+    moderationLogs?: ModerationLogCreateNestedManyWithoutTargetUserInput
+    adminActions?: ModerationLogCreateNestedManyWithoutAdminInput
   }
 
   export type UserUncheckedCreateWithoutUserAchievementsInput = {
@@ -23736,6 +25912,12 @@ export namespace Prisma {
     bio?: string | null
     companionPersona?: $Enums.CompanionPersona
     plan?: $Enums.Plan
+    role?: $Enums.UserRole
+    isSuspended?: boolean
+    suspendedUntil?: Date | string | null
+    isBanned?: boolean
+    banReason?: string | null
+    warningCount?: number
     onboardingCompleted?: boolean
     termsAcceptedAt?: Date | string | null
     termsVersion?: string | null
@@ -23757,6 +25939,8 @@ export namespace Prisma {
     notificationPref?: NotificationPrefUncheckedCreateNestedOneWithoutUserInput
     subscriptions?: SubscriptionUncheckedCreateNestedManyWithoutUserInput
     userBadges?: UserBadgeUncheckedCreateNestedManyWithoutUserInput
+    moderationLogs?: ModerationLogUncheckedCreateNestedManyWithoutTargetUserInput
+    adminActions?: ModerationLogUncheckedCreateNestedManyWithoutAdminInput
   }
 
   export type UserCreateOrConnectWithoutUserAchievementsInput = {
@@ -23816,6 +26000,12 @@ export namespace Prisma {
     bio?: NullableStringFieldUpdateOperationsInput | string | null
     companionPersona?: EnumCompanionPersonaFieldUpdateOperationsInput | $Enums.CompanionPersona
     plan?: EnumPlanFieldUpdateOperationsInput | $Enums.Plan
+    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    isSuspended?: BoolFieldUpdateOperationsInput | boolean
+    suspendedUntil?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    isBanned?: BoolFieldUpdateOperationsInput | boolean
+    banReason?: NullableStringFieldUpdateOperationsInput | string | null
+    warningCount?: IntFieldUpdateOperationsInput | number
     onboardingCompleted?: BoolFieldUpdateOperationsInput | boolean
     termsAcceptedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     termsVersion?: NullableStringFieldUpdateOperationsInput | string | null
@@ -23837,6 +26027,8 @@ export namespace Prisma {
     notificationPref?: NotificationPrefUpdateOneWithoutUserNestedInput
     subscriptions?: SubscriptionUpdateManyWithoutUserNestedInput
     userBadges?: UserBadgeUpdateManyWithoutUserNestedInput
+    moderationLogs?: ModerationLogUpdateManyWithoutTargetUserNestedInput
+    adminActions?: ModerationLogUpdateManyWithoutAdminNestedInput
   }
 
   export type UserUncheckedUpdateWithoutUserAchievementsInput = {
@@ -23851,6 +26043,12 @@ export namespace Prisma {
     bio?: NullableStringFieldUpdateOperationsInput | string | null
     companionPersona?: EnumCompanionPersonaFieldUpdateOperationsInput | $Enums.CompanionPersona
     plan?: EnumPlanFieldUpdateOperationsInput | $Enums.Plan
+    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    isSuspended?: BoolFieldUpdateOperationsInput | boolean
+    suspendedUntil?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    isBanned?: BoolFieldUpdateOperationsInput | boolean
+    banReason?: NullableStringFieldUpdateOperationsInput | string | null
+    warningCount?: IntFieldUpdateOperationsInput | number
     onboardingCompleted?: BoolFieldUpdateOperationsInput | boolean
     termsAcceptedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     termsVersion?: NullableStringFieldUpdateOperationsInput | string | null
@@ -23872,6 +26070,8 @@ export namespace Prisma {
     notificationPref?: NotificationPrefUncheckedUpdateOneWithoutUserNestedInput
     subscriptions?: SubscriptionUncheckedUpdateManyWithoutUserNestedInput
     userBadges?: UserBadgeUncheckedUpdateManyWithoutUserNestedInput
+    moderationLogs?: ModerationLogUncheckedUpdateManyWithoutTargetUserNestedInput
+    adminActions?: ModerationLogUncheckedUpdateManyWithoutAdminNestedInput
   }
 
   export type AchievementUpsertWithoutUserAchievementsInput = {
@@ -23965,6 +26165,12 @@ export namespace Prisma {
     bio?: string | null
     companionPersona?: $Enums.CompanionPersona
     plan?: $Enums.Plan
+    role?: $Enums.UserRole
+    isSuspended?: boolean
+    suspendedUntil?: Date | string | null
+    isBanned?: boolean
+    banReason?: string | null
+    warningCount?: number
     onboardingCompleted?: boolean
     termsAcceptedAt?: Date | string | null
     termsVersion?: string | null
@@ -23986,6 +26192,8 @@ export namespace Prisma {
     notificationPref?: NotificationPrefCreateNestedOneWithoutUserInput
     subscriptions?: SubscriptionCreateNestedManyWithoutUserInput
     userAchievements?: UserAchievementCreateNestedManyWithoutUserInput
+    moderationLogs?: ModerationLogCreateNestedManyWithoutTargetUserInput
+    adminActions?: ModerationLogCreateNestedManyWithoutAdminInput
   }
 
   export type UserUncheckedCreateWithoutUserBadgesInput = {
@@ -24000,6 +26208,12 @@ export namespace Prisma {
     bio?: string | null
     companionPersona?: $Enums.CompanionPersona
     plan?: $Enums.Plan
+    role?: $Enums.UserRole
+    isSuspended?: boolean
+    suspendedUntil?: Date | string | null
+    isBanned?: boolean
+    banReason?: string | null
+    warningCount?: number
     onboardingCompleted?: boolean
     termsAcceptedAt?: Date | string | null
     termsVersion?: string | null
@@ -24021,6 +26235,8 @@ export namespace Prisma {
     notificationPref?: NotificationPrefUncheckedCreateNestedOneWithoutUserInput
     subscriptions?: SubscriptionUncheckedCreateNestedManyWithoutUserInput
     userAchievements?: UserAchievementUncheckedCreateNestedManyWithoutUserInput
+    moderationLogs?: ModerationLogUncheckedCreateNestedManyWithoutTargetUserInput
+    adminActions?: ModerationLogUncheckedCreateNestedManyWithoutAdminInput
   }
 
   export type UserCreateOrConnectWithoutUserBadgesInput = {
@@ -24076,6 +26292,12 @@ export namespace Prisma {
     bio?: NullableStringFieldUpdateOperationsInput | string | null
     companionPersona?: EnumCompanionPersonaFieldUpdateOperationsInput | $Enums.CompanionPersona
     plan?: EnumPlanFieldUpdateOperationsInput | $Enums.Plan
+    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    isSuspended?: BoolFieldUpdateOperationsInput | boolean
+    suspendedUntil?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    isBanned?: BoolFieldUpdateOperationsInput | boolean
+    banReason?: NullableStringFieldUpdateOperationsInput | string | null
+    warningCount?: IntFieldUpdateOperationsInput | number
     onboardingCompleted?: BoolFieldUpdateOperationsInput | boolean
     termsAcceptedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     termsVersion?: NullableStringFieldUpdateOperationsInput | string | null
@@ -24097,6 +26319,8 @@ export namespace Prisma {
     notificationPref?: NotificationPrefUpdateOneWithoutUserNestedInput
     subscriptions?: SubscriptionUpdateManyWithoutUserNestedInput
     userAchievements?: UserAchievementUpdateManyWithoutUserNestedInput
+    moderationLogs?: ModerationLogUpdateManyWithoutTargetUserNestedInput
+    adminActions?: ModerationLogUpdateManyWithoutAdminNestedInput
   }
 
   export type UserUncheckedUpdateWithoutUserBadgesInput = {
@@ -24111,6 +26335,12 @@ export namespace Prisma {
     bio?: NullableStringFieldUpdateOperationsInput | string | null
     companionPersona?: EnumCompanionPersonaFieldUpdateOperationsInput | $Enums.CompanionPersona
     plan?: EnumPlanFieldUpdateOperationsInput | $Enums.Plan
+    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    isSuspended?: BoolFieldUpdateOperationsInput | boolean
+    suspendedUntil?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    isBanned?: BoolFieldUpdateOperationsInput | boolean
+    banReason?: NullableStringFieldUpdateOperationsInput | string | null
+    warningCount?: IntFieldUpdateOperationsInput | number
     onboardingCompleted?: BoolFieldUpdateOperationsInput | boolean
     termsAcceptedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     termsVersion?: NullableStringFieldUpdateOperationsInput | string | null
@@ -24132,6 +26362,8 @@ export namespace Prisma {
     notificationPref?: NotificationPrefUncheckedUpdateOneWithoutUserNestedInput
     subscriptions?: SubscriptionUncheckedUpdateManyWithoutUserNestedInput
     userAchievements?: UserAchievementUncheckedUpdateManyWithoutUserNestedInput
+    moderationLogs?: ModerationLogUncheckedUpdateManyWithoutTargetUserNestedInput
+    adminActions?: ModerationLogUncheckedUpdateManyWithoutAdminNestedInput
   }
 
   export type BadgeUpsertWithoutUserBadgesInput = {
@@ -24163,6 +26395,382 @@ export namespace Prisma {
     category?: StringFieldUpdateOperationsInput | string
     icon?: StringFieldUpdateOperationsInput | string
     xpReward?: IntFieldUpdateOperationsInput | number
+  }
+
+  export type UserCreateWithoutAdminActionsInput = {
+    id?: string
+    email: string
+    username?: string | null
+    passwordHash: string
+    name: string
+    avatarUrl?: string | null
+    phone?: string | null
+    location?: string | null
+    bio?: string | null
+    companionPersona?: $Enums.CompanionPersona
+    plan?: $Enums.Plan
+    role?: $Enums.UserRole
+    isSuspended?: boolean
+    suspendedUntil?: Date | string | null
+    isBanned?: boolean
+    banReason?: string | null
+    warningCount?: number
+    onboardingCompleted?: boolean
+    termsAcceptedAt?: Date | string | null
+    termsVersion?: string | null
+    communityGuidelinesAcceptedAt?: Date | string | null
+    communityGuidelinesVersion?: string | null
+    zybaScore?: number | null
+    stressLevel?: number | null
+    streak?: number | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    streakDays?: number | null
+    lastStreakDate?: Date | string | null
+    lastAvatarChangeAt?: Date | string | null
+    assessment?: AssessmentCreateNestedOneWithoutUserInput
+    moodEntries?: MoodEntryCreateNestedManyWithoutUserInput
+    dailyAssessments?: DailyAssessmentCreateNestedManyWithoutUserInput
+    journalEntries?: JournalEntryCreateNestedManyWithoutUserInput
+    activities?: ActivityLogCreateNestedManyWithoutUserInput
+    notificationPref?: NotificationPrefCreateNestedOneWithoutUserInput
+    subscriptions?: SubscriptionCreateNestedManyWithoutUserInput
+    userAchievements?: UserAchievementCreateNestedManyWithoutUserInput
+    userBadges?: UserBadgeCreateNestedManyWithoutUserInput
+    moderationLogs?: ModerationLogCreateNestedManyWithoutTargetUserInput
+  }
+
+  export type UserUncheckedCreateWithoutAdminActionsInput = {
+    id?: string
+    email: string
+    username?: string | null
+    passwordHash: string
+    name: string
+    avatarUrl?: string | null
+    phone?: string | null
+    location?: string | null
+    bio?: string | null
+    companionPersona?: $Enums.CompanionPersona
+    plan?: $Enums.Plan
+    role?: $Enums.UserRole
+    isSuspended?: boolean
+    suspendedUntil?: Date | string | null
+    isBanned?: boolean
+    banReason?: string | null
+    warningCount?: number
+    onboardingCompleted?: boolean
+    termsAcceptedAt?: Date | string | null
+    termsVersion?: string | null
+    communityGuidelinesAcceptedAt?: Date | string | null
+    communityGuidelinesVersion?: string | null
+    zybaScore?: number | null
+    stressLevel?: number | null
+    streak?: number | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    streakDays?: number | null
+    lastStreakDate?: Date | string | null
+    lastAvatarChangeAt?: Date | string | null
+    assessment?: AssessmentUncheckedCreateNestedOneWithoutUserInput
+    moodEntries?: MoodEntryUncheckedCreateNestedManyWithoutUserInput
+    dailyAssessments?: DailyAssessmentUncheckedCreateNestedManyWithoutUserInput
+    journalEntries?: JournalEntryUncheckedCreateNestedManyWithoutUserInput
+    activities?: ActivityLogUncheckedCreateNestedManyWithoutUserInput
+    notificationPref?: NotificationPrefUncheckedCreateNestedOneWithoutUserInput
+    subscriptions?: SubscriptionUncheckedCreateNestedManyWithoutUserInput
+    userAchievements?: UserAchievementUncheckedCreateNestedManyWithoutUserInput
+    userBadges?: UserBadgeUncheckedCreateNestedManyWithoutUserInput
+    moderationLogs?: ModerationLogUncheckedCreateNestedManyWithoutTargetUserInput
+  }
+
+  export type UserCreateOrConnectWithoutAdminActionsInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutAdminActionsInput, UserUncheckedCreateWithoutAdminActionsInput>
+  }
+
+  export type UserCreateWithoutModerationLogsInput = {
+    id?: string
+    email: string
+    username?: string | null
+    passwordHash: string
+    name: string
+    avatarUrl?: string | null
+    phone?: string | null
+    location?: string | null
+    bio?: string | null
+    companionPersona?: $Enums.CompanionPersona
+    plan?: $Enums.Plan
+    role?: $Enums.UserRole
+    isSuspended?: boolean
+    suspendedUntil?: Date | string | null
+    isBanned?: boolean
+    banReason?: string | null
+    warningCount?: number
+    onboardingCompleted?: boolean
+    termsAcceptedAt?: Date | string | null
+    termsVersion?: string | null
+    communityGuidelinesAcceptedAt?: Date | string | null
+    communityGuidelinesVersion?: string | null
+    zybaScore?: number | null
+    stressLevel?: number | null
+    streak?: number | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    streakDays?: number | null
+    lastStreakDate?: Date | string | null
+    lastAvatarChangeAt?: Date | string | null
+    assessment?: AssessmentCreateNestedOneWithoutUserInput
+    moodEntries?: MoodEntryCreateNestedManyWithoutUserInput
+    dailyAssessments?: DailyAssessmentCreateNestedManyWithoutUserInput
+    journalEntries?: JournalEntryCreateNestedManyWithoutUserInput
+    activities?: ActivityLogCreateNestedManyWithoutUserInput
+    notificationPref?: NotificationPrefCreateNestedOneWithoutUserInput
+    subscriptions?: SubscriptionCreateNestedManyWithoutUserInput
+    userAchievements?: UserAchievementCreateNestedManyWithoutUserInput
+    userBadges?: UserBadgeCreateNestedManyWithoutUserInput
+    adminActions?: ModerationLogCreateNestedManyWithoutAdminInput
+  }
+
+  export type UserUncheckedCreateWithoutModerationLogsInput = {
+    id?: string
+    email: string
+    username?: string | null
+    passwordHash: string
+    name: string
+    avatarUrl?: string | null
+    phone?: string | null
+    location?: string | null
+    bio?: string | null
+    companionPersona?: $Enums.CompanionPersona
+    plan?: $Enums.Plan
+    role?: $Enums.UserRole
+    isSuspended?: boolean
+    suspendedUntil?: Date | string | null
+    isBanned?: boolean
+    banReason?: string | null
+    warningCount?: number
+    onboardingCompleted?: boolean
+    termsAcceptedAt?: Date | string | null
+    termsVersion?: string | null
+    communityGuidelinesAcceptedAt?: Date | string | null
+    communityGuidelinesVersion?: string | null
+    zybaScore?: number | null
+    stressLevel?: number | null
+    streak?: number | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    streakDays?: number | null
+    lastStreakDate?: Date | string | null
+    lastAvatarChangeAt?: Date | string | null
+    assessment?: AssessmentUncheckedCreateNestedOneWithoutUserInput
+    moodEntries?: MoodEntryUncheckedCreateNestedManyWithoutUserInput
+    dailyAssessments?: DailyAssessmentUncheckedCreateNestedManyWithoutUserInput
+    journalEntries?: JournalEntryUncheckedCreateNestedManyWithoutUserInput
+    activities?: ActivityLogUncheckedCreateNestedManyWithoutUserInput
+    notificationPref?: NotificationPrefUncheckedCreateNestedOneWithoutUserInput
+    subscriptions?: SubscriptionUncheckedCreateNestedManyWithoutUserInput
+    userAchievements?: UserAchievementUncheckedCreateNestedManyWithoutUserInput
+    userBadges?: UserBadgeUncheckedCreateNestedManyWithoutUserInput
+    adminActions?: ModerationLogUncheckedCreateNestedManyWithoutAdminInput
+  }
+
+  export type UserCreateOrConnectWithoutModerationLogsInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutModerationLogsInput, UserUncheckedCreateWithoutModerationLogsInput>
+  }
+
+  export type UserUpsertWithoutAdminActionsInput = {
+    update: XOR<UserUpdateWithoutAdminActionsInput, UserUncheckedUpdateWithoutAdminActionsInput>
+    create: XOR<UserCreateWithoutAdminActionsInput, UserUncheckedCreateWithoutAdminActionsInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutAdminActionsInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutAdminActionsInput, UserUncheckedUpdateWithoutAdminActionsInput>
+  }
+
+  export type UserUpdateWithoutAdminActionsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    username?: NullableStringFieldUpdateOperationsInput | string | null
+    passwordHash?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    avatarUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    location?: NullableStringFieldUpdateOperationsInput | string | null
+    bio?: NullableStringFieldUpdateOperationsInput | string | null
+    companionPersona?: EnumCompanionPersonaFieldUpdateOperationsInput | $Enums.CompanionPersona
+    plan?: EnumPlanFieldUpdateOperationsInput | $Enums.Plan
+    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    isSuspended?: BoolFieldUpdateOperationsInput | boolean
+    suspendedUntil?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    isBanned?: BoolFieldUpdateOperationsInput | boolean
+    banReason?: NullableStringFieldUpdateOperationsInput | string | null
+    warningCount?: IntFieldUpdateOperationsInput | number
+    onboardingCompleted?: BoolFieldUpdateOperationsInput | boolean
+    termsAcceptedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    termsVersion?: NullableStringFieldUpdateOperationsInput | string | null
+    communityGuidelinesAcceptedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    communityGuidelinesVersion?: NullableStringFieldUpdateOperationsInput | string | null
+    zybaScore?: NullableIntFieldUpdateOperationsInput | number | null
+    stressLevel?: NullableIntFieldUpdateOperationsInput | number | null
+    streak?: NullableIntFieldUpdateOperationsInput | number | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    streakDays?: NullableIntFieldUpdateOperationsInput | number | null
+    lastStreakDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    lastAvatarChangeAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    assessment?: AssessmentUpdateOneWithoutUserNestedInput
+    moodEntries?: MoodEntryUpdateManyWithoutUserNestedInput
+    dailyAssessments?: DailyAssessmentUpdateManyWithoutUserNestedInput
+    journalEntries?: JournalEntryUpdateManyWithoutUserNestedInput
+    activities?: ActivityLogUpdateManyWithoutUserNestedInput
+    notificationPref?: NotificationPrefUpdateOneWithoutUserNestedInput
+    subscriptions?: SubscriptionUpdateManyWithoutUserNestedInput
+    userAchievements?: UserAchievementUpdateManyWithoutUserNestedInput
+    userBadges?: UserBadgeUpdateManyWithoutUserNestedInput
+    moderationLogs?: ModerationLogUpdateManyWithoutTargetUserNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutAdminActionsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    username?: NullableStringFieldUpdateOperationsInput | string | null
+    passwordHash?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    avatarUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    location?: NullableStringFieldUpdateOperationsInput | string | null
+    bio?: NullableStringFieldUpdateOperationsInput | string | null
+    companionPersona?: EnumCompanionPersonaFieldUpdateOperationsInput | $Enums.CompanionPersona
+    plan?: EnumPlanFieldUpdateOperationsInput | $Enums.Plan
+    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    isSuspended?: BoolFieldUpdateOperationsInput | boolean
+    suspendedUntil?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    isBanned?: BoolFieldUpdateOperationsInput | boolean
+    banReason?: NullableStringFieldUpdateOperationsInput | string | null
+    warningCount?: IntFieldUpdateOperationsInput | number
+    onboardingCompleted?: BoolFieldUpdateOperationsInput | boolean
+    termsAcceptedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    termsVersion?: NullableStringFieldUpdateOperationsInput | string | null
+    communityGuidelinesAcceptedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    communityGuidelinesVersion?: NullableStringFieldUpdateOperationsInput | string | null
+    zybaScore?: NullableIntFieldUpdateOperationsInput | number | null
+    stressLevel?: NullableIntFieldUpdateOperationsInput | number | null
+    streak?: NullableIntFieldUpdateOperationsInput | number | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    streakDays?: NullableIntFieldUpdateOperationsInput | number | null
+    lastStreakDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    lastAvatarChangeAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    assessment?: AssessmentUncheckedUpdateOneWithoutUserNestedInput
+    moodEntries?: MoodEntryUncheckedUpdateManyWithoutUserNestedInput
+    dailyAssessments?: DailyAssessmentUncheckedUpdateManyWithoutUserNestedInput
+    journalEntries?: JournalEntryUncheckedUpdateManyWithoutUserNestedInput
+    activities?: ActivityLogUncheckedUpdateManyWithoutUserNestedInput
+    notificationPref?: NotificationPrefUncheckedUpdateOneWithoutUserNestedInput
+    subscriptions?: SubscriptionUncheckedUpdateManyWithoutUserNestedInput
+    userAchievements?: UserAchievementUncheckedUpdateManyWithoutUserNestedInput
+    userBadges?: UserBadgeUncheckedUpdateManyWithoutUserNestedInput
+    moderationLogs?: ModerationLogUncheckedUpdateManyWithoutTargetUserNestedInput
+  }
+
+  export type UserUpsertWithoutModerationLogsInput = {
+    update: XOR<UserUpdateWithoutModerationLogsInput, UserUncheckedUpdateWithoutModerationLogsInput>
+    create: XOR<UserCreateWithoutModerationLogsInput, UserUncheckedCreateWithoutModerationLogsInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutModerationLogsInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutModerationLogsInput, UserUncheckedUpdateWithoutModerationLogsInput>
+  }
+
+  export type UserUpdateWithoutModerationLogsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    username?: NullableStringFieldUpdateOperationsInput | string | null
+    passwordHash?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    avatarUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    location?: NullableStringFieldUpdateOperationsInput | string | null
+    bio?: NullableStringFieldUpdateOperationsInput | string | null
+    companionPersona?: EnumCompanionPersonaFieldUpdateOperationsInput | $Enums.CompanionPersona
+    plan?: EnumPlanFieldUpdateOperationsInput | $Enums.Plan
+    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    isSuspended?: BoolFieldUpdateOperationsInput | boolean
+    suspendedUntil?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    isBanned?: BoolFieldUpdateOperationsInput | boolean
+    banReason?: NullableStringFieldUpdateOperationsInput | string | null
+    warningCount?: IntFieldUpdateOperationsInput | number
+    onboardingCompleted?: BoolFieldUpdateOperationsInput | boolean
+    termsAcceptedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    termsVersion?: NullableStringFieldUpdateOperationsInput | string | null
+    communityGuidelinesAcceptedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    communityGuidelinesVersion?: NullableStringFieldUpdateOperationsInput | string | null
+    zybaScore?: NullableIntFieldUpdateOperationsInput | number | null
+    stressLevel?: NullableIntFieldUpdateOperationsInput | number | null
+    streak?: NullableIntFieldUpdateOperationsInput | number | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    streakDays?: NullableIntFieldUpdateOperationsInput | number | null
+    lastStreakDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    lastAvatarChangeAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    assessment?: AssessmentUpdateOneWithoutUserNestedInput
+    moodEntries?: MoodEntryUpdateManyWithoutUserNestedInput
+    dailyAssessments?: DailyAssessmentUpdateManyWithoutUserNestedInput
+    journalEntries?: JournalEntryUpdateManyWithoutUserNestedInput
+    activities?: ActivityLogUpdateManyWithoutUserNestedInput
+    notificationPref?: NotificationPrefUpdateOneWithoutUserNestedInput
+    subscriptions?: SubscriptionUpdateManyWithoutUserNestedInput
+    userAchievements?: UserAchievementUpdateManyWithoutUserNestedInput
+    userBadges?: UserBadgeUpdateManyWithoutUserNestedInput
+    adminActions?: ModerationLogUpdateManyWithoutAdminNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutModerationLogsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    username?: NullableStringFieldUpdateOperationsInput | string | null
+    passwordHash?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    avatarUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    location?: NullableStringFieldUpdateOperationsInput | string | null
+    bio?: NullableStringFieldUpdateOperationsInput | string | null
+    companionPersona?: EnumCompanionPersonaFieldUpdateOperationsInput | $Enums.CompanionPersona
+    plan?: EnumPlanFieldUpdateOperationsInput | $Enums.Plan
+    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    isSuspended?: BoolFieldUpdateOperationsInput | boolean
+    suspendedUntil?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    isBanned?: BoolFieldUpdateOperationsInput | boolean
+    banReason?: NullableStringFieldUpdateOperationsInput | string | null
+    warningCount?: IntFieldUpdateOperationsInput | number
+    onboardingCompleted?: BoolFieldUpdateOperationsInput | boolean
+    termsAcceptedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    termsVersion?: NullableStringFieldUpdateOperationsInput | string | null
+    communityGuidelinesAcceptedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    communityGuidelinesVersion?: NullableStringFieldUpdateOperationsInput | string | null
+    zybaScore?: NullableIntFieldUpdateOperationsInput | number | null
+    stressLevel?: NullableIntFieldUpdateOperationsInput | number | null
+    streak?: NullableIntFieldUpdateOperationsInput | number | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    streakDays?: NullableIntFieldUpdateOperationsInput | number | null
+    lastStreakDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    lastAvatarChangeAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    assessment?: AssessmentUncheckedUpdateOneWithoutUserNestedInput
+    moodEntries?: MoodEntryUncheckedUpdateManyWithoutUserNestedInput
+    dailyAssessments?: DailyAssessmentUncheckedUpdateManyWithoutUserNestedInput
+    journalEntries?: JournalEntryUncheckedUpdateManyWithoutUserNestedInput
+    activities?: ActivityLogUncheckedUpdateManyWithoutUserNestedInput
+    notificationPref?: NotificationPrefUncheckedUpdateOneWithoutUserNestedInput
+    subscriptions?: SubscriptionUncheckedUpdateManyWithoutUserNestedInput
+    userAchievements?: UserAchievementUncheckedUpdateManyWithoutUserNestedInput
+    userBadges?: UserBadgeUncheckedUpdateManyWithoutUserNestedInput
+    adminActions?: ModerationLogUncheckedUpdateManyWithoutAdminNestedInput
   }
 
   export type MoodEntryCreateManyUserInput = {
@@ -24228,6 +26836,28 @@ export namespace Prisma {
     slot?: number | null
     customLabel?: string | null
     updatedAt?: Date | string
+  }
+
+  export type ModerationLogCreateManyTargetUserInput = {
+    id?: string
+    adminId: string
+    action: $Enums.ModerationActionType
+    reason: string
+    durationDays?: number | null
+    reportId?: string | null
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+  }
+
+  export type ModerationLogCreateManyAdminInput = {
+    id?: string
+    targetUserId: string
+    action: $Enums.ModerationActionType
+    reason: string
+    durationDays?: number | null
+    reportId?: string | null
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
   }
 
   export type MoodEntryUpdateWithoutUserInput = {
@@ -24427,6 +27057,72 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type ModerationLogUpdateWithoutTargetUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    action?: EnumModerationActionTypeFieldUpdateOperationsInput | $Enums.ModerationActionType
+    reason?: StringFieldUpdateOperationsInput | string
+    durationDays?: NullableIntFieldUpdateOperationsInput | number | null
+    reportId?: NullableStringFieldUpdateOperationsInput | string | null
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    admin?: UserUpdateOneRequiredWithoutAdminActionsNestedInput
+  }
+
+  export type ModerationLogUncheckedUpdateWithoutTargetUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    adminId?: StringFieldUpdateOperationsInput | string
+    action?: EnumModerationActionTypeFieldUpdateOperationsInput | $Enums.ModerationActionType
+    reason?: StringFieldUpdateOperationsInput | string
+    durationDays?: NullableIntFieldUpdateOperationsInput | number | null
+    reportId?: NullableStringFieldUpdateOperationsInput | string | null
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ModerationLogUncheckedUpdateManyWithoutTargetUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    adminId?: StringFieldUpdateOperationsInput | string
+    action?: EnumModerationActionTypeFieldUpdateOperationsInput | $Enums.ModerationActionType
+    reason?: StringFieldUpdateOperationsInput | string
+    durationDays?: NullableIntFieldUpdateOperationsInput | number | null
+    reportId?: NullableStringFieldUpdateOperationsInput | string | null
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ModerationLogUpdateWithoutAdminInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    action?: EnumModerationActionTypeFieldUpdateOperationsInput | $Enums.ModerationActionType
+    reason?: StringFieldUpdateOperationsInput | string
+    durationDays?: NullableIntFieldUpdateOperationsInput | number | null
+    reportId?: NullableStringFieldUpdateOperationsInput | string | null
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    targetUser?: UserUpdateOneRequiredWithoutModerationLogsNestedInput
+  }
+
+  export type ModerationLogUncheckedUpdateWithoutAdminInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    targetUserId?: StringFieldUpdateOperationsInput | string
+    action?: EnumModerationActionTypeFieldUpdateOperationsInput | $Enums.ModerationActionType
+    reason?: StringFieldUpdateOperationsInput | string
+    durationDays?: NullableIntFieldUpdateOperationsInput | number | null
+    reportId?: NullableStringFieldUpdateOperationsInput | string | null
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ModerationLogUncheckedUpdateManyWithoutAdminInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    targetUserId?: StringFieldUpdateOperationsInput | string
+    action?: EnumModerationActionTypeFieldUpdateOperationsInput | $Enums.ModerationActionType
+    reason?: StringFieldUpdateOperationsInput | string
+    durationDays?: NullableIntFieldUpdateOperationsInput | number | null
+    reportId?: NullableStringFieldUpdateOperationsInput | string | null
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type PaymentCreateManySubscriptionInput = {
     id?: string
     userId: string
@@ -24624,6 +27320,10 @@ export namespace Prisma {
      * @deprecated Use UserBadgeDefaultArgs instead
      */
     export type UserBadgeArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = UserBadgeDefaultArgs<ExtArgs>
+    /**
+     * @deprecated Use ModerationLogDefaultArgs instead
+     */
+    export type ModerationLogArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = ModerationLogDefaultArgs<ExtArgs>
 
   /**
    * Batch Payload for updateMany & deleteMany & createMany

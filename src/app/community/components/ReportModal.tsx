@@ -7,8 +7,10 @@ interface ReportModalProps {
   open: boolean;
   postId: string;
   authorName: string;
+  targetType?: "POST" | "COMMENT";
+  commentId?: string;
   onClose: () => void;
-  onReportSuccess: (isCrisis: boolean, hidePost: boolean) => void;
+  onReportSuccess: (isCrisis: boolean, hideChoice: boolean) => void;
 }
 
 const REPORT_REASONS = [
@@ -49,6 +51,8 @@ export default function ReportModal({
   open,
   postId,
   authorName,
+  targetType = "POST",
+  commentId,
   onClose,
   onReportSuccess,
 }: ReportModalProps) {
@@ -60,13 +64,19 @@ export default function ReportModal({
 
   if (!open) return null;
 
+  const isComment = targetType === "COMMENT";
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
     setErrorMessage(null);
 
     try {
-      const res = await fetch(`/api/community/posts/${postId}/report`, {
+      const endpoint = isComment && commentId
+        ? `/api/community/comments/${commentId}/report`
+        : `/api/community/posts/${postId}/report`;
+
+      const res = await fetch(endpoint, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
