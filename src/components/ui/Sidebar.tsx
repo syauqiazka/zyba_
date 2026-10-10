@@ -13,6 +13,7 @@ import {
   Bot,
   Zap,
   Heart,
+  ChartNoAxesCombined,
   Users,
   BookOpen,
   Trophy,
@@ -21,12 +22,20 @@ import {
   Shield,
 } from "lucide-react";
 
-const NAV_ITEMS = [
+type NavItem = {
+  href: string;
+  label: string;
+  icon: React.ElementType;
+  isPremium?: boolean;
+};
+
+const NAV_ITEMS: NavItem[] = [
   { href: "/dashboard", label: "Dashboard", icon: Home },
   { href: "/daily-assessment", label: "Assessment Harian", icon: CalendarCheck },
   { href: "/companion", label: "Tanya Zyba", icon: Bot },
   { href: "/activity", label: "Kegiatan Rutin Harian", icon: Zap },
   { href: "/wellness-journey", label: "Ruang Sehat", icon: Heart },
+  { href: "/settings/zyba-plus/insights", label: "Deep Insights", icon: ChartNoAxesCombined, isPremium: true },
   { href: "/community", label: "Komunitas Zyba", icon: Users },
   { href: "/resources", label: "Wawasan", icon: Quote },
   { href: "/guidebook", label: "Buku Panduan", icon: BookOpen },
@@ -218,6 +227,7 @@ export default function Sidebar({ onClose }: { onClose?: () => void }) {
             const isActive = pathname === item.href || (item.href !== "/dashboard" && pathname?.startsWith(item.href));
             const isCommunity = item.href === "/community";
             const showCommunityBadge = isCommunity && communityBadgeCount > 0;
+            const isPlus = currentUser.plan === "PLUS";
 
             return (
               <Link
@@ -237,7 +247,7 @@ export default function Sidebar({ onClose }: { onClose?: () => void }) {
                     strokeWidth={isActive ? 2.4 : 2}
                     className={isActive ? "text-cream shrink-0" : "text-brown-700 shrink-0"}
                   />
-                  {/* Tanda titik merah (red dot) di atas ikon untuk tablet (icon-only) & mobile & desktop */}
+                  {/* Red dot badge: shown above icon on all sizes for community */}
                   {showCommunityBadge && (
                     <span
                       className="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-red-500 border border-cream shadow-xs animate-pulse"
@@ -248,13 +258,29 @@ export default function Sidebar({ onClose }: { onClose?: () => void }) {
 
                 <span className="md:hidden lg:inline truncate">{item.label}</span>
 
+                {/* BETA badge for companion */}
                 {item.href === "/companion" && (
                   <span className="ml-auto text-[10px] font-semibold tracking-wide px-2 py-0.5 rounded-full bg-orange-100 text-orange-500 md:hidden lg:inline">
                     BETA
                   </span>
                 )}
 
-                {/* Tanda badge angka merah di samping label Komunitas */}
+                {/* PLUS badge for premium nav items — inline, no absolute positioning */}
+                {item.isPremium && (
+                  <span className={`ml-auto text-[9px] font-extrabold tracking-wide px-1.5 py-0.5 rounded-full md:hidden lg:inline-flex items-center gap-0.5 ${
+                    isPlus
+                      ? "bg-orange-100 text-orange-600"
+                      : "bg-brown-900/8 text-brown-700/60"
+                  }`}>
+                    {isPlus ? (
+                      <><Sparkles size={8} />PLUS</>
+                    ) : (
+                      "→"
+                    )}
+                  </span>
+                )}
+
+                {/* Community count badge */}
                 {showCommunityBadge && (
                   <span className="ml-auto text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-red-500 text-white shadow-2xs leading-none md:hidden lg:inline-flex items-center justify-center">
                     {communityBadgeCount > 99 ? "99+" : communityBadgeCount}
@@ -328,20 +354,16 @@ export default function Sidebar({ onClose }: { onClose?: () => void }) {
             onLogout={handleLogout}
           />
 
+          {/* Profile card — flex layout, no absolute badge, safe on all widths */}
           <div className={currentUser.plan === "PLUS"
-            ? "relative overflow-hidden flex items-center justify-between md:justify-center lg:justify-between rounded-2xl border border-orange-300/70 bg-gradient-to-br from-orange-50 via-white to-green-50 p-1.5 lg:p-2 shadow-[0_8px_24px_-16px_rgba(233,130,85,0.7)]"
-            : "bg-white/80 hover:bg-white border border-brown-900/10 rounded-2xl p-1.5 lg:p-2 flex items-center justify-between md:justify-center lg:justify-between transition-colors shadow-xs"}>
-            {currentUser.plan === "PLUS" && (
-              <div className="absolute right-2 top-2 md:hidden lg:flex items-center gap-1 rounded-full bg-brown-900 px-2 py-0.5 text-[9px] font-extrabold tracking-wide text-white shadow-sm">
-                <Sparkles size={9} /> PLUS
-              </div>
-            )}
+            ? "flex items-center gap-2 rounded-2xl border border-orange-300/70 bg-gradient-to-br from-orange-50 via-white to-green-50 p-1.5 lg:p-2 shadow-[0_8px_24px_-16px_rgba(233,130,85,0.7)] min-w-0"
+            : "bg-white/80 hover:bg-white border border-brown-900/10 rounded-2xl p-1.5 lg:p-2 flex items-center gap-2 transition-colors shadow-xs min-w-0"}>
 
-            {/* Left: User Avatar + Name + Handle (Clicking toggles Profile Popover) */}
+            {/* Left: User Avatar + Name + Handle */}
             <button
               type="button"
               onClick={() => setIsProfilePopoverOpen(!isProfilePopoverOpen)}
-              className="flex items-center justify-start md:justify-center lg:justify-start gap-2.5 p-1 rounded-xl hover:bg-green-100/60 transition-colors text-left flex-1 min-w-0 cursor-pointer group"
+              className="flex items-center justify-start md:justify-center lg:justify-start gap-2 p-1 rounded-xl hover:bg-green-100/60 transition-colors text-left flex-1 min-w-0 cursor-pointer group"
               title="Buka profil"
             >
               <UserAvatar
@@ -355,17 +377,26 @@ export default function Sidebar({ onClose }: { onClose?: () => void }) {
                 }}
               />
 
+              {/* Name + username — shown on mobile (drawer) and desktop, hidden on tablet icon-only */}
               <div className="flex flex-col min-w-0 flex-1 md:hidden lg:flex">
-                <span className="text-xs font-bold text-brown-900 truncate leading-tight group-hover:text-orange-500 transition-colors">
-                  {currentUser.name}
-                </span>
+                <div className="flex items-center gap-1.5 min-w-0">
+                  <span className="text-xs font-bold text-brown-900 truncate leading-tight group-hover:text-orange-500 transition-colors">
+                    {currentUser.name}
+                  </span>
+                  {/* PLUS badge: inline next to name, only on mobile & desktop (not tablet icon-only) */}
+                  {currentUser.plan === "PLUS" && (
+                    <span className="inline-flex items-center gap-0.5 shrink-0 rounded-full bg-brown-900 px-1.5 py-0.5 text-[8px] font-extrabold tracking-wide text-white">
+                      <Sparkles size={7} />PLUS
+                    </span>
+                  )}
+                </div>
                 <span className="text-[10px] text-brown-700/80 truncate">
                   @{currentUser.email ? currentUser.email.split("@")[0] : "schatz_232"}
                 </span>
               </div>
             </button>
 
-            {/* Right: Settings Gear Icon (Image 2) */}
+            {/* Right: Settings Gear — hidden on tablet icon-only mode */}
             <button
               type="button"
               onClick={() => setIsSettingsModalOpen(true)}
