@@ -187,6 +187,7 @@ if (expiredSubscription) {      // Background async update, tidak perlu membloki
         isSuspended: Boolean(user.isSuspended),
         suspendedUntil: user.suspendedUntil || null,
         isBanned: Boolean(user.isBanned),
+        banReason: (user as any).banReason || null,
         warningCount: user.warningCount || 0,
         onboardingCompleted: user.onboardingCompleted,
 

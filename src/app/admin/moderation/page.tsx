@@ -24,9 +24,28 @@ import {
   History,
   FileText,
   UserCheck,
+  Scale,
+  MessageSquareQuote,
 } from "lucide-react";
 
 // ─── Types ─────────────────────────────────────────────────────────────────
+export interface BanAppealItem {
+  id: string;
+  userId: string;
+  userName: string;
+  userEmail: string;
+  userAvatar?: string | null;
+  banReason: string;
+  appealReason: string;
+  contactEmail?: string | null;
+  status: "PENDING" | "APPROVED" | "REJECTED";
+  adminNote?: string | null;
+  reviewedBy?: string | null;
+  reviewedAt?: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
 type ReportStatus = "PENDING" | "ACTION_TAKEN" | "DISMISSED";
 type ReportTargetType = "POST" | "COMMENT";
 
@@ -468,9 +487,219 @@ function TargetBadge({ type }: { type: ReportTargetType }) {
   );
 }
 
+const APPEAL_STATUS_LABELS: Record<string, { label: string; color: string }> = {
+  ALL: { label: "Semua Status", color: "" },
+  PENDING: { label: "Menunggu", color: "bg-amber-100 text-amber-800 border-amber-200" },
+  APPROVED: { label: "Disetujui", color: "bg-green-100 text-green-800 border-green-200" },
+  REJECTED: { label: "Ditolak", color: "bg-red-100 text-red-800 border-red-200" },
+};
+
+function AppealStatusBadge({ status }: { status: "PENDING" | "APPROVED" | "REJECTED" }) {
+  const cfg = {
+    PENDING: "bg-amber-100 text-amber-800 border-amber-200",
+    APPROVED: "bg-green-100 text-green-800 border-green-200",
+    REJECTED: "bg-red-100 text-red-800 border-red-200",
+  }[status] || "bg-gray-100 text-gray-800 border-gray-200";
+
+  return (
+    <span className={`inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full border ${cfg}`}>
+      {status === "PENDING" && <Clock size={9} />}
+      {status === "APPROVED" && <CheckCircle2 size={9} />}
+      {status === "REJECTED" && <X size={9} />}
+      {APPEAL_STATUS_LABELS[status]?.label || status}
+    </span>
+  );
+}
+
+// ─── Modal Review Banding Admin ─────────────────────────────────────────────
+interface AppealReviewModalProps {
+  appeal: BanAppealItem;
+  onClose: () => void;
+  onSuccess: () => void;
+}
+
+function AppealReviewModal({ appeal, onClose, onSuccess }: AppealReviewModalProps) {
+  const [adminNote, setAdminNote] = useState(appeal.adminNote || "");
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState("");
+
+  const handleAction = async (action: "APPROVE" | "REJECT") => {
+    if (action === "REJECT" && !adminNote.trim()) {
+      setError("Alasan penolakan banding wajib diisi agar pengguna memahami alasannya.");
+      return;
+    }
+
+    setSubmitting(true);
+    setError("");
+    try {
+      const res = await fetch(`/api/admin/moderation/appeals/${appeal.id}/action`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          action,
+          note: adminNote.trim(),
+        }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.error || "Gagal memproses permohonan banding.");
+      onSuccess();
+      onClose();
+    } catch (err: any) {
+      setError(err?.message || "Gagal memproses permohonan banding.");
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/50 backdrop-blur-sm p-4"
+      onClick={(e) => e.target === e.currentTarget && onClose()}
+    >
+      <div className="w-full max-w-lg bg-white rounded-3xl shadow-2xl overflow-hidden animate-in fade-in slide-in-from-bottom-4 duration-200 max-h-[90dvh] flex flex-col">
+        {/* Header */}
+        <div className="flex items-center justify-between px-5 py-4 border-b border-brown-900/10 shrink-0">
+          <div>
+            <h2 className="font-display font-bold text-sm text-brown-900 flex items-center gap-2">
+              <Scale size={16} className="text-orange-500" />
+              Tinjau Permohonan Banding
+            </h2>
+            <p className="text-[11px] text-brown-700/60 mt-0.5">
+              ID Permohonan: <span className="font-mono">{appeal.id}</span>
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={onClose}
+            className="w-8 h-8 rounded-full hover:bg-cream flex items-center justify-center text-brown-700/50 hover:text-brown-900 transition-colors"
+          >
+            <X size={15} />
+          </button>
+        </div>
+
+        {/* Content Body */}
+        <div className="overflow-y-auto flex-1 p-5 space-y-4 text-xs">
+          {/* User info & Status */}
+          <div className="flex items-center justify-between p-3.5 bg-cream/70 rounded-2xl border border-brown-900/10">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-full bg-white border border-brown-900/15 flex items-center justify-center text-lg shadow-2xs">
+                {appeal.userAvatar && (appeal.userAvatar.length === 1 || appeal.userAvatar.length === 2)
+                  ? appeal.userAvatar
+                  : "👤"}
+              </div>
+              <div>
+                <p className="font-bold text-brown-900 text-sm leading-tight">{appeal.userName}</p>
+                <p className="text-[11px] text-brown-700/70">{appeal.userEmail}</p>
+                {appeal.contactEmail && appeal.contactEmail !== appeal.userEmail && (
+                  <p className="text-[10px] text-orange-600 font-medium">Kontak: {appeal.contactEmail}</p>
+                )}
+              </div>
+            </div>
+            <AppealStatusBadge status={appeal.status} />
+          </div>
+
+          {/* Ban Reason */}
+          <div>
+            <label className="block text-[11px] font-bold text-red-700 uppercase tracking-wide mb-1">
+              Alasan Pemblokiran Akun
+            </label>
+            <div className="p-3 bg-red-50/60 rounded-xl border border-red-200/60 text-red-900 leading-relaxed font-medium">
+              {appeal.banReason}
+            </div>
+          </div>
+
+          {/* User Appeal Reason */}
+          <div>
+            <label className="block text-[11px] font-bold text-brown-900 uppercase tracking-wide mb-1">
+              Argumen & Penyangkalan Pengguna
+            </label>
+            <div className="p-3.5 bg-white rounded-xl border border-brown-900/15 text-brown-900 leading-relaxed whitespace-pre-wrap font-sans">
+              &quot;{appeal.appealReason}&quot;
+            </div>
+            <p className="text-[10px] text-brown-700/50 mt-1">
+              Diajukan pada: {fmtWib(appeal.createdAt)}
+            </p>
+          </div>
+
+          {/* If already reviewed, display admin note */}
+          {appeal.status !== "PENDING" && (
+            <div className="p-3.5 bg-cream/80 rounded-xl border border-brown-900/10">
+              <p className="text-[10px] font-bold text-brown-700/70 uppercase mb-1">
+                Hasil Peninjauan ({fmtWib(appeal.reviewedAt)}) oleh {appeal.reviewedBy || "Admin"}
+              </p>
+              <p className="text-xs text-brown-900">{appeal.adminNote || "(Tidak ada catatan)"}</p>
+            </div>
+          )}
+
+          {/* Admin Note Input */}
+          {appeal.status === "PENDING" && (
+            <div>
+              <label className="block text-[11px] font-bold text-brown-900 uppercase tracking-wide mb-1">
+                Catatan / Alasan Keputusan Admin
+                <span className="text-[10px] text-brown-700/50 normal-case font-normal ml-1">
+                  (Wajib diisi jika menolak banding)
+                </span>
+              </label>
+              <textarea
+                value={adminNote}
+                onChange={(e) => setAdminNote(e.target.value)}
+                placeholder="Berikan alasan atau penjelasan keputusan moderasi..."
+                rows={3}
+                className="w-full text-xs rounded-xl border border-brown-900/15 p-3 text-brown-900 placeholder:text-brown-700/40 focus:outline-none focus:ring-2 focus:ring-orange-500/20 resize-none"
+              />
+            </div>
+          )}
+
+          {error && (
+            <div className="p-3 rounded-xl bg-red-50 border border-red-200 text-red-700 text-xs flex items-center gap-2">
+              <AlertTriangle size={14} className="shrink-0" />
+              <span>{error}</span>
+            </div>
+          )}
+        </div>
+
+        {/* Footer Actions */}
+        <div className="p-4 border-t border-brown-900/10 flex items-center justify-end gap-2 shrink-0 bg-cream/30">
+          <button
+            type="button"
+            onClick={onClose}
+            disabled={submitting}
+            className="px-4 py-2 text-xs font-semibold text-brown-700 hover:text-brown-900 rounded-xl hover:bg-cream transition-colors"
+          >
+            Tutup
+          </button>
+
+          {appeal.status === "PENDING" && (
+            <>
+              <button
+                type="button"
+                onClick={() => handleAction("REJECT")}
+                disabled={submitting}
+                className="px-4 py-2 text-xs font-bold text-white bg-red-600 hover:bg-red-700 rounded-xl transition-colors disabled:opacity-50 flex items-center gap-1.5 shadow-xs"
+              >
+                <X size={13} />
+                {submitting ? "Memproses..." : "Tolak Banding"}
+              </button>
+              <button
+                type="button"
+                onClick={() => handleAction("APPROVE")}
+                disabled={submitting}
+                className="px-4 py-2 text-xs font-bold text-white bg-green-600 hover:bg-green-700 rounded-xl transition-colors disabled:opacity-50 flex items-center gap-1.5 shadow-xs"
+              >
+                <CheckCircle2 size={13} />
+                {submitting ? "Memproses..." : "Setujui & Unban Akun"}
+              </button>
+            </>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // ─── Main Admin Moderation Page ─────────────────────────────────────────────
 export default function AdminModerationPage() {
-  const [activeTab, setActiveTab] = useState<"REPORTS" | "AUDIT_LOGS">("REPORTS");
+  const [activeTab, setActiveTab] = useState<"REPORTS" | "AUDIT_LOGS" | "APPEALS">("REPORTS");
 
   // State: Tab Laporan
   const [reports, setReports] = useState<Report[]>([]);
@@ -498,6 +727,18 @@ export default function AdminModerationPage() {
   const [logSearchQuery, setLogSearchQuery] = useState("");
   const [logPage, setLogPage] = useState(1);
   const [selectedLogDetail, setSelectedLogDetail] = useState<ModerationLogItem | null>(null);
+
+  // State: Tab Pengajuan Banding (Unban Appeals)
+  const [appeals, setAppeals] = useState<BanAppealItem[]>([]);
+  const [appealPagination, setAppealPagination] = useState<Pagination>({ page: 1, limit: 15, total: 0, totalPages: 0 });
+  const [appealLoading, setAppealLoading] = useState(false);
+  const [appealError, setAppealError] = useState("");
+  const [appealStatus, setAppealStatus] = useState("ALL");
+  const [appealSearch, setAppealSearch] = useState("");
+  const [appealSearchInput, setAppealSearchInput] = useState("");
+  const [appealPage, setAppealPage] = useState(1);
+  const [selectedAppeal, setSelectedAppeal] = useState<BanAppealItem | null>(null);
+  const [pendingAppealsCount, setPendingAppealsCount] = useState<number>(0);
 
   // Load Laporan
   const loadReports = useCallback(async () => {
@@ -551,13 +792,62 @@ export default function AdminModerationPage() {
     }
   }, [logPage, logActionFilter, logStartDate, logEndDate, logSearchQuery]);
 
+  // Load Appeals
+  const loadAppeals = useCallback(async () => {
+    setAppealLoading(true);
+    setAppealError("");
+    try {
+      const params = new URLSearchParams({
+        page: String(appealPage),
+        limit: "15",
+        status: appealStatus,
+        search: appealSearch,
+      });
+      const res = await fetch(`/api/admin/moderation/appeals?${params.toString()}`, { cache: "no-store" });
+      const data = await res.json().catch(() => ({}));
+      if (res.status === 403) throw new Error("Akses ditolak. Anda tidak memiliki hak admin.");
+      if (!res.ok) throw new Error(data.error || "Gagal mengambil daftar permohonan banding.");
+      setAppeals(data.appeals || []);
+      setAppealPagination(data.pagination || { page: 1, limit: 15, total: 0, totalPages: 0 });
+    } catch (err) {
+      setAppealError(err instanceof Error ? err.message : "Gagal mengambil daftar permohonan banding.");
+    } finally {
+      setAppealLoading(false);
+    }
+  }, [appealPage, appealStatus, appealSearch]);
+
+  // Load Pending Count (untuk badge tab)
+  const loadPendingAppealsCount = useCallback(async () => {
+    try {
+      const res = await fetch("/api/admin/moderation/appeals?status=PENDING&limit=1", { cache: "no-store" });
+      const data = await res.json().catch(() => ({}));
+      if (res.ok && data?.pagination?.total !== undefined) {
+        setPendingAppealsCount(data.pagination.total);
+      }
+    } catch {
+      // ignore
+    }
+  }, []);
+
+  useEffect(() => {
+    loadPendingAppealsCount();
+  }, [loadPendingAppealsCount]);
+
   useEffect(() => {
     if (activeTab === "REPORTS") {
       loadReports();
-    } else {
+    } else if (activeTab === "AUDIT_LOGS") {
       loadAuditLogs();
+    } else if (activeTab === "APPEALS") {
+      loadAppeals();
+      loadPendingAppealsCount();
     }
-  }, [activeTab, loadReports, loadAuditLogs]);
+  }, [activeTab, loadReports, loadAuditLogs, loadAppeals, loadPendingAppealsCount]);
+
+  const applyAppealSearch = () => {
+    setAppealSearch(appealSearchInput.trim());
+    setAppealPage(1);
+  };
 
   const applyRepSearch = () => {
     setRepSearch(repSearchInput);
@@ -637,9 +927,13 @@ export default function AdminModerationPage() {
                 if (activeTab === "REPORTS") {
                   setRepPage(1);
                   loadReports();
-                } else {
+                } else if (activeTab === "AUDIT_LOGS") {
                   setLogPage(1);
                   loadAuditLogs();
+                } else {
+                  setAppealPage(1);
+                  loadAppeals();
+                  loadPendingAppealsCount();
                 }
               }}
               className="inline-flex items-center gap-1.5 text-xs font-semibold bg-white border border-brown-900/15 rounded-xl px-3.5 py-2 text-brown-700 hover:text-brown-900 transition-colors shadow-sm"
@@ -650,11 +944,11 @@ export default function AdminModerationPage() {
         </div>
 
         {/* Tab Selector */}
-        <div className="mb-5 flex border-b border-brown-900/15">
+        <div className="mb-5 flex border-b border-brown-900/15 overflow-x-auto scrollbar-none">
           <button
             type="button"
             onClick={() => setActiveTab("REPORTS")}
-            className={`flex items-center gap-2 pb-3 px-4 text-xs font-bold transition-colors relative ${
+            className={`flex items-center gap-2 pb-3 px-4 text-xs font-bold transition-colors whitespace-nowrap relative ${
               activeTab === "REPORTS"
                 ? "text-brown-900 border-b-2 border-orange-500"
                 : "text-brown-700/60 hover:text-brown-900"
@@ -671,7 +965,7 @@ export default function AdminModerationPage() {
           <button
             type="button"
             onClick={() => setActiveTab("AUDIT_LOGS")}
-            className={`flex items-center gap-2 pb-3 px-4 text-xs font-bold transition-colors relative ${
+            className={`flex items-center gap-2 pb-3 px-4 text-xs font-bold transition-colors whitespace-nowrap relative ${
               activeTab === "AUDIT_LOGS"
                 ? "text-brown-900 border-b-2 border-orange-500"
                 : "text-brown-700/60 hover:text-brown-900"
@@ -679,6 +973,23 @@ export default function AdminModerationPage() {
           >
             <History size={15} />
             Riwayat Audit Tindakan
+          </button>
+          <button
+            type="button"
+            onClick={() => setActiveTab("APPEALS")}
+            className={`flex items-center gap-2 pb-3 px-4 text-xs font-bold transition-colors whitespace-nowrap relative ${
+              activeTab === "APPEALS"
+                ? "text-brown-900 border-b-2 border-orange-500"
+                : "text-brown-700/60 hover:text-brown-900"
+            }`}
+          >
+            <Scale size={15} />
+            Pengajuan Banding (Unban)
+            {pendingAppealsCount > 0 && (
+              <span className="text-[10px] bg-red-100 text-red-800 font-extrabold px-1.5 py-0.2 rounded-full animate-pulse">
+                {pendingAppealsCount}
+              </span>
+            )}
           </button>
         </div>
 
@@ -1195,6 +1506,197 @@ export default function AdminModerationPage() {
             </section>
           </div>
         )}
+
+        {/* ─── TAB 3: PENGAJUAN BANDING (UNBAN APPEALS) ────────────────────────── */}
+        {activeTab === "APPEALS" && (
+          <div>
+            {/* Filter Bar Appeals */}
+            <div className="mb-4 flex flex-wrap gap-2 items-center">
+              <div className="flex items-center gap-1 bg-white rounded-xl border border-brown-900/15 px-3 py-1.5 flex-1 min-w-[200px]">
+                <Search size={13} className="text-brown-700/50 shrink-0" />
+                <input
+                  type="text"
+                  placeholder="Cari pengguna, email, atau argumen..."
+                  value={appealSearchInput}
+                  onChange={(e) => setAppealSearchInput(e.target.value)}
+                  onKeyDown={(e) => e.key === "Enter" && applyAppealSearch()}
+                  className="flex-1 text-xs text-brown-900 placeholder:text-brown-700/40 bg-transparent focus:outline-none"
+                />
+                {appealSearchInput && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setAppealSearchInput("");
+                      setAppealSearch("");
+                      setAppealPage(1);
+                    }}
+                  >
+                    <X size={12} className="text-brown-700/50 hover:text-brown-900" />
+                  </button>
+                )}
+              </div>
+              <select
+                value={appealStatus}
+                onChange={(e) => {
+                  setAppealStatus(e.target.value);
+                  setAppealPage(1);
+                }}
+                className="text-xs rounded-xl border border-brown-900/15 bg-white px-3 py-2 text-brown-900 focus:outline-none font-semibold"
+              >
+                {Object.entries(APPEAL_STATUS_LABELS).map(([v, { label }]) => (
+                  <option key={v} value={v}>
+                    {label}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* Content Table / List */}
+            <section className="bg-white rounded-3xl border border-brown-900/10 p-4 sm:p-6 shadow-sm overflow-hidden">
+              <div className="flex items-center justify-between mb-4">
+                <div>
+                  <h2 className="font-display text-sm font-bold text-brown-900 flex items-center gap-2">
+                    <Scale size={16} className="text-orange-500" />
+                    Daftar Permohonan Banding
+                  </h2>
+                  <p className="text-[11px] text-brown-700/60 mt-0.5">
+                    Pengguna yang diblokir/dibatasi dapat mengajukan penyangkalan untuk ditinjau oleh tim admin.
+                  </p>
+                </div>
+              </div>
+
+              {appealLoading ? (
+                <div className="py-16 flex flex-col items-center justify-center text-brown-700/50">
+                  <RefreshCw size={22} className="animate-spin mb-2 text-orange-500" />
+                  <p className="text-xs font-semibold">Memuat data permohonan banding...</p>
+                </div>
+              ) : appealError ? (
+                <div className="p-4 rounded-2xl bg-red-50 border border-red-200 text-red-700 text-xs flex items-center gap-2">
+                  <AlertTriangle size={15} className="shrink-0" />
+                  <span>{appealError}</span>
+                </div>
+              ) : appeals.length === 0 ? (
+                <div className="py-16 text-center text-brown-700/60">
+                  <Scale size={32} className="mx-auto mb-2 text-brown-700/30" />
+                  <p className="text-xs font-semibold text-brown-900">Tidak ada pengajuan banding</p>
+                  <p className="text-[11px] text-brown-700/50 mt-0.5">
+                    {appealSearch || appealStatus !== "ALL"
+                      ? "Tidak ada permohonan yang sesuai dengan filter pencarian saat ini."
+                      : "Belum ada pengguna yang mengajukan permohonan pembatalan ban (unban)."}
+                  </p>
+                </div>
+              ) : (
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left text-xs border-collapse">
+                    <thead>
+                      <tr className="border-b border-brown-900/10 text-[10px] font-bold text-brown-700/60 uppercase tracking-wider">
+                        <th className="py-2.5 px-3">Pengguna</th>
+                        <th className="py-2.5 px-3">Alasan Ban Awal</th>
+                        <th className="py-2.5 px-3">Argumen Pengguna</th>
+                        <th className="py-2.5 px-3 text-center">Status</th>
+                        <th className="py-2.5 px-3 whitespace-nowrap">Tanggal (WIB)</th>
+                        <th className="py-2.5 px-3 text-right">Aksi</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-brown-900/6">
+                      {appeals.map((item) => (
+                        <tr key={item.id} className="hover:bg-cream/40 transition-colors">
+                          <td className="py-3 px-3">
+                            <div className="flex items-center gap-2.5">
+                              <div className="w-8 h-8 rounded-full bg-cream border border-brown-900/10 flex items-center justify-center text-sm shrink-0">
+                                {item.userAvatar && (item.userAvatar.length === 1 || item.userAvatar.length === 2)
+                                  ? item.userAvatar
+                                  : "👤"}
+                              </div>
+                              <div className="min-w-0">
+                                <p className="font-bold text-brown-900 leading-tight truncate">{item.userName}</p>
+                                <p className="text-[10px] text-brown-700/60 truncate">{item.userEmail}</p>
+                              </div>
+                            </div>
+                          </td>
+                          <td className="py-3 px-3 max-w-[180px]">
+                            <p className="text-red-700 font-medium truncate text-[11px]" title={item.banReason}>
+                              {item.banReason}
+                            </p>
+                          </td>
+                          <td className="py-3 px-3 max-w-[260px]">
+                            <p className="text-brown-900 line-clamp-2 italic text-[11px]" title={item.appealReason}>
+                              &quot;{item.appealReason}&quot;
+                            </p>
+                          </td>
+                          <td className="py-3 px-3 text-center whitespace-nowrap">
+                            <AppealStatusBadge status={item.status} />
+                          </td>
+                          <td className="py-3 px-3 text-brown-700/70 whitespace-nowrap text-[11px]">
+                            {fmtWib(item.createdAt)}
+                          </td>
+                          <td className="py-3 px-3 text-right whitespace-nowrap">
+                            <button
+                              type="button"
+                              onClick={() => setSelectedAppeal(item)}
+                              className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-colors shadow-2xs ${
+                                item.status === "PENDING"
+                                  ? "bg-brown-900 text-white hover:bg-orange-500"
+                                  : "bg-cream text-brown-800 hover:bg-white border border-brown-900/10"
+                              }`}
+                            >
+                              {item.status === "PENDING" ? "Tinjau Banding" : "Lihat Detail"}
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+
+              {/* Pagination Appeals */}
+              {!appealLoading && appealPagination.totalPages > 1 && (
+                <div className="mt-6 flex flex-wrap items-center justify-between gap-3 pt-4 border-t border-brown-900/10">
+                  <p className="text-xs text-brown-700/70">
+                    Menampilkan {appeals.length} dari {appealPagination.total} pengajuan · Halaman {appealPagination.page} dari{" "}
+                    {appealPagination.totalPages}
+                  </p>
+                  <div className="flex gap-1.5">
+                    <button
+                      type="button"
+                      onClick={() => setAppealPage((p) => Math.max(1, p - 1))}
+                      disabled={appealPage <= 1}
+                      className="w-8 h-8 rounded-xl border border-brown-900/15 bg-white flex items-center justify-center text-brown-700 hover:bg-cream transition-colors disabled:opacity-40"
+                    >
+                      <ChevronLeft size={14} />
+                    </button>
+                    {Array.from({ length: Math.min(5, appealPagination.totalPages) }, (_, i) => {
+                      const p = Math.max(1, Math.min(appealPagination.totalPages - 4, appealPage - 2)) + i;
+                      return (
+                        <button
+                          key={p}
+                          type="button"
+                          onClick={() => setAppealPage(p)}
+                          className={`w-8 h-8 rounded-xl border text-xs font-bold transition-colors ${
+                            appealPage === p
+                              ? "bg-brown-900 text-white border-brown-900"
+                              : "bg-white text-brown-700 border-brown-900/15 hover:bg-cream"
+                          }`}
+                        >
+                          {p}
+                        </button>
+                      );
+                    })}
+                    <button
+                      type="button"
+                      onClick={() => setAppealPage((p) => Math.min(appealPagination.totalPages, p + 1))}
+                      disabled={appealPage >= appealPagination.totalPages}
+                      className="w-8 h-8 rounded-xl border border-brown-900/15 bg-white flex items-center justify-center text-brown-700 hover:bg-cream transition-colors disabled:opacity-40"
+                    >
+                      <ChevronRight size={14} />
+                    </button>
+                  </div>
+                </div>
+              )}
+            </section>
+          </div>
+        )}
       </div>
 
       {/* Modal Action untuk Laporan Aktif */}
@@ -1286,6 +1788,19 @@ export default function AdminModerationPage() {
             </div>
           </div>
         </div>
+      )}
+
+      {/* Modal Review Banding */}
+      {selectedAppeal && (
+        <AppealReviewModal
+          appeal={selectedAppeal}
+          onClose={() => setSelectedAppeal(null)}
+          onSuccess={() => {
+            setSelectedAppeal(null);
+            loadAppeals();
+            loadPendingAppealsCount();
+          }}
+        />
       )}
     </main>
   );

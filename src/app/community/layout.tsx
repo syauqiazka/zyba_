@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { CommunityProvider } from "./context/CommunityContext";
 import CommunitySidebar from "./components/CommunitySidebar";
 import CommunityGuidelinesGate from "./components/CommunityGuidelinesGate";
+import BanRestrictionBanner from "./components/BanRestrictionBanner";
 
 /**
  * Community Layout — Instagram-style contextual sidebar + mobile off-canvas drawer.
@@ -58,6 +59,8 @@ function CommunityLayoutInner({ children }: { children: React.ReactNode }) {
 
       {/* Main content: mobile has pt-16 to avoid hamburger overlap, reset with md:pt-0 per Bagian 15.1 */}
       <div className="flex-1 min-w-0 h-full min-h-0 overflow-hidden flex flex-col pt-16 md:pt-0">
+        {/* Ban/Suspend restriction banner — muncul di semua halaman community jika akun dibatasi */}
+        <BanRestrictionBanner />
         {children}
       </div>
     </div>
