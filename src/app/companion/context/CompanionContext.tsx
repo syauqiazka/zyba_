@@ -16,6 +16,8 @@ export interface Message {
   content: string;
   flaggedForRisk?: boolean;
   modelUsed?: string;
+  isFallback?: boolean;
+  fallbackReason?: string;
   time: string;
   createdAt?: string;
 }
@@ -130,7 +132,7 @@ export function CompanionProvider({ children }: { children: React.ReactNode }) {
 
   // Persist commStyle, selectedModel & selectedPersona across refreshes via localStorage
   const [commStyle, setCommStyleRaw] = useState<"CASUAL" | "FORMAL" | "FUN">("CASUAL");
-  const [selectedModel, setSelectedModelRaw] = useState<AIModelType>("gemini-3.8-flash");
+  const [selectedModel, setSelectedModelRaw] = useState<AIModelType>("gemini-2.5-flash");
   const [selectedPersona, setSelectedPersonaRaw] = useState<PersonaId>("KINA");
   const [isSending, setIsSending] = useState(false);
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
@@ -142,7 +144,16 @@ export function CompanionProvider({ children }: { children: React.ReactNode }) {
       const savedModel = localStorage.getItem("zyba_companion_model") as AIModelType | null;
       const savedStyle = localStorage.getItem("zyba_companion_style") as "CASUAL" | "FORMAL" | "FUN" | null;
       const savedPersona = localStorage.getItem("zyba_companion_persona") as PersonaId | null;
-      if (savedModel) setSelectedModelRaw(savedModel);
+      if (savedModel) {
+        // Normalisasi alias lama jika ada di storage pengguna
+        const mapped = savedModel === "gemini-3.8-flash" ? "gemini-2.5-flash"
+          : savedModel === "gemini-3.7-flash" ? "gemini-2.0-flash"
+          : savedModel === "gemini-3.5-flash-lite" ? "gemini-1.5-flash"
+          : savedModel === "llama-3.3-70b" ? "llama-3.3-70b-versatile"
+          : savedModel === "ministral-8b" ? "ministral-8b-latest"
+          : savedModel;
+        setSelectedModelRaw(mapped as AIModelType);
+      }
       if (savedStyle) setCommStyleRaw(savedStyle);
       if (savedPersona && ["KINA", "OLLIE", "RUBI", "BRUNO"].includes(savedPersona)) {
         setSelectedPersonaRaw(savedPersona);
@@ -239,8 +250,10 @@ export function CompanionProvider({ children }: { children: React.ReactNode }) {
         if (data.plan === "FREE" || data.plan === "PLUS") {
           setPlan(data.plan);
           setSelectedModelRaw((current) => {
-            if (data.plan === "PLUS") return "openai-premium";
-            return current === "openai-premium" ? "gemini-3.8-flash" : current;
+            if (data.plan === "FREE" && current === "openai-premium") {
+              return "gemini-2.5-flash";
+            }
+            return current;
           });
         }
       })
@@ -359,6 +372,13 @@ export function CompanionProvider({ children }: { children: React.ReactNode }) {
       setCrisisAlert(true);
     }
 
+    // Capture current conversation messages for contextual history
+    const activeConvState = conversations.find((c) => c.id === currentConvId);
+    const historyPayload = (activeConvState?.messages || []).slice(-10).map((m) => ({
+      role: m.role,
+      content: m.content,
+    }));
+
     try {
       const response = await fetch("/api/companion", {
         method: "POST",
@@ -369,6 +389,7 @@ export function CompanionProvider({ children }: { children: React.ReactNode }) {
           model: selectedModel,
           style: commStyle,
           persona: selectedPersona,
+          history: historyPayload,
         }),
       });
 
@@ -410,6 +431,8 @@ export function CompanionProvider({ children }: { children: React.ReactNode }) {
           data.reply ||
           "Aku selalu di sini mendengarkanmu. Ceritakan lebih lanjut apa yang sedang membebani pikiranmu.",
         modelUsed: data.modelUsed || selectedModel,
+        isFallback: data.isFallback,
+        fallbackReason: data.fallbackReason,
         time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
         createdAt: new Date().toISOString(),
       };

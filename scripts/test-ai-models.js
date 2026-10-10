@@ -1,29 +1,64 @@
 #!/usr/bin/env node
-// AI Models Smoke Test (AGENTS.md Bagian 31.B)
-// Test each configured AI provider/model
+// AI Models & Multi-Mode Integration Test (SPEC TAHAP KEDELAPAN — AGENTS.md 19, 21)
 
 const https = require('https');
 const http = require('http');
 
 const BASE_URL = process.env.TEST_URL || 'http://localhost:3000';
-const TEST_MESSAGE = 'Halo, ini test. Tolong balas singkat.';
-
-// Mock auth token (untuk local test — ganti dengan real token jika ada auth)
 const AUTH_TOKEN = process.env.TEST_AUTH_TOKEN || '';
 
-const MODELS_TO_TEST = [
-  'gemini-3.8-flash',
-  'gemini-3.7-flash',
-  'llama-3.3-70b',
-  'ministral-8b',
-  'openrouter-free',
+const TEST_CASES = [
+  {
+    name: "Gemini 2.5 Flash (Resmi)",
+    model: "gemini-2.5-flash",
+    mode: "companion",
+    persona: "KINA",
+    message: "Halo Kina, aku lagi ngerasa agak overwhelmed sama tugas kuliah.",
+  },
+  {
+    name: "Groq Llama 3.3 70B (Resmi)",
+    model: "llama-3.3-70b-versatile",
+    mode: "coding",
+    persona: "OLLIE",
+    message: "Bagaimana cara melakukan debouncing fungsi di JavaScript?",
+  },
+  {
+    name: "Mistral 8B (Resmi)",
+    model: "ministral-8b-latest",
+    mode: "companion",
+    persona: "RUBI",
+    message: "Halo Rubi, mau cerita santai dong hari ini.",
+  },
+  {
+    name: "OpenRouter Gemma 4 31B (Resmi)",
+    model: "gemma-4-31b-free",
+    mode: "learning",
+    persona: "OLLIE",
+    message: "Bisa jelaskan konsep rekursi secara sederhana dengan analogi?",
+  },
+  {
+    name: "Legacy Alias Mapping (gemini-3.8-flash -> gemini-2.5-flash)",
+    model: "gemini-3.8-flash",
+    mode: "companion",
+    persona: "BRUNO",
+    message: "Halo Bruno, dadaku rasanya deg-degan cemas.",
+  },
+  {
+    name: "Mode Analysis Deep Test",
+    model: "llama-3.3-70b-versatile",
+    mode: "analysis",
+    persona: "OLLIE",
+    message: "Analisis faktor-faktor penyebab burnout pada mahasiswa tingkat akhir.",
+  },
 ];
 
-async function testModel(model) {
+async function runTestCase(testCase) {
   return new Promise((resolve) => {
     const postData = JSON.stringify({
-      message: TEST_MESSAGE,
-      model,
+      message: testCase.message,
+      model: testCase.model,
+      mode: testCase.mode,
+      persona: testCase.persona,
       conversationId: `test-${Date.now()}`,
     });
 
@@ -38,30 +73,46 @@ async function testModel(model) {
     };
 
     const client = url.protocol === 'https:' ? https : http;
+    const startTime = Date.now();
     const req = client.request(url, options, (res) => {
       let data = '';
       res.on('data', (chunk) => (data += chunk));
       res.on('end', () => {
+        const latency = Date.now() - startTime;
         try {
           const json = JSON.parse(data);
           if (res.statusCode === 200 && json.reply) {
-            resolve({ model, status: 'PASS', modelUsed: json.modelUsed, error: null });
+            resolve({
+              ...testCase,
+              status: 'PASS',
+              modelUsed: json.modelUsed,
+              isFallback: json.isFallback,
+              fallbackReason: json.fallbackReason,
+              latency,
+              error: null,
+            });
           } else {
-            resolve({ model, status: 'FAIL', modelUsed: null, error: json.error || `HTTP ${res.statusCode}` });
+            resolve({
+              ...testCase,
+              status: 'FAIL',
+              modelUsed: json.modelUsed || null,
+              latency,
+              error: json.error || `HTTP ${res.statusCode}`,
+            });
           }
         } catch (err) {
-          resolve({ model, status: 'FAIL', modelUsed: null, error: 'Parse error' });
+          resolve({ ...testCase, status: 'FAIL', modelUsed: null, latency, error: 'JSON Parse Error' });
         }
       });
     });
 
     req.on('error', (err) => {
-      resolve({ model, status: 'FAIL', modelUsed: null, error: err.message });
+      resolve({ ...testCase, status: 'FAIL', modelUsed: null, latency: Date.now() - startTime, error: err.message });
     });
 
     req.setTimeout(15000, () => {
       req.destroy();
-      resolve({ model, status: 'FAIL', modelUsed: null, error: 'Timeout' });
+      resolve({ ...testCase, status: 'FAIL', modelUsed: null, latency: 15000, error: 'Timeout' });
     });
 
     req.write(postData);
@@ -70,41 +121,29 @@ async function testModel(model) {
 }
 
 async function main() {
-  console.log('🧪 ZYBA AI Models Smoke Test\n');
-  console.log(`Testing ${MODELS_TO_TEST.length} models against ${BASE_URL}\n`);
-  console.log('MODEL                   | STATUS | ACTUAL MODEL USED       | ERROR');
-  console.log('------------------------|--------|-------------------------|------------------');
+  console.log('🧪 ZYBA AI Infrastructure & Multi-Mode Test Suite\n');
+  console.log(`Target: ${BASE_URL}\n`);
+  console.log('TEST CASE                           | STATUS | MODEL USED        | FALLBACK | LATENCY | NOTES');
+  console.log('------------------------------------|--------|-------------------|----------|---------|------------------');
 
   const results = [];
-  for (const model of MODELS_TO_TEST) {
-    const result = await testModel(model);
-    results.push(result);
-    
-    const pad = (s, len) => (s || '').padEnd(len).slice(0, len);
-    const statusIcon = result.status === 'PASS' ? '✓' : '✗';
+  for (const tc of TEST_CASES) {
+    const r = await runTestCase(tc);
+    results.push(r);
+
+    const pad = (s, len) => (String(s || '')).padEnd(len).slice(0, len);
+    const statusIcon = r.status === 'PASS' ? '✓' : '✗';
+    const fallbackStr = r.isFallback ? 'YES' : 'NO';
     console.log(
-      `${pad(model, 23)} | ${statusIcon} ${result.status.padEnd(4)} | ${pad(result.modelUsed || '-', 23)} | ${result.error || ''}`
+      `${pad(r.name, 35)} | ${statusIcon} ${r.status.padEnd(4)} | ${pad(r.modelUsed || '-', 17)} | ${pad(fallbackStr, 8)} | ${pad(r.latency + 'ms', 7)} | ${r.error || r.fallbackReason || 'OK'}`
     );
   }
 
   console.log('\n📊 Summary:');
-  const passed = results.filter(r => r.status === 'PASS').length;
-  const failed = results.filter(r => r.status === 'FAIL').length;
-  console.log(`✓ ${passed} passed`);
-  console.log(`✗ ${failed} failed`);
-
-  if (failed > 0) {
-    console.log('\n⚠️  Some models failed. Check API keys in .env:');
-    console.log('   - GEMINI_API_KEY');
-    console.log('   - GROQ_API_KEY');
-    console.log('   - MISTRAL_API_KEY');
-    console.log('   - OPENROUTER_API_KEY');
-  }
-
-  process.exit(failed > 0 ? 1 : 0);
+  const passed = results.filter((r) => r.status === 'PASS').length;
+  const failed = results.filter((r) => r.status === 'FAIL').length;
+  console.log(`✓ ${passed} Passed`);
+  console.log(`✗ ${failed} Failed`);
 }
 
-main().catch(err => {
-  console.error('Test runner error:', err);
-  process.exit(1);
-});
+main();

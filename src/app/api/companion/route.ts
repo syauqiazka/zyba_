@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { detectRisk, CRISIS_RESOURCES } from "@/backend/crisis/crisisDetection";
 import { processMultiModelAIResponse, AIModelType } from "@/backend/ai/aiModelManager";
 import { PersonaId } from "@/backend/ai/personas";
+import { AIMode } from "@/backend/ai/types";
+import { resolveModelDescriptor, getDefaultModelForMode } from "@/backend/ai/modelRegistry";
 import { verifySessionToken } from "@/lib/auth";
 import { consumeMessageQuota, releaseMessageQuota } from "@/backend/billing/entitlements";
 import { companionDb } from "@/backend/db/companionClient";
@@ -30,6 +32,7 @@ export async function POST(req: NextRequest) {
     const {
       message,
       model,
+      mode = "companion",
       persona = "KINA",
       communicationStyle,
       history = [],
@@ -37,6 +40,7 @@ export async function POST(req: NextRequest) {
     } = body as {
       message: string;
       model?: AIModelType;
+      mode?: AIMode;
       persona?: PersonaId;
       communicationStyle?: string;
       history?: { role: "USER" | "ASSISTANT"; content: string }[];
@@ -66,26 +70,6 @@ export async function POST(req: NextRequest) {
       item.content.length > 4000
     )) {
       return NextResponse.json({ error: "Riwayat percakapan tidak valid." }, { status: 400 });
-    }
-
-    const FREE_MODELS: AIModelType[] = [
-      "gemini-3.8-flash",
-      "gemini-3.7-flash",
-      "gemini-3.5-flash-lite",
-      "llama-3.3-70b",
-      "qwen-3.8-27b",
-      "ministral-8b",
-      "openrouter-free",
-      "nemotron-3-ultra",
-      "gemma-4-31b",
-      "zyba-default",
-    ];
-
-    if (model && model !== "openai-premium" && !FREE_MODELS.includes(model)) {
-      return NextResponse.json(
-        { error: "Model tidak tersedia untuk akun Free." },
-        { status: 403 }
-      );
     }
 
     if (conversationId && !conversationId.startsWith("conv-")) {
@@ -134,6 +118,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    // Jika model openai-premium diminta oleh user Free, tolak
     if (model === "openai-premium" && quotaCheck.plan !== "PLUS") {
       await releaseMessageQuota(session.userId).catch(() => undefined);
       return NextResponse.json(
@@ -142,44 +127,64 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Free users can use the existing provider pool. Premium is pinned to
-    // the paid OpenAI model so the 60-chat entitlement actually unlocks
-    // paid inference instead of merely changing the quota number.
-    const effectiveModel: AIModelType =
-      quotaCheck.plan === "PLUS"
-        ? "openai-premium"
-        : (model || "gemini-3.8-flash");
+    // Resolusi model yang fleksibel & optimal
+    let effectiveModel: AIModelType;
+    if (model) {
+      const resolved = resolveModelDescriptor(model);
+      effectiveModel = (resolved ? resolved.id : model) as AIModelType;
+    } else {
+      // Default model sesuai mode & plan pengguna
+      const defaultDesc = getDefaultModelForMode(mode, quotaCheck.plan);
+      effectiveModel = defaultDesc.id;
+    }
+
+    // Otomatis tarik riwayat percakapan dari DB jika history dari client kosong
+    let finalHistory = safeHistory;
+    if (finalHistory.length === 0 && conversationId && !conversationId.startsWith("conv-")) {
+      try {
+        const recentMessages = await companionDb.message.findMany({
+          where: { conversationId },
+          orderBy: { createdAt: "desc" },
+          take: 12,
+          select: { role: true, content: true },
+        });
+        finalHistory = recentMessages
+          .reverse()
+          .filter((m) => !!m.content)
+          .map((m) => ({
+            role: m.role as "USER" | "ASSISTANT",
+            content: m.content as string,
+          }));
+      } catch (historyErr) {
+        console.warn("[Companion] Failed to fetch context history from DB:", historyErr);
+      }
+    }
 
     let aiResult;
     try {
       aiResult = await processMultiModelAIResponse({
         message: trimmedMessage,
         model: effectiveModel,
+        mode,
         persona,
-        history: safeHistory,
+        communicationStyle: communicationStyle as any,
+        history: finalHistory,
+        userPlan: quotaCheck.plan,
+        userId: session.userId,
       });
     } catch (aiErr: any) {
-      // AI failure must not burn the user's daily slot. Keep release failure
-      // from masking the provider error, because the request is already failed.
+      // AI failure must not burn the user's daily slot.
       try {
         await releaseMessageQuota(session.userId);
       } catch (releaseErr) {
         console.error("[Companion] Failed to release AI quota:", releaseErr);
       }
 
-      if (
-        aiErr?.message === "PREMIUM_AI_NOT_CONFIGURED" ||
-        aiErr?.message === "PREMIUM_AI_UNAVAILABLE" ||
-        aiErr?.message === "PREMIUM_AI_EMPTY_RESPONSE" ||
-        aiErr?.message === "RATE_LIMIT"
-      ) {
+      if (aiErr?.message === "RATE_LIMIT") {
         return NextResponse.json(
           {
             error: "AI_TEMPORARILY_UNAVAILABLE",
-            message:
-              aiErr?.message === "RATE_LIMIT"
-                ? "Layanan AI sedang padat. Silakan coba lagi sebentar."
-                : "AI Premium sedang tidak tersedia. Silakan coba lagi beberapa saat lagi.",
+            message: "Layanan AI sedang padat. Silakan coba lagi sebentar.",
           },
           { status: 503 }
         );
@@ -213,33 +218,27 @@ export async function POST(req: NextRequest) {
         });
 
         // Achievement & Badge check (fire-and-forget, no await to keep response fast)
-void (async () => {
-  try {
-    const convCount = await companionDb.conversation.count({
-      where: { userId: session.userId },
-    });
+        void (async () => {
+          try {
+            const convCount = await companionDb.conversation.count({
+              where: { userId: session.userId },
+            });
 
-    await checkAndUnlock(session.userId, {
-      type: "companion_message",
-      conversationCount: convCount,
-    });
-  } catch (err) {
-    console.warn("[Companion Achievement] Check error:", err);
-  }
+            await checkAndUnlock(session.userId, {
+              type: "companion_message",
+              conversationCount: convCount,
+            });
+          } catch (err) {
+            console.warn("[Companion Achievement] Check error:", err);
+          }
 
-  try {
-    const { triggerBadgeCheck } = await import(
-      "@/lib/badges/badgeService"
-    );
-
-    await triggerBadgeCheck(
-      session.userId,
-      "companion_message"
-    );
-  } catch (err) {
-    console.warn("[Companion Badge] Check error:", err);
-  }
-})();
+          try {
+            const { triggerBadgeCheck } = await import("@/lib/badges/badgeService");
+            await triggerBadgeCheck(session.userId, "companion_message");
+          } catch (err) {
+            console.warn("[Companion Badge] Check error:", err);
+          }
+        })();
       } catch (dbErr) {
         console.error("[Companion] Message save failed:", dbErr);
         // Continue — AI reply tetap dikembalikan meski save gagal
@@ -252,6 +251,10 @@ void (async () => {
       crisisResources: null,
       emotionTag: aiResult.emotionTag,
       modelUsed: aiResult.modelUsed,
+      isFallback: aiResult.isFallback || false,
+      requestedModel: aiResult.requestedModel,
+      fallbackReason: aiResult.fallbackReason,
+      latencyMs: aiResult.latencyMs,
       providerStatus: aiResult.providerStatus,
       quotaRemaining: Math.max(0, quotaCheck.remaining - 1),
       quotaLimit: quotaCheck.limit,

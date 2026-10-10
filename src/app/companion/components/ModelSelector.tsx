@@ -2,7 +2,8 @@
 
 import React, { useState, useRef, useEffect } from "react";
 import { createPortal } from "react-dom";
-import { AIModelType } from "@/backend/ai/aiModelManager";
+import { AIModelType } from "@/backend/ai/types";
+import { LEGACY_MODEL_ALIAS_MAP } from "@/backend/ai/modelRegistry";
 
 interface Props {
   selectedModel: AIModelType;
@@ -17,64 +18,81 @@ interface ModelOption {
   badge: string;
   desc: string;
   icon: string;
+  tier: "FREE" | "PLUS" | "ALL";
 }
 
 const MODEL_OPTIONS: ModelOption[] = [
   {
-    id: "openai-premium",
-    name: "GPT-6.1 Sol",
-    badge: "Premium",
-    desc: "AI premium ZYBA dengan model berbayar OpenAI",
-    icon: "✨",
-  },
-  {
-    id: "gemini-3.8-flash",
-    name: "Gemini 3.8 Flash",
-    badge: "Terbaru",
-    desc: "Most intelligent Flash model, long-horizon tasks",
+    id: "gemini-2.5-flash",
+    name: "Gemini 2.5 Flash",
+    badge: "Rekomendasi",
+    desc: "Model unggulan Google, cerdas & konteks luas",
     icon: "⚡",
+    tier: "ALL",
   },
   {
-    id: "gemini-3.7-flash",
-    name: "Gemini 3.7 Flash",
+    id: "gemini-2.0-flash",
+    name: "Gemini 2.0 Flash",
     badge: "Cepat",
-    desc: "High-speed Flash untuk coding & agentic tool use",
+    desc: "Generasi baru Google untuk respons instan",
     icon: "🚀",
+    tier: "ALL",
   },
   {
-    id: "gemini-3.5-flash-lite",
-    name: "Gemini 3.5 Flash Lite",
-    badge: "Hemat",
-    desc: "Fastest, most cost-effective 3.5 model",
-    icon: "💨",
-  },
-  {
-    id: "llama-3.3-70b",
+    id: "llama-3.3-70b-versatile",
     name: "Groq Llama 3.3 70B",
     badge: "Ultra Fast",
-    desc: "Inferensi kilat via Groq LPU",
+    desc: "Inference super cepat via Groq LPU hardware",
     icon: "🦙",
+    tier: "ALL",
   },
   {
-    id: "ministral-8b",
+    id: "llama-3.1-8b-instant",
+    name: "Groq Llama 3.1 8B",
+    badge: "Kilat",
+    desc: "Latensi terendah untuk interaksi percakapan tanpa jeda",
+    icon: "⚡",
+    tier: "ALL",
+  },
+  {
+    id: "qwen-2.5-32b",
+    name: "Groq Qwen 2.5 32B",
+    badge: "Logika & Code",
+    desc: "Penalaran matematika & coding via Groq",
+    icon: "🧠",
+    tier: "ALL",
+  },
+  {
+    id: "ministral-8b-latest",
     name: "Ministral 8B",
-    badge: "Gratis",
-    desc: "Mistral's latest small model, efficient",
+    badge: "Reflektif",
+    desc: "Model compact Mistral AI, terstruktur untuk refleksi",
     icon: "🌊",
+    tier: "ALL",
   },
   {
-    id: "nemotron-3-ultra",
-    name: "NVIDIA Nemotron 3 Ultra",
-    badge: "Gratis",
-    desc: "55B MoE, reasoning frontier dari NVIDIA",
-    icon: "🟢",
-  },
-  {
-    id: "gemma-4-31b",
+    id: "gemma-4-31b-free",
     name: "Google Gemma 4 31B",
     badge: "Gratis",
-    desc: "Dense multimodal, 256K context",
+    desc: "Open multimodal via OpenRouter free tier",
     icon: "💎",
+    tier: "ALL",
+  },
+  {
+    id: "nemotron-3-ultra-free",
+    name: "NVIDIA Nemotron 3 Ultra",
+    badge: "Frontier",
+    desc: "NVIDIA reasoning frontier via OpenRouter free tier",
+    icon: "🟢",
+    tier: "ALL",
+  },
+  {
+    id: "openai-premium",
+    name: "GPT Premium",
+    badge: "Plus",
+    desc: "Inference prioritas OpenAI untuk pelanggan Zyba Plus",
+    icon: "✨",
+    tier: "PLUS",
   },
 ];
 
@@ -91,7 +109,10 @@ export default function ModelSelector({
   const dropdownPortalRef = useRef<HTMLDivElement>(null);
   const [dropdownPosition, setDropdownPosition] = useState<{ top?: number; bottom?: number; left: number; width: number } | null>(null);
 
-  // Close dropdown when clicked outside (sama persis gender/kota di signup)
+  // Normalisasi model ID lama jika ada di state
+  const normalizedModelId: AIModelType = (LEGACY_MODEL_ALIAS_MAP[selectedModel] || selectedModel) as AIModelType;
+
+  // Close dropdown when clicked outside
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       const target = event.target as Node;
@@ -145,12 +166,15 @@ export default function ModelSelector({
     };
   }, [isOpen, dropDirection]);
 
+  // Pengguna PLUS dapat mengakses seluruh model. Pengguna FREE dapat mengakses model bertier ALL/FREE
   const planOptions = MODEL_OPTIONS.filter((m) =>
-    plan === "PLUS" ? m.id === "openai-premium" : m.id !== "openai-premium"
+    plan === "PLUS" ? true : m.tier !== "PLUS"
   );
 
   const currentOption =
-    planOptions.find((m) => m.id === selectedModel) || planOptions[0];
+    planOptions.find((m) => m.id === normalizedModelId) ||
+    MODEL_OPTIONS.find((m) => m.id === normalizedModelId) ||
+    planOptions[0];
 
   const filteredOptions = planOptions.filter(
     (m) =>
@@ -160,7 +184,7 @@ export default function ModelSelector({
 
   return (
     <div className="relative inline-block text-left z-[60]" ref={dropdownRef}>
-      {/* Trigger Button — Style sama persis dropdown gender/kota di signup ProfileSecurityFlow */}
+      {/* Trigger Button */}
       <button
         ref={triggerRef}
         type="button"
@@ -182,124 +206,122 @@ export default function ModelSelector({
         </span>
       </button>
 
-      {/* Popover Dropdown (Membuka ke atas atau bawah sesuai posisi, selalu aman di dalam layar) */}
+      {/* Popover Dropdown */}
       {isOpen && dropdownPosition && typeof document !== "undefined" &&
         createPortal(
           <div
-          ref={dropdownPortalRef}
-          style={{
-            position: "fixed",
-            top: dropdownPosition?.top,
-            bottom: dropdownPosition?.bottom,
-            left: dropdownPosition?.left,
-            width: dropdownPosition?.width,
-          }}
-          className="fixed max-h-[min(70vh,520px)] overflow-hidden bg-white border-2 border-brown-900/15 rounded-2xl shadow-2xl z-[100] p-2.5 flex flex-col gap-1.5 animate-in fade-in duration-150"
-        >
-          {/* Header Popover */}
-          <div className="flex items-center justify-between px-2 py-1 border-b border-brown-900/10 mb-1">
-            <div className="flex items-center gap-1.5">
-              <span className="text-xs">⚙️</span>
-              <span className="text-[11px] font-extrabold text-brown-900">
-                Pilih Model Kecerdasan AI
-              </span>
-            </div>
-            <button
-              type="button"
-              onClick={() => setIsOpen(false)}
-              className="text-xs text-brown-700/60 hover:text-brown-900 font-bold p-0.5 rounded-md hover:bg-brown-900/5 transition-colors"
-            >
-              ✕
-            </button>
-          </div>
-
-          {/* Search Filter Input */}
-          <div className="relative px-1">
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Cari model..."
-              autoFocus
-              className="w-full bg-cream/50 border border-brown-900/15 rounded-xl px-2.5 py-1.5 pl-7 text-xs text-brown-900 focus:outline-none focus:ring-1 focus:ring-orange-500 font-medium placeholder:text-brown-700/40"
-            />
-            <span className="absolute left-3 top-2 text-[10px] text-brown-700/50">
-              🔍
-            </span>
-            {searchQuery && (
+            ref={dropdownPortalRef}
+            style={{
+              position: "fixed",
+              top: dropdownPosition?.top,
+              bottom: dropdownPosition?.bottom,
+              left: dropdownPosition?.left,
+              width: dropdownPosition?.width,
+            }}
+            className="fixed max-h-[min(70vh,520px)] overflow-hidden bg-white border-2 border-brown-900/15 rounded-2xl shadow-2xl z-[100] p-2.5 flex flex-col gap-1.5 animate-in fade-in duration-150"
+          >
+            {/* Header Popover */}
+            <div className="flex items-center justify-between px-2 py-1 border-b border-brown-900/10 mb-1">
+              <div className="flex items-center gap-1.5">
+                <span className="text-xs">⚙️</span>
+                <span className="text-[11px] font-extrabold text-brown-900">
+                  Pilih Model Kecerdasan AI
+                </span>
+              </div>
               <button
                 type="button"
-                onClick={() => setSearchQuery("")}
-                className="absolute right-3 top-2 text-[10px] text-brown-700/50 hover:text-brown-900 font-bold"
+                onClick={() => setIsOpen(false)}
+                className="text-xs text-brown-700/60 hover:text-brown-900 font-bold p-0.5 rounded-md hover:bg-brown-900/5 transition-colors"
               >
                 ✕
               </button>
-            )}
-          </div>
+            </div>
 
-          {/* Options List */}
-          <div className="max-h-60 overflow-y-auto space-y-1 p-0.5 mt-1">
-            {filteredOptions.length === 0 ? (
-              <p className="text-xs text-brown-700/50 text-center py-4">
-                Model tidak ditemukan.
-              </p>
-            ) : (
-              filteredOptions.map((opt) => {
-                const isSelected = selectedModel === opt.id;
-                return (
-                  <button
-                    key={opt.id}
-                    type="button"
-                    onClick={() => {
-                      setSelectedModel(opt.id);
-                      setIsOpen(false);
-                    }}
-                    className={`w-full text-left p-2.5 rounded-xl text-xs font-medium transition-colors flex items-start justify-between gap-2 ${
-                      isSelected
-                        ? "bg-green-100 text-brown-900 font-bold border border-green-300/60 shadow-2xs"
-                        : "text-brown-700 hover:bg-cream/70 hover:text-brown-900 border border-transparent"
-                    }`}
-                  >
-                    <div className="flex items-start gap-2.5 min-w-0">
-                      <span className="text-base shrink-0 mt-0.5">
-                        {opt.icon}
-                      </span>
-                      <div className="min-w-0">
-                        <div className="flex items-center gap-1.5">
-                          <p className="text-xs font-bold text-brown-900 truncate">
-                            {opt.name}
+            {/* Search Filter Input */}
+            <div className="relative px-1">
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Cari model..."
+                autoFocus
+                className="w-full bg-cream/50 border border-brown-900/15 rounded-xl px-2.5 py-1.5 pl-7 text-xs text-brown-900 focus:outline-none focus:ring-1 focus:ring-orange-500 font-medium placeholder:text-brown-700/40"
+              />
+              <span className="absolute left-3 top-2 text-[10px] text-brown-700/50">
+                🔍
+              </span>
+              {searchQuery && (
+                <button
+                  type="button"
+                  onClick={() => setSearchQuery("")}
+                  className="absolute right-3 top-2 text-[10px] text-brown-700/50 hover:text-brown-900 font-bold"
+                >
+                  ✕
+                </button>
+              )}
+            </div>
+
+            {/* Options List */}
+            <div className="max-h-60 overflow-y-auto space-y-1 p-0.5 mt-1">
+              {filteredOptions.length === 0 ? (
+                <p className="text-xs text-brown-700/50 text-center py-4">
+                  Model tidak ditemukan.
+                </p>
+              ) : (
+                filteredOptions.map((opt) => {
+                  const isSelected = normalizedModelId === opt.id;
+                  return (
+                    <button
+                      key={opt.id}
+                      type="button"
+                      onClick={() => {
+                        setSelectedModel(opt.id);
+                        setIsOpen(false);
+                      }}
+                      className={`w-full text-left p-2.5 rounded-xl text-xs font-medium transition-colors flex items-start justify-between gap-2 ${
+                        isSelected
+                          ? "bg-green-100 text-brown-900 font-bold border border-green-300/60 shadow-2xs"
+                          : "text-brown-700 hover:bg-cream/70 hover:text-brown-900 border border-transparent"
+                      }`}
+                    >
+                      <div className="flex items-start gap-2.5 min-w-0">
+                        <span className="text-base shrink-0 mt-0.5">
+                          {opt.icon}
+                        </span>
+                        <div className="min-w-0">
+                          <div className="flex items-center gap-1.5">
+                            <p className="text-xs font-bold text-brown-900 truncate">
+                              {opt.name}
+                            </p>
+                            <span
+                              className={`text-[9px] px-1.5 py-0.2 rounded-full font-semibold ${
+                                opt.badge === "Plus" || opt.badge === "Rekomendasi"
+                                  ? "bg-orange-100 text-orange-600 font-bold"
+                                  : "bg-cream text-brown-700/70"
+                              }`}
+                            >
+                              {opt.badge}
+                            </span>
+                          </div>
+                          <p className="text-[11px] text-brown-700/70 line-clamp-1 mt-0.5">
+                            {opt.desc}
                           </p>
-                          <span
-                            className={`text-[9px] px-1.5 py-0.2 rounded-full font-semibold ${
-                              opt.badge === "Pro" || opt.badge === "Rekomendasi"
-                                ? "bg-orange-100 text-orange-600 font-bold"
-                                : "bg-cream text-brown-700/70"
-                            }`}
-                          >
-                            {opt.badge}
-                          </span>
                         </div>
-                        <p className="text-[11px] text-brown-700/70 line-clamp-1 mt-0.5">
-                          {opt.desc}
-                        </p>
                       </div>
-                    </div>
 
-                    {isSelected && (
-                      <span className="text-green-600 font-bold text-sm ml-1 shrink-0 mt-0.5">
-                        ✓
-                      </span>
-                    )}
-                  </button>
-                );
-              })
-            )}
-          </div>
-        </div>
-,
+                      {isSelected && (
+                        <span className="text-green-600 font-bold text-sm ml-1 shrink-0 mt-0.5">
+                          ✓
+                        </span>
+                      )}
+                    </button>
+                  );
+                })
+              )}
+            </div>
+          </div>,
           document.body
-        )
-      }
+        )}
     </div>
   );
 }

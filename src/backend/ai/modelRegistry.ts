@@ -1,94 +1,255 @@
-// Centralized AI Model Registry (AGENTS.md 19.4)
-// Single source of truth untuk models yang tersedia
+// src/backend/ai/modelRegistry.ts
+// Centralized AI Model Registry (AGENTS.md 19, SPEC Multi-Provider & Modes)
 
-import { AIModelType } from "./aiModelManager";
+import { AIModelType, ModelDescriptor, AIMode, AIProviderId } from "./types";
 
-export interface ModelDefinition {
-  id: AIModelType;
-  provider: "gemini" | "groq" | "mistral" | "openrouter";
-  label: string;
-  description: string;
-  enabled: boolean;
-  requiresApiKey: string; // env var name
-}
-
-export const MODEL_REGISTRY: ModelDefinition[] = [
+export const MODEL_REGISTRY: ModelDescriptor[] = [
+  // ── 1. Google Gemini (Tier Utama untuk Chat & Wellness) ──
   {
-    id: "gemini-3.8-flash",
+    id: "gemini-2.5-flash",
+    canonicalId: "gemini-2.5-flash",
     provider: "gemini",
-    label: "Gemini 3.8 Flash",
-    description: "Model terbaru Google, tercepat untuk coding & wellness conversation",
-    enabled: true,
+    label: "Gemini 2.5 Flash",
+    description: "Model unggulan Google, cerdas, berkecepatan tinggi dengan jendela konteks luas.",
+    badge: "Utama",
+    icon: "⚡",
     requiresApiKey: "GEMINI_API_KEY",
+    recommendedModes: ["companion", "general_chat", "learning"],
+    tier: "ALL",
+    maxContextTokens: 32000,
+    defaultTemperature: 0.7,
   },
   {
-    id: "gemini-3.7-flash",
+    id: "gemini-2.0-flash",
+    canonicalId: "gemini-2.0-flash",
     provider: "gemini",
-    label: "Gemini 3.7 Flash",
-    description: "High-speed model untuk everyday tasks",
-    enabled: true,
+    label: "Gemini 2.0 Flash",
+    description: "Generasi baru Gemini untuk respons kilat dan penalaran multimodal.",
+    badge: "Cepat",
+    icon: "🚀",
     requiresApiKey: "GEMINI_API_KEY",
+    recommendedModes: ["general_chat", "analysis"],
+    tier: "ALL",
+    maxContextTokens: 32000,
+    defaultTemperature: 0.7,
   },
   {
-    id: "gemini-3.5-flash-lite",
+    id: "gemini-1.5-flash",
+    canonicalId: "gemini-1.5-flash",
     provider: "gemini",
-    label: "Gemini 3.5 Flash Lite",
-    description: "Hemat, cocok untuk high-throughput",
-    enabled: true,
+    label: "Gemini 1.5 Flash",
+    description: "Model stabil dan hemat untuk high-throughput everyday tasks.",
+    badge: "Stabil",
+    icon: "💨",
     requiresApiKey: "GEMINI_API_KEY",
+    recommendedModes: ["companion", "learning"],
+    tier: "ALL",
+    maxContextTokens: 16000,
+    defaultTemperature: 0.7,
   },
+
+  // ── 2. Groq LPU (Inference Ultra-Cepat) ──
   {
-    id: "llama-3.3-70b",
+    id: "llama-3.3-70b-versatile",
+    canonicalId: "llama-3.3-70b-versatile",
     provider: "groq",
-    label: "Llama 3.3 70B",
-    description: "Open model dengan inference tercepat (Groq LPU)",
-    enabled: true,
+    label: "Groq Llama 3.3 70B",
+    description: "Model Open Source 70B dengan inferensi super cepat di hardware LPU.",
+    badge: "Ultra Fast",
+    icon: "🦙",
     requiresApiKey: "GROQ_API_KEY",
+    recommendedModes: ["general_chat", "coding", "analysis"],
+    tier: "ALL",
+    maxContextTokens: 8000,
+    defaultTemperature: 0.6,
   },
   {
-    id: "ministral-8b",
+    id: "llama-3.1-8b-instant",
+    canonicalId: "llama-3.1-8b-instant",
+    provider: "groq",
+    label: "Groq Llama 3.1 8B",
+    description: "Latensi terendah untuk interaksi percakapan instan tanpa jeda.",
+    badge: "Kilat",
+    icon: "⚡",
+    requiresApiKey: "GROQ_API_KEY",
+    recommendedModes: ["general_chat", "companion"],
+    tier: "ALL",
+    maxContextTokens: 8000,
+    defaultTemperature: 0.7,
+  },
+  {
+    id: "qwen-2.5-32b",
+    canonicalId: "qwen-2.5-32b",
+    provider: "groq",
+    label: "Groq Qwen 2.5 32B",
+    description: "Penalaran matematika, logika, dan coding yang tangguh via Groq.",
+    badge: "Logika & Code",
+    icon: "🧠",
+    requiresApiKey: "GROQ_API_KEY",
+    recommendedModes: ["coding", "learning"],
+    tier: "ALL",
+    maxContextTokens: 8000,
+    defaultTemperature: 0.5,
+  },
+
+  // ── 3. Mistral AI (Eropa / Penalaran Terstruktur) ──
+  {
+    id: "ministral-8b-latest",
+    canonicalId: "ministral-8b-latest",
     provider: "mistral",
     label: "Ministral 8B",
-    description: "Model compact Mistral, efficient untuk chat",
-    enabled: true,
+    description: "Model efisien Mistral AI, reflektif dan terstruktur untuk chat.",
+    badge: "Reflektif",
+    icon: "🌊",
     requiresApiKey: "MISTRAL_API_KEY",
+    recommendedModes: ["companion", "learning"],
+    tier: "ALL",
+    maxContextTokens: 8000,
+    defaultTemperature: 0.7,
   },
   {
-    id: "nemotron-3-ultra",
+    id: "mistral-small-latest",
+    canonicalId: "mistral-small-latest",
+    provider: "mistral",
+    label: "Mistral Small",
+    description: "Kemampuan penalaran mendalam dan analisis yang seimbang.",
+    badge: "Analisis",
+    icon: "🎯",
+    requiresApiKey: "MISTRAL_API_KEY",
+    recommendedModes: ["analysis", "coding"],
+    tier: "ALL",
+    maxContextTokens: 16000,
+    defaultTemperature: 0.5,
+  },
+
+  // ── 4. OpenRouter Free Tier (Akses Terbuka & Variatif) ──
+  {
+    id: "gemma-4-31b-free",
+    canonicalId: "google/gemma-4-31b-it:free",
     provider: "openrouter",
-    label: "Nemotron 3 Ultra",
-    description: "NVIDIA model via OpenRouter (free tier)",
-    enabled: true,
+    label: "Google Gemma 4 31B",
+    description: "Model open multimodal mutakhir dari Google via OpenRouter free tier.",
+    badge: "Gratis",
+    icon: "💎",
     requiresApiKey: "OPENROUTER_API_KEY",
+    recommendedModes: ["companion", "general_chat", "analysis"],
+    tier: "ALL",
+    maxContextTokens: 8000,
+    defaultTemperature: 0.7,
   },
   {
-    id: "gemma-4-31b",
+    id: "nemotron-3-ultra-free",
+    canonicalId: "nvidia/nemotron-3-ultra-550b-a55b:free",
     provider: "openrouter",
-    label: "Gemma 4 31B",
-    description: "Google open model via OpenRouter (free tier)",
-    enabled: true,
+    label: "NVIDIA Nemotron 3 Ultra",
+    description: "Frontier MoE reasoning model dari NVIDIA via OpenRouter free tier.",
+    badge: "Frontier",
+    icon: "🟢",
     requiresApiKey: "OPENROUTER_API_KEY",
+    recommendedModes: ["analysis", "learning"],
+    tier: "ALL",
+    maxContextTokens: 8000,
+    defaultTemperature: 0.6,
+  },
+  {
+    id: "north-mini-code-free",
+    canonicalId: "cohere/north-mini-code:free",
+    provider: "openrouter",
+    label: "North Mini Code",
+    description: "Model khusus coding dan sintaks via OpenRouter free tier.",
+    badge: "Code",
+    icon: "💻",
+    requiresApiKey: "OPENROUTER_API_KEY",
+    recommendedModes: ["coding"],
+    tier: "ALL",
+    maxContextTokens: 8000,
+    defaultTemperature: 0.3,
+  },
+
+  // ── 5. OpenAI (Modular / Ready Saat Diaktifkan) ──
+  {
+    id: "openai-premium",
+    canonicalId: process.env.OPENAI_PREMIUM_MODEL || "gpt-4o-mini",
+    provider: "openai",
+    label: "GPT Premium",
+    description: "Inference prioritas tingkat lanjut OpenAI untuk pelanggan Zyba Plus.",
+    badge: "Plus",
+    icon: "✨",
+    requiresApiKey: "OPENAI_API_KEY",
+    recommendedModes: ["companion", "analysis", "coding"],
+    tier: "PLUS",
+    maxContextTokens: 16000,
+    defaultTemperature: 0.7,
   },
 ];
 
 /**
- * Get models yang benar-benar tersedia (API key configured)
- * Hanya model ini yang boleh muncul di UI selector
+ * Mapping alias lama ke ID kanonikal modern
  */
-export function getAvailableModels(): ModelDefinition[] {
+export const LEGACY_MODEL_ALIAS_MAP: Record<string, AIModelType> = {
+  "gemini-3.8-flash": "gemini-2.5-flash",
+  "gemini-3.7-flash": "gemini-2.0-flash",
+  "gemini-3.5-flash-lite": "gemini-1.5-flash",
+  "llama-3.3-70b": "llama-3.3-70b-versatile",
+  "qwen-3.8-27b": "qwen-2.5-32b",
+  "ministral-8b": "ministral-8b-latest",
+  "openrouter-free": "gemma-4-31b-free",
+  "nemotron-3-ultra": "nemotron-3-ultra-free",
+  "gemma-4-31b": "gemma-4-31b-free",
+};
+
+/**
+ * Resolusi model ID dengan dukungan alias lama
+ */
+export function resolveModelDescriptor(modelId?: string): ModelDescriptor | undefined {
+  if (!modelId) return undefined;
+  const canonicalId = LEGACY_MODEL_ALIAS_MAP[modelId] || modelId;
+  return MODEL_REGISTRY.find((m) => m.id === canonicalId || m.canonicalId === modelId);
+}
+
+/**
+ * Mendapatkan model yang aktif (API key terkonfigurasi)
+ */
+export function getAvailableModels(userPlan: "FREE" | "PLUS" = "FREE"): ModelDescriptor[] {
   return MODEL_REGISTRY.filter((model) => {
-    if (!model.enabled) return false;
-    
-    // Check if API key exists in environment
+    // 1. Cek ketersediaan API key
     const apiKey = process.env[model.requiresApiKey];
-    return !!apiKey;
+    if (!apiKey) return false;
+
+    // 2. Cek kesesuaian plan
+    if (model.tier === "PLUS" && userPlan !== "PLUS") {
+      return false;
+    }
+
+    return true;
   });
 }
 
 /**
- * Validate apakah model ID valid dan available
+ * Dapatkan model default untuk mode tertentu berdasarkan ketersediaan provider saat runtime
  */
-export function isModelAvailable(modelId: AIModelType): boolean {
-  const available = getAvailableModels();
-  return available.some((m) => m.id === modelId);
+export function getDefaultModelForMode(mode: AIMode = "companion", userPlan: "FREE" | "PLUS" = "FREE"): ModelDescriptor {
+  const available = getAvailableModels(userPlan);
+
+  // Cari model tersedia yang direkomendasikan untuk mode tersebut
+  const recommended = available.find((m) => m.recommendedModes.includes(mode));
+  if (recommended) return recommended;
+
+  // Fallback ke model tersedia pertama
+  if (available.length > 0) return available[0];
+
+  // Jika tidak ada API key sama sekali, kembalikan descriptor Gemini pertama sebagai default
+  return MODEL_REGISTRY[0];
+}
+
+/**
+ * Cek apakah model tersedia untuk digunakan
+ */
+export function isModelAvailable(modelId: string, userPlan: "FREE" | "PLUS" = "FREE"): boolean {
+  const desc = resolveModelDescriptor(modelId);
+  if (!desc) return false;
+  const apiKey = process.env[desc.requiresApiKey];
+  if (!apiKey) return false;
+  if (desc.tier === "PLUS" && userPlan !== "PLUS") return false;
+  return true;
 }

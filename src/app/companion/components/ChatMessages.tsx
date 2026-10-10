@@ -14,6 +14,8 @@ interface Message {
   content: string;
   flaggedForRisk?: boolean;
   modelUsed?: string;
+  isFallback?: boolean;
+  fallbackReason?: string;
   time: string;
   createdAt?: string;
 }
@@ -281,6 +283,14 @@ export default function ChatMessages({
                 <>
                   <span>·</span>
                   <span className="font-mono text-[9px]">{msg.modelUsed}</span>
+                  {msg.isFallback && (
+                    <span
+                      className="text-[9px] text-amber-800 bg-amber-50 border border-amber-200/60 rounded px-1.5 py-0.2 select-none cursor-help font-medium"
+                      title={msg.fallbackReason || "Dialihkan otomatis karena provider pilihan sedang padat atau offline"}
+                    >
+                      cadangan
+                    </span>
+                  )}
                 </>
               )}
             </div>
