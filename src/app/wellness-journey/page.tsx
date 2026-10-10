@@ -23,6 +23,9 @@ import WellnessAreas, { WellnessDomain } from "./components/WellnessAreas";
 import WhatChanged, { ChangeObservation } from "./components/WhatChanged";
 import HabitsHistory, { HabitCountItem } from "./components/HabitsHistory";
 import JourneyEmptyState from "./components/JourneyEmptyState";
+import FreeWeeklyInsight from "./components/FreeWeeklyInsight";
+import FreePatternDetection from "./components/FreePatternDetection";
+import { FreeWellnessInsights, buildFreeWellnessInsights } from "@/lib/wellness/insightsService";
 import {
   OverviewSkeleton,
   TrendSkeleton,
@@ -79,6 +82,7 @@ export default function WellnessJourneyPage() {
   const [assessmentHistory, setAssessmentHistory] = useState<any[]>([]);
   const [activityData, setActivityData] = useState<any>(null);
   const [journalEntries, setJournalEntries] = useState<any[]>([]);
+  const [freeInsights, setFreeInsights] = useState<FreeWellnessInsights | null>(null);
 
   // Loading & error states
   const [isLoading, setIsLoading] = useState(true);
@@ -89,11 +93,12 @@ export default function WellnessJourneyPage() {
     setHasError(false);
 
     try {
-      const [userRes, assessmentRes, activityRes, journalRes] = await Promise.all([
+      const [userRes, assessmentRes, activityRes, journalRes, insightsRes] = await Promise.all([
         fetch("/api/user/me", { cache: "no-store" }).catch(() => null),
         fetch("/api/daily-assessment?limit=90&page=1&includeTotal=false", { cache: "no-store", credentials: "include" }).catch(() => null),
         fetch("/api/activity?days=90", { cache: "no-store", credentials: "include" }).catch(() => null),
         fetch("/api/journal", { cache: "no-store", credentials: "include" }).catch(() => null),
+        fetch("/api/wellness/insights", { cache: "no-store", credentials: "include" }).catch(() => null),
       ]);
 
       if (userRes && userRes.ok) {
@@ -114,6 +119,11 @@ export default function WellnessJourneyPage() {
       if (journalRes && journalRes.ok) {
         const j = await journalRes.json();
         setJournalEntries(Array.isArray(j.entries) ? j.entries : []);
+      }
+
+      if (insightsRes && insightsRes.ok) {
+        const ins = await insightsRes.json();
+        setFreeInsights(ins);
       }
     } catch (err) {
       console.error("[WellnessJourney] Error fetching data:", err);
@@ -533,6 +543,16 @@ export default function WellnessJourneyPage() {
     };
   }, [assessmentHistory, timeRange, userData, activityData, journalEntries]);
 
+  const derivedFreeInsights = useMemo(() => {
+    if (freeInsights) return freeInsights;
+    if (assessmentHistory.length === 0) return null;
+    return buildFreeWellnessInsights({
+      assessments: assessmentHistory,
+      journals: journalEntries,
+      activities: activityData?.activities || [],
+    });
+  }, [freeInsights, assessmentHistory, journalEntries, activityData]);
+
   return (
     <div className="flex flex-col gap-6 max-w-[1240px] mx-auto pb-16">
       {/* 1. COMPACT EDITORIAL HEADER */}
@@ -572,32 +592,6 @@ export default function WellnessJourneyPage() {
           })}
         </div>
       </div>
-
-      {/* PREMIUM INSIGHT */}
-      <Link
-        href="/settings/zyba-plus/insights"
-        className="group relative overflow-hidden rounded-3xl border border-orange-300/40 bg-gradient-to-r from-white via-orange-50/70 to-purple-50/70 p-5 shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md sm:p-6"
-      >
-        <div className="relative flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <div className="flex flex-wrap items-center gap-2">
-              <span className="inline-flex items-center gap-1 rounded-full bg-orange-500 px-2.5 py-1 text-[10px] font-extrabold uppercase tracking-wider text-white">
-                ✨ Premium Insight
-              </span>
-              <span className="text-[10px] font-bold text-brown-700/50">60 AI chat/hari</span>
-            </div>
-            <h2 className="mt-2 font-display text-lg font-extrabold text-brown-900 sm:text-xl">
-              Lihat apa yang berubah dalam wellness-mu
-            </h2>
-            <p className="mt-1 max-w-2xl text-xs leading-5 text-brown-700 sm:text-sm">
-              Dapatkan Wellness Memory, Pattern Detection, Weekly Insight, dan Personalized 7-Day Plan dari data perjalananmu.
-            </p>
-          </div>
-          <span className="inline-flex shrink-0 items-center justify-center rounded-full bg-brown-900 px-4 py-2.5 text-xs font-extrabold text-white">
-            Buka Insight →
-          </span>
-        </div>
-      </Link>
 
       {/* ERROR STATE */}
       {hasError && (
@@ -643,7 +637,23 @@ export default function WellnessJourneyPage() {
           {/* 3. WELLNESS TREND CHART */}
           <WellnessTrendChart points={trendPoints} />
 
-          {/* 4. WELLNESS AREAS & WHAT CHANGED (2-column on desktop, stacked on mobile) */}
+          {/* 4. FREE WEEKLY INSIGHT (Tersedia Gratis untuk Semua Pengguna) */}
+          {derivedFreeInsights && (
+            <FreeWeeklyInsight
+              weekly={derivedFreeInsights.weekly}
+              dataQuality={derivedFreeInsights.dataQuality}
+            />
+          )}
+
+          {/* 5. FREE PATTERN DETECTION & RECOMMENDATIONS (Dengan Empty State Informatif) */}
+          {derivedFreeInsights && (
+            <FreePatternDetection
+              patterns={derivedFreeInsights.patterns}
+              recommendations={derivedFreeInsights.recommendations}
+            />
+          )}
+
+          {/* 6. WELLNESS AREAS & WHAT CHANGED (2-column on desktop, stacked on mobile) */}
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
             <div className="lg:col-span-7">
               <WellnessAreas domains={domains} timeRangeLabel={`${timeRange} Hari`} />
@@ -657,8 +667,34 @@ export default function WellnessJourneyPage() {
             </div>
           </div>
 
-          {/* 5. HABITS / ACTIVITY HISTORY */}
+          {/* 7. HABITS / ACTIVITY HISTORY */}
           <HabitsHistory habits={habits} timeRangeLabel={`${timeRange} Hari`} />
+
+          {/* 8. ZYBA PLUS VALUE ADD PROPOSITION BANNER */}
+          <Link
+            href="/settings/zyba-plus/insights"
+            className="group relative overflow-hidden rounded-3xl border border-orange-300/40 bg-gradient-to-r from-white via-orange-50/70 to-purple-50/70 p-5 shadow-xs transition-all hover:-translate-y-0.5 hover:shadow-md sm:p-6"
+          >
+            <div className="relative flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+              <div>
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className="inline-flex items-center gap-1 rounded-full bg-orange-500 px-2.5 py-1 text-[10px] font-extrabold uppercase tracking-wider text-white">
+                    ✨ ZYBA Plus Deep Analytics
+                  </span>
+                  <span className="text-[10px] font-bold text-brown-700/50">Fitur Lanjutan</span>
+                </div>
+                <h3 className="mt-2 font-display text-lg font-extrabold text-brown-900 sm:text-xl">
+                  Tingkatkan ke Analisis Mendalam & Adaptive 7-Day Plan
+                </h3>
+                <p className="mt-1 max-w-2xl text-xs leading-5 text-brown-700 sm:text-sm">
+                  Dapatkan Analisis Longitudinal 90 Hari, Deteksi Pemicu Stres Terperinci, Rencana Pemulihan 7 Hari Adaptif, dan Integrasi Memori Wellness dengan Tanya Zyba.
+                </p>
+              </div>
+              <span className="inline-flex shrink-0 items-center justify-center rounded-full bg-brown-900 px-4 py-2.5 text-xs font-extrabold text-white group-hover:bg-orange-500 transition-colors">
+                Buka ZYBA Plus Insights →
+              </span>
+            </div>
+          </Link>
         </div>
       )}
     </div>
