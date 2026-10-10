@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import Link from "next/link";
 import { Sparkles, Receipt, ArrowRight, ShieldCheck, Clock, CheckCircle2, AlertCircle, RefreshCw, X, Zap } from "lucide-react";
 
@@ -34,6 +35,20 @@ export default function SidebarPremiumCard({ plan, subscription, premiumUntil, o
   const [activeTab, setActiveTab] = useState<"status" | "history">("status");
   const [payments, setPayments] = useState<PaymentHistoryItem[]>([]);
   const [loadingPayments, setLoadingPayments] = useState(false);
+  // Cegah SSR mismatch: createPortal hanya tersedia di browser
+  const [isMounted, setIsMounted] = useState(false);
+  useEffect(() => { setIsMounted(true); }, []);
+
+  // Lock body scroll when modal is open
+  useEffect(() => {
+    if (isModalOpen) {
+      const originalOverflow = document.body.style.overflow;
+      document.body.style.overflow = "hidden";
+      return () => {
+        document.body.style.overflow = originalOverflow;
+      };
+    }
+  }, [isModalOpen]);
 
   // Hitung sisa hari jika akun PLUS
   const targetDate = subscription?.endDate || premiumUntil;
@@ -97,7 +112,7 @@ export default function SidebarPremiumCard({ plan, subscription, premiumUntil, o
   return (
     <>
       {/* ── 1. SIDEBAR CARD (EXPANDED DESKTOP & MOBILE DRAWER) ── */}
-      <div className="hidden lg:block md:hidden">
+      <div className="block md:hidden lg:block">
         {isPlus ? (
           /* Card untuk pengguna PLUS */
           <div className="relative overflow-hidden rounded-2xl border border-green-500/25 bg-gradient-to-br from-green-50/90 via-white to-orange-50/60 p-3 shadow-2xs transition-all hover:border-green-500/40">
@@ -206,10 +221,10 @@ export default function SidebarPremiumCard({ plan, subscription, premiumUntil, o
         </button>
       </div>
 
-      {/* ── 3. MODAL POPUP STATUS & RIWAYAT PEMBAYARAN ── */}
-      {isModalOpen && (
+      {/* ── 3. MODAL POPUP STATUS & RIWAYAT PEMBAYARAN (via Portal ke document.body) ── */}
+      {isModalOpen && isMounted && createPortal(
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-brown-900/40 backdrop-blur-xs p-4 animate-in fade-in duration-200"
+          className="fixed inset-0 z-[999] flex items-center justify-center bg-brown-900/40 backdrop-blur-xs p-4 animate-in fade-in duration-200"
           onClick={() => setIsModalOpen(false)}
         >
           <div
@@ -459,7 +474,7 @@ export default function SidebarPremiumCard({ plan, subscription, premiumUntil, o
             )}
           </div>
         </div>
-      )}
+      , document.body)}
     </>
   );
 }

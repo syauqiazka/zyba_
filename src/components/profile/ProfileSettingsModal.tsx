@@ -857,13 +857,11 @@ export default function ProfileSettingsModal({ user, isOpen, onClose, onUserUpda
             {/* ── BILLING ──────────────────────────────────────────── */}
             <SectionDivider />
             <Section id="zyba-plus" title="Zyba Plus">
-              <ZybaPlusTab onSuccess={ok} />
+              <ZybaPlusTab user={user} onSuccess={ok} />
             </Section>
 
             <Section id="billing-history" title="Riwayat Pembayaran">
-              <div className="bg-cream/50 rounded-2xl p-5 border border-brown-900/10">
-                <p className="text-xs text-brown-700">Belum ada riwayat pembayaran. Aktifkan Zyba Plus untuk melihat tagihan di sini.</p>
-              </div>
+              <BillingHistoryTab />
             </Section>
 
             {/* ── PREFERENSI APLIKASI ───────────────────────────────── */}
@@ -1006,9 +1004,10 @@ const PLUS_FEATURES = [
   "Prioritas pemrosesan AI",
 ];
 
-function ZybaPlusTab({ onSuccess }: { onSuccess: (msg: string) => void }) {
+function ZybaPlusTab({ user, onSuccess }: { user?: ProfileUser; onSuccess: (msg: string) => void }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const isPlus = user?.plan === "PLUS";
 
   const handleCheckout = async () => {
     if (loading) return;
@@ -1028,6 +1027,50 @@ function ZybaPlusTab({ onSuccess }: { onSuccess: (msg: string) => void }) {
       setLoading(false);
     }
   };
+
+  if (isPlus) {
+    return (
+      <div className="flex flex-col gap-5">
+        <div className="rounded-2xl border border-green-500/30 bg-gradient-to-br from-green-50/80 via-white to-orange-50/40 p-6 text-center">
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-green-500 text-white text-xs font-extrabold uppercase tracking-wider mb-3">
+            ✨ Zyba Plus Aktif
+          </span>
+          <h3 className="font-display text-lg font-extrabold text-brown-900">Selamat! Akunmu adalah Zyba Plus.</h3>
+          <p className="mx-auto mt-1 max-w-sm text-xs text-brown-700/80 leading-relaxed">
+            Semua benefit premium aktif: kuota 60 AI chat/hari, wawasan emosi personal, dan model AI berkecepatan tinggi.
+          </p>
+          <div className="mt-4 flex justify-center gap-2">
+            <button
+              type="button"
+              onClick={handleCheckout}
+              disabled={loading}
+              className="px-4 py-2 rounded-xl bg-orange-500 text-white text-xs font-bold hover:bg-orange-600 transition-colors cursor-pointer"
+            >
+              {loading ? "Menyiapkan..." : "Perpanjang Paket"}
+            </button>
+            <a
+              href="/settings/zyba-plus/insights"
+              className="px-4 py-2 rounded-xl bg-brown-900 text-white text-xs font-bold hover:bg-brown-800 transition-colors"
+            >
+              Deep Insights ❯
+            </a>
+          </div>
+        </div>
+
+        <div className="rounded-2xl border border-brown-900/10 bg-cream/50 p-5">
+          <h3 className="mb-3 text-[11px] font-extrabold uppercase tracking-wider text-brown-700">Benefit Aktif</h3>
+          <div className="grid grid-cols-1 gap-1.5 sm:grid-cols-2">
+            {PLUS_FEATURES.map((feature) => (
+              <div key={feature} className="flex items-start gap-2 py-1 text-xs text-brown-900">
+                <span className="mt-0.5 text-green-600 font-bold">✓</span>
+                <span>{feature}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col gap-5">
@@ -1055,7 +1098,7 @@ function ZybaPlusTab({ onSuccess }: { onSuccess: (msg: string) => void }) {
 
       {error && <div className="rounded-xl border border-red-200 bg-red-50 p-3 text-xs font-medium text-red-700">{error}</div>}
 
-      <button type="button" disabled={loading} onClick={handleCheckout} className="w-full rounded-full bg-orange-500 py-3.5 text-sm font-extrabold text-white shadow-md hover:bg-orange-600 disabled:opacity-50">
+      <button type="button" disabled={loading} onClick={handleCheckout} className="w-full rounded-full bg-orange-500 py-3.5 text-sm font-extrabold text-white shadow-md hover:bg-orange-600 disabled:opacity-50 cursor-pointer">
         {loading ? "Menyiapkan pembayaran..." : "Bayar & Upgrade Premium →"}
       </button>
 
@@ -1067,6 +1110,106 @@ function ZybaPlusTab({ onSuccess }: { onSuccess: (msg: string) => void }) {
       </div>
 
       <p className="text-center text-[10px] text-brown-700/60">Setelah transfer, kirim bukti pembayaran. Premium aktif setelah diverifikasi admin.</p>
+    </div>
+  );
+}
+
+function BillingHistoryTab() {
+  const [payments, setPayments] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let mounted = true;
+    fetch("/api/billing/history", { cache: "no-store" })
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        if (mounted && data?.payments) {
+          setPayments(data.payments);
+        }
+      })
+      .catch(() => {})
+      .finally(() => {
+        if (mounted) setLoading(false);
+      });
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
+  const formatRupiah = (val: number) =>
+    new Intl.NumberFormat("id-ID", {
+      style: "currency",
+      currency: "IDR",
+      maximumFractionDigits: 0,
+    })
+      .format(val)
+      .replace("IDR", "Rp");
+
+  const formatDateTime = (val: string) =>
+    new Intl.DateTimeFormat("id-ID", {
+      day: "numeric",
+      month: "short",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    }).format(new Date(val));
+
+  if (loading) {
+    return (
+      <div className="bg-cream/50 rounded-2xl p-6 border border-brown-900/10 text-center">
+        <p className="text-xs text-brown-700/70">Memuat riwayat transaksi...</p>
+      </div>
+    );
+  }
+
+  if (payments.length === 0) {
+    return (
+      <div className="bg-cream/50 rounded-2xl p-6 border border-brown-900/10 text-center flex flex-col items-center gap-2">
+        <p className="text-xs font-bold text-brown-900">Belum ada riwayat pembayaran</p>
+        <p className="text-[11px] text-brown-700/60 max-w-sm">
+          Semua transaksi langganan Zyba Plus akan otomatis dicatat di sini beserta status verifikasinya.
+        </p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex flex-col gap-2.5">
+      {payments.map((p) => {
+        const isSuccess = p.status === "SUCCESS";
+        const isPending = p.status === "PENDING";
+        return (
+          <div
+            key={p.id}
+            className="p-3.5 rounded-2xl bg-white border border-brown-900/10 flex items-center justify-between gap-3 shadow-2xs"
+          >
+            <div className="flex flex-col min-w-0">
+              <div className="flex items-center gap-2">
+                <span className="text-xs font-extrabold text-brown-900">
+                  {formatRupiah(p.amount)}
+                </span>
+                <span
+                  className={`text-[10px] font-extrabold px-2 py-0.5 rounded-full ${
+                    isSuccess
+                      ? "bg-green-100 text-green-700"
+                      : isPending
+                      ? "bg-amber-100 text-amber-700"
+                      : "bg-red-100 text-red-600"
+                  }`}
+                >
+                  {isSuccess ? "Berhasil" : isPending ? "Menunggu Verifikasi" : p.status}
+                </span>
+              </div>
+              <span className="text-[10px] text-brown-700/60 mt-0.5 font-mono">
+                Order: {p.orderId}
+              </span>
+              <span className="text-[10px] text-brown-700/50">
+                {formatDateTime(p.createdAt)} · {p.paymentMethod || "Transfer Manual"}
+              </span>
+            </div>
+          </div>
+        );
+      })}
     </div>
   );
 }

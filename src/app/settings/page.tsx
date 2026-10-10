@@ -1,8 +1,8 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import ProfileSettingsModal from "@/components/profile/ProfileSettingsModal";
-import { SettingsBanner, ProfileSection, SettingsToggles } from "./components";
+import { SettingsBanner, ProfileSection, SettingsToggles, SubscriptionCard } from "./components";
 import { PersonaId } from "@/backend/ai/personas";
 import { useFreshDataSignal } from "@/hooks/useFreshData";
 
@@ -15,6 +15,8 @@ export default function SettingsPage() {
   const [bio, setBio] = useState("");
   const [username, setUsername] = useState("");
   const [plan, setPlan] = useState<"FREE" | "PLUS">("FREE");
+  const [subscription, setSubscription] = useState<any>(null);
+  const [premiumUntil, setPremiumUntil] = useState<string | null>(null);
   const [avatarKey, setAvatarKey] = useState("fox");
   const [avatarUrl, setAvatarUrl] = useState("");
   const [isLoading, setIsLoading] = useState(true);
@@ -29,6 +31,57 @@ export default function SettingsPage() {
   const [saveError, setSaveError] = useState<string | null>(null);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+
+  const loadFromDB = useCallback(async () => {
+    try {
+      const [userRes, notifRes] = await Promise.all([
+        fetch("/api/user/me", { cache: "no-store" }),
+        fetch("/api/settings/notifications", { cache: "no-store" }),
+      ]);
+
+      if (userRes.ok) {
+        const data = await userRes.json();
+        if (data.user) {
+          const u = data.user;
+          setName(u.name || "");
+          setEmail(u.email || "");
+          setPhone(u.phone || "");
+          setLocation(u.location || "");
+          setBio(u.bio || "");
+          setUsername(u.username || "");
+          setPlan(u.plan || "FREE");
+          setAvatarKey(u.avatarKey || "fox");
+          if (u.avatarUrl) setAvatarUrl(u.avatarUrl);
+          setSubscription(data.subscription || null);
+          setPremiumUntil(data.stats?.premiumUntil || null);
+          // Sync full profile into localStorage cache
+          try {
+            const existing = localStorage.getItem("zyba_user_cache");
+            const prev = existing ? JSON.parse(existing) : {};
+            localStorage.setItem("zyba_user_cache", JSON.stringify({
+              ...prev, name: u.name, email: u.email,
+              username: u.username || prev.username, bio: u.bio || prev.bio,
+              phone: u.phone || prev.phone, location: u.location || prev.location,
+              plan: u.plan, avatarKey: u.avatarKey, avatarUrl: u.avatarUrl,
+            }));
+          } catch {}
+        }
+      }
+
+      if (notifRes.ok) {
+        const { pref } = await notifRes.json();
+        if (pref) {
+          setNotifChatbot(pref.companionNotif ?? true);
+          setNotifWellness(pref.wellnessNotif ?? true);
+          setNotifCommunity(pref.communityNotif ?? false);
+        }
+      }
+    } catch (err) {
+      console.error("[Settings] Load error:", err);
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
 
   useEffect(() => {
     // Load from localStorage cache first (instant render)
@@ -50,56 +103,9 @@ export default function SettingsPage() {
       if (savedPersona) setSelectedPersona(savedPersona);
     } catch {}
 
-    async function loadFromDB() {
-      try {
-        const [userRes, notifRes] = await Promise.all([
-          fetch("/api/user/me", { cache: "no-store" }),
-          fetch("/api/settings/notifications", { cache: "no-store" }),
-        ]);
-
-        if (userRes.ok) {
-          const data = await userRes.json();
-          if (data.user) {
-            const u = data.user;
-            setName(u.name || "");
-            setEmail(u.email || "");
-            setPhone(u.phone || "");
-            setLocation(u.location || "");
-            setBio(u.bio || "");
-            setUsername(u.username || "");
-            setPlan(u.plan || "FREE");
-            setAvatarKey(u.avatarKey || "fox");
-            if (u.avatarUrl) setAvatarUrl(u.avatarUrl);
-            // Sync full profile into localStorage cache
-            try {
-              const existing = localStorage.getItem("zyba_user_cache");
-              const prev = existing ? JSON.parse(existing) : {};
-              localStorage.setItem("zyba_user_cache", JSON.stringify({
-                ...prev, name: u.name, email: u.email,
-                username: u.username || prev.username, bio: u.bio || prev.bio,
-                phone: u.phone || prev.phone, location: u.location || prev.location,
-                plan: u.plan, avatarKey: u.avatarKey, avatarUrl: u.avatarUrl,
-              }));
-            } catch {}
-          }
-        }
-
-        if (notifRes.ok) {
-          const { pref } = await notifRes.json();
-          if (pref) {
-            setNotifChatbot(pref.companionNotif ?? true);
-            setNotifWellness(pref.wellnessNotif ?? true);
-            setNotifCommunity(pref.communityNotif ?? false);
-          }
-        }
-      } catch (err) {
-        console.error("[Settings] Load error:", err);
-      } finally {
-        setIsLoading(false);
-      }
-    }
     void loadFromDB();
-  }, [dataRefreshSignal]);
+  }, [dataRefreshSignal, loadFromDB]);
+
 
   const handleSave = async () => {
     setIsSaved(false);
@@ -212,6 +218,14 @@ export default function SettingsPage() {
           fingerprintEnabled={fingerprintEnabled} onFingerprintChange={setFingerprintEnabled}
         />
       </div>
+
+      {/* Bagian 3: Langganan & Riwayat Pembayaran */}
+      <SubscriptionCard
+        plan={plan}
+        subscription={subscription}
+        premiumUntil={premiumUntil}
+        onRefresh={loadFromDB}
+      />
 
       {/* Bagian 24.1: Privasi Data */}
       <div className="rounded-3xl p-6 border border-brown-900/10 bg-white flex flex-col gap-4">
