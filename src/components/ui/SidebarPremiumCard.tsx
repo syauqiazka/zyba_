@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import Link from "next/link";
 import { Sparkles, Receipt, ArrowRight, ShieldCheck, Clock, CheckCircle2, AlertCircle, RefreshCw, X, Zap } from "lucide-react";
 
@@ -207,9 +208,9 @@ export default function SidebarPremiumCard({ plan, subscription, premiumUntil, o
       </div>
 
       {/* ── 3. MODAL POPUP STATUS & RIWAYAT PEMBAYARAN ── */}
-      {isModalOpen && (
+      {isModalOpen && typeof document !== "undefined" && createPortal(
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-brown-900/40 backdrop-blur-xs p-4 animate-in fade-in duration-200"
+          className="fixed inset-0 z-[1000] flex items-center justify-center bg-brown-900/40 backdrop-blur-xs p-4 animate-in fade-in duration-200"
           onClick={() => setIsModalOpen(false)}
         >
           <div
@@ -459,7 +460,7 @@ export default function SidebarPremiumCard({ plan, subscription, premiumUntil, o
             )}
           </div>
         </div>
-      )}
+      , document.body)}
     </>
   );
 }
