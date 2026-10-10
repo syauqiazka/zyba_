@@ -65,7 +65,7 @@ export default function BillingHistoryPage() {
       .replace("IDR", "Rp");
 
   return (
-    <main className="min-h-screen bg-cream px-4 py-6 sm:px-6 sm:py-10">
+    <main className="min-h-screen bg-cream px-4 py-6 sm:px-6 sm:py-10 pb-28 md:pb-12">
       <div className="mx-auto w-full max-w-4xl">
         <header className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div>

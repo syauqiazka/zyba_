@@ -229,7 +229,7 @@ export default function AdminPaymentsPage() {
   };
 
   return (
-    <main className="min-h-screen bg-cream px-4 py-6 sm:px-6 sm:py-8 text-brown-900">
+    <main className="min-h-screen bg-cream px-3.5 py-5 sm:px-6 sm:py-8 pb-28 md:pb-12 text-brown-900">
       <div className="mx-auto max-w-6xl">
         {/* Header Navigation */}
         <div className="mb-6 flex flex-wrap items-start justify-between gap-4">
@@ -458,8 +458,8 @@ export default function AdminPaymentsPage() {
               </p>
             </div>
           ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full text-left text-xs border-collapse">
+            <div className="overflow-x-auto scrollbar-thin">
+              <table className="w-full min-w-[660px] text-left text-xs border-collapse">
                 <thead>
                   <tr className="border-b border-brown-900/10 text-[11px] font-bold text-brown-700/70 uppercase">
                     <th className="py-3 px-3">Waktu (WIB)</th>

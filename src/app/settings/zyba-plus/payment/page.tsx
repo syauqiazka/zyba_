@@ -137,7 +137,7 @@ export default function ManualPaymentPage() {
   }
 
   return (
-    <main className="min-h-screen bg-cream px-4 py-6 sm:px-6 sm:py-10">
+    <main className="min-h-screen bg-cream px-3.5 py-6 sm:px-6 sm:py-10 pb-28 md:pb-12">
       <div className="mx-auto w-full max-w-3xl">
         <button onClick={() => router.push("/settings/zyba-plus")} className="mb-5 inline-flex items-center gap-2 text-sm font-bold text-brown-700 hover:text-brown-900">
           <ArrowLeft size={16} /> Kembali
@@ -171,7 +171,7 @@ export default function ManualPaymentPage() {
 
             <div className="mt-4 rounded-2xl border border-brown-900/10 bg-white p-4 text-center">
               <p className="text-xs font-bold text-brown-700">Atau bayar dengan QRIS</p>
-              <div className="mx-auto mt-3 h-64 w-64 overflow-hidden rounded-xl bg-white p-2" aria-label="QRIS ZYBA">
+              <div className="mx-auto mt-3 w-56 sm:w-64 max-w-full aspect-square overflow-hidden rounded-xl bg-white p-2" aria-label="QRIS ZYBA">
                 <svg viewBox={`0 0 ${QR_SIZE} ${QR_SIZE}`} className="h-full w-full" shapeRendering="crispEdges" role="img" aria-label="QRIS ZYBA Syausyau">
                   <rect width={QR_SIZE} height={QR_SIZE} fill="white" />
                   {Array.from(atob(QRIS_BITS_BASE64)).flatMap((byte, byteIndex) =>
