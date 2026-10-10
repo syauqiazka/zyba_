@@ -113,7 +113,7 @@ export default function DashboardPage() {
             };
           }
         }
-      } catch {}
+      } catch { }
     }
     return EMPTY_USER;
   });
@@ -156,7 +156,7 @@ export default function DashboardPage() {
         const data = await res.json();
         setCooldownInfo(data);
       }
-    } catch {}
+    } catch { }
   }, []);
 
   useEffect(() => {
@@ -228,7 +228,7 @@ export default function DashboardPage() {
         const prev = cached ? JSON.parse(cached) : {};
         localStorage.setItem("zyba_user_cache", JSON.stringify({ ...prev, avatarUrl: data.avatarUrl }));
         window.dispatchEvent(new CustomEvent("zyba_user_updated", { detail: { avatarUrl: data.avatarUrl } }));
-      } catch {}
+      } catch { }
 
       setAvatarToast("✓ Foto profil berhasil diperbarui!");
       setTimeout(() => setAvatarToast(null), 3500);
@@ -423,8 +423,8 @@ export default function DashboardPage() {
           stats.stressLevel != null
             ? Number(stats.stressLevel)
             : latestDaily?.stressLevel != null
-            ? Number(latestDaily.stressLevel)
-            : null;
+              ? Number(latestDaily.stressLevel)
+              : null;
 
         const stressLabels = [
           "",
@@ -720,7 +720,7 @@ export default function DashboardPage() {
           TOP BANNER
       ================================================= */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-5 glass-card p-6 rounded-3xl border border-brown-900/10 bg-gradient-to-r from-cream via-white to-green-100/40 shadow-sm relative overflow-hidden">
-        
+
         {/* Hidden file input for avatar upload */}
         <input
           ref={avatarInputRef}
@@ -774,11 +774,10 @@ export default function DashboardPage() {
           <div>
             <div className="flex items-center gap-2 mb-1 flex-wrap">
               <span
-                className={`px-2.5 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider ${
-                  userData.hasAssessment
+                className={`px-2.5 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider ${userData.hasAssessment
                     ? "bg-orange-100 text-orange-500"
                     : "bg-green-100 text-green-500"
-                }`}
+                  }`}
               >
                 {userData.hasAssessment ? "Welcome back (｡•̀ᴗ-)✧" : "Selamat Datang! ✨"}
               </span>
@@ -830,13 +829,21 @@ export default function DashboardPage() {
             </div>
 
             <div
-              className={`w-12 h-12 rounded-2xl text-white font-display font-extrabold flex items-center justify-center text-xl shadow-lg ${
-                userData.hasAssessment
+              className={`min-w-[64px] h-12 px-2 rounded-2xl text-white font-display font-extrabold flex items-center justify-center gap-1 text-xl shadow-lg whitespace-nowrap ${userData.hasAssessment
                   ? "bg-orange-500 shadow-orange-500/20"
                   : "bg-green-500 shadow-green-500/20"
-              }`}
+                }`}
             >
-              {userData.hasAssessment ? `🔥 ${userData.streak}` : "🌱"}
+              {userData.hasAssessment ? (
+                <>
+                  <span className="shrink-0 leading-none">🔥</span>
+                  <span className="shrink-0 leading-none">
+                    {userData.streak}
+                  </span>
+                </>
+              ) : (
+                <span className="shrink-0 leading-none">🌱</span>
+              )}
             </div>
           </div>
         </div>
