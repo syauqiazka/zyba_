@@ -265,18 +265,10 @@ export default function Sidebar({ onClose }: { onClose?: () => void }) {
                   </span>
                 )}
 
-                {/* PLUS badge for premium nav items — inline, no absolute positioning */}
-                {item.isPremium && (
-                  <span className={`ml-auto text-[9px] font-extrabold tracking-wide px-1.5 py-0.5 rounded-full md:hidden lg:inline-flex items-center gap-0.5 ${
-                    isPlus
-                      ? "bg-orange-100 text-orange-600"
-                      : "bg-brown-900/8 text-brown-700/60"
-                  }`}>
-                    {isPlus ? (
-                      <><Sparkles size={8} />PLUS</>
-                    ) : (
-                      "→"
-                    )}
+                {/* PLUS dot badge for premium nav items — tiny, non-intrusive */}
+                {item.isPremium && isPlus && (
+                  <span className="ml-auto inline-flex items-center gap-0.5 shrink-0 text-[8px] font-extrabold tracking-widest text-orange-500/80 md:hidden lg:inline-flex">
+                    PLUS
                   </span>
                 )}
 
