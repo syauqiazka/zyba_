@@ -232,6 +232,21 @@ export const appealRepository = {
       appeal.reviewedBy = adminName;
       appeal.reviewedAt = nowIso;
       appeal.updatedAt = nowIso;
+
+      // 3. Kirim notifikasi komunitas dan direct message (DM) ke pengguna
+      try {
+        const { sendModerationNotificationAndMessage } = await import("./moderationNotification");
+        await sendModerationNotificationAndMessage({
+          targetUserId: appeal.userId,
+          adminId,
+          adminName,
+          type: "unban",
+          message: `Pemberitahuan Banding ZYBA (Disetujui):\n\nKabar baik! Permohonan banding Anda atas pembatasan akun telah DISETUJUI oleh moderator (${adminName}). Akun Anda telah dipulihkan sepenuhnya (Unbanned).\n\nCatatan moderator: ${appeal.adminNote}\n\nSelamat datang kembali di Komunitas ZYBA!`,
+          reason: appeal.adminNote,
+        });
+      } catch (notifErr) {
+        console.warn("[processAppeal] Gagal kirim notif unban:", notifErr);
+      }
     } else {
       // REJECT
       appeal.status = "REJECTED";
@@ -248,6 +263,21 @@ export const appealRepository = {
         reason: `Banding unban ditolak: ${appeal.adminNote}`,
         metadata: { appealId: appeal.id, rejectedAppeal: true },
       });
+
+      // Kirim notifikasi komunitas dan direct message (DM) ke pengguna
+      try {
+        const { sendModerationNotificationAndMessage } = await import("./moderationNotification");
+        await sendModerationNotificationAndMessage({
+          targetUserId: appeal.userId,
+          adminId,
+          adminName,
+          type: "appeal_rejected",
+          message: `Pemberitahuan Banding ZYBA (Ditolak):\n\nSetelah peninjauan kembali oleh moderator (${adminName}), permohonan banding Anda TIDAK DAPAT DISETUJUI.\n\nCatatan moderator: ${appeal.adminNote}\n\nPembatasan pada akun Anda tetap diberlakukan sesuai pedoman komunitas ZYBA.`,
+          reason: appeal.adminNote,
+        });
+      } catch (notifErr) {
+        console.warn("[processAppeal] Gagal kirim notif reject appeal:", notifErr);
+      }
     }
 
     appeals[idx] = appeal;

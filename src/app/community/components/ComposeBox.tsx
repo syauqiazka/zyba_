@@ -57,6 +57,17 @@ export default function ComposeBox({ onAddPost, onRiskDetected, currentUserIniti
     if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
+  const [customTagInput, setCustomTagInput] = useState("");
+
+  const handleApplyCustomTag = () => {
+    const clean = customTagInput.trim().replace(/^#+/, "").replace(/\s+/g, "");
+    if (clean) {
+      setSelectedTag(clean);
+      setCustomTagInput("");
+      setShowTagPicker(false);
+    }
+  };
+
   const handlePost = async () => {
     const trimmed = content.trim();
     if (!trimmed && !selectedFile) return;
@@ -199,27 +210,67 @@ export default function ComposeBox({ onAddPost, onRiskDetected, currentUserIniti
               </button>
 
               {showTagPicker && (
-                <div className="absolute top-full left-0 mt-1.5 z-30 bg-white border border-brown-900/10 rounded-2xl shadow-xl p-2.5 flex flex-wrap gap-1.5 w-64 animate-in fade-in zoom-in-95 duration-150">
-                  <div className="w-full text-[10px] font-bold text-brown-700/60 uppercase tracking-wider px-1 pb-1">
-                    Pilih Topik Cerita
+                <div className="absolute top-full left-0 mt-1.5 z-30 bg-white border border-brown-900/10 rounded-2xl shadow-xl p-3 flex flex-col gap-2.5 w-72 animate-in fade-in zoom-in-95 duration-150">
+                  <div>
+                    <div className="text-[10px] font-bold text-brown-700/60 uppercase tracking-wider px-0.5 pb-1 flex items-center justify-between">
+                      <span>Ketik Hashtag Bebas</span>
+                      <span className="text-[9px] text-orange-600 font-normal">Bisa apa saja</span>
+                    </div>
+                    <div className="flex items-center gap-1.5 bg-cream/70 border border-brown-900/15 rounded-xl px-2.5 py-1.5 focus-within:border-orange-500 focus-within:bg-white transition-all shadow-2xs">
+                      <span className="text-orange-500 font-bold text-xs select-none">#</span>
+                      <input
+                        type="text"
+                        placeholder="Contoh: Overthinking, CeritaKu..."
+                        value={customTagInput}
+                        onChange={(e) =>
+                          setCustomTagInput(e.target.value.replace(/^#+/, "").replace(/\s+/g, ""))
+                        }
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter") {
+                            e.preventDefault();
+                            handleApplyCustomTag();
+                          }
+                        }}
+                        autoFocus
+                        className="w-full text-xs text-brown-900 bg-transparent outline-none placeholder:text-brown-700/40"
+                        maxLength={30}
+                      />
+                      {customTagInput.trim() && (
+                        <button
+                          type="button"
+                          onClick={handleApplyCustomTag}
+                          className="shrink-0 text-[10px] font-bold bg-orange-500 text-white px-2 py-0.5 rounded-lg hover:bg-orange-600 transition-colors cursor-pointer"
+                        >
+                          Pakai
+                        </button>
+                      )}
+                    </div>
                   </div>
-                  {TAG_OPTIONS.map((tag) => (
-                    <button
-                      key={tag}
-                      type="button"
-                      onClick={() => {
-                        setSelectedTag(tag);
-                        setShowTagPicker(false);
-                      }}
-                      className={`text-[11px] font-semibold px-2.5 py-1 rounded-pill transition-all ${
-                        selectedTag === tag
-                          ? "bg-brown-900 text-white shadow-2xs"
-                          : "bg-cream text-brown-700 hover:bg-orange-100 hover:text-orange-600"
-                      }`}
-                    >
-                      #{tag}
-                    </button>
-                  ))}
+
+                  <div>
+                    <div className="text-[10px] font-bold text-brown-700/50 uppercase tracking-wider px-0.5 pb-1">
+                      Rekomendasi Topik Populer
+                    </div>
+                    <div className="flex flex-wrap gap-1.5 max-h-36 overflow-y-auto pr-0.5">
+                      {TAG_OPTIONS.map((tag) => (
+                        <button
+                          key={tag}
+                          type="button"
+                          onClick={() => {
+                            setSelectedTag(tag);
+                            setShowTagPicker(false);
+                          }}
+                          className={`text-[11px] font-semibold px-2.5 py-1 rounded-pill transition-all cursor-pointer ${
+                            selectedTag === tag
+                              ? "bg-brown-900 text-white shadow-2xs"
+                              : "bg-cream text-brown-700 hover:bg-orange-100 hover:text-orange-600"
+                          }`}
+                        >
+                          #{tag}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
                 </div>
               )}
             </div>

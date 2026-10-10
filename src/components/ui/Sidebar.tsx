@@ -42,6 +42,7 @@ export default function Sidebar({ onClose }: { onClose?: () => void }) {
   const [isAdmin, setIsAdmin] = useState(false);
   const [subscription, setSubscription] = useState<any>(null);
   const [premiumUntil, setPremiumUntil] = useState<string | null>(null);
+  const [communityBadgeCount, setCommunityBadgeCount] = useState(0);
 
   // Instant hydration from localStorage cache to eliminate any loading delay
   const [currentUser, setCurrentUser] = useState<ProfileUser>(() => {
@@ -119,6 +120,48 @@ export default function Sidebar({ onClose }: { onClose?: () => void }) {
     return () => window.removeEventListener("zyba_open_profile", handleOpenProfile);
   }, []);
 
+  useEffect(() => {
+    let mounted = true;
+
+    const fetchBadges = async () => {
+      try {
+        const res = await fetch("/api/community/badges", { cache: "no-store" });
+        if (res.ok) {
+          const data = await res.json();
+          if (mounted) {
+            const total =
+              (Number(data.unreadNotificationCount) || 0) +
+              (Number(data.unreadMessageCount) || 0);
+            setCommunityBadgeCount(total);
+          }
+        }
+      } catch (e) {
+        // Fallback silent
+      }
+    };
+
+    void fetchBadges();
+
+    const handleBadgeUpdate = () => {
+      void fetchBadges();
+    };
+
+    window.addEventListener("zyba_badge_update", handleBadgeUpdate);
+
+    // Polling setiap 30 detik untuk mendeteksi notifikasi baru secara dinamis
+    const interval = setInterval(() => {
+      if (typeof document !== "undefined" && document.visibilityState === "visible") {
+        void fetchBadges();
+      }
+    }, 30000);
+
+    return () => {
+      mounted = false;
+      window.removeEventListener("zyba_badge_update", handleBadgeUpdate);
+      clearInterval(interval);
+    };
+  }, [pathname]);
+
   const handleLogout = async () => {
     // Hapus cookie auth-token via API lalu redirect ke halaman login
     await fetch("/api/auth", { method: "DELETE" });
@@ -173,6 +216,9 @@ export default function Sidebar({ onClose }: { onClose?: () => void }) {
           {NAV_ITEMS.map((item) => {
             const Icon = item.icon;
             const isActive = pathname === item.href || (item.href !== "/dashboard" && pathname?.startsWith(item.href));
+            const isCommunity = item.href === "/community";
+            const showCommunityBadge = isCommunity && communityBadgeCount > 0;
+
             return (
               <Link
                 key={item.href}
@@ -185,15 +231,33 @@ export default function Sidebar({ onClose }: { onClose?: () => void }) {
                     : "text-brown-700 hover:-translate-y-0.5 hover:bg-gradient-to-r hover:from-orange-100/80 hover:to-green-100/80 hover:text-brown-900 hover:shadow-xs"
                 }`}
               >
-                <Icon
-                  size={18}
-                  strokeWidth={isActive ? 2.4 : 2}
-                  className={isActive ? "text-cream shrink-0" : "text-brown-700 shrink-0"}
-                />
+                <div className="relative shrink-0 flex items-center justify-center">
+                  <Icon
+                    size={18}
+                    strokeWidth={isActive ? 2.4 : 2}
+                    className={isActive ? "text-cream shrink-0" : "text-brown-700 shrink-0"}
+                  />
+                  {/* Tanda titik merah (red dot) di atas ikon untuk tablet (icon-only) & mobile & desktop */}
+                  {showCommunityBadge && (
+                    <span
+                      className="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-red-500 border border-cream shadow-xs animate-pulse"
+                      title={`${communityBadgeCount} notifikasi komunitas baru`}
+                    />
+                  )}
+                </div>
+
                 <span className="md:hidden lg:inline truncate">{item.label}</span>
+
                 {item.href === "/companion" && (
                   <span className="ml-auto text-[10px] font-semibold tracking-wide px-2 py-0.5 rounded-full bg-orange-100 text-orange-500 md:hidden lg:inline">
                     BETA
+                  </span>
+                )}
+
+                {/* Tanda badge angka merah di samping label Komunitas */}
+                {showCommunityBadge && (
+                  <span className="ml-auto text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-red-500 text-white shadow-2xs leading-none md:hidden lg:inline-flex items-center justify-center">
+                    {communityBadgeCount > 99 ? "99+" : communityBadgeCount}
                   </span>
                 )}
               </Link>

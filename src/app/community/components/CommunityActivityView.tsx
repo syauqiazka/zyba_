@@ -4,7 +4,7 @@ import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCommunity } from "../context/CommunityContext";
-import { Heart, MessageSquare, AtSign, MessageCircle, UserPlus, CheckCheck } from "lucide-react";
+import { Heart, MessageSquare, AtSign, MessageCircle, UserPlus, CheckCheck, ShieldAlert, ShieldCheck, AlertTriangle, Shield } from "lucide-react";
 import UserAvatar from "@/components/ui/UserAvatar";
 
 export default function CommunityActivityView() {
@@ -46,6 +46,16 @@ export default function CommunityActivityView() {
         return <AtSign size={10} />;
       case "dm":
         return <MessageCircle size={10} />;
+      case "ban":
+        return <ShieldAlert size={10} />;
+      case "suspend":
+        return <AlertTriangle size={10} />;
+      case "unban":
+        return <ShieldCheck size={10} />;
+      case "appeal_rejected":
+        return <ShieldAlert size={10} />;
+      case "warn":
+        return <Shield size={10} />;
       case "follow":
       default:
         return <UserPlus size={10} />;
@@ -62,6 +72,16 @@ export default function CommunityActivityView() {
         return "bg-purple-500 text-white";
       case "dm":
         return "bg-orange-500 text-white";
+      case "ban":
+        return "bg-red-600 text-white";
+      case "suspend":
+        return "bg-amber-500 text-white";
+      case "unban":
+        return "bg-green-600 text-white";
+      case "appeal_rejected":
+        return "bg-red-500 text-white";
+      case "warn":
+        return "bg-amber-600 text-white";
       case "follow":
       default:
         return "bg-green-600 text-white";
@@ -69,7 +89,9 @@ export default function CommunityActivityView() {
   };
 
   const handleNotificationClick = (n: typeof notifications[0]) => {
-    if (n.action === "follow" && n.actorId) {
+    if (["ban", "suspend", "unban", "appeal_rejected", "warn"].includes(n.action)) {
+      router.push(`/community/messages`);
+    } else if (n.action === "follow" && n.actorId) {
       router.push(`/community/profile/${n.actorId}`);
     } else if (n.action === "dm" && n.actorId) {
       router.push(`/community/messages?userId=${n.actorId}`);
@@ -154,6 +176,16 @@ export default function CommunityActivityView() {
                         ? "menyebutmu dalam postingan"
                         : n.action === "dm"
                         ? "mengirim pesan langsung kepadamu"
+                        : n.action === "ban"
+                        ? "memberlakukan pemblokiran permanen pada akun Anda"
+                        : n.action === "suspend"
+                        ? "menangguhkan sementara akun Anda di komunitas"
+                        : n.action === "unban"
+                        ? "mencabut pembatasan akun Anda (Unbanned)"
+                        : n.action === "appeal_rejected"
+                        ? "menolak permohonan banding pembatasan akun"
+                        : n.action === "warn"
+                        ? "mengirimkan peringatan pedoman komunitas resmi"
                         : "mulai mengikutimu"}
                     </span>
                   </p>
@@ -161,6 +193,14 @@ export default function CommunityActivityView() {
                     {n.time}
                   </span>
                 </div>
+
+                {["ban", "suspend", "unban", "appeal_rejected", "warn"].includes(n.action) && (
+                  <div className="mt-2 flex items-center gap-2">
+                    <span className="text-[11px] font-bold text-orange-600 group-hover:underline">
+                      Buka pesan resmi moderasi →
+                    </span>
+                  </div>
+                )}
 
                 {n.targetText && (
                   <p className="text-xs text-brown-700/80 mt-1 line-clamp-2 bg-[#FAF7F2] p-2 rounded-xl border border-brown-900/5">

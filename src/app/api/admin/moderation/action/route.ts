@@ -36,6 +36,19 @@ export async function POST(req: NextRequest) {
       case "WARN": {
         if (!targetUserId) return NextResponse.json({ error: "Target user ID diperlukan." }, { status: 400 });
         actionResult = await userRepository.warnUser(targetUserId, cleanReason, admin.id, reportId);
+        try {
+          const { sendModerationNotificationAndMessage } = await import("@/backend/community/moderationNotification");
+          await sendModerationNotificationAndMessage({
+            targetUserId,
+            adminId: admin.id,
+            adminName: admin.name,
+            type: "warn",
+            message: `Pemberitahuan Peringatan Komunitas ZYBA:\n\nAkun Anda telah menerima peringatan resmi dari Tim Moderasi ZYBA terkait aktivitas Anda di komunitas.\n\nAlasan: ${cleanReason}\n\nHarap patuhi pedoman komunitas ZYBA agar kenyamanan dan ruang aman bersama tetap terjaga.`,
+            reason: cleanReason,
+          });
+        } catch (notifErr) {
+          console.warn("[WARN] Gagal mengirim notif/pesan moderasi:", notifErr);
+        }
         break;
       }
 
@@ -111,6 +124,19 @@ export async function POST(req: NextRequest) {
         if (!targetUserId) return NextResponse.json({ error: "Target user ID diperlukan." }, { status: 400 });
         const days = Math.max(1, Number(durationDays) || 7);
         actionResult = await userRepository.suspendUser(targetUserId, days, cleanReason, admin.id, reportId);
+        try {
+          const { sendModerationNotificationAndMessage } = await import("@/backend/community/moderationNotification");
+          await sendModerationNotificationAndMessage({
+            targetUserId,
+            adminId: admin.id,
+            adminName: admin.name,
+            type: "suspend",
+            message: `Pemberitahuan Penangguhan Akun ZYBA:\n\nAkun Anda telah ditangguhkan sementara selama ${days} hari dari Komunitas ZYBA.\n\nAlasan: ${cleanReason}\n\nSelama masa penangguhan, Anda tidak dapat membuat postingan maupun berkomentar. Anda dapat mengajukan permohonan banding melalui Komunitas ZYBA jika merasa terdapat kekeliruan.`,
+            reason: cleanReason,
+          });
+        } catch (notifErr) {
+          console.warn("[SUSPEND] Gagal mengirim notif/pesan moderasi:", notifErr);
+        }
         break;
       }
 
@@ -130,6 +156,19 @@ export async function POST(req: NextRequest) {
         } catch (dbErr) {
           console.warn("[BAN] Gagal menyembunyikan postingan/komentar user:", dbErr);
         }
+        try {
+          const { sendModerationNotificationAndMessage } = await import("@/backend/community/moderationNotification");
+          await sendModerationNotificationAndMessage({
+            targetUserId,
+            adminId: admin.id,
+            adminName: admin.name,
+            type: "ban",
+            message: `Pemberitahuan Pemblokiran Permanen ZYBA:\n\nAkun Anda telah diblokir secara permanen dari Komunitas ZYBA karena pelanggaran terhadap pedoman komunitas.\n\nAlasan: ${cleanReason}\n\nJika Anda meyakini keputusan ini merupakan kekeliruan, Anda dapat mengajukan permohonan penyangkalan banding melalui banner di halaman Komunitas ZYBA.`,
+            reason: cleanReason,
+          });
+        } catch (notifErr) {
+          console.warn("[BAN] Gagal mengirim notif/pesan moderasi:", notifErr);
+        }
         break;
       }
 
@@ -148,6 +187,19 @@ export async function POST(req: NextRequest) {
           });
         } catch (dbErr) {
           console.warn("[LIFT_RESTRICTION] Gagal memulihkan postingan/komentar user:", dbErr);
+        }
+        try {
+          const { sendModerationNotificationAndMessage } = await import("@/backend/community/moderationNotification");
+          await sendModerationNotificationAndMessage({
+            targetUserId,
+            adminId: admin.id,
+            adminName: admin.name,
+            type: "unban",
+            message: `Kabar Baik dari Tim Moderasi ZYBA:\n\nPembatasan pada akun Anda telah resmi dicabut (Unbanned). Anda sekarang dapat kembali membuat postingan, berkomentar, dan berinteraksi di Komunitas ZYBA.\n\nCatatan: ${cleanReason || "Selamat datang kembali! Harap selalu menjaga ruang aman dan mematuhi pedoman komunitas ZYBA."}`,
+            reason: cleanReason,
+          });
+        } catch (notifErr) {
+          console.warn("[LIFT_RESTRICTION] Gagal mengirim notif/pesan moderasi:", notifErr);
         }
         break;
       }

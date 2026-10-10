@@ -24,7 +24,17 @@ export interface CommunityNotification {
   id: string;
   user: string;
   avatar: string;
-  action: "like" | "reply" | "mention" | "follow" | "dm";
+  action:
+    | "like"
+    | "reply"
+    | "mention"
+    | "follow"
+    | "dm"
+    | "ban"
+    | "suspend"
+    | "unban"
+    | "appeal_rejected"
+    | "warn";
   time: string;
   targetText?: string;
   read: boolean;
