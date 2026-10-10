@@ -404,7 +404,33 @@ export function CompanionProvider({ children }: { children: React.ReactNode }) {
       }
 
       if (!response.ok) {
-        throw new Error("Gagal menerima respons AI");
+        const errJson = await response.json().catch(() => ({}));
+        if (errJson.message) {
+          const errorMsg: Message = {
+            id: `ai-err-${Date.now()}`,
+            role: "ASSISTANT",
+            content: `⚠️ ${errJson.message}`,
+            modelUsed: selectedModel,
+            time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+            createdAt: new Date().toISOString(),
+          };
+          setConversations((prev) =>
+            prev.map((c) => {
+              if (c.id === currentConvId) {
+                return {
+                  ...c,
+                  lastMsg: errorMsg.content.slice(0, 60),
+                  time: formatChatListTime(new Date()),
+                  messages: [...c.messages, errorMsg],
+                };
+              }
+              return c;
+            })
+          );
+          setIsSending(false);
+          return;
+        }
+        throw new Error(errJson.error || "Gagal menerima respons AI");
       }
 
       const data = await response.json();

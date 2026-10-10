@@ -189,6 +189,16 @@ export async function POST(req: NextRequest) {
           { status: 503 }
         );
       }
+
+      if (aiErr?.message?.includes("Kredensial API Key untuk model")) {
+        return NextResponse.json(
+          {
+            error: "PROVIDER_AUTH_ERROR",
+            message: aiErr.message,
+          },
+          { status: 400 }
+        );
+      }
       throw aiErr;
     }
 

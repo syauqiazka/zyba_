@@ -95,6 +95,22 @@ export class CentralAIRouter {
       } catch (err: any) {
         lastError = err?.message || "Unknown error";
         console.warn(`[AIRouter] ✗ Failed ${descriptor.id} (${descriptor.provider}): ${lastError}`);
+
+        // Jika user secara eksplisit memilih model ini dan gagal karena API Key / Auth error:
+        // Jangan sembunyikan error konfigurasi dengan diam-diam fallback ke Mistral!
+        const errMsg = lastError || "";
+        const isAuthOrConfigError =
+          errMsg.includes("401") ||
+          errMsg.includes("UNAUTHENTICATED") ||
+          errMsg.includes("KEY_NOT_CONFIGURED") ||
+          errMsg.includes("invalid_api_key") ||
+          errMsg.includes("Invalid API Key");
+
+        if (requestedDescriptor && descriptor.id === requestedDescriptor.id && isAuthOrConfigError) {
+          throw new Error(
+            `Kredensial API Key untuk model ${requestedDescriptor.label} (${requestedDescriptor.provider.toUpperCase()}) tidak valid atau expired di server (.env). Silakan periksa kunci API Anda atau gunakan model lain.`
+          );
+        }
       }
     }
 
