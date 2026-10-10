@@ -207,6 +207,15 @@ if (expiredSubscription) {      // Background async update, tidak perlu membloki
         latestDailyAssessment: latestDaily,
         premiumUntil: activeSubscription?.endDate ?? null,
       },
+      subscription: activeSubscription
+        ? {
+            id: activeSubscription.id,
+            plan: activeSubscription.plan,
+            status: activeSubscription.status,
+            startDate: activeSubscription.startDate,
+            endDate: activeSubscription.endDate,
+          }
+        : null,
     };
 
     // Simpan ke fast cache

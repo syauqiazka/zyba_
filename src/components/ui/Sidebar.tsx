@@ -6,6 +6,7 @@ import { usePathname, useRouter } from "next/navigation";
 import ProfilePopover, { ProfileUser } from "../profile/ProfilePopover";
 import ProfileSettingsModal from "../profile/ProfileSettingsModal";
 import UserAvatar from "./UserAvatar";
+import SidebarPremiumCard from "./SidebarPremiumCard";
 import {
   Home,
   CalendarCheck,
@@ -39,6 +40,8 @@ export default function Sidebar({ onClose }: { onClose?: () => void }) {
   const [isProfilePopoverOpen, setIsProfilePopoverOpen] = useState(false);
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [subscription, setSubscription] = useState<any>(null);
+  const [premiumUntil, setPremiumUntil] = useState<string | null>(null);
 
   // Instant hydration from localStorage cache to eliminate any loading delay
   const [currentUser, setCurrentUser] = useState<ProfileUser>(() => {
@@ -70,39 +73,42 @@ export default function Sidebar({ onClose }: { onClose?: () => void }) {
     };
   });
 
-  useEffect(() => {
-    async function loadUser() {
-      try {
-        const res = await fetch("/api/user/me", { cache: "no-store" });
-        if (res.ok) {
-          const data = await res.json();
-          if (data.user) {
-            const updatedUser: ProfileUser = {
-              name: data.user.name || "Pengguna ZYBA",
-              email: data.user.email || "user@zyba.app",
-              avatarUrl: data.user.avatarUrl || "🦊",
-              plan: data.user.plan || "FREE",
-              streak: data.stats?.streak || 1,
-              zybaScore: data.stats?.zybaScore || null,
-            };
-            setCurrentUser(updatedUser);
-            if (data.user.isAdmin || data.user.role === "ADMIN") setIsAdmin(true);
-            try {
-              localStorage.setItem(
-                "zyba_user_cache",
-                JSON.stringify({
-                  ...updatedUser,
-                  stats: data.stats,
-                })
-              );
-            } catch {}
-          }
+  const loadUser = async () => {
+    try {
+      const res = await fetch("/api/user/me", { cache: "no-store" });
+      if (res.ok) {
+        const data = await res.json();
+        if (data.user) {
+          const updatedUser: ProfileUser = {
+            name: data.user.name || "Pengguna ZYBA",
+            email: data.user.email || "user@zyba.app",
+            avatarUrl: data.user.avatarUrl || "🦊",
+            plan: data.user.plan || "FREE",
+            streak: data.stats?.streak || 1,
+            zybaScore: data.stats?.zybaScore || null,
+          };
+          setCurrentUser(updatedUser);
+          if (data.subscription) setSubscription(data.subscription);
+          if (data.stats?.premiumUntil) setPremiumUntil(data.stats.premiumUntil);
+          if (data.user.isAdmin || data.user.role === "ADMIN") setIsAdmin(true);
+          try {
+            localStorage.setItem(
+              "zyba_user_cache",
+              JSON.stringify({
+                ...updatedUser,
+                stats: data.stats,
+              })
+            );
+          } catch {}
         }
-      } catch (err) {
-        // Fallback
       }
+    } catch (err) {
+      // Fallback
     }
-    loadUser();
+  };
+
+  useEffect(() => {
+    void loadUser();
   }, []);
 
   useEffect(() => {
@@ -235,7 +241,15 @@ export default function Sidebar({ onClose }: { onClose?: () => void }) {
       </div>
 
       {/* Footer Profile */}
-      <div className="flex flex-col gap-3 pt-4 border-t border-brown-900/10 shrink-0">
+      <div className="flex flex-col gap-2.5 pt-3 border-t border-brown-900/10 shrink-0">
+        {/* Status Langganan & Riwayat Pembayaran (di atas akun pengguna) */}
+        <SidebarPremiumCard
+          plan={currentUser.plan || "FREE"}
+          subscription={subscription}
+          premiumUntil={premiumUntil}
+          onRefreshUser={loadUser}
+        />
+
         {/* Profile User Control Bar */}
         <div className="relative">
           {/* Profile Popover */}
