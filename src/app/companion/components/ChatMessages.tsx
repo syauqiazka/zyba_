@@ -302,8 +302,8 @@ export default function ChatMessages({
       {/* Typing Indicator */}
       {isSending && (
         <div className="flex items-start gap-3 pl-1">
-          <div className="w-8 h-8 rounded-xl bg-cream border border-orange-500/20 flex items-center justify-center text-sm font-bold text-orange-600 shrink-0 select-none">
-            ✳
+          <div className="w-8 h-8 rounded-xl bg-cream border border-orange-500/20 flex items-center justify-center text-base shrink-0 shadow-2xs select-none">
+            {persona.emoji}
           </div>
           <div className="bg-white border border-brown-900/8 rounded-2xl rounded-bl-xs px-4 py-3 shadow-2xs flex items-center gap-1.5">
             <span className="w-2 h-2 rounded-full bg-brown-900/40 animate-pulse" />

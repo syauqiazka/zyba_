@@ -132,7 +132,7 @@ export function CompanionProvider({ children }: { children: React.ReactNode }) {
 
   // Persist commStyle, selectedModel & selectedPersona across refreshes via localStorage
   const [commStyle, setCommStyleRaw] = useState<"CASUAL" | "FORMAL" | "FUN">("CASUAL");
-  const [selectedModel, setSelectedModelRaw] = useState<AIModelType>("gemini-2.5-flash");
+  const [selectedModel, setSelectedModelRaw] = useState<AIModelType>("gemini-flash-lite-latest");
   const [selectedPersona, setSelectedPersonaRaw] = useState<PersonaId>("KINA");
   const [isSending, setIsSending] = useState(false);
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
@@ -146,12 +146,19 @@ export function CompanionProvider({ children }: { children: React.ReactNode }) {
       const savedPersona = localStorage.getItem("zyba_companion_persona") as PersonaId | null;
       if (savedModel) {
         // Normalisasi alias lama jika ada di storage pengguna
-        const mapped = savedModel === "gemini-3.8-flash" ? "gemini-2.5-flash"
-          : savedModel === "gemini-3.7-flash" ? "gemini-2.0-flash"
-          : savedModel === "gemini-3.5-flash-lite" ? "gemini-1.5-flash"
-          : savedModel === "llama-3.3-70b" ? "llama-3.3-70b-versatile"
-          : savedModel === "ministral-8b" ? "ministral-8b-latest"
-          : savedModel;
+        const mapped =
+          savedModel === "gemini-3.8-flash" ||
+          savedModel === "gemini-2.5-flash" ||
+          savedModel === "gemini-3.7-flash" ||
+          savedModel === "gemini-3.5-flash-lite" ||
+          savedModel === "gemini-1.5-flash" ||
+          savedModel === "gemini-2.0-flash"
+            ? "gemini-flash-lite-latest"
+            : savedModel === "llama-3.3-70b" || savedModel === "llama-3.3-70b-versatile"
+            ? "openai/gpt-oss-20b"
+            : savedModel === "ministral-8b"
+            ? "ministral-8b-latest"
+            : savedModel;
         setSelectedModelRaw(mapped as AIModelType);
       }
       if (savedStyle) setCommStyleRaw(savedStyle);

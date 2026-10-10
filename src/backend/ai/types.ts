@@ -14,10 +14,13 @@ export type AIMode =
 
 export type AIModelType =
   // Google Gemini (Model Resmi Google Generative AI)
+  | "gemini-flash-lite-latest"
   | "gemini-2.5-flash"
   | "gemini-2.0-flash"
   | "gemini-1.5-flash"
   // Groq (LPU Ultra-fast Inference)
+  | "openai/gpt-oss-20b"
+  | "qwen/qwen3.8-27b"
   | "llama-3.3-70b-versatile"
   | "llama-3.1-8b-instant"
   | "qwen-2.5-32b"
