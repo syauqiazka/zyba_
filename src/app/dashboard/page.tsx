@@ -9,6 +9,7 @@ import StressLevelChart from "./components/StressLevelChart";
 import CompanionWidget from "./components/CompanionWidget";
 import TrackerChecklist from "./components/TrackerChecklist";
 import QuickAccessCards from "./components/QuickAccessCards";
+import PremiumStatusWidget from "./components/PremiumStatusWidget";
 import UserAvatar from "@/components/ui/UserAvatar";
 import AvatarCropModal from "@/components/ui/AvatarCropModal";
 
@@ -17,6 +18,14 @@ import {
   type AssessmentMetric,
   type DailyAssessment,
 } from "@/lib/assessmentMetrics";
+
+interface SubscriptionInfo {
+  id?: string;
+  plan?: "FREE" | "PLUS";
+  status?: string;
+  startDate?: string;
+  endDate?: string;
+}
 
 interface UserData {
   name: string;
@@ -32,6 +41,10 @@ interface UserData {
   hasAssessment: boolean;
 
   conversationCount: number;
+
+  plan: "FREE" | "PLUS";
+  subscription: SubscriptionInfo | null;
+  premiumUntil: string | null;
 }
 
 const EMPTY_USER: UserData = {
@@ -48,6 +61,10 @@ const EMPTY_USER: UserData = {
   hasAssessment: false,
 
   conversationCount: 0,
+
+  plan: "FREE",
+  subscription: null,
+  premiumUntil: null,
 };
 
 function getJakartaDateKey(
@@ -110,6 +127,9 @@ export default function DashboardPage() {
               streak: parsed.stats?.streak ?? parsed.streak ?? 0,
               hasAssessment: parsed.stats?.hasAssessment ?? parsed.hasAssessment ?? false,
               conversationCount: parsed.stats?.conversationCount ?? parsed.conversationCount ?? 0,
+              plan: (parsed.stats?.plan === "PLUS" || parsed.plan === "PLUS" ? "PLUS" : "FREE") as "FREE" | "PLUS",
+              subscription: parsed.stats?.subscription ?? parsed.subscription ?? null,
+              premiumUntil: parsed.stats?.premiumUntil ?? parsed.premiumUntil ?? null,
             };
           }
         }
@@ -505,6 +525,10 @@ export default function DashboardPage() {
               stats.conversationCount ||
               0
             ),
+
+          plan: (user.plan === "PLUS" ? "PLUS" : "FREE") as "FREE" | "PLUS",
+          subscription: (userData as any).subscription ?? null,
+          premiumUntil: stats.premiumUntil ?? null,
         };
 
         setUserData(
@@ -682,39 +706,12 @@ export default function DashboardPage() {
   return (
     <div className="flex flex-col gap-8 pb-12 min-h-0">
 
-      {/* PREMIUM EXPERIENCE */}
-      <Link
-        href="/settings/zyba-plus/insights"
-        className="group relative overflow-hidden rounded-3xl border border-orange-300/40 bg-gradient-to-br from-[#fff7ed] via-white to-[#f5f0ff] p-5 shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md sm:p-6"
-      >
-        <div className="absolute -right-12 -top-12 h-32 w-32 rounded-full bg-orange-200/30 blur-2xl" />
-        <div className="relative flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
-          <div className="min-w-0">
-            <div className="flex flex-wrap items-center gap-2">
-              <span className="inline-flex items-center gap-1 rounded-full bg-orange-500 px-2.5 py-1 text-[10px] font-extrabold uppercase tracking-wider text-white">
-                ✨ ZYBA Premium
-              </span>
-              <span className="text-[10px] font-bold text-brown-700/50">Wellness yang lebih personal</span>
-            </div>
-            <h2 className="mt-2 font-display text-xl font-extrabold tracking-tight text-brown-900 sm:text-2xl">
-              Temukan pola wellness-mu
-            </h2>
-            <p className="mt-1 max-w-2xl text-xs leading-5 text-brown-700 sm:text-sm">
-              Premium mengubah data check-in, aktivitas, dan jurnal menjadi Wellness Insight, Pattern Detection, dan rencana personal 7 hari.
-            </p>
-            <div className="mt-4 flex flex-wrap gap-2">
-              {["60 AI chat/hari", "Wellness Memory", "Pattern Detection", "Personalized Plan"].map((feature) => (
-                <span key={feature} className="rounded-full border border-brown-900/10 bg-white/80 px-2.5 py-1 text-[10px] font-bold text-brown-700">
-                  ✓ {feature}
-                </span>
-              ))}
-            </div>
-          </div>
-          <span className="inline-flex shrink-0 items-center justify-center rounded-full bg-brown-900 px-4 py-2.5 text-xs font-extrabold text-white transition-transform group-hover:translate-x-0.5">
-            Lihat Premium →
-          </span>
-        </div>
-      </Link>
+      {/* PREMIUM STATUS WIDGET — dinamis berdasarkan plan aktual */}
+      <PremiumStatusWidget
+        plan={userData.plan}
+        subscription={userData.subscription}
+        premiumUntil={userData.premiumUntil}
+      />
 
       {/* =================================================
           TOP BANNER
