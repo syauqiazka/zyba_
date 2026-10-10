@@ -261,8 +261,18 @@ export const communityRepository = {
     const userIds = [...new Set(posts.flatMap((p) => [p.userId, ...p.comments.map((c) => c.userId)]))];
     const users = await accountDb.user.findMany({
       where: { id: { in: userIds } },
-      select: { id: true, name: true, avatarUrl: true },
+      select: { id: true, name: true, avatarUrl: true, isBanned: true },
     });
+    const bannedUserIds = new Set(users.filter((u) => u.isBanned).map((u) => u.id));
+
+    // Filter out posts created by permanently banned users
+    posts = posts.filter((p) => !bannedUserIds.has(p.userId));
+
+    // Filter out comments created by banned users
+    for (const p of posts) {
+      p.comments = p.comments.filter((c) => !bannedUserIds.has(c.userId));
+    }
+
     const umap = new Map(users.map((u) => [u.id, u]));
 
     const mappedPosts: CommunityPostItem[] = posts.map((p) => {
@@ -525,7 +535,7 @@ export const communityRepository = {
       return [];
     }
 
-    const posts = await communityDb.communityPost.findMany({
+    let posts = await communityDb.communityPost.findMany({
       where: {
         userId: { in: followingIds },
         isHidden: false,
@@ -551,8 +561,16 @@ export const communityRepository = {
     const userIds = [...new Set(posts.flatMap(p => [p.userId, ...p.comments.map(c => c.userId)]))];
     const users = await accountDb.user.findMany({
       where: { id: { in: userIds } },
-      select: { id: true, name: true, avatarUrl: true },
+      select: { id: true, name: true, avatarUrl: true, isBanned: true },
     });
+    const bannedUserIds = new Set(users.filter(u => u.isBanned).map(u => u.id));
+
+    // Filter out posts and comments from banned users
+    posts = posts.filter(p => !bannedUserIds.has(p.userId));
+    for (const p of posts) {
+      p.comments = p.comments.filter(c => !bannedUserIds.has(c.userId));
+    }
+
     const umap = new Map(users.map(u => [u.id, u]));
 
     return posts.map(p => {
@@ -589,11 +607,13 @@ export const communityRepository = {
     const userIds = [...new Set(rawComments.map((c) => c.userId))];
     const users = await accountDb.user.findMany({
       where: { id: { in: userIds } },
-      select: { id: true, name: true, avatarUrl: true },
+      select: { id: true, name: true, avatarUrl: true, isBanned: true },
     });
+    const bannedUserIds = new Set(users.filter(u => u.isBanned).map(u => u.id));
+    const activeComments = rawComments.filter(c => !bannedUserIds.has(c.userId));
     const umap = new Map(users.map((u) => [u.id, u]));
 
-    return buildCommentTree(rawComments, umap);
+    return buildCommentTree(activeComments, umap);
   },
 
   async deleteComment(

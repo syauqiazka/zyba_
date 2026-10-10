@@ -468,6 +468,7 @@ export default function PostCard({ post, onToggleLike, onToggleRepost, onAddComm
 
   // Post-level state
   const [menuOpen, setMenuOpen] = useState(false);
+  const [menuPlacement, setMenuPlacement] = useState<"bottom" | "top">("bottom");
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [confirmMute, setConfirmMute] = useState(false);
   const [confirmBlock, setConfirmBlock] = useState(false);
@@ -509,7 +510,7 @@ export default function PostCard({ post, onToggleLike, onToggleRepost, onAddComm
     }
   }, [showComments, loadComments]);
 
-  // Close dropdown on outside click / Escape
+  // Close dropdown on outside click / Escape / Scroll
   useEffect(() => {
     if (!menuOpen) return;
     const handleKey = (e: KeyboardEvent) => { if (e.key === "Escape") closeMenu(); };
@@ -524,11 +525,48 @@ export default function PostCard({ post, onToggleLike, onToggleRepost, onAddComm
     };
   }, [menuOpen]);
 
+  // Ensure only one post menu is open at any time across the community feed
+  useEffect(() => {
+    const handleOtherPostMenu = (e: Event) => {
+      const customEvent = e as CustomEvent;
+      if (customEvent.detail && customEvent.detail !== post.id) {
+        closeMenu();
+      }
+    };
+    window.addEventListener("zyba_active_post_menu", handleOtherPostMenu);
+    return () => {
+      window.removeEventListener("zyba_active_post_menu", handleOtherPostMenu);
+    };
+  }, [post.id]);
+
   const closeMenu = () => {
     setMenuOpen(false);
     setConfirmDelete(false);
     setConfirmMute(false);
     setConfirmBlock(false);
+  };
+
+  const handleToggleMenu = () => {
+    if (!menuOpen) {
+      if (menuRef.current) {
+        const rect = menuRef.current.getBoundingClientRect();
+        const spaceBelow = window.innerHeight - rect.bottom;
+        const spaceAbove = rect.top;
+        // Jika ruang bawah < 260px dan ruang atas cukup, buka ke atas
+        if (spaceBelow < 260 && spaceAbove > 260) {
+          setMenuPlacement("top");
+        } else {
+          setMenuPlacement("bottom");
+        }
+      }
+      window.dispatchEvent(new CustomEvent("zyba_active_post_menu", { detail: post.id }));
+      setConfirmDelete(false);
+      setConfirmMute(false);
+      setConfirmBlock(false);
+      setMenuOpen(true);
+    } else {
+      closeMenu();
+    }
   };
 
   const isOwner = currentUserId != null && post.userId != null && String(currentUserId) === String(post.userId);
@@ -675,7 +713,8 @@ export default function PostCard({ post, onToggleLike, onToggleRepost, onAddComm
     <>
       <article
         id={`post-${post.id}`}
-        className="flex gap-3 sm:gap-3.5 px-3 sm:px-5 py-4 border-b border-brown-900/[0.06] hover:bg-[#faf7f2]/50 transition-colors group last:border-b-0"
+        style={{ zIndex: menuOpen ? 45 : 1 }}
+        className="relative flex gap-3 sm:gap-3.5 px-3 sm:px-5 py-4 border-b border-brown-900/[0.06] hover:bg-[#faf7f2]/50 transition-colors group last:border-b-0"
       >
         {/* Left: Avatar + thread line */}
         <div className="flex flex-col items-center shrink-0">
@@ -721,15 +760,10 @@ export default function PostCard({ post, onToggleLike, onToggleRepost, onAddComm
               </button>
 
               {/* Three-dot menu */}
-              <div className="relative z-40" ref={menuRef}>
+              <div className={`relative ${menuOpen ? "z-50" : "z-40"}`} ref={menuRef}>
                 <button
                   type="button"
-                  onClick={() => {
-                    setMenuOpen((v) => !v);
-                    setConfirmDelete(false);
-                    setConfirmMute(false);
-                    setConfirmBlock(false);
-                  }}
+                  onClick={handleToggleMenu}
                   className="min-w-9 min-h-9 flex items-center justify-center text-brown-700/60 hover:text-brown-900 transition-colors p-1.5 rounded-lg hover:bg-cream touch-manipulation focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-500"
                   title="Opsi lainnya"
                   aria-label="Opsi lainnya"
@@ -740,7 +774,11 @@ export default function PostCard({ post, onToggleLike, onToggleRepost, onAddComm
 
                 {menuOpen && (
                   <div
-                    className="absolute right-0 top-full mt-1.5 z-[80] w-56 max-w-[calc(100vw-24px)] bg-white rounded-2xl shadow-xl border border-brown-900/10 p-1.5 animate-in fade-in slide-in-from-top-1 duration-150"
+                    className={`absolute right-0 z-[80] w-56 max-w-[calc(100vw-24px)] bg-white rounded-2xl shadow-xl border border-brown-900/10 p-1.5 animate-in fade-in duration-150 ${
+                      menuPlacement === "top"
+                        ? "bottom-full mb-1.5 slide-in-from-bottom-1"
+                        : "top-full mt-1.5 slide-in-from-top-1"
+                    }`}
                     role="menu"
                   >
                     {isOwner ? (

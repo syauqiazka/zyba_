@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { requireAdmin } from "@/backend/billing/admin";
 import { userRepository } from "@/backend/auth/userRepository";
 import { reportRepository } from "@/backend/community/reportRepository";
+import { communityDb } from "@/backend/db/communityClient";
 import { invalidateCommunityCache } from "@/lib/communityCache";
 
 export async function POST(req: NextRequest) {
@@ -116,12 +117,38 @@ export async function POST(req: NextRequest) {
       case "BAN": {
         if (!targetUserId) return NextResponse.json({ error: "Target user ID diperlukan." }, { status: 400 });
         actionResult = await userRepository.banUser(targetUserId, cleanReason, admin.id, reportId);
+        // Sembunyikan semua postingan dan komentar pengguna yang diblokir permanen
+        try {
+          await communityDb.communityPost.updateMany({
+            where: { userId: targetUserId },
+            data: { isHidden: true },
+          });
+          await communityDb.communityComment.updateMany({
+            where: { userId: targetUserId },
+            data: { isHidden: true },
+          });
+        } catch (dbErr) {
+          console.warn("[BAN] Gagal menyembunyikan postingan/komentar user:", dbErr);
+        }
         break;
       }
 
       case "LIFT_RESTRICTION": {
         if (!targetUserId) return NextResponse.json({ error: "Target user ID diperlukan." }, { status: 400 });
         actionResult = await userRepository.liftRestrictions(targetUserId, admin.id, cleanReason);
+        // Pulihkan postingan dan komentar pengguna yang sebelumnya diblokir
+        try {
+          await communityDb.communityPost.updateMany({
+            where: { userId: targetUserId },
+            data: { isHidden: false },
+          });
+          await communityDb.communityComment.updateMany({
+            where: { userId: targetUserId },
+            data: { isHidden: false },
+          });
+        } catch (dbErr) {
+          console.warn("[LIFT_RESTRICTION] Gagal memulihkan postingan/komentar user:", dbErr);
+        }
         break;
       }
 
