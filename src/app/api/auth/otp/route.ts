@@ -89,6 +89,13 @@ export async function POST(req: NextRequest) {
         path: "/",
         maxAge: 0,
       });
+      response.cookies.set("zyba_otp_verified", "verified", {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "lax",
+        path: "/",
+        maxAge: 10 * 60,
+      });
       return response;
     }
 
