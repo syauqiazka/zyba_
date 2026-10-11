@@ -726,7 +726,7 @@ export default function ProfileSecurityFlow({
                   autoComplete="one-time-code"
                   maxLength={4}
                   value={otpCode}
-                  onChange={(event) => setOtpCode(event.target.value.replace(/\\D/g, "").slice(0, 4))}
+                  onChange={(event) => setOtpCode(event.target.value.replace(/\D/g, "").slice(0, 4))}
                   placeholder="Masukkan 4 digit kode"
                   className="w-full rounded-xl border border-brown-900/15 px-4 py-3 text-center text-lg tracking-[0.5em] font-bold text-brown-900 outline-none focus:border-orange-500"
                 />
@@ -768,7 +768,7 @@ export default function ProfileSecurityFlow({
                     return;
                   }
 
-                  if (!/^\\d{4}$/.test(otpCode)) {
+                  if (!/^\d{4}$/.test(otpCode)) {
                     setCaptchaError("Masukkan kode OTP 4 digit yang dikirim ke email Anda.");
                     return;
                   }
