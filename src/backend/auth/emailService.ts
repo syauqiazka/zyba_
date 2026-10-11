@@ -4,10 +4,11 @@
  */
 
 import nodemailer from "nodemailer";
+import { randomInt } from "crypto";
 
 export function generateOTP(_email: string): string {
   // Generate a short-lived 4-digit verification code.
-  return Math.floor(1000 + Math.random() * 9000).toString();
+  return randomInt(1000, 10000).toString();
 }
 
 export function verifyOTP(_email: string, _inputOtp: string): { success: boolean; message: string } {
