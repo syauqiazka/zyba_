@@ -10,7 +10,7 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
 
-    const { email, name, password, recaptchaToken } = body;
+    const { email, name, password } = body;
     const action = (body.action || "").toUpperCase();
 
     // =========================
@@ -218,49 +218,6 @@ export async function POST(request: NextRequest) {
         );
       }
       // ── End OTP proof check ────────────────────────────────────────────────
-
-      // reCAPTCHA (opsional tapi dipertahankan jika dikonfigurasi)
-      if (recaptchaToken) {
-        const recaptchaSecret = process.env.RECAPTCHA_SECRET_KEY;
-        if (recaptchaSecret) {
-          const captchaResponse = await fetch("https://www.google.com/recaptcha/api/siteverify", {
-            method: "POST",
-            headers: { "Content-Type": "application/x-www-form-urlencoded" },
-            body: new URLSearchParams({
-              secret: recaptchaSecret,
-              response: recaptchaToken,
-              remoteip: clientIp,
-            }),
-            cache: "no-store",
-          });
-          const captchaResult = await captchaResponse.json() as {
-            success?: boolean;
-            score?: number;
-            action?: string;
-            ["error-codes"]?: string[];
-          };
-          if (
-            !captchaResponse.ok ||
-            !captchaResult.success ||
-            captchaResult.action !== "signup" ||
-            typeof captchaResult.score !== "number" ||
-            captchaResult.score < 0.5
-          ) {
-            return NextResponse.json(
-              { error: "Verifikasi keamanan gagal. Silakan coba lagi." },
-              { status: 400 }
-            );
-          }
-        }
-      } else {
-        // Jika reCAPTCHA tidak dikonfigurasi, wajibkan minimal OTP (sudah dicek di atas)
-        const recaptchaSecret = process.env.RECAPTCHA_SECRET_KEY;
-        if (recaptchaSecret) {
-          // reCAPTCHA dikonfigurasi tapi token tidak dikirim
-          return NextResponse.json({ error: "Verifikasi reCAPTCHA wajib dilakukan." }, { status: 400 });
-        }
-        // reCAPTCHA tidak dikonfigurasi — lanjut dengan OTP saja
-      }
 
       const existingUser = await userRepository.findByEmail(normalized);
       if (existingUser) {

@@ -22,22 +22,6 @@ const AVATAR_EMOJI_MAP: Record<string, string> = {
   fox: "🦊", panda: "🐼", lion: "🦁", rabbit: "🐰", leaf: "🌿", flower: "🌸",
 };
 
-declare global {
-  interface Window {
-    grecaptcha?: {
-      ready: (callback: () => void) => void;
-      execute: (siteKey: string, options: { action: string }) => Promise<string>;
-      render: (container: HTMLElement, parameters: {
-        sitekey: string;
-        callback: (token: string) => void;
-        "expired-callback"?: () => void;
-        "error-callback"?: () => void;
-      }) => number;
-      reset: (widgetId?: number) => void;
-    };
-  }
-}
-
 export const POPULAR_CITIES = [
   "Jakarta, DKI Jakarta",
   "Surabaya, Jawa Timur",
@@ -160,8 +144,6 @@ export default function ProfileSecurityFlow({
   const [emailError, setEmailError] = useState("");
   const [isCheckingEmail, setIsCheckingEmail] = useState(false);
   const [passwordError, setPasswordError] = useState("");
-  const [isVerifyingCaptcha, setIsVerifyingCaptcha] = useState(false);
-  const [captchaError, setCaptchaError] = useState("");
 
   // OTP State
   const [otpCode, setOtpCode] = useState("");
@@ -275,8 +257,6 @@ export default function ProfileSecurityFlow({
           email: email.trim().toLowerCase(),
           name: fullName || undefined,
           password,
-          // reCAPTCHA opsional — kirim kalau tersedia
-          recaptchaToken: undefined,
         }),
       });
       const signupData = await signupRes.json();
@@ -857,19 +837,13 @@ export default function ProfileSecurityFlow({
               </div>
             )}
 
-            {/* reCAPTCHA tidak dipakai di step ini — OTP adalah verifikasi utama */}
-            {captchaError && (
-              <p className="mb-3 text-xs font-medium text-red-500">{captchaError}</p>
-            )}
-
             <button
               type="button"
-              disabled={isVerifyingCaptcha || isRequestingOtp}
+              disabled={isRequestingOtp}
               onClick={async () => {
                 if (isRequestingOtp) return;
                 setPasswordError("");
                 setOtpError("");
-                setCaptchaError("");
                 if (!password || password.length < 8) {
                   setPasswordError("Kata sandi harus minimal 8 karakter.");
                   return;
