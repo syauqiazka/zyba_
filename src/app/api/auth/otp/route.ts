@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { generateOTP, sendOTPEmail } from "@/lib/emailService";
-import { COOKIE_NAME, createOtpChallenge, verifyOtpChallenge } from "@/lib/otpChallenge";
+import { COOKIE_NAME, createOtpChallenge, createOtpVerifiedProof, verifyOtpChallenge } from "@/lib/otpChallenge";
 import { checkRateLimit, getClientIp, rateLimitResponse } from "@/lib/server/rateLimit";
 
 export async function POST(req: NextRequest) {
@@ -89,7 +89,7 @@ export async function POST(req: NextRequest) {
         path: "/",
         maxAge: 0,
       });
-      response.cookies.set("zyba_otp_verified", "verified", {
+      response.cookies.set("zyba_otp_verified", createOtpVerifiedProof(normalizedEmail), {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
         sameSite: "lax",
