@@ -800,9 +800,10 @@ export default function ProfileSecurityFlow({
                     return;
                   }
 
-
+                  onSignupSuccess(email.trim());
+                  setStep("FINGERPRINT");
                 } catch {
-                  setCaptchaError("Verifikasi keamanan gagal. Silakan coba lagi.");
+                  setCaptchaError("Verifikasi OTP gagal. Silakan coba lagi.");
                 } finally {
                   setIsVerifyingCaptcha(false);
                 }
