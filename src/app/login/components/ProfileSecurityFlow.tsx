@@ -119,38 +119,6 @@ export default function ProfileSecurityFlow({
   const [locationSearch, setLocationSearch] = useState("");
   const locationDropdownRef = React.useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    if (step !== "PASSWORD_STRENGTH") return;
-
-    const siteKey = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY;
-    if (!siteKey) {
-      setCaptchaError("Verifikasi keamanan belum dikonfigurasi.");
-      return;
-    }
-
-    const renderCaptcha = () => {
-      if (!window.grecaptcha || !siteKey) return;
-      window.grecaptcha.ready(() => {});
-    };
-
-    if (window.grecaptcha) {
-      renderCaptcha();
-      return;
-    }
-
-    const existing = document.querySelector('script[src*="google.com/recaptcha/api.js"]');
-    if (existing) {
-      existing.addEventListener("load", renderCaptcha, { once: true });
-      return () => existing.removeEventListener("load", renderCaptcha);
-    }
-
-    const script = document.createElement("script");
-    script.src = "https://www.google.com/recaptcha/api.js?render=" + encodeURIComponent(siteKey);
-    script.async = true;
-    script.defer = true;
-    script.onload = renderCaptcha;
-    document.head.appendChild(script);
-  }, [step]);
 
   // Sync initialEmail if changed from parent
   useEffect(() => {
@@ -193,6 +161,8 @@ export default function ProfileSecurityFlow({
   const [passwordError, setPasswordError] = useState("");
   const [isVerifyingCaptcha, setIsVerifyingCaptcha] = useState(false);
   const [captchaError, setCaptchaError] = useState("");
+  const [otpCode, setOtpCode] = useState("");
+  const [otpSent, setOtpSent] = useState(false);
 
 
   // Biometric state
@@ -744,7 +714,27 @@ export default function ProfileSecurityFlow({
               </div>
             )}
 
-            {/* reCAPTCHA berjalan di background; tidak menampilkan checkbox/UI. */}
+            {otpSent && (
+              <div className="flex flex-col gap-2">
+                <label htmlFor="signup-otp" className="text-xs font-bold text-brown-900 pl-1">
+                  Kode OTP dari email
+                </label>
+                <input
+                  id="signup-otp"
+                  type="text"
+                  inputMode="numeric"
+                  autoComplete="one-time-code"
+                  maxLength={4}
+                  value={otpCode}
+                  onChange={(event) => setOtpCode(event.target.value.replace(/\\D/g, "").slice(0, 4))}
+                  placeholder="Masukkan 4 digit kode"
+                  className="w-full rounded-xl border border-brown-900/15 px-4 py-3 text-center text-lg tracking-[0.5em] font-bold text-brown-900 outline-none focus:border-orange-500"
+                />
+                <p className="text-[11px] text-brown-700/70">
+                  Kode berlaku 10 menit. Periksa juga folder spam jika email belum masuk.
+                </p>
+              </div>
+            )}
             {captchaError && (
               <p className="mb-3 text-xs font-medium text-red-500">{captchaError}</p>
             )}
@@ -760,52 +750,41 @@ export default function ProfileSecurityFlow({
                   return;
                 }
 
-                const siteKey = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY;
-                if (!siteKey) {
-                  setCaptchaError("Verifikasi keamanan belum dikonfigurasi. Pastikan NEXT_PUBLIC_RECAPTCHA_SITE_KEY sudah diisi di environment production.");
-                  return;
-                }
-
                 setIsVerifyingCaptcha(true);
                 try {
-                  const captchaToken = await new Promise<string>((resolve, reject) => {
-                    const executeCaptcha = () => {
-                      if (!window.grecaptcha) {
-                        reject(new Error("reCAPTCHA belum tersedia"));
-                        return;
-                      }
-                      window.grecaptcha.ready(() => {
-                        window.grecaptcha!.execute(siteKey, { action: "signup" })
-                          .then((token) => {
-                            if (!token) reject(new Error("Token reCAPTCHA kosong"));
-                            else resolve(token);
-                          })
-                          .catch(reject);
-                      });
-                    };
-
-                    if (window.grecaptcha) {
-                      executeCaptcha();
+                  if (!otpSent) {
+                    const requestOtp = await fetch("/api/auth/otp", {
+                      method: "POST",
+                      headers: { "Content-Type": "application/json" },
+                      body: JSON.stringify({ action: "REQUEST", email: email.trim() }),
+                    });
+                    const requestData = await requestOtp.json();
+                    if (!requestOtp.ok) {
+                      setCaptchaError(requestData.error || "Kode OTP gagal dikirim. Silakan coba lagi.");
                       return;
                     }
+                    setOtpSent(true);
+                    setCaptchaError("");
+                    return;
+                  }
 
-                    const existing = document.querySelector('script[src*="google.com/recaptcha/api.js"]') as HTMLScriptElement | null;
-                    if (existing) {
-                      existing.addEventListener("load", executeCaptcha, { once: true });
-                      existing.addEventListener("error", () => reject(new Error("Gagal memuat reCAPTCHA")), { once: true });
-                      return;
-                    }
+                  if (!/^\\d{4}$/.test(otpCode)) {
+                    setCaptchaError("Masukkan kode OTP 4 digit yang dikirim ke email Anda.");
+                    return;
+                  }
 
-                    const script = document.createElement("script");
-                    script.src = "https://www.google.com/recaptcha/api.js?render=" + encodeURIComponent(siteKey);
-                    script.async = true;
-                    script.defer = true;
-                    script.onload = executeCaptcha;
-                    script.onerror = () => reject(new Error("Gagal memuat reCAPTCHA"));
-                    document.head.appendChild(script);
+                  const verifyOtp = await fetch("/api/auth/otp", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ action: "VERIFY", email: email.trim(), otp: otpCode }),
                   });
+                  const verifyData = await verifyOtp.json();
+                  if (!verifyOtp.ok) {
+                    setCaptchaError(verifyData.error || "Kode OTP tidak valid. Silakan coba lagi.");
+                    return;
+                  }
 
-                  const res = await fetch("/api/auth", {
+                  const signupRes = await fetch("/api/auth", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({
@@ -813,17 +792,15 @@ export default function ProfileSecurityFlow({
                       email: email.trim(),
                       name: fullName || undefined,
                       password,
-                      recaptchaToken: captchaToken,
                     }),
                   });
-                  const data = await res.json();
-                  if (!res.ok) {
-                    setCaptchaError(data.error || "Verifikasi keamanan gagal. Silakan coba lagi.");
+                  const signupData = await signupRes.json();
+                  if (!signupRes.ok) {
+                    setCaptchaError(signupData.error || "Pendaftaran gagal. Silakan coba lagi.");
                     return;
                   }
 
-                  onSignupSuccess(email.trim());
-                  setStep("FINGERPRINT");
+
                 } catch {
                   setCaptchaError("Verifikasi keamanan gagal. Silakan coba lagi.");
                 } finally {
@@ -832,7 +809,7 @@ export default function ProfileSecurityFlow({
               }}
               className="mt-2 w-full py-3.5 rounded-full bg-brown-900 text-white font-bold text-xs md:text-sm flex items-center justify-center gap-2 hover:bg-orange-500 transition-all shadow-md active:scale-98 disabled:opacity-50"
             >
-              {isVerifyingCaptcha ? "Memverifikasi..." : "Buat Akun & Lanjutkan →"}
+              {isVerifyingCaptcha ? (otpSent ? "Memverifikasi OTP..." : "Mengirim OTP...") : (otpSent ? "Verifikasi OTP & Buat Akun →" : "Kirim Kode OTP →")}
             </button>
           </div>
         </div>
