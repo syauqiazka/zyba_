@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { userRepository } from "@/backend/auth/userRepository";
 import bcrypt from "bcryptjs";
 import { createSessionToken } from "@/lib/auth";
+import { verifyOtpVerifiedProof } from "@/lib/otpChallenge";
 import { checkRateLimit, getClientIp, rateLimitResponse } from "@/lib/server/rateLimit";
 import { invalidateUserMeCache, invalidateDailyAssessmentCache } from "@/lib/server/userMeCache";
 
@@ -95,7 +96,7 @@ export async function POST(request: NextRequest) {
 
     if (action === "SIGNUP") {
       const otpVerified = request.cookies.get("zyba_otp_verified")?.value;
-      if (otpVerified !== "verified") {
+      if (!email || !verifyOtpVerifiedProof(otpVerified, email)) {
         return NextResponse.json(
           { error: "Verifikasi email dengan OTP wajib dilakukan sebelum membuat akun." },
           { status: 403 }
