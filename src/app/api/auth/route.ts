@@ -9,7 +9,7 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
 
-    const { email, otp, name, password, recaptchaToken } = body;
+    const { email, name, password } = body;
     const action = (body.action || "").toUpperCase();
 
     // =========================
@@ -94,6 +94,14 @@ export async function POST(request: NextRequest) {
     }
 
     if (action === "SIGNUP") {
+      const otpVerified = request.cookies.get("zyba_otp_verified")?.value;
+      if (otpVerified !== "verified") {
+        return NextResponse.json(
+          { error: "Verifikasi email dengan OTP wajib dilakukan sebelum membuat akun." },
+          { status: 403 }
+        );
+      }
+
       const clientIp = getClientIp(request);
       const limitCheck = await checkRateLimit(`signup:${clientIp}`, 10, 60);
       if (!limitCheck.allowed) {
@@ -102,48 +110,6 @@ export async function POST(request: NextRequest) {
 
       if (!email) {
         return NextResponse.json({ error: "Email wajib diisi." }, { status: 400 });
-      }
-      if (!recaptchaToken) {
-        return NextResponse.json({ error: "Verifikasi reCAPTCHA wajib dilakukan." }, { status: 400 });
-      }
-
-      const recaptchaSecret = process.env.RECAPTCHA_SECRET_KEY;
-      if (!recaptchaSecret) {
-        console.error("[auth] RECAPTCHA_SECRET_KEY is not configured");
-        return NextResponse.json({ error: "Verifikasi keamanan belum dikonfigurasi server." }, { status: 503 });
-      }
-
-      const captchaResponse = await fetch("https://www.google.com/recaptcha/api/siteverify", {
-        method: "POST",
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body: new URLSearchParams({
-          secret: recaptchaSecret,
-          response: recaptchaToken,
-          remoteip: clientIp,
-        }),
-        cache: "no-store",
-      });
-      const captchaResult = await captchaResponse.json() as {
-        success?: boolean;
-        score?: number;
-        action?: string;
-        hostname?: string;
-        ["error-codes"]?: string[];
-      };
-
-      // reCAPTCHA v3 berjalan tanpa checkbox. Hanya izinkan token
-      // yang valid, berasal dari action signup, dan memiliki skor aman.
-      if (
-        !captchaResponse.ok ||
-        !captchaResult.success ||
-        captchaResult.action !== "signup" ||
-        typeof captchaResult.score !== "number" ||
-        captchaResult.score < 0.5
-      ) {
-        return NextResponse.json(
-          { error: "Verifikasi keamanan gagal. Silakan coba lagi." },
-          { status: 400 }
-        );
       }
 
       const normalized = email.toLowerCase().trim();
@@ -195,6 +161,13 @@ export async function POST(request: NextRequest) {
         sameSite: "lax",
         path: "/",
         maxAge: 60 * 60 * 24 * 30,
+      });
+      response.cookies.set("zyba_otp_verified", "", {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "lax",
+        path: "/",
+        maxAge: 0,
       });
 
       return response;
