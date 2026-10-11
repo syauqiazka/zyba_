@@ -187,16 +187,23 @@ export default function ProfileSecurityFlow({
   }, []);
 
   // Kirim OTP ke email
-  const handleSendOtp = async () => {
+  const handleSendOtp = async (): Promise<{ success: boolean; error?: string }> => {
     setOtpError("");
     setIsRequestingOtp(true);
     try {
+      const normalizedEmail = email.trim().toLowerCase();
+      if (!normalizedEmail) {
+        const err = "Alamat email tidak boleh kosong.";
+        setOtpError(err);
+        return { success: false, error: err };
+      }
+
       const res = await fetch("/api/auth/otp", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           action: "REQUEST",
-          email: email.trim().toLowerCase(),
+          email: normalizedEmail,
           purpose: "SIGNUP",
         }),
       });
@@ -205,17 +212,21 @@ export default function ProfileSecurityFlow({
         if (res.status === 429) {
           const cd = data.retryAfter || 60;
           startCooldown(cd);
-          setOtpError(data.error || `Terlalu banyak permintaan. Tunggu ${cd} detik.`);
+          const err = data.error || `Terlalu banyak permintaan. Tunggu ${cd} detik.`;
+          setOtpError(err);
+          return { success: false, error: err };
         } else {
-          setOtpError(data.error || "Gagal mengirim kode OTP. Coba lagi.");
+          const err = data.error || "Gagal mengirim kode OTP. Coba lagi.";
+          setOtpError(err);
+          return { success: false, error: err };
         }
-        return false;
       }
       startCooldown(data.resendCooldownSec || 60);
-      return true;
+      return { success: true };
     } catch {
-      setOtpError("Gagal mengirim kode OTP. Periksa koneksi internet.");
-      return false;
+      const err = "Gagal mengirim kode OTP. Periksa koneksi internet.";
+      setOtpError(err);
+      return { success: false, error: err };
     } finally {
       setIsRequestingOtp(false);
     }
@@ -822,19 +833,26 @@ export default function ProfileSecurityFlow({
               </div>
             </div>
 
-            {passwordError && (
-              <div className="p-3 rounded-xl bg-orange-100/80 border border-danger/30 text-left">
-                <p className="text-xs font-bold text-danger flex items-center gap-1.5">
-                  <span>⚠️</span> {passwordError}
+            {/* Tampilkan pesan error jika ada (passwordError atau otpError) */}
+            {(passwordError || otpError) && (
+              <div className="p-3.5 rounded-2xl bg-orange-100/90 border border-danger/30 text-left flex flex-col gap-1.5 animate-in fade-in duration-150">
+                <p className="text-xs font-bold text-danger flex items-start gap-1.5 leading-snug">
+                  <span className="shrink-0 text-sm">⚠️</span>
+                  <span>{passwordError || otpError}</span>
                 </p>
-                {passwordError.includes("terdaftar") && (
+                {(passwordError.includes("terdaftar") || otpError.includes("terdaftar")) && (
                   <button
                     type="button"
                     onClick={onSwitchToSignIn}
-                    className="text-[11px] font-extrabold text-orange-600 hover:underline text-left mt-1 block"
+                    className="text-[11px] font-extrabold text-orange-600 hover:underline text-left mt-0.5 block"
                   >
                     Masuk ke akun Anda sekarang →
                   </button>
+                )}
+                {resendCooldown > 0 && (
+                  <p className="text-[11px] text-brown-700/80 font-medium">
+                    ⏱️ Anda dapat mencoba lagi dalam <strong className="text-orange-600">{resendCooldown} detik</strong>.
+                  </p>
                 )}
               </div>
             )}
@@ -848,7 +866,9 @@ export default function ProfileSecurityFlow({
               type="button"
               disabled={isVerifyingCaptcha || isRequestingOtp}
               onClick={async () => {
+                if (isRequestingOtp) return;
                 setPasswordError("");
+                setOtpError("");
                 setCaptchaError("");
                 if (!password || password.length < 8) {
                   setPasswordError("Kata sandi harus minimal 8 karakter.");
@@ -856,16 +876,29 @@ export default function ProfileSecurityFlow({
                 }
 
                 // Kirim OTP ke email terlebih dahulu
-                const sent = await handleSendOtp();
-                if (sent) {
+                const result = await handleSendOtp();
+                if (result.success) {
                   setOtpCode("");
                   setOtpError("");
+                  setPasswordError("");
                   setStep("OTP_VERIFY");
+                } else {
+                  setPasswordError(result.error || "Gagal mengirim kode verifikasi ke email Anda. Silakan coba lagi.");
                 }
               }}
               className="mt-2 w-full py-3.5 rounded-full bg-brown-900 text-white font-bold text-xs md:text-sm flex items-center justify-center gap-2 hover:bg-orange-500 transition-all shadow-md active:scale-98 disabled:opacity-50"
             >
-              {isRequestingOtp ? "Mengirim Kode OTP..." : "Lanjutkan & Verifikasi Email →"}
+              {isRequestingOtp ? (
+                <>
+                  <span className="animate-spin inline-block mr-1">⏳</span>
+                  <span>Mengirim Kode OTP...</span>
+                </>
+              ) : (
+                <>
+                  <span>Lanjutkan & Verifikasi Email</span>
+                  <span>→</span>
+                </>
+              )}
             </button>
           </div>
         </div>
@@ -952,6 +985,7 @@ export default function ProfileSecurityFlow({
                 type="button"
                 disabled={resendCooldown > 0 || isRequestingOtp || isVerifyingOtp}
                 onClick={async () => {
+                  if (isRequestingOtp) return;
                   setOtpCode("");
                   setOtpError("");
                   await handleSendOtp();

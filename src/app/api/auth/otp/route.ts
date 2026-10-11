@@ -10,6 +10,7 @@ import {
   RESEND_COOLDOWN_SECONDS,
 } from "@/lib/otpChallenge";
 import { checkRateLimit, getClientIp, rateLimitResponse } from "@/lib/server/rateLimit";
+import { userRepository } from "@/backend/auth/userRepository";
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -67,6 +68,21 @@ export async function POST(req: NextRequest) {
 
     // ── REQUEST: Kirim OTP ────────────────────────────────────────────────────
     if (action === "REQUEST") {
+      // Untuk pendaftaran akun baru: pastikan email belum terdaftar
+      if (purpose === "SIGNUP") {
+        try {
+          const existingUser = await userRepository.findByEmail(normalizedEmail);
+          if (existingUser) {
+            return NextResponse.json(
+              { error: "Email ini sudah terdaftar. Silakan masuk ke akun Anda atau gunakan email lain." },
+              { status: 400 }
+            );
+          }
+        } catch (dbErr) {
+          console.warn("[OTP Route] Database lookup warning:", dbErr);
+        }
+      }
+
       // Rate limit: per IP (5 request OTP per 5 menit)
       const ipLimit = await checkRateLimit(`otp_req_ip:${clientIp}`, 5, 300);
       if (!ipLimit.allowed) {
@@ -76,10 +92,10 @@ export async function POST(req: NextRequest) {
         );
       }
 
-      // Rate limit: per email+purpose (3 request per 10 menit) — lebih ketat dari IP
+      // Rate limit: per email+purpose (5 request per 10 menit)
       const emailLimit = await checkRateLimit(
         `otp_req_email:${normalizedEmail}:${purpose}`,
-        3,
+        5,
         600
       );
       if (!emailLimit.allowed) {

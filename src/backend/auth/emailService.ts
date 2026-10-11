@@ -141,15 +141,19 @@ function createSmtpTransporter() {
 
   if (smtpHost && smtpUser && smtpPass) {
     return nodemailer.createTransport({
-      host: smtpHost,
+      host: smtpHost.trim(),
       port: smtpPort,
       secure: smtpSecure, // true for port 465 (SSL), false for 587 (STARTTLS)
       auth: {
-        user: smtpUser,
-        pass: smtpPass,
+        user: smtpUser.trim(),
+        // Bersihkan spasi dari App Password (mis. Google App Password format 4x4)
+        pass: smtpPass.trim().replace(/\s+/g, ""),
       },
+      connectionTimeout: 10000, // 10 detik batas koneksi awal
+      greetingTimeout: 10000,   // 10 detik batas greeting SMTP
+      socketTimeout: 15000,     // 15 detik batas soket
       // For STARTTLS (port 587): requireTLS ensures upgrade from plain to TLS
-      ...(smtpSecure ? {} : { requireTLS: true }),
+      ...(smtpSecure ? {} : { requireTLS: smtpPort === 587 }),
     });
   }
 
@@ -161,10 +165,13 @@ function createSmtpTransporter() {
     return nodemailer.createTransport({
       service: "gmail",
       auth: {
-        user: gmailUser,
+        user: gmailUser.trim(),
         // Remove all spaces from Google App Password (groups of 4 chars separated by spaces)
-        pass: gmailPass.replace(/\s+/g, ""),
+        pass: gmailPass.trim().replace(/\s+/g, ""),
       },
+      connectionTimeout: 10000,
+      greetingTimeout: 10000,
+      socketTimeout: 15000,
     });
   }
 
@@ -228,9 +235,11 @@ export async function sendOTPEmail(
   }
 
   try {
-    // Log tujuan email (TIDAK log OTP itu sendiri)
+    const startMs = Date.now();
+    const domain = normalizedEmail.includes("@") ? normalizedEmail.split("@")[1] : "unknown";
+    // Log diagnostik aman (tanpa kode OTP dan tanpa kredensial)
     console.log(
-      `[EmailService] Mengirim email OTP (${purpose}) ke ${normalizedEmail} via SMTP...`
+      `[EmailService] Mengirim email OTP (${purpose}) ke domain @${domain} via SMTP...`
     );
 
     const info = await transporter.sendMail({
@@ -244,9 +253,10 @@ export async function sendOTPEmail(
       html: buildOtpEmailHtml(otp, normalizedEmail, purposeLabel),
     });
 
+    const durationMs = Date.now() - startMs;
     // Log MessageId (metadata aman, bukan OTP)
     console.log(
-      `[EmailService] ✅ Email OTP (${purpose}) terkirim ke ${normalizedEmail}. MessageId: ${info.messageId}`
+      `[EmailService] ✅ Email OTP (${purpose}) terkirim ke domain @${domain} (${durationMs}ms). MessageId: ${info.messageId}`
     );
 
     return {
@@ -257,16 +267,22 @@ export async function sendOTPEmail(
   } catch (err: unknown) {
     // Log pesan error TANPA menyertakan credentials (err.message sudah cukup)
     const errMsg = err instanceof Error ? err.message : String(err);
+    const domain = normalizedEmail.includes("@") ? normalizedEmail.split("@")[1] : "unknown";
     console.error(
-      `[EmailService] ❌ Gagal mengirim email OTP (${purpose}) ke ${normalizedEmail}: ${errMsg}`
+      `[EmailService] ❌ Gagal mengirim email OTP (${purpose}) ke domain @${domain}: ${errMsg}`
     );
 
-    // Return pesan aman untuk frontend — tidak bocorkan detail SMTP error
+    let clientMsg = "Gagal mengirim email verifikasi. Periksa alamat email Anda dan coba lagi dalam beberapa menit.";
+    if (errMsg.includes("EAUTH") || errMsg.includes("Invalid login") || errMsg.includes("Username and Password not accepted")) {
+      clientMsg = "Autentikasi akun email server gagal. Hubungi administrator sistem.";
+    } else if (errMsg.includes("ETIMEDOUT") || errMsg.includes("ESOCKETTIMEDOUT") || errMsg.includes("ECONNREFUSED")) {
+      clientMsg = "Koneksi ke server email timeout. Silakan periksa jaringan dan coba lagi.";
+    }
+
     return {
       success: false,
       delivered: false,
-      message:
-        "Gagal mengirim email verifikasi. Periksa alamat email Anda dan coba lagi dalam beberapa menit.",
+      message: clientMsg,
     };
   }
 }
