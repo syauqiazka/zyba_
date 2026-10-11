@@ -37,7 +37,7 @@ export async function POST(req: NextRequest) {
   } catch (error: any) {
     console.error("Bookmark error:", error);
     return NextResponse.json(
-      { error: error.message || "Failed to bookmark" },
+      { error: "Gagal menyimpan bookmark." },
       { status: 500 }
     );
   }
@@ -70,7 +70,7 @@ export async function DELETE(req: NextRequest) {
   } catch (error: any) {
     console.error("Unbookmark error:", error);
     return NextResponse.json(
-      { error: error.message || "Failed to unbookmark" },
+      { error: "Gagal menghapus bookmark." },
       { status: 500 }
     );
   }
@@ -97,7 +97,7 @@ export async function GET(req: NextRequest) {
   } catch (error: any) {
     console.error("Get bookmarks error:", error);
     return NextResponse.json(
-      { error: error.message || "Failed to get bookmarks" },
+      { error: "Gagal memuat daftar bookmark." },
       { status: 500 }
     );
   }

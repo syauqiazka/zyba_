@@ -1,13 +1,24 @@
 import { NextRequest, NextResponse } from "next/server";
 import { accountDb } from "@/backend/db/accountClient";
 import { communityDb } from "@/backend/db/communityClient";
+import { verifySessionToken } from "@/lib/auth";
 
 export async function GET(req: NextRequest) {
   try {
+    // Pencarian komunitas hanya tersedia untuk pengguna yang sudah login
+    const token = req.cookies.get("auth-token")?.value;
+    if (!token) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+    const session = await verifySessionToken(token);
+    if (!session?.userId) {
+      return NextResponse.json({ error: "Sesi tidak valid atau telah berakhir." }, { status: 401 });
+    }
+
     const { searchParams } = new URL(req.url);
     const query = searchParams.get("q") || "";
     const type = searchParams.get("type") || "all"; // all, people, posts
-    const limit = parseInt(searchParams.get("limit") || "20", 10);
+    const limit = Math.min(parseInt(searchParams.get("limit") || "20", 10), 50);
 
     if (!query.trim()) {
       return NextResponse.json({ people: [], posts: [] });
@@ -41,7 +52,10 @@ export async function GET(req: NextRequest) {
     // Search posts
     if (type === "all" || type === "posts") {
       const posts = await communityDb.communityPost.findMany({
-        where: { content: { contains: query, mode: "insensitive" } },
+        where: {
+          content: { contains: query, mode: "insensitive" },
+          isHidden: false,
+        },
         take: limit,
         orderBy: { createdAt: "desc" },
         include: { likes: true, comments: { take: 3 } },

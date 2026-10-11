@@ -70,6 +70,24 @@ export async function GET(request: NextRequest) {
     return redirect("/login?error=missing_code");
   }
 
+  // ── Validasi state CSRF ──────────────────────────────────────────────────
+  // state harus cocok dengan nilai yang disimpan di cookie saat OAuth dimulai.
+  // Jika tidak cocok, tolak — ini adalah serangan CSRF atau session yang salah.
+  const stateFromGoogle = searchParams.get("state") || "";
+  const stateFromCookie = request.cookies.get("google_oauth_state")?.value || "";
+
+  if (
+    !stateFromGoogle ||
+    !stateFromCookie ||
+    stateFromGoogle !== stateFromCookie
+  ) {
+    console.warn("[Google OAuth] State mismatch — kemungkinan serangan CSRF.", {
+      fromGoogle: stateFromGoogle,
+      fromCookie: stateFromCookie ? "[ada]" : "[kosong]",
+    });
+    return redirect("/login?error=oauth_state_mismatch");
+  }
+
   const clientId = process.env.GOOGLE_CLIENT_ID;
   const clientSecret = process.env.GOOGLE_CLIENT_SECRET;
 
@@ -137,8 +155,9 @@ export async function GET(request: NextRequest) {
 
     if (!user) {
       isNewUser = true;
+      const crypto = await import("crypto");
       const dummyPasswordHash = await bcrypt.hash(
-        `google_${Date.now()}_${Math.random()}`,
+        crypto.randomBytes(48).toString("hex"),
         12
       );
       try {
@@ -207,8 +226,14 @@ export async function GET(request: NextRequest) {
       maxAge: 60 * 60 * 24 * 30,
     });
 
-    // Bersihkan cookie temporary state
-    response.cookies.delete("google_oauth_state");
+    // Bersihkan cookie state CSRF setelah validasi berhasil
+    response.cookies.set("google_oauth_state", "", {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      path: "/",
+      maxAge: 0,
+    });
 
     return response;
 

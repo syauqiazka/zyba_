@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { generateElevenLabsAudio, ELEVENLABS_CONFIG } from "@/backend/ai/elevenlabs";
 import { companionDb } from "@/backend/db/companionClient";
+import { verifySessionToken } from "@/lib/auth";
 
 /**
  * POST /api/companion/tts
@@ -12,6 +13,19 @@ import { companionDb } from "@/backend/db/companionClient";
  */
 export async function POST(req: NextRequest) {
   try {
+    const token =
+      req.cookies.get("auth-token")?.value ||
+      req.headers.get("authorization")?.replace(/^Bearer\s+/i, "");
+
+    if (!token) {
+      return NextResponse.json({ error: "Unauthorized: Sesi login diperlukan." }, { status: 401 });
+    }
+
+    const session = await verifySessionToken(token);
+    if (!session?.userId) {
+      return NextResponse.json({ error: "Sesi tidak valid atau telah berakhir." }, { status: 401 });
+    }
+
     const body = await req.json();
     const { messageId, text } = body as { messageId?: string; text: string };
 

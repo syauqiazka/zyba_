@@ -1,17 +1,37 @@
 /**
  * Backend Email & OTP Service for ZYBA Authentication
- * Menggunakan Nodemailer untuk pengiriman email nyata via Gmail / SMTP / Resend.
+ * Menggunakan Nodemailer SMTP sebagai satu-satunya metode pengiriman email OTP.
+ * Resend API TIDAK digunakan — hanya SMTP.
  */
 
 import nodemailer from "nodemailer";
 import { randomInt } from "crypto";
 
-export function generateOTP(_email: string): string {
-  // Generate a short-lived 4-digit verification code.
-  return randomInt(1000, 10000).toString();
+/**
+ * Generate a cryptographically secure 6-digit OTP.
+ * Uses Node.js crypto.randomInt — NOT Math.random().
+ */
+export function generateOTP(_email?: string): string {
+  // randomInt(min, max) produces a value in [min, max)
+  // So randomInt(100000, 1000000) gives exactly 6 digits: 100000 – 999999
+  return randomInt(100000, 1000000).toString();
 }
 
-export function verifyOTP(_email: string, _inputOtp: string): { success: boolean; message: string } {
+/**
+ * @deprecated Use the new generateOTP() (no email param).
+ * Kept for backward-compat with old callers that pass an unused email arg.
+ */
+export function generateOTPCompat(_email: string): string {
+  return generateOTP();
+}
+
+/**
+ * @deprecated OTP verification must be done via challenge session.
+ */
+export function verifyOTP(
+  _email: string,
+  _inputOtp: string
+): { success: boolean; message: string } {
   return {
     success: false,
     message: "Verifikasi OTP harus dilakukan melalui challenge sesi.",
@@ -21,7 +41,7 @@ export function verifyOTP(_email: string, _inputOtp: string): { success: boolean
 /**
  * Helper to build responsive HTML email template with ZYBA branding
  */
-function buildOtpEmailHtml(otp: string, recipientEmail: string): string {
+function buildOtpEmailHtml(otp: string, recipientEmail: string, purposeLabel: string): string {
   return `
 <!DOCTYPE html>
 <html lang="id">
@@ -53,15 +73,15 @@ function buildOtpEmailHtml(otp: string, recipientEmail: string): string {
           <tr>
             <td style="padding: 36px 32px 28px; text-align: center;">
               <h2 style="margin: 0 0 12px; font-size: 20px; font-weight: 700; color: #3B2A20;">
-                Kode Verifikasi Pendaftaran
+                ${purposeLabel}
               </h2>
               <p style="margin: 0 0 24px; font-size: 14px; line-height: 1.6; color: #5A4636;">
-                Halo! Terima kasih telah memulai perjalanan kesehatan mental & fisik Anda bersama ZYBA. Masukkan 4 digit kode verifikasi berikut untuk menyelesaikan setup akun Anda:
+                Halo! Masukkan 6 digit kode verifikasi berikut untuk melanjutkan:
               </p>
 
-              <!-- OTP Display Box -->
-              <div style="margin: 28px auto; padding: 20px 24px; max-width: 260px; background-color: #FCE3D3; border: 2px dashed #F2884B; border-radius: 20px; text-align: center;">
-                <span style="font-size: 40px; font-weight: 900; letter-spacing: 12px; color: #F2884B; font-family: 'Courier New', monospace; display: block; margin-left: 12px;">
+              <!-- OTP Display Box — 6 digit, NO literal OTP in comments -->
+              <div style="margin: 28px auto; padding: 20px 24px; max-width: 280px; background-color: #FCE3D3; border: 2px dashed #F2884B; border-radius: 20px; text-align: center;">
+                <span style="font-size: 38px; font-weight: 900; letter-spacing: 14px; color: #F2884B; font-family: 'Courier New', monospace; display: block; margin-left: 14px;">
                   ${otp}
                 </span>
               </div>
@@ -72,7 +92,7 @@ function buildOtpEmailHtml(otp: string, recipientEmail: string): string {
               </div>
 
               <p style="margin: 0 0 8px; font-size: 12px; line-height: 1.5; color: #8C7B70;">
-                Email ini dikirimkan untuk <strong>${recipientEmail}</strong>. Jika Anda tidak merasa mendaftar di ZYBA, Anda dapat mengabaikan email ini dengan aman.
+                Email ini dikirimkan untuk <strong>${recipientEmail}</strong>. Jika Anda tidak merasa melakukan ini di ZYBA, Anda dapat mengabaikan email ini dengan aman.
               </p>
             </td>
           </tr>
@@ -81,7 +101,7 @@ function buildOtpEmailHtml(otp: string, recipientEmail: string): string {
           <tr>
             <td style="background-color: #FDFBF8; border-top: 1px solid rgba(59, 42, 32, 0.06); padding: 20px 30px; text-align: center;">
               <p style="margin: 0; font-size: 11px; color: #8C7B70; line-height: 1.4;">
-                🛡️ <strong>Keamanan:</strong> Jangan pernah membagikan kode verifikasi ini kepada siapa pun. Tim ZYBA tidak pernah meminta kode OTP Anda.
+                🛡️ <strong>Keamanan:</strong> Jangan pernah membagikan kode verifikasi ini kepada siapa pun, termasuk tim ZYBA. Tim ZYBA tidak pernah meminta kode OTP Anda.
               </p>
             </td>
           </tr>
@@ -107,22 +127,12 @@ function buildOtpEmailHtml(otp: string, recipientEmail: string): string {
 }
 
 /**
- * Create Nodemailer Transporter based on environment variables
+ * Create Nodemailer Transporter based on environment variables.
+ * Priority: SMTP_HOST/PORT/USER/PASS → GMAIL_USER/GMAIL_APP_PASSWORD.
+ * Resend API is NOT used.
  */
-function createTransporter() {
-  const gmailUser = process.env.GMAIL_USER;
-  const gmailPass = process.env.GMAIL_APP_PASSWORD || process.env.GMAIL_PASS;
-
-  if (gmailUser && gmailPass) {
-    return nodemailer.createTransport({
-      service: "gmail",
-      auth: {
-        user: gmailUser,
-        pass: gmailPass.replace(/\s+/g, ""), // Bersihkan spasi dari Google App Password
-      },
-    });
-  }
-
+function createSmtpTransporter() {
+  // Check for generic SMTP config first (recommended)
   const smtpHost = process.env.SMTP_HOST;
   const smtpPort = process.env.SMTP_PORT ? Number(process.env.SMTP_PORT) : 587;
   const smtpUser = process.env.SMTP_USER;
@@ -133,10 +143,27 @@ function createTransporter() {
     return nodemailer.createTransport({
       host: smtpHost,
       port: smtpPort,
-      secure: smtpSecure,
+      secure: smtpSecure, // true for port 465 (SSL), false for 587 (STARTTLS)
       auth: {
         user: smtpUser,
         pass: smtpPass,
+      },
+      // For STARTTLS (port 587): requireTLS ensures upgrade from plain to TLS
+      ...(smtpSecure ? {} : { requireTLS: true }),
+    });
+  }
+
+  // Fallback: Gmail shorthand using GMAIL_USER / GMAIL_APP_PASSWORD
+  const gmailUser = process.env.GMAIL_USER;
+  const gmailPass = process.env.GMAIL_APP_PASSWORD || process.env.GMAIL_PASS;
+
+  if (gmailUser && gmailPass) {
+    return nodemailer.createTransport({
+      service: "gmail",
+      auth: {
+        user: gmailUser,
+        // Remove all spaces from Google App Password (groups of 4 chars separated by spaces)
+        pass: gmailPass.replace(/\s+/g, ""),
       },
     });
   }
@@ -145,77 +172,101 @@ function createTransporter() {
 }
 
 /**
- * Mengirim email kode OTP ke pengguna
+ * Resolve the "from" address for outgoing emails.
+ */
+function resolveFromAddress(): string {
+  if (process.env.EMAIL_FROM) {
+    return process.env.EMAIL_FROM;
+  }
+  // Build from SMTP_USER or GMAIL_USER
+  const senderAddr =
+    process.env.SMTP_USER ||
+    process.env.GMAIL_USER ||
+    "no-reply@zyba.app";
+  return `"ZYBA Wellness" <${senderAddr}>`;
+}
+
+export type OtpPurpose = "SIGNUP" | "RESET_PASSWORD";
+
+/**
+ * Mengirim email kode OTP ke pengguna menggunakan SMTP.
+ *
+ * @param email  - Alamat email tujuan (akan dinormalisasi lowercase).
+ * @param otp    - Kode OTP 6 digit yang sudah di-generate.
+ * @param purpose - Tujuan OTP: "SIGNUP" | "RESET_PASSWORD".
  */
 export async function sendOTPEmail(
   email: string,
-  otp: string
+  otp: string,
+  purpose: OtpPurpose = "SIGNUP"
 ): Promise<{ success: boolean; delivered: boolean; message: string }> {
   const normalizedEmail = email.toLowerCase().trim();
 
-  // 1. Coba kirim via Resend API jika RESEND_API_KEY tersedia
-  if (process.env.RESEND_API_KEY) {
-    try {
-      console.log(`[Backend EmailService] Mengirim email OTP ke ${normalizedEmail} via Resend...`);
-      const fromAddress = process.env.EMAIL_FROM || "ZYBA Wellness <onboarding@resend.dev>";
-      const res = await fetch("https://api.resend.com/emails", {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${process.env.RESEND_API_KEY}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          from: fromAddress,
-          to: [normalizedEmail],
-          subject: `${otp} adalah Kode Verifikasi ZYBA Anda`,
-          html: buildOtpEmailHtml(otp, normalizedEmail),
-        }),
-      });
+  const purposeLabel =
+    purpose === "RESET_PASSWORD"
+      ? "Kode Verifikasi Reset Password"
+      : "Kode Verifikasi Pendaftaran";
 
-      if (res.ok) {
-        console.log(`[Backend EmailService] ✅ Email OTP sukses terkirim via Resend ke ${normalizedEmail}`);
-        return { success: true, delivered: true, message: "Email OTP berhasil dikirim ke kotak masuk Anda." };
-      } else {
-        const errorData = await res.json().catch(() => ({}));
-        console.error("[Backend EmailService] Resend API Error:", errorData);
-      }
-    } catch (err) {
-      console.error("[Backend EmailService] Exception Resend:", err);
-    }
+  const subjectPrefix =
+    purpose === "RESET_PASSWORD"
+      ? "Reset Password ZYBA"
+      : "Kode Verifikasi ZYBA";
+
+  const transporter = createSmtpTransporter();
+
+  if (!transporter) {
+    console.error(
+      "[EmailService] SMTP tidak dikonfigurasi. Set SMTP_HOST, SMTP_USER, SMTP_PASS " +
+      "atau GMAIL_USER, GMAIL_APP_PASSWORD di environment variables."
+    );
+    return {
+      success: false,
+      delivered: false,
+      message:
+        "Layanan email belum dikonfigurasi. Hubungi administrator untuk mengaktifkan pengiriman email.",
+    };
   }
 
-  // 2. Coba kirim via Nodemailer (Gmail / SMTP)
-  const transporter = createTransporter();
-  if (transporter) {
-    try {
-      console.log(`[Backend EmailService] Mengirim email OTP ke ${normalizedEmail} via Nodemailer/SMTP...`);
-      const senderName = "ZYBA Wellness Support";
-      const senderAddress = process.env.GMAIL_USER || process.env.SMTP_USER || "no-reply@zyba.app";
+  try {
+    // Log tujuan email (TIDAK log OTP itu sendiri)
+    console.log(
+      `[EmailService] Mengirim email OTP (${purpose}) ke ${normalizedEmail} via SMTP...`
+    );
 
-      const info = await transporter.sendMail({
-        from: `"${senderName}" <${senderAddress}>`,
-        to: normalizedEmail,
-        subject: `${otp} adalah Kode Verifikasi ZYBA Anda`,
-        text: `Kode verifikasi akun ZYBA Anda adalah: ${otp}. Kode ini berlaku selama 10 menit. Jangan bagikan kode ini kepada siapa pun.`,
-        html: buildOtpEmailHtml(otp, normalizedEmail),
-      });
+    const info = await transporter.sendMail({
+      from: resolveFromAddress(),
+      to: normalizedEmail,
+      subject: `[${subjectPrefix}] Kode 6 digit Anda`,
+      text:
+        `Kode verifikasi ZYBA Anda adalah: ${otp}. ` +
+        `Kode ini berlaku selama 10 menit. ` +
+        `Jangan bagikan kode ini kepada siapa pun, termasuk tim ZYBA.`,
+      html: buildOtpEmailHtml(otp, normalizedEmail, purposeLabel),
+    });
 
-      console.log(`[Backend EmailService] ✅ Email OTP sukses terkirim ke ${normalizedEmail}. MessageId: ${info.messageId}`);
-      return { success: true, delivered: true, message: "Email OTP berhasil dikirim ke kotak masuk Anda." };
-    } catch (err: any) {
-      console.error("[Backend EmailService] ❌ Gagal mengirim email via SMTP:", err?.message || err);
-      // Fallback log
-      return {
-        success: false,
-        delivered: false,
-        message: "Layanan email sedang tidak dapat mengirim OTP. Silakan coba lagi.",
-      };
-    }
+    // Log MessageId (metadata aman, bukan OTP)
+    console.log(
+      `[EmailService] ✅ Email OTP (${purpose}) terkirim ke ${normalizedEmail}. MessageId: ${info.messageId}`
+    );
+
+    return {
+      success: true,
+      delivered: true,
+      message: "Email kode verifikasi berhasil dikirimkan ke kotak masuk Anda.",
+    };
+  } catch (err: unknown) {
+    // Log pesan error TANPA menyertakan credentials (err.message sudah cukup)
+    const errMsg = err instanceof Error ? err.message : String(err);
+    console.error(
+      `[EmailService] ❌ Gagal mengirim email OTP (${purpose}) ke ${normalizedEmail}: ${errMsg}`
+    );
+
+    // Return pesan aman untuk frontend — tidak bocorkan detail SMTP error
+    return {
+      success: false,
+      delivered: false,
+      message:
+        "Gagal mengirim email verifikasi. Periksa alamat email Anda dan coba lagi dalam beberapa menit.",
+    };
   }
-
-  return {
-    success: false,
-    delivered: false,
-    message: "Layanan email belum dikonfigurasi. Silakan coba lagi nanti.",
-  };
 }

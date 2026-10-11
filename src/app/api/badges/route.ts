@@ -69,7 +69,7 @@ export async function GET(request: NextRequest) {
     });
   } catch (error: any) {
     console.error("[Badges API GET] Error:", error);
-    return NextResponse.json({ error: error?.message || "Internal server error" }, { status: 500 });
+    return NextResponse.json({ error: "Gagal memuat data badge." }, { status: 500 });
   }
 }
 
@@ -114,7 +114,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ success: true, badge: updated });
   } catch (error: any) {
     console.error("[Badges API POST] Error:", error);
-    return NextResponse.json({ error: error?.message || "Internal server error" }, { status: 500 });
+    return NextResponse.json({ error: "Gagal memperbarui pin badge." }, { status: 500 });
   }
 }
 
@@ -138,6 +138,6 @@ export async function DELETE(request: NextRequest) {
     return NextResponse.json({ success: true });
   } catch (error: any) {
     console.error("[Badges API DELETE] Error:", error);
-    return NextResponse.json({ error: error?.message || "Internal server error" }, { status: 500 });
+    return NextResponse.json({ error: "Gagal melepas pin badge." }, { status: 500 });
   }
 }

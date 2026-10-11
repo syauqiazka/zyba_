@@ -23,7 +23,8 @@ export async function GET(req: NextRequest) {
 
     return NextResponse.json({ username: user?.username || null });
   } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    console.error("[Username GET Error]:", error);
+    return NextResponse.json({ error: "Gagal mengambil username." }, { status: 500 });
   }
 }
 
@@ -44,7 +45,8 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ username });
   } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    console.error("[Username POST Error]:", error);
+    return NextResponse.json({ error: "Gagal membuat username." }, { status: 500 });
   }
 }
 
@@ -88,6 +90,7 @@ export async function PATCH(req: NextRequest) {
 
     return NextResponse.json({ username });
   } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    console.error("[Username PATCH Error]:", error);
+    return NextResponse.json({ error: "Gagal memperbarui username." }, { status: 500 });
   }
 }

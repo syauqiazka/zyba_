@@ -1,643 +1,116 @@
 import { NextRequest, NextResponse } from "next/server";
 import { verifySessionToken } from "@/lib/auth";
-import {
-  userRepository,
-  computeStreak,
-} from "@/backend/auth/userRepository";
-import { resolveAvatar } from "@/lib/avatarUtils";
 import { accountDb } from "@/backend/db/accountClient";
-import {
-  calculateZybaScore,
-  scoreToCondition,
-} from "@/backend/scoring/zybaScore";
+import { companionDb } from "@/backend/db/companionClient";
+import { communityDb } from "@/backend/db/communityClient";
+import { invalidateUserMeCache, invalidateDailyAssessmentCache } from "@/lib/server/userMeCache";
 import { invalidateUserPlanCache } from "@/backend/billing/entitlements";
-import { invalidateUserMeCache } from "@/lib/server/userMeCache";
-
-export async function GET(req: NextRequest) {
-  try {
-    /* =====================================================
-       AUTH
-    ===================================================== */
-
-    const token =
-      req.cookies.get("auth-token")?.value;
-
-    if (!token) {
-      console.log("[/api/user/me] No token");
-
-      return NextResponse.json(
-        { error: "Unauthorized" },
-        { status: 401 }
-      );
-    }
-
-    const session =
-      await verifySessionToken(token);
-
-    if (!session) {
-      console.log(
-        "[/api/user/me] Invalid session"
-      );
-
-      return NextResponse.json(
-        { error: "Invalid session" },
-        { status: 401 }
-      );
-    }
-
-    /* =====================================================
-       USER
-    ===================================================== */
-
-    const user =
-      (await userRepository.findById(
-        session.userId
-      )) ||
-      (await userRepository.findByEmail(
-        session.email
-      ));
-
-    if (!user) {
-      console.log(
-        "[/api/user/me] User not found:",
-        session.userId,
-        session.email
-      );
-
-      return NextResponse.json(
-        { error: "User not found" },
-        { status: 404 }
-      );
-    }
-
-    /* =====================================================
-       ASSESSMENT AWAL + DAILY ASSESSMENT
-
-       Assessment:
-       /assessment
-
-       Daily:
-       /assessment/daily
-    ===================================================== */
-
-    const [
-      initialAssessment,
-      dailyAssessments,
-    ] = await Promise.all([
-      accountDb.assessment.findUnique({
-        where: {
-          userId: user.id,
-        },
-      }),
-
-      accountDb.dailyAssessment.findMany({
-        where: {
-          userId: user.id,
-        },
-
-        orderBy: [
-          {
-            date: "desc",
-          },
-          {
-            createdAt: "desc",
-          },
-        ],
-
-        take: 31,
-      }),
-    ]);
-
-    /* =====================================================
-       STATUS ASSESSMENT
-
-       Kalau salah satu ada:
-       - Assessment awal
-       - Daily Assessment
-       - zybaScore
-
-       maka user sudah pernah assessment.
-    ===================================================== */
-
-    const hasInitialAssessment =
-      Boolean(initialAssessment);
-
-    const hasDailyAssessment =
-      dailyAssessments.length > 0;
-
-    const hasAssessment =
-      hasInitialAssessment ||
-      hasDailyAssessment ||
-      user.zybaScore !== null;
-
-    /*
-     * Sesuai struktur aplikasi:
-     *
-     * Akun baru:
-     *   Assessment awal + Daily
-     *
-     * Akun lama:
-     *   Daily saja
-     *
-     * Karena schema belum punya field khusus
-     * "accountType", presence initialAssessment
-     * dipakai sebagai penanda sumber awal.
-     */
-    const isNewAccount =
-      hasInitialAssessment;
-
-    /* =====================================================
-       ZYBA SCORE
-    ===================================================== */
-
-    let zybaScore: number | null =
-      null;
-
-    let condition =
-      "Belum Dinilai";
-
-    if (hasAssessment) {
-      try {
-        /*
-         * Perhitungan tetap menggunakan service
-         * Zyba Score yang sudah ada.
-         */
-        const dynamicScore =
-          await calculateZybaScore(
-            user.id
-          );
-
-        zybaScore =
-          dynamicScore;
-
-        condition =
-          scoreToCondition(
-            dynamicScore
-          );
-
-        /*
-         * Simpan score terbaru ke users.
-         */
-        if (
-          user.zybaScore !==
-          dynamicScore
-        ) {
-          accountDb.user
-            .update({
-              where: {
-                id: user.id,
-              },
-              data: {
-                zybaScore:
-                  dynamicScore,
-              },
-            })
-            .catch((error) => {
-              console.error(
-                "[/api/user/me] Failed to update zybaScore:",
-                error
-              );
-            });
-        }
-      } catch (error) {
-        console.error(
-          "[/api/user/me] Failed to calculate Zyba Score:",
-          error
-        );
-
-        /*
-         * Fallback ke score yang tersimpan
-         * di User.
-         */
-        zybaScore =
-          user.zybaScore ??
-          null;
-
-        if (
-          zybaScore !== null
-        ) {
-          condition =
-            scoreToCondition(
-              zybaScore
-            );
-        }
-      }
-    }
-
-    /* =====================================================
-       STRESS LEVEL TERBARU
-    ===================================================== */
-
-    const latestDailyAssessment =
-      dailyAssessments[0] ??
-      null;
-
-    /*
-     * Prioritas:
-     *
-     * 1. Daily Assessment terbaru
-     * 2. Assessment awal
-     * 3. User.stressLevel
-     */
-    const rawStress =
-      latestDailyAssessment?.stressLevel ??
-      initialAssessment?.stressLevel ??
-      user.stressLevel ??
-      null;
-
-    const stressLevel =
-      rawStress !== null
-        ? Number(rawStress)
-        : null;
-
-    /* =====================================================
-       STRESS LABEL
-    ===================================================== */
-
-    const stressLabels: Record<
-      number,
-      string
-    > = {
-      1: "Level 1 - Sangat Rendah",
-      2: "Level 2 - Rendah",
-      3: "Level 3 - Sedang",
-      4: "Level 4 - Tinggi",
-      5: "Level 5 - Sangat Tinggi",
-    };
-
-    const stressLabel =
-      stressLevel !== null
-        ? (
-          stressLabels[
-          stressLevel
-          ] ||
-          `Level ${stressLevel}`
-        )
-        : "Belum Ada Data";
-
-    /* =====================================================
-       STREAK
-    ===================================================== */
-
-    const dynamicStreak =
-      computeStreak(
-        user.createdAt
-      );
-
-    /* =====================================================
-       SUBSCRIPTION
-    ===================================================== */
-
-    const activeSubscription =
-      await accountDb.subscription.findFirst(
-        {
-          where: {
-            userId: user.id,
-            status: "ACTIVE",
-            endDate: {
-              gte: new Date(),
-            },
-          },
-
-          orderBy: {
-            createdAt: "desc",
-          },
-        }
-      );
-
-    /* =====================================================
-       EXPIRED SUBSCRIPTION
-    ===================================================== */
-
-    const expiredSubscriptions =
-      await accountDb.subscription.findMany(
-        {
-          where: {
-            userId: user.id,
-            status: "ACTIVE",
-            endDate: {
-              lt: new Date(),
-            },
-          },
-        }
-      );
-
-    if (
-      expiredSubscriptions.length > 0
-    ) {
-      await accountDb.subscription.updateMany(
-        {
-          where: {
-            userId: user.id,
-            status: "ACTIVE",
-            endDate: {
-              lt: new Date(),
-            },
-          },
-
-          data: {
-            status: "EXPIRED",
-          },
-        }
-      );
-
-      if (!activeSubscription) {
-        await accountDb.user.update({
-          where: {
-            id: user.id,
-          },
-
-          data: {
-            plan: "FREE",
-          },
-        });
-
-        invalidateUserPlanCache(user.id);
-        invalidateUserMeCache(user.id);
-      }
-    }
-
-    const plan =
-      activeSubscription?.plan ===
-        "PLUS"
-        ? "PLUS"
-        : "FREE";
-
-    /* =====================================================
-       RESPONSE
-    ===================================================== */
-
-    return NextResponse.json({
-      success: true,
-
-      user: {
-        id: user.id,
-
-        name:
-          user.name,
-
-        email:
-          user.email,
-
-        username:
-          user.username ||
-          null,
-
-        bio:
-          user.bio ||
-          null,
-
-        avatarUrl:
-          resolveAvatar(
-            user.avatarUrl
-          ),
-
-        avatarKey:
-          user.avatarUrl ||
-          "fox",
-
-        plan,
-
-        onboardingCompleted:
-          user.onboardingCompleted,
-
-        createdAt:
-          user.createdAt,
-      },
-
-      /* =================================================
-         ASSESSMENT DATA
-      ================================================= */
-
-      isNewAccount,
-
-      initialAssessment,
-
-      dailyAssessments,
-
-      /* =================================================
-         STATS
-      ================================================= */
-
-      stats: {
-        zybaScore,
-
-        hasAssessment,
-
-        condition,
-
-        stressLevel,
-
-        stressLabel,
-
-        streak:
-          hasAssessment
-            ? dynamicStreak
-            : 0,
-
-        /*
-         * Tetap dikirim untuk compatibility
-         * dengan kode lama.
-         */
-        assessment:
-          initialAssessment,
-
-        /*
-         * Tambahan status supaya frontend
-         * bisa menentukan sumber data.
-         */
-        hasInitialAssessment,
-
-        hasDailyAssessment,
-
-        dailyAssessmentCount:
-          dailyAssessments.length,
-
-        /*
-         * Jangan ubah behaviour Companion
-         * yang sekarang.
-         */
-        conversationCount: 0,
-      },
-    });
-  } catch (error) {
-    console.error(
-      "Fetch user me error:",
-      error
-    );
-
-    return NextResponse.json(
-      {
-        error: "Server error",
-      },
-      { status: 500 }
-    );
-  }
-}
-
-export async function PATCH(req: NextRequest) {
+import { invalidateCommunityCache } from "@/lib/communityCache";
+
+/**
+ * DELETE /api/account/delete
+ * Permanently deletes the authenticated user's account and all personal wellness data.
+ * Adheres to Privacy & Data Protection requirements (TAHAP 6).
+ */
+export async function DELETE(req: NextRequest) {
   try {
     const token =
-      req.cookies.get("auth-token")?.value;
+      req.cookies.get("auth-token")?.value ||
+      req.headers.get("authorization")?.replace(/^Bearer\s+/i, "");
 
     if (!token) {
       return NextResponse.json(
-        { error: "Unauthorized" },
+        { error: "Unauthorized: Sesi login diperlukan." },
         { status: 401 }
       );
     }
 
-    const session =
-      await verifySessionToken(token);
-
-    if (!session || !session.userId) {
+    const session = await verifySessionToken(token);
+    if (!session?.userId) {
       return NextResponse.json(
-        { error: "Invalid session" },
+        { error: "Sesi tidak valid atau telah kedaluwarsa." },
         { status: 401 }
       );
     }
 
-    const body =
-      await req.json();
+    const userId = session.userId;
 
-    const {
-      name,
-      username,
-      bio,
-    } = body;
-
-    /* =====================================================
-       VALIDATE NAME
-    ===================================================== */
-
-    if (
-      name !== undefined &&
-      !name.trim()
-    ) {
-      return NextResponse.json(
-        {
-          error:
-            "Nama tidak boleh kosong",
-        },
-        { status: 400 }
-      );
-    }
-
-    const updateData: any = {};
-
-    if (
-      name !== undefined
-    ) {
-      updateData.name =
-        name.trim();
-    }
-
-    if (
-      bio !== undefined
-    ) {
-      updateData.bio =
-        bio.trim() ||
-        null;
-    }
-
-    /* =====================================================
-       USERNAME
-    ===================================================== */
-
-    if (
-      username !== undefined
-    ) {
-      const cleanUsername =
-        username
-          .trim()
-          .toLowerCase()
-          .replace(
-            /[^a-z0-9_]/g,
-            ""
-          );
-
-      if (cleanUsername) {
-        const existing =
-          await accountDb.user.findFirst(
-            {
-              where: {
-                username:
-                  cleanUsername,
-
-                NOT: {
-                  id:
-                    session.userId,
-                },
-              },
-            }
-          );
-
-        if (existing) {
-          return NextResponse.json(
-            {
-              error:
-                "Username sudah digunakan orang lain",
-            },
-            { status: 409 }
-          );
-        }
-
-        updateData.username =
-          cleanUsername;
-      }
-    }
-
-    /* =====================================================
-       UPDATE USER
-    ===================================================== */
-
-    const updatedUser =
-      await accountDb.user.update({
-        where: {
-          id: session.userId,
-        },
-
-        data: updateData,
+    // 1. Bersihkan data di database Companion (percakapan & pesan)
+    try {
+      await companionDb.conversation.deleteMany({
+        where: { userId },
       });
+      await companionDb.premiumInsightCache.deleteMany({
+        where: { userId },
+      }).catch(() => {});
+    } catch (companionErr) {
+      console.warn("[Account Delete] Companion cleanup warning:", companionErr);
+    }
 
-    return NextResponse.json({
+    // 2. Bersihkan data di database Community
+    try {
+      await communityDb.communityBookmark.deleteMany({ where: { userId } }).catch(() => {});
+      await communityDb.communityLike.deleteMany({ where: { userId } }).catch(() => {});
+      await communityDb.communityFollow.deleteMany({
+        where: { OR: [{ followerId: userId }, { followingId: userId }] },
+      }).catch(() => {});
+      await communityDb.communityNotification.deleteMany({
+        where: { OR: [{ recipientId: userId }, { actorId: userId }] },
+      }).catch(() => {});
+      await communityDb.directMessage.deleteMany({
+        where: { senderId: userId },
+      }).catch(() => {});
+      await communityDb.directParticipant.deleteMany({
+        where: { userId },
+      }).catch(() => {});
+      await communityDb.communityComment.deleteMany({ where: { userId } }).catch(() => {});
+      await communityDb.communityPost.deleteMany({ where: { userId } }).catch(() => {});
+      invalidateCommunityCache();
+    } catch (commErr) {
+      console.warn("[Account Delete] Community cleanup warning:", commErr);
+    }
+
+    // 3. Bersihkan data di database Account (User dan relasi cascade)
+    try {
+      await accountDb.dailyAssessment.deleteMany({ where: { userId } }).catch(() => {});
+      await accountDb.moodEntry.deleteMany({ where: { userId } }).catch(() => {});
+      await accountDb.journalEntry.deleteMany({ where: { userId } }).catch(() => {});
+      await accountDb.activityLog.deleteMany({ where: { userId } }).catch(() => {});
+      await accountDb.assessment.deleteMany({ where: { userId } }).catch(() => {});
+      await accountDb.subscription.deleteMany({ where: { userId } }).catch(() => {});
+      await accountDb.payment.deleteMany({ where: { userId } }).catch(() => {});
+      await accountDb.notificationPref.deleteMany({ where: { userId } }).catch(() => {});
+      await accountDb.userAchievement.deleteMany({ where: { userId } }).catch(() => {});
+      await accountDb.userBadge.deleteMany({ where: { userId } }).catch(() => {});
+      await accountDb.user.delete({ where: { id: userId } }).catch(() => {});
+    } catch (accountErr) {
+      console.warn("[Account Delete] Account DB cleanup warning:", accountErr);
+    }
+
+    // 4. Invalidate cache server
+    invalidateUserMeCache(userId);
+    invalidateDailyAssessmentCache(userId);
+    invalidateUserPlanCache(userId);
+
+    // 5. Hapus cookie auth-token
+    const response = NextResponse.json({
       success: true,
-
-      user: {
-        id: updatedUser.id,
-
-        name:
-          updatedUser.name,
-
-        email:
-          updatedUser.email,
-
-        username:
-          updatedUser.username ||
-          null,
-
-        bio:
-          updatedUser.bio ||
-          null,
-
-        avatarUrl:
-          resolveAvatar(
-            updatedUser.avatarUrl
-          ),
-      },
+      message: "Akun dan semua data terkait berhasil dihapus secara permanen.",
     });
-  } catch (err: any) {
-    console.error(
-      "Update user me error:",
-      err
-    );
 
+    response.cookies.set("auth-token", "", {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      path: "/",
+      maxAge: 0,
+    });
+
+    return response;
+  } catch (error: any) {
+    console.error("[Account Delete Error]:", error);
     return NextResponse.json(
-      {
-        error:
-          err.message ||
-          "Failed to update profile",
-      },
+      { error: "Gagal menghapus akun. Silakan coba lagi nanti." },
       { status: 500 }
     );
   }

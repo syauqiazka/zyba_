@@ -97,7 +97,7 @@ export async function GET(request: NextRequest) {
   } catch (error: any) {
     console.error("[Achievements API GET] Error:", error);
     return NextResponse.json(
-      { error: error?.message || "Gagal memuat data pencapaian." },
+      { error: "Gagal memuat data pencapaian." },
       { status: 500 }
     );
   }

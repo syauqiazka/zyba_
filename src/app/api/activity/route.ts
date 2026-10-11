@@ -161,7 +161,7 @@ export async function GET(req: NextRequest) {
   } catch (error: any) {
     console.error("[Activity API GET] Error:", error);
     return NextResponse.json(
-      { error: error?.message || "Internal server error" },
+      { error: "Gagal memuat data aktivitas pengguna." },
       { status: 500 }
     );
   }
@@ -278,7 +278,7 @@ export async function POST(req: NextRequest) {
   } catch (error: any) {
     console.error("[Activity API POST] Error:", error);
     return NextResponse.json(
-      { error: error?.message || "Gagal menyimpan aktivitas." },
+      { error: "Gagal memproses dan menyimpan aktivitas." },
       { status: 500 }
     );
   }

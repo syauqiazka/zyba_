@@ -15,7 +15,9 @@ import {
 // =====================================================
 
 async function getCurrentUserSession(req: NextRequest): Promise<{ userId: string; email?: string; name?: string }> {
-  const token = req.cookies.get("auth-token")?.value;
+  const token =
+    req.cookies.get("auth-token")?.value ||
+    req.headers.get("authorization")?.replace(/^Bearer\s+/i, "");
 
   if (token) {
     const session = await verifySessionToken(token);
@@ -29,7 +31,7 @@ async function getCurrentUserSession(req: NextRequest): Promise<{ userId: string
     }
   }
 
-  throw new Error("No authenticated user found.");
+  throw new Error("UNAUTHORIZED");
 }
 
 // =====================================================
@@ -73,18 +75,7 @@ export async function GET(req: NextRequest) {
     try {
       userSession = await getCurrentUserSession(req);
     } catch {
-      return NextResponse.json({
-        today: null,
-        todayDate,
-        hasCompletedToday: false,
-        history: [],
-        pagination: {
-          page: 1,
-          limit: 10,
-          total: 0,
-          totalPages: 0,
-        },
-      });
+      return NextResponse.json({ error: "Unauthorized: Sesi login diperlukan." }, { status: 401 });
     }
 
     const { userRepository: uRepo } = await import("@/backend/auth/userRepository");
@@ -224,8 +215,12 @@ if (includeTotal) {
 
 export async function POST(req: NextRequest) {
   try {
-    const userSession =
-      await getCurrentUserSession(req);
+    let userSession: { userId: string; email?: string; name?: string };
+    try {
+      userSession = await getCurrentUserSession(req);
+    } catch {
+      return NextResponse.json({ error: "Unauthorized: Sesi login diperlukan." }, { status: 401 });
+    }
 
     const body =
       await req.json();
@@ -596,9 +591,7 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json(
       {
-        error:
-          error?.message ||
-          "Gagal menyimpan assessment harian",
+        error: "Gagal menyimpan assessment harian.",
       },
       {
         status: 500,

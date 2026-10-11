@@ -1,27 +1,42 @@
 import { NextRequest, NextResponse } from "next/server";
 import { userRepository } from "@/backend/auth/userRepository";
 import bcrypt from "bcryptjs";
-import { createSessionToken } from "@/lib/auth";
-import { verifyOtpVerifiedProof } from "@/lib/otpChallenge";
+import { createSessionToken, verifySessionToken } from "@/lib/auth";
 import { checkRateLimit, getClientIp, rateLimitResponse } from "@/lib/server/rateLimit";
 import { invalidateUserMeCache, invalidateDailyAssessmentCache } from "@/lib/server/userMeCache";
+import { verifyOtpProof, verifyOtpVerifiedProof, proofCookieNameForPurpose } from "@/lib/otpChallenge";
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
 
-    const { email, name, password } = body;
+    const { email, name, password, recaptchaToken } = body;
     const action = (body.action || "").toUpperCase();
 
     // =========================
     // ACCEPT TERMS
     // =========================
-    // =========================
-    // ACCEPT TERMS
-    // =========================
     if (action === "ACCEPT_TERMS") {
-      const user = await userRepository.findByEmail(email);
+      const token =
+        request.cookies.get("auth-token")?.value ||
+        request.headers.get("authorization")?.replace(/^Bearer\s+/i, "");
 
+      if (!token) {
+        return NextResponse.json(
+          { error: "Sesi autentikasi diperlukan untuk menyetujui syarat & ketentuan." },
+          { status: 401 }
+        );
+      }
+
+      const session = await verifySessionToken(token);
+      if (!session?.userId) {
+        return NextResponse.json(
+          { error: "Sesi tidak valid atau telah berakhir." },
+          { status: 401 }
+        );
+      }
+
+      const user = await userRepository.findById(session.userId);
       if (!user) {
         return NextResponse.json(
           { error: "User tidak ditemukan." },
@@ -30,11 +45,12 @@ export async function POST(request: NextRequest) {
       }
 
       const acceptedAt = new Date();
-
       await userRepository.update(user.id, {
         termsAcceptedAt: acceptedAt.toISOString(),
         termsVersion: "1.0",
       });
+
+      invalidateUserMeCache(user.id);
 
       return NextResponse.json({
         success: true,
@@ -43,25 +59,91 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    // Update Profile after Setup
+    // =========================
+    // UPDATE PROFILE
+    // =========================
     if (action === "UPDATE_PROFILE") {
-      const targetEmail = email;
-      if (!targetEmail) {
-        return NextResponse.json({ error: "Email wajib diisi" }, { status: 400 });
+      const token =
+        request.cookies.get("auth-token")?.value ||
+        request.headers.get("authorization")?.replace(/^Bearer\s+/i, "");
+
+      if (!token) {
+        return NextResponse.json(
+          { error: "Sesi autentikasi diperlukan untuk memperbarui profil." },
+          { status: 401 }
+        );
       }
 
-      const updated = await userRepository.update(targetEmail, {
-        name: name || undefined,
-        phone: body.phone || undefined,
-        location: body.location || undefined,
-        avatarUrl: body.avatarUrl || undefined,
-        communicationStyle: body.communicationStyle || undefined,
-        onboardingCompleted: true,
-      });
+      const session = await verifySessionToken(token);
+      if (!session?.userId) {
+        return NextResponse.json(
+          { error: "Sesi tidak valid atau telah berakhir." },
+          { status: 401 }
+        );
+      }
+
+      // Ambil user dari database berdasarkan session terverifikasi
+      const user = await userRepository.findById(session.userId);
+      if (!user) {
+        return NextResponse.json(
+          { error: "User tidak ditemukan." },
+          { status: 404 }
+        );
+      }
+
+      // Strictly allowlisted fields only. Ignore role, plan, email, id, passwordHash.
+      const updatePayload: Record<string, any> = {};
+
+      if (typeof body.name === "string" && body.name.trim()) {
+        updatePayload.name = body.name.trim().slice(0, 100);
+      }
+
+      if (typeof body.phone === "string") {
+        updatePayload.phone = body.phone.trim().slice(0, 30);
+      }
+
+      if (typeof body.location === "string") {
+        updatePayload.location = body.location.trim().slice(0, 100);
+      }
+
+      if (typeof body.avatarUrl === "string" && body.avatarUrl.trim()) {
+        const safeAvatar = body.avatarUrl.trim();
+        // Allow relative avatar paths, preset identifiers, or http/https image URLs
+        if (
+          !safeAvatar.toLowerCase().startsWith("javascript:") &&
+          !safeAvatar.toLowerCase().startsWith("data:text/html") &&
+          safeAvatar.length <= 500
+        ) {
+          updatePayload.avatarUrl = safeAvatar;
+        }
+      }
+
+      if (typeof body.communicationStyle === "string") {
+        const allowedStyles = ["KINA", "OLLIE", "RUBI", "BRUNO", "FORMAL", "CASUAL", "FUN"];
+        const normalizedStyle = body.communicationStyle.trim().toUpperCase();
+        if (allowedStyles.includes(normalizedStyle)) {
+          updatePayload.communicationStyle = normalizedStyle;
+        }
+      }
+
+      updatePayload.onboardingCompleted = true;
+
+      const updated = await userRepository.update(user.id, updatePayload);
+
+      invalidateUserMeCache(user.id);
 
       return NextResponse.json({
         success: true,
-        user: updated,
+        user: updated ? {
+          id: updated.id,
+          name: updated.name,
+          email: updated.email,
+          avatarUrl: updated.avatarUrl,
+          phone: updated.phone,
+          location: updated.location,
+          communicationStyle: updated.communicationStyle,
+          onboardingCompleted: updated.onboardingCompleted,
+        } : null,
       });
     }
 
@@ -95,14 +177,6 @@ export async function POST(request: NextRequest) {
     }
 
     if (action === "SIGNUP") {
-      const otpVerified = request.cookies.get("zyba_otp_verified")?.value;
-      if (!email || !verifyOtpVerifiedProof(otpVerified, email)) {
-        return NextResponse.json(
-          { error: "Verifikasi email dengan OTP wajib dilakukan sebelum membuat akun." },
-          { status: 403 }
-        );
-      }
-
       const clientIp = getClientIp(request);
       const limitCheck = await checkRateLimit(`signup:${clientIp}`, 10, 60);
       if (!limitCheck.allowed) {
@@ -117,6 +191,75 @@ export async function POST(request: NextRequest) {
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       if (!emailRegex.test(normalized)) {
         return NextResponse.json({ error: "Format email tidak valid. Masukkan alamat email yang benar." }, { status: 400 });
+      }
+
+      // ── Verifikasi bukti OTP (wajib) ──────────────────────────────────────
+      // Akun TIDAK boleh dibuat sebelum email diverifikasi via OTP.
+      // Mendukung bukti HMAC zyba_otp_proof_signup maupun legacy zyba_otp_verified.
+      const proofCookieName = proofCookieNameForPurpose("SIGNUP");
+      const proofToken = request.cookies.get(proofCookieName)?.value;
+      const legacyToken = request.cookies.get("zyba_otp_verified")?.value;
+
+      const proofResult = verifyOtpProof(proofToken, normalized, "SIGNUP");
+      const legacyValid = verifyOtpVerifiedProof(legacyToken, normalized);
+
+      if (!proofResult.valid && !legacyValid) {
+        const proofMsgs: Record<string, string> = {
+          missing: "Verifikasi email belum dilakukan. Silakan verifikasi email Anda terlebih dahulu dengan kode OTP.",
+          invalid: "Bukti verifikasi email tidak valid. Silakan ulangi verifikasi OTP.",
+          expired: "Sesi verifikasi email telah kadaluarsa (berlaku 15 menit). Silakan ulangi verifikasi OTP.",
+          wrong_purpose: "Token verifikasi tidak sesuai untuk pendaftaran akun.",
+          wrong_email: "Email tidak cocok dengan yang diverifikasi. Gunakan email yang sama saat verifikasi OTP.",
+        };
+        const reason = (proofResult as { reason?: string }).reason || "invalid";
+        return NextResponse.json(
+          { error: proofMsgs[reason] || "Verifikasi email diperlukan sebelum membuat akun." },
+          { status: 403 }
+        );
+      }
+      // ── End OTP proof check ────────────────────────────────────────────────
+
+      // reCAPTCHA (opsional tapi dipertahankan jika dikonfigurasi)
+      if (recaptchaToken) {
+        const recaptchaSecret = process.env.RECAPTCHA_SECRET_KEY;
+        if (recaptchaSecret) {
+          const captchaResponse = await fetch("https://www.google.com/recaptcha/api/siteverify", {
+            method: "POST",
+            headers: { "Content-Type": "application/x-www-form-urlencoded" },
+            body: new URLSearchParams({
+              secret: recaptchaSecret,
+              response: recaptchaToken,
+              remoteip: clientIp,
+            }),
+            cache: "no-store",
+          });
+          const captchaResult = await captchaResponse.json() as {
+            success?: boolean;
+            score?: number;
+            action?: string;
+            ["error-codes"]?: string[];
+          };
+          if (
+            !captchaResponse.ok ||
+            !captchaResult.success ||
+            captchaResult.action !== "signup" ||
+            typeof captchaResult.score !== "number" ||
+            captchaResult.score < 0.5
+          ) {
+            return NextResponse.json(
+              { error: "Verifikasi keamanan gagal. Silakan coba lagi." },
+              { status: 400 }
+            );
+          }
+        }
+      } else {
+        // Jika reCAPTCHA tidak dikonfigurasi, wajibkan minimal OTP (sudah dicek di atas)
+        const recaptchaSecret = process.env.RECAPTCHA_SECRET_KEY;
+        if (recaptchaSecret) {
+          // reCAPTCHA dikonfigurasi tapi token tidak dikirim
+          return NextResponse.json({ error: "Verifikasi reCAPTCHA wajib dilakukan." }, { status: 400 });
+        }
+        // reCAPTCHA tidak dikonfigurasi — lanjut dengan OTP saja
       }
 
       const existingUser = await userRepository.findByEmail(normalized);
@@ -171,6 +314,15 @@ export async function POST(request: NextRequest) {
         maxAge: 0,
       });
 
+      // Hapus proof cookie setelah akun berhasil dibuat
+      response.cookies.set(proofCookieName, "", {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "lax",
+        path: "/",
+        maxAge: 0,
+      });
+
       return response;
     }
 
@@ -203,8 +355,8 @@ export async function POST(request: NextRequest) {
         valid = false;
       }
 
-      // Fallback migrasi jika user dibuat sebelum password di-hash
-      if (!valid && user.passwordHash === inputPassword) {
+      // Fallback migrasi HANYA jika hash lama di database belum berformat bcrypt ($2a$ / $2b$)
+      if (!valid && user.passwordHash && !user.passwordHash.startsWith("$2") && inputPassword && user.passwordHash === inputPassword) {
         valid = true;
         const newHash = await bcrypt.hash(inputPassword, 12);
         await userRepository.update(user.id, { passwordHash: newHash });
@@ -256,7 +408,7 @@ export async function POST(request: NextRequest) {
   } catch (error: any) {
     console.error("Auth error:", error);
     return NextResponse.json(
-      { error: error?.message || "Server error", detail: String(error?.stack || error) },
+      { error: "Terjadi kesalahan internal pada layanan autentikasi." },
       { status: 500 }
     );
   }

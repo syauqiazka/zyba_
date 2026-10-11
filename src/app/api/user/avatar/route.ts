@@ -113,9 +113,17 @@ export async function POST(req: NextRequest) {
     // Support JSON body for setting preset emoji or external avatar URL
     if (contentType.includes("application/json")) {
       const body = await req.json();
-      const newAvatar = body.avatarUrl;
+      const newAvatar = typeof body.avatarUrl === "string" ? body.avatarUrl.trim() : "";
       if (!newAvatar) {
         return NextResponse.json({ error: "avatarUrl wajib diisi." }, { status: 400 });
+      }
+
+      if (
+        newAvatar.toLowerCase().startsWith("javascript:") ||
+        newAvatar.toLowerCase().startsWith("data:text/html") ||
+        newAvatar.length > 500
+      ) {
+        return NextResponse.json({ error: "Format avatar tidak valid." }, { status: 400 });
       }
 
       const now = new Date();
@@ -149,17 +157,26 @@ export async function POST(req: NextRequest) {
 
     if (!file) return NextResponse.json({ error: "File wajib dikirim." }, { status: 400 });
 
-    // Validate file type
-    if (!file.type.startsWith("image/")) {
-      return NextResponse.json({ error: "Hanya file gambar yang diizinkan." }, { status: 400 });
-    }
-
     // Validate file size (max 5MB)
     if (file.size > 5 * 1024 * 1024) {
-      return NextResponse.json({ error: "Ukuran foto maksimal 5MB." }, { status: 400 });
+      return NextResponse.json({ error: "Ukuran foto melebihi batas maksimal 5MB." }, { status: 400 });
+    }
+
+    const arrayBuffer = await file.arrayBuffer();
+    const buffer = Buffer.from(arrayBuffer);
+
+    // Validate magic bytes / file signature
+    const { validateImageBuffer, generateSafeFileName } = await import("@/lib/server/uploadSecurity");
+    const validation = validateImageBuffer(buffer);
+    if (!validation.valid || !validation.extension || !validation.mime) {
+      return NextResponse.json(
+        { error: validation.error || "File harus berupa gambar asli berformat JPEG, PNG, atau WebP." },
+        { status: 400 }
+      );
     }
 
     let avatarUrl: string | null = null;
+    const filename = generateSafeFileName("avatar", session.userId, validation.extension);
 
     // ── Primary: Self-Hosted Filesystem Storage in public/uploads/avatars ──
     try {
@@ -168,12 +185,9 @@ export async function POST(req: NextRequest) {
       await fs.mkdir(avatarsDir, { recursive: true });
       await fs.mkdir(rootAvatarsDir, { recursive: true }).catch(() => {});
 
-      const ext = (file.name.split(".").pop() || "jpg").toLowerCase().replace(/[^a-z0-9]/g, "");
-      const filename = `avatar_${session.userId}_${Date.now()}.${ext}`;
       const filePath = path.join(avatarsDir, filename);
       const rootFilePath = path.join(rootAvatarsDir, filename);
 
-      const buffer = Buffer.from(await file.arrayBuffer());
       await fs.writeFile(filePath, buffer);
       await fs.writeFile(rootFilePath, buffer).catch(() => {});
 
@@ -241,6 +255,6 @@ export async function POST(req: NextRequest) {
     });
   } catch (err: any) {
     console.error("[Avatar Upload Error]:", err);
-    return NextResponse.json({ error: err.message || "Upload error" }, { status: 500 });
+    return NextResponse.json({ error: "Gagal memproses upload foto profil." }, { status: 500 });
   }
 }

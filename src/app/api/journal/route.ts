@@ -18,26 +18,37 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   try {
-    const token = req.cookies.get("auth-token")?.value;
-    let userId: string | null = null;
-    if (token) { const s = await verifySessionToken(token); if (s) userId = s.userId; }
+    const token =
+      req.cookies.get("auth-token")?.value ||
+      req.headers.get("authorization")?.replace(/^Bearer\s+/i, "");
+
+    if (!token) {
+      return NextResponse.json({ error: "Unauthorized: Sesi login diperlukan." }, { status: 401 });
+    }
+
+    const session = await verifySessionToken(token);
+    if (!session?.userId) {
+      return NextResponse.json({ error: "Sesi tidak valid atau telah berakhir." }, { status: 401 });
+    }
+
+    const userId = session.userId;
     const body = await req.json();
     const { title, content, mood } = body;
     if (!content?.trim()) return NextResponse.json({ error: "Isi journal tidak boleh kosong." }, { status: 400 });
     const isRisk = detectRisk(content);
     let savedEntry = null;
     let unlockedBadges: any[] = [];
-    if (userId) {
-      try {
-        savedEntry = await accountDb.journalEntry.create({
-          data: { userId, title: title || "Entri Mood Harian", content, mood: mood || undefined },
-        });
-        const { triggerBadgeCheck } = await import("@/lib/badges/badgeService");
-        unlockedBadges = await triggerBadgeCheck(userId, "journal_entry");
-      } catch (e) {
-        console.warn("DB journal fallback:", e);
-      }
+
+    try {
+      savedEntry = await accountDb.journalEntry.create({
+        data: { userId, title: title || "Entri Mood Harian", content, mood: mood || undefined },
+      });
+      const { triggerBadgeCheck } = await import("@/lib/badges/badgeService");
+      unlockedBadges = await triggerBadgeCheck(userId, "journal_entry");
+    } catch (e) {
+      console.warn("DB journal fallback:", e);
     }
+
     return NextResponse.json({
       success: true,
       isRisk,
@@ -46,6 +57,7 @@ export async function POST(req: NextRequest) {
       unlockedBadges,
     });
   } catch (err: any) {
-    return NextResponse.json({ error: err.message || "Gagal menyimpan journal." }, { status: 500 });
+    console.error("[Journal POST Error]:", err);
+    return NextResponse.json({ error: "Gagal menyimpan journal." }, { status: 500 });
   }
 }

@@ -342,7 +342,7 @@ invalidateUserMeCache(session.userId);
   } catch (error: any) {
     console.error("Update user me error:", error);
     return NextResponse.json(
-      { error: error?.message || "Failed to update profile" },
+      { error: "Gagal memperbarui profil pengguna." },
       { status: 500 }
     );
   }

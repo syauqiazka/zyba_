@@ -26,7 +26,7 @@ export async function GET(req: NextRequest) {
   } catch (error: any) {
     console.error("[GET Comments Error]:", error);
     return NextResponse.json(
-      { error: error?.message || "Gagal mengambil komentar." },
+      { error: "Gagal mengambil komentar." },
       { status: 500 }
     );
   }
@@ -123,6 +123,7 @@ export async function DELETE(req: NextRequest) {
     invalidateCommunityCache();
     return NextResponse.json({ success: true });
   } catch (err: any) {
-    return NextResponse.json({ error: err.message || "Gagal menghapus komentar" }, { status: 500 });
+    console.error("[DELETE Comment Error]:", err);
+    return NextResponse.json({ error: "Gagal memproses penghapusan komentar." }, { status: 500 });
   }
 }

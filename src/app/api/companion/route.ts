@@ -272,6 +272,6 @@ export async function POST(req: NextRequest) {
     });
   } catch (err: any) {
     console.error("[API Companion Error]:", err);
-    return NextResponse.json({ error: err.message || "Internal server error" }, { status: 500 });
+    return NextResponse.json({ error: "Layanan Companion sedang mengalami kendala. Silakan coba beberapa saat lagi." }, { status: 500 });
   }
 }

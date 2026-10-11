@@ -56,17 +56,21 @@ function calculateZybaScore(data: {
 
 export async function POST(req: NextRequest) {
   try {
-    const token = req.cookies.get("auth-token")?.value;
-    let userId = "user_demo_alex";
-    let sessionData = null;
+    const token =
+      req.cookies.get("auth-token")?.value ||
+      req.headers.get("authorization")?.replace(/^Bearer\s+/i, "");
 
-    if (token) {
-      const session = await verifySessionToken(token);
-      if (session?.userId) {
-        userId = session.userId;
-        sessionData = session;
-      }
+    if (!token) {
+      return NextResponse.json({ error: "Unauthorized: Sesi login diperlukan." }, { status: 401 });
     }
+
+    const session = await verifySessionToken(token);
+    if (!session?.userId) {
+      return NextResponse.json({ error: "Sesi tidak valid atau telah berakhir." }, { status: 401 });
+    }
+
+    const userId = session.userId;
+    const sessionData = session;
 
     const body = await req.json();
     const {
@@ -192,7 +196,7 @@ export async function POST(req: NextRequest) {
   } catch (err: any) {
     console.error("Assessment save error:", err);
     return NextResponse.json(
-      { error: err.message || "Internal server error" },
+      { error: "Gagal memproses dan menyimpan asesmen." },
       { status: 500 }
     );
   }

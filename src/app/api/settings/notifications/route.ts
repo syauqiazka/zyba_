@@ -19,7 +19,8 @@ export async function PUT(req: NextRequest) {
 
     return NextResponse.json({ success: true });
   } catch (err: any) {
-    return NextResponse.json({ error: err.message }, { status: 500 });
+    console.error("[Notifications PUT Error]:", err);
+    return NextResponse.json({ error: "Gagal menyimpan preferensi notifikasi." }, { status: 500 });
   }
 }
 
@@ -33,6 +34,7 @@ export async function GET(req: NextRequest) {
     const pref = await accountDb.notificationPref.findUnique({ where: { userId: session.userId } });
     return NextResponse.json({ pref: pref ?? { companionNotif: true, wellnessNotif: true, communityNotif: false } });
   } catch (err: any) {
-    return NextResponse.json({ error: err.message }, { status: 500 });
+    console.error("[Notifications GET Error]:", err);
+    return NextResponse.json({ error: "Gagal mengambil preferensi notifikasi." }, { status: 500 });
   }
 }

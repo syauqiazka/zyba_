@@ -71,32 +71,18 @@ export function computeStreak(createdAtIso: string): number {
   }
 }
 
+function isDemoFallbackAllowed(): boolean {
+  if (process.env.NODE_ENV === "production") return false;
+  return process.env.ENABLE_DEMO_FALLBACK === "true";
+}
+
 // Ensure data folder and file exist
 function ensureFiles() {
   if (!fs.existsSync(DATA_DIR)) {
     fs.mkdirSync(DATA_DIR, { recursive: true });
   }
   if (!fs.existsSync(USERS_FILE)) {
-    // Seed default demo user
-    const defaultPasswordHash = bcrypt.hashSync("demo_password", 12);
-    const initialUsers: StoredUser[] = [
-      {
-        id: "user_demo_alex",
-        email: "alex@zyba.app",
-        passwordHash: defaultPasswordHash,
-        name: "Alex Rivera",
-        avatarUrl: "fox_face",
-        communicationStyle: "FORMAL",
-        plan: "FREE",
-        onboardingCompleted: true,
-        zybaScore: 80,
-        stressLevel: 2,
-        streak: 1,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-      },
-    ];
-    fs.writeFileSync(USERS_FILE, JSON.stringify(initialUsers, null, 2), { encoding: "utf8" });
+    fs.writeFileSync(USERS_FILE, JSON.stringify([], null, 2), { encoding: "utf8" });
   }
   if (!fs.existsSync(ASSESSMENTS_FILE)) {
     fs.writeFileSync(ASSESSMENTS_FILE, JSON.stringify([], null, 2), { encoding: "utf8" });
@@ -180,35 +166,21 @@ export const userRepository = {
       const user = await accountDb.user.findUnique({ where: { email: normalized } });
       if (user) return dbToStored(user);
     } catch (e: any) {
-      console.warn("[userRepo] DB findByEmail failed, checking local fallback:", e.message);
+      console.warn("[userRepo] DB findByEmail failed:", e.message);
+      if (process.env.NODE_ENV === "production") {
+        return null;
+      }
     }
 
-    // Check local fallback
-    try {
-      const localUsers = readLocalUsers();
-      const found = localUsers.find((u) => u.email.toLowerCase() === normalized);
-      if (found) return found;
-    } catch (fsErr) {
-      console.error("[userRepo] local read failed:", fsErr);
-    }
-
-    // Default demo fallback for alex@zyba.app
-    if (normalized === "alex@zyba.app" || normalized === "alex.rivera@gmail.com") {
-      return {
-        id: "user_demo_alex",
-        email: normalized,
-        passwordHash: bcrypt.hashSync("demo_password", 12),
-        name: "Alex Rivera",
-        avatarUrl: "fox_face",
-        communicationStyle: "FORMAL",
-        plan: "FREE",
-        onboardingCompleted: true,
-        zybaScore: 80,
-        stressLevel: 2,
-        streak: 1,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-      };
+    // In development ONLY, check local fallback if explicitly enabled
+    if (isDemoFallbackAllowed()) {
+      try {
+        const localUsers = readLocalUsers();
+        const found = localUsers.find((u) => u.email.toLowerCase() === normalized);
+        if (found) return found;
+      } catch (fsErr) {
+        console.error("[userRepo] local read failed:", fsErr);
+      }
     }
 
     return null;
@@ -219,31 +191,18 @@ export const userRepository = {
       const user = await accountDb.user.findUnique({ where: { id } });
       if (user) return dbToStored(user);
     } catch (e: any) {
-      console.warn("[userRepo] DB findById failed, checking local fallback:", e.message);
+      console.warn("[userRepo] DB findById failed:", e.message);
+      if (process.env.NODE_ENV === "production") {
+        return null;
+      }
     }
 
-    try {
-      const localUsers = readLocalUsers();
-      const found = localUsers.find((u) => u.id === id);
-      if (found) return found;
-    } catch { }
-
-    if (id === "user_demo_alex") {
-      return {
-        id: "user_demo_alex",
-        email: "alex@zyba.app",
-        passwordHash: bcrypt.hashSync("demo_password", 12),
-        name: "Alex Rivera",
-        avatarUrl: "fox_face",
-        communicationStyle: "FORMAL",
-        plan: "FREE",
-        onboardingCompleted: true,
-        zybaScore: 80,
-        stressLevel: 2,
-        streak: 1,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-      };
+    if (isDemoFallbackAllowed()) {
+      try {
+        const localUsers = readLocalUsers();
+        const found = localUsers.find((u) => u.id === id);
+        if (found) return found;
+      } catch { }
     }
 
     return null;
@@ -274,6 +233,10 @@ export const userRepository = {
       });
       return dbToStored(created);
     } catch (dbErr: any) {
+      if (!isDemoFallbackAllowed()) {
+        console.error("[userRepo] DB create failed in production/fallback disabled:", dbErr.message);
+        throw dbErr;
+      }
       console.warn("[userRepo] DB create failed, saving to local fallback:", dbErr.message);
       const newUser: StoredUser = {
         id: `user_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
@@ -365,9 +328,11 @@ export const userRepository = {
     const effectiveName =
       nameHint || localUser?.name || "Pengguna ZYBA";
 
+    const crypto = await import("crypto");
+    const unguessableSecret = crypto.randomBytes(32).toString("hex");
     const effectivePass =
       localUser?.passwordHash ||
-      bcrypt.hashSync("zyba_session_fallback", 10);
+      bcrypt.hashSync(unguessableSecret, 12);
 
     try {
       const created = await accountDb.user.create({
@@ -532,6 +497,10 @@ export const userRepository = {
       });
       return dbToStored(updated);
     } catch (e: any) {
+      if (!isDemoFallbackAllowed()) {
+        console.error("[userRepo] DB update failed in production/fallback disabled:", e.message);
+        throw e;
+      }
       console.warn("[userRepo] DB update failed, updating local fallback:", e.message);
       try {
         const users = readLocalUsers();

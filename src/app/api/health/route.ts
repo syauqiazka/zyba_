@@ -28,11 +28,12 @@ export async function GET() {
       }
     );
   } catch (err: any) {
+    // Log DB error detail server-side only, never expose to public
+    console.error("[Health] DB connection error:", err?.message);
     return NextResponse.json(
       {
         status: "degraded",
         db: "error",
-        error: err?.message?.slice(0, 120) ?? "Unknown DB error",
         timestamp: new Date().toISOString(),
       },
       {

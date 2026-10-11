@@ -1,27 +1,65 @@
 import { NextRequest, NextResponse } from "next/server";
 import fs from "fs/promises";
 import path from "path";
+import { verifySessionToken } from "@/lib/auth";
+import { validateImageBuffer, generateSafeFileName } from "@/lib/server/uploadSecurity";
 
 // File upload endpoint for community posts, attachments, and photos.
-// If BLOB_READ_WRITE_TOKEN is provided, uploads to Vercel Blob storage.
-// Otherwise, saves directly to public/uploads/ for instant local development and self-hosting.
+// Enforces:
+// 1. Authentication (session token required)
+// 2. Magic bytes / file signature validation (JPEG, PNG, WebP only)
+// 3. Strict 5MB file size limit
+// 4. Safe random filename without user-controlled paths or extensions
 export async function POST(req: NextRequest) {
   try {
+    // 1. Autentikasi sesi
+    const token =
+      req.cookies.get("auth-token")?.value ||
+      req.headers.get("authorization")?.replace(/^Bearer\s+/i, "");
+
+    if (!token) {
+      return NextResponse.json(
+        { error: "Sesi login diperlukan untuk mengunggah file." },
+        { status: 401 }
+      );
+    }
+
+    const session = await verifySessionToken(token);
+    if (!session?.userId) {
+      return NextResponse.json(
+        { error: "Sesi tidak valid atau telah berakhir." },
+        { status: 401 }
+      );
+    }
+
     const formData = await req.formData();
     const file = formData.get("file") as File | null;
     if (!file) {
       return NextResponse.json({ error: "File wajib dikirim." }, { status: 400 });
     }
 
-    // Validate mime type
-    if (!file.type.startsWith("image/")) {
-      return NextResponse.json({ error: "Hanya file gambar (JPEG, PNG, atau WEBP) yang diperbolehkan." }, { status: 400 });
+    // 2. Validasi ukuran file (Maksimal 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      return NextResponse.json(
+        { error: "Ukuran gambar melebihi batas maksimal 5MB." },
+        { status: 400 }
+      );
     }
 
-    // Maximum file size: 5MB
-    if (file.size > 5 * 1024 * 1024) {
-      return NextResponse.json({ error: "Ukuran gambar maksimal 5MB." }, { status: 400 });
+    // 3. Baca buffer dan validasi signature / magic bytes sebenarnya
+    const arrayBuffer = await file.arrayBuffer();
+    const buffer = Buffer.from(arrayBuffer);
+
+    const validation = validateImageBuffer(buffer);
+    if (!validation.valid || !validation.extension || !validation.mime) {
+      return NextResponse.json(
+        { error: validation.error || "File harus berupa gambar asli (JPEG, PNG, atau WebP)." },
+        { status: 400 }
+      );
     }
+
+    // 4. Buat nama file yang aman (tidak mempercayai input path/nama client)
+    const cleanName = generateSafeFileName("post", session.userId, validation.extension);
 
     // ── Self-Hosted Filesystem Storage (public/uploads/ & uploads/) ──
     try {
@@ -30,12 +68,9 @@ export async function POST(req: NextRequest) {
       await fs.mkdir(uploadDir, { recursive: true });
       await fs.mkdir(rootUploadDir, { recursive: true }).catch(() => {});
 
-      const ext = (file.name.split(".").pop() || "jpg").toLowerCase().replace(/[^a-z0-9]/g, "");
-      const cleanName = `post_${Date.now()}_${Math.random().toString(36).slice(2, 8)}.${ext}`;
       const filePath = path.join(uploadDir, cleanName);
       const rootFilePath = path.join(rootUploadDir, cleanName);
 
-      const buffer = Buffer.from(await file.arrayBuffer());
       await fs.writeFile(filePath, buffer);
       await fs.writeFile(rootFilePath, buffer).catch(() => {});
 
@@ -45,18 +80,18 @@ export async function POST(req: NextRequest) {
       console.warn("[Upload FS failed, attempting Vercel Blob fallback]:", fsErr);
 
       // Optional fallback: Vercel Blob if token exists
-      const token = process.env.BLOB_READ_WRITE_TOKEN;
-      if (token) {
+      const blobToken = process.env.BLOB_READ_WRITE_TOKEN;
+      if (blobToken) {
         try {
-          const filename = `zyba/${Date.now()}-${file.name.replace(/[^a-zA-Z0-9._-]/g, "_")}`;
+          const filename = `zyba/${cleanName}`;
           const res = await fetch(`https://blob.vercel-storage.com/${filename}`, {
             method: "PUT",
             headers: {
-              Authorization: "Bearer " + token,
-              "Content-Type": file.type || "application/octet-stream",
-              "x-content-type": file.type || "application/octet-stream",
+              Authorization: "Bearer " + blobToken,
+              "Content-Type": validation.mime,
+              "x-content-type": validation.mime,
             },
-            body: await file.arrayBuffer(),
+            body: buffer,
           });
 
           if (res.ok) {
@@ -69,14 +104,15 @@ export async function POST(req: NextRequest) {
       }
 
       // Ultimate fallback: Base64 data URL
-      const buffer = Buffer.from(await file.arrayBuffer());
       const base64 = buffer.toString("base64");
-      const dataUrl = `data:${file.type};base64,${base64}`;
+      const dataUrl = `data:${validation.mime};base64,${base64}`;
       return NextResponse.json({ success: true, url: dataUrl, pathname: dataUrl });
     }
   } catch (err: any) {
     console.error("[Upload Error]:", err);
-    return NextResponse.json({ error: err.message || "Gagal memproses upload file" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Gagal memproses upload file." },
+      { status: 500 }
+    );
   }
 }
-

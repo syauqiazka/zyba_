@@ -24,6 +24,6 @@ export async function GET(req: NextRequest) {
     });
   } catch (err: any) {
     console.error("[Quota Check Error]:", err);
-    return NextResponse.json({ error: err.message || "Internal server error" }, { status: 500 });
+    return NextResponse.json({ error: "Gagal memeriksa kuota pesan." }, { status: 500 });
   }
 }

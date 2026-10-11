@@ -72,9 +72,7 @@ export async function GET(req: NextRequest) {
       {
         success: false,
         posts: [],
-        error:
-          error?.message ||
-          "Database Community tidak dapat diakses.",
+        error: "Database Community sedang tidak dapat diakses.",
       },
       {
         status: 500,
@@ -88,31 +86,32 @@ export async function POST(
 ) {
   try {
     const token =
-      req.cookies.get("auth-token")?.value;
+      req.cookies.get("auth-token")?.value ||
+      req.headers.get("authorization")?.replace(/^Bearer\s+/i, "");
 
-    let userId = "user_demo_alex";
-    let authorName = "Pengguna ZYBA";
+    if (!token) {
+      return NextResponse.json(
+        { error: "Unauthorized: Silakan masuk untuk berinteraksi di komunitas." },
+        { status: 401 }
+      );
+    }
+
+    const session = await verifySessionToken(token);
+    if (!session?.userId) {
+      return NextResponse.json(
+        { error: "Sesi tidak valid atau telah berakhir." },
+        { status: 401 }
+      );
+    }
+
+    const userId = session.userId;
+    let authorName = session.name || "Pengguna ZYBA";
     let avatarUrl = "fox";
 
-    if (token) {
-      const session =
-        await verifySessionToken(token);
-
-      if (session) {
-        userId = session.userId;
-
-        const user =
-          await userRepository.findById(
-            session.userId
-          );
-
-        if (user) {
-          authorName = user.name;
-          avatarUrl = resolveAvatar(
-            user.avatarUrl
-          );
-        }
-      }
+    const user = await userRepository.findById(session.userId);
+    if (user) {
+      authorName = user.name;
+      avatarUrl = resolveAvatar(user.avatarUrl);
     }
 
     // 🔒 SERVER-SIDE MODERATION ENFORCEMENT: Pengguna yang dibatasi (banned atau suspended) dilarang berinteraksi
@@ -327,9 +326,7 @@ export async function POST(
     return NextResponse.json(
       {
         success: false,
-        error:
-          error?.message ||
-          "Gagal memproses postingan.",
+        error: "Gagal memproses postingan komunitas.",
       },
       {
         status: 500,

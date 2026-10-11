@@ -31,6 +31,7 @@ export async function GET(req: NextRequest) {
       },
     });
   } catch (err: any) {
-    return NextResponse.json({ error: err.message }, { status: 500 });
+    console.error("[Settings Export Error]:", err);
+    return NextResponse.json({ error: "Gagal mengekspor data pengguna." }, { status: 500 });
   }
 }

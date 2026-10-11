@@ -2,16 +2,23 @@ import { NextRequest, NextResponse } from "next/server";
 import { communityDb } from "@/backend/db/communityClient";
 import { accountDb } from "@/backend/db/accountClient";
 import { formatRelativeTime } from "@/lib/dateUtils";
+import { verifySessionToken } from "@/lib/auth";
 
 export async function GET(
   req: NextRequest,
   { params }: { params: { userId: string } }
 ) {
   try {
+    const token = req.cookies.get("auth-token")?.value;
+    if (!token) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    const session = await verifySessionToken(token);
+    if (!session?.userId) return NextResponse.json({ error: "Sesi tidak valid." }, { status: 401 });
+
     const { searchParams } = new URL(req.url);
     const cursor = searchParams.get("cursor");
     const limit = parseInt(searchParams.get("limit") || "20", 10);
-    const includeHidden = searchParams.get("includeHidden") === "true";
+    // includeHidden hanya boleh dipakai oleh pemilik profil itu sendiri
+    const includeHidden = searchParams.get("includeHidden") === "true" && session.userId === params.userId;
 
     // Base where: always filter by userId; only include hidden posts when explicitly requested
     const where: any = { userId: params.userId };

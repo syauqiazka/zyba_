@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 
 interface ProfileSecurityFlowProps {
@@ -88,11 +88,12 @@ export default function ProfileSecurityFlow({
 }: ProfileSecurityFlowProps) {
   const router = useRouter();
 
-  // Sub-steps 1 to 8 matching Figma bottom row
+  // Sub-steps matching Figma bottom row + OTP_VERIFY step
   const [step, setStep] = useState<
     | "SELECT_AVATAR"
     | "PROFILE_SETUP"
     | "PASSWORD_STRENGTH"
+    | "OTP_VERIFY"
     | "FINGERPRINT"
     | "NOTIFICATIONS"
     | "COMPILING"
@@ -161,9 +162,133 @@ export default function ProfileSecurityFlow({
   const [passwordError, setPasswordError] = useState("");
   const [isVerifyingCaptcha, setIsVerifyingCaptcha] = useState(false);
   const [captchaError, setCaptchaError] = useState("");
-  const [otpCode, setOtpCode] = useState("");
-  const [otpSent, setOtpSent] = useState(false);
 
+  // OTP State
+  const [otpCode, setOtpCode] = useState("");
+  const [otpError, setOtpError] = useState("");
+  const [isRequestingOtp, setIsRequestingOtp] = useState(false);
+  const [isVerifyingOtp, setIsVerifyingOtp] = useState(false);
+  const [resendCooldown, setResendCooldown] = useState(0);
+  const cooldownRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  function startCooldown(seconds: number) {
+    setResendCooldown(seconds);
+    if (cooldownRef.current) clearInterval(cooldownRef.current);
+    cooldownRef.current = setInterval(() => {
+      setResendCooldown((prev) => {
+        if (prev <= 1) { clearInterval(cooldownRef.current!); return 0; }
+        return prev - 1;
+      });
+    }, 1000);
+  }
+
+  useEffect(() => {
+    return () => { if (cooldownRef.current) clearInterval(cooldownRef.current); };
+  }, []);
+
+  // Kirim OTP ke email
+  const handleSendOtp = async () => {
+    setOtpError("");
+    setIsRequestingOtp(true);
+    try {
+      const res = await fetch("/api/auth/otp", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          action: "REQUEST",
+          email: email.trim().toLowerCase(),
+          purpose: "SIGNUP",
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        if (res.status === 429) {
+          const cd = data.retryAfter || 60;
+          startCooldown(cd);
+          setOtpError(data.error || `Terlalu banyak permintaan. Tunggu ${cd} detik.`);
+        } else {
+          setOtpError(data.error || "Gagal mengirim kode OTP. Coba lagi.");
+        }
+        return false;
+      }
+      startCooldown(data.resendCooldownSec || 60);
+      return true;
+    } catch {
+      setOtpError("Gagal mengirim kode OTP. Periksa koneksi internet.");
+      return false;
+    } finally {
+      setIsRequestingOtp(false);
+    }
+  };
+
+  // Verifikasi OTP lalu langsung call SIGNUP
+  const handleVerifyOtpAndSignup = async () => {
+    setOtpError("");
+    const sanitizedOtp = otpCode.replace(/\D/g, "").slice(0, 6);
+    if (sanitizedOtp.length !== 6) {
+      setOtpError("Kode OTP harus berisi tepat 6 digit angka.");
+      return;
+    }
+
+    setIsVerifyingOtp(true);
+    try {
+      // 1. Verifikasi OTP — set proof cookie di server
+      const verifyRes = await fetch("/api/auth/otp", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          action: "VERIFY",
+          email: email.trim().toLowerCase(),
+          otp: sanitizedOtp,
+          purpose: "SIGNUP",
+        }),
+      });
+      const verifyData = await verifyRes.json();
+      if (!verifyRes.ok) {
+        if (verifyRes.status === 429) {
+          const cd = verifyData.retryAfter || 60;
+          startCooldown(cd);
+          setOtpError(verifyData.error || `Terlalu banyak percobaan. Tunggu ${cd} detik.`);
+        } else {
+          setOtpError(verifyData.error || "Kode OTP tidak cocok atau kadaluarsa.");
+        }
+        return;
+      }
+
+      // 2. OTP verified — panggil SIGNUP (proof cookie sudah diset server)
+      const signupRes = await fetch("/api/auth", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          action: "SIGNUP",
+          email: email.trim().toLowerCase(),
+          name: fullName || undefined,
+          password,
+          // reCAPTCHA opsional — kirim kalau tersedia
+          recaptchaToken: undefined,
+        }),
+      });
+      const signupData = await signupRes.json();
+      if (!signupRes.ok) {
+        setOtpError(signupData.error || "Pendaftaran gagal. Silakan coba lagi.");
+        return;
+      }
+
+      // 3. Berhasil — teruskan ke langkah berikutnya
+      onSignupSuccess(email.trim().toLowerCase());
+      setStep("FINGERPRINT");
+    } catch {
+      setOtpError("Terjadi kesalahan jaringan. Periksa koneksi internet.");
+    } finally {
+      setIsVerifyingOtp(false);
+    }
+  };
+
+  function maskEmail(e: string): string {
+    const [local, domain] = e.split("@");
+    if (!local || !domain) return e;
+    return `${local.slice(0, Math.min(3, local.length))}***@${domain}`;
+  }
 
   // Biometric state
   const [isFingerprintScanned, setIsFingerprintScanned] = useState(false);
@@ -714,34 +839,14 @@ export default function ProfileSecurityFlow({
               </div>
             )}
 
-            {otpSent && (
-              <div className="flex flex-col gap-2">
-                <label htmlFor="signup-otp" className="text-xs font-bold text-brown-900 pl-1">
-                  Kode OTP dari email
-                </label>
-                <input
-                  id="signup-otp"
-                  type="text"
-                  inputMode="numeric"
-                  autoComplete="one-time-code"
-                  maxLength={4}
-                  value={otpCode}
-                  onChange={(event) => setOtpCode(event.target.value.replace(/\D/g, "").slice(0, 4))}
-                  placeholder="Masukkan 4 digit kode"
-                  className="w-full rounded-xl border border-brown-900/15 px-4 py-3 text-center text-lg tracking-[0.5em] font-bold text-brown-900 outline-none focus:border-orange-500"
-                />
-                <p className="text-[11px] text-brown-700/70">
-                  Kode berlaku 10 menit. Periksa juga folder spam jika email belum masuk.
-                </p>
-              </div>
-            )}
+            {/* reCAPTCHA tidak dipakai di step ini — OTP adalah verifikasi utama */}
             {captchaError && (
               <p className="mb-3 text-xs font-medium text-red-500">{captchaError}</p>
             )}
 
             <button
               type="button"
-              disabled={isVerifyingCaptcha}
+              disabled={isVerifyingCaptcha || isRequestingOtp}
               onClick={async () => {
                 setPasswordError("");
                 setCaptchaError("");
@@ -750,68 +855,116 @@ export default function ProfileSecurityFlow({
                   return;
                 }
 
-                setIsVerifyingCaptcha(true);
-                try {
-                  if (!otpSent) {
-                    const requestOtp = await fetch("/api/auth/otp", {
-                      method: "POST",
-                      headers: { "Content-Type": "application/json" },
-                      body: JSON.stringify({ action: "REQUEST", email: email.trim() }),
-                    });
-                    const requestData = await requestOtp.json();
-                    if (!requestOtp.ok) {
-                      setCaptchaError(requestData.error || "Kode OTP gagal dikirim. Silakan coba lagi.");
-                      return;
-                    }
-                    setOtpSent(true);
-                    setCaptchaError("");
-                    return;
-                  }
-
-                  if (!/^\d{4}$/.test(otpCode)) {
-                    setCaptchaError("Masukkan kode OTP 4 digit yang dikirim ke email Anda.");
-                    return;
-                  }
-
-                  const verifyOtp = await fetch("/api/auth/otp", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ action: "VERIFY", email: email.trim(), otp: otpCode }),
-                  });
-                  const verifyData = await verifyOtp.json();
-                  if (!verifyOtp.ok) {
-                    setCaptchaError(verifyData.error || "Kode OTP tidak valid. Silakan coba lagi.");
-                    return;
-                  }
-
-                  const signupRes = await fetch("/api/auth", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({
-                      action: "SIGNUP",
-                      email: email.trim(),
-                      name: fullName || undefined,
-                      password,
-                    }),
-                  });
-                  const signupData = await signupRes.json();
-                  if (!signupRes.ok) {
-                    setCaptchaError(signupData.error || "Pendaftaran gagal. Silakan coba lagi.");
-                    return;
-                  }
-
-                  onSignupSuccess(email.trim());
-                  setStep("FINGERPRINT");
-                } catch {
-                  setCaptchaError("Verifikasi OTP gagal. Silakan coba lagi.");
-                } finally {
-                  setIsVerifyingCaptcha(false);
+                // Kirim OTP ke email terlebih dahulu
+                const sent = await handleSendOtp();
+                if (sent) {
+                  setOtpCode("");
+                  setOtpError("");
+                  setStep("OTP_VERIFY");
                 }
               }}
               className="mt-2 w-full py-3.5 rounded-full bg-brown-900 text-white font-bold text-xs md:text-sm flex items-center justify-center gap-2 hover:bg-orange-500 transition-all shadow-md active:scale-98 disabled:opacity-50"
             >
-              {isVerifyingCaptcha ? (otpSent ? "Memverifikasi OTP..." : "Mengirim OTP...") : (otpSent ? "Verifikasi OTP & Buat Akun →" : "Kirim Kode OTP →")}
+              {isRequestingOtp ? "Mengirim Kode OTP..." : "Lanjutkan & Verifikasi Email →"}
             </button>
+          </div>
+        </div>
+      )}
+      {/* ========================================================================= */}
+      {/* 3.5. OTP VERIFY — Verifikasi email sebelum akun dibuat */}
+      {/* ========================================================================= */}
+      {step === "OTP_VERIFY" && (
+        <div className="flex flex-col">
+          <div className="relative w-full bg-[#E2EBD2] pt-6 pb-8 px-6 flex flex-col items-center">
+            <button
+              type="button"
+              onClick={() => { setStep("PASSWORD_STRENGTH"); setOtpError(""); }}
+              style={{ position: "absolute" }} className="absolute left-5 top-5 z-20 w-8 h-8 rounded-full bg-white/80 hover:bg-white text-brown-900 flex items-center justify-center text-sm shadow-xs transition-colors"
+            >
+              ←
+            </button>
+            <span className="text-xs font-bold uppercase tracking-widest text-brown-700/70">
+              Langkah 3 dari 7 • Verifikasi Email
+            </span>
+            <h2 className="font-display font-extrabold text-xl text-brown-900 mt-1">
+              Kode Verifikasi Email
+            </h2>
+          </div>
+
+          <div className="p-4 sm:p-8 flex flex-col gap-5 bg-white -mt-4 rounded-t-3xl z-10">
+            {/* Info email */}
+            <div className="p-3.5 rounded-2xl bg-cream/40 border border-brown-900/10 text-center">
+              <span className="text-2xl block mb-1">📧</span>
+              <p className="text-xs text-brown-700 leading-relaxed">
+                Kode 6 digit dikirimkan ke{" "}
+                <strong className="text-brown-900 block mt-0.5">{maskEmail(email.trim())}</strong>
+              </p>
+              <p className="text-[10px] text-brown-700/60 mt-1">
+                Berlaku 10 menit · Periksa folder spam jika tidak muncul
+              </p>
+            </div>
+
+            {/* OTP Input */}
+            <div className="flex flex-col gap-1.5">
+              <label className="text-xs font-bold text-brown-900 pl-1">
+                Kode OTP (6 digit)
+              </label>
+              <input
+                type="text"
+                inputMode="numeric"
+                autoComplete="one-time-code"
+                maxLength={6}
+                value={otpCode}
+                onChange={(e) => {
+                  setOtpCode(e.target.value.replace(/\D/g, "").slice(0, 6));
+                  setOtpError("");
+                }}
+                placeholder="123456"
+                className="w-full bg-cream/40 border border-brown-900/15 rounded-full px-4 py-3 text-center text-2xl tracking-[0.6em] font-bold font-mono text-brown-900 focus:outline-none focus:ring-2 focus:ring-orange-500"
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" && !isVerifyingOtp && otpCode.replace(/\D/g, "").length === 6) {
+                    handleVerifyOtpAndSignup();
+                  }
+                }}
+              />
+            </div>
+
+            {otpError && (
+              <div className="p-3 rounded-xl bg-orange-100/80 border border-danger/30">
+                <p className="text-xs font-bold text-danger flex items-center gap-1.5">
+                  <span>⚠️</span> {otpError}
+                </p>
+              </div>
+            )}
+
+            <button
+              type="button"
+              disabled={isVerifyingOtp || otpCode.replace(/\D/g, "").length !== 6}
+              onClick={handleVerifyOtpAndSignup}
+              className="w-full py-3.5 rounded-full bg-brown-900 text-white font-bold text-xs md:text-sm flex items-center justify-center gap-2 hover:bg-orange-500 transition-all shadow-md active:scale-98 disabled:opacity-50"
+            >
+              {isVerifyingOtp ? "Memverifikasi & Membuat Akun..." : "Verifikasi & Buat Akun →"}
+            </button>
+
+            {/* Resend */}
+            <div className="text-center">
+              <button
+                type="button"
+                disabled={resendCooldown > 0 || isRequestingOtp || isVerifyingOtp}
+                onClick={async () => {
+                  setOtpCode("");
+                  setOtpError("");
+                  await handleSendOtp();
+                }}
+                className="text-xs font-semibold text-orange-600 hover:underline disabled:opacity-40 disabled:no-underline transition-opacity"
+              >
+                {resendCooldown > 0
+                  ? `Kirim ulang dalam ${resendCooldown} detik`
+                  : isRequestingOtp
+                  ? "Mengirim..."
+                  : "Tidak menerima kode? Kirim ulang"}
+              </button>
+            </div>
           </div>
         </div>
       )}
