@@ -183,10 +183,22 @@ const successSendRes = simulatePasswordStepClick({
   isRequestingOtp: false,
   sendOtpResult: { success: true }
 });
-assert(successSendRes.action === "TRANSITION_STEP" && successSendRes.nextStep === "OTP_VERIFY", "Pengiriman berhasil memindahkan pengguna ke langkah OTP_VERIFY");
+// 7. No reCAPTCHA Blocking OTP Login / Registration
+console.log("\n--- 7. No reCAPTCHA Blocking OTP Login / Registration ---");
+import fs from "fs";
+const authRouteSrc = fs.readFileSync(new URL("../src/app/api/auth/route.ts", import.meta.url), "utf8");
+const profileFlowSrc = fs.readFileSync(new URL("../src/app/login/components/ProfileSecurityFlow.tsx", import.meta.url), "utf8");
+
+assert(!authRouteSrc.includes("RECAPTCHA_SECRET_KEY"), "Auth route has no RECAPTCHA_SECRET_KEY requirement");
+assert(!authRouteSrc.includes("Verifikasi reCAPTCHA wajib dilakukan"), "Auth route has no reCAPTCHA error message");
+assert(!authRouteSrc.includes("https://www.google.com/recaptcha/api/siteverify"), "Auth route does not call Google siteverify");
+assert(!profileFlowSrc.includes("grecaptcha"), "ProfileSecurityFlow has no window.grecaptcha");
+assert(!profileFlowSrc.includes("captchaError"), "ProfileSecurityFlow has no captchaError state");
+assert(!profileFlowSrc.includes("recaptchaToken"), "ProfileSecurityFlow does not pass recaptchaToken");
 
 console.log("\n==================================================================");
 console.log(`📊 Total: ${passed} PASS, ${failed} FAIL`);
 console.log("==================================================================");
 
 if (failed > 0) process.exit(1);
+
