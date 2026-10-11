@@ -54,6 +54,11 @@ export async function POST(req: NextRequest) {
     }
 
     if (action === "VERIFY") {
+      const verifyLimit = await checkRateLimit(`otp_verify:${clientIp}`, 10, 300);
+      if (!verifyLimit.allowed) {
+        return rateLimitResponse(verifyLimit.retryAfterSec, "Terlalu banyak percobaan verifikasi OTP.");
+      }
+
       if (!otp) {
         return NextResponse.json(
           { error: "Kode OTP wajib diisi." },
