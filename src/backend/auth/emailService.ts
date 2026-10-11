@@ -1,11 +1,35 @@
 /**
  * Backend Email & OTP Service for ZYBA Authentication
- * Menggunakan Nodemailer SMTP sebagai satu-satunya metode pengiriman email OTP.
- * Resend API TIDAK digunakan — hanya SMTP.
+ * Menggunakan Brevo Transactional Email API via HTTPS (Port 443).
+ * Endpoint: POST https://api.brevo.com/v3/smtp/email
+ * Koneksi keluar SMTP (port 465/587) TIDAK digunakan.
  */
 
-import nodemailer from "nodemailer";
 import { randomInt } from "crypto";
+
+export const DEFAULT_BREVO_SENDER = "muhammad.syauqi1869@smk.belajar.id";
+
+/**
+ * Extracts a clean email address from strings like:
+ * - "muhammad.syauqi1869@smk.belajar.id"
+ * - "ZYBA Wellness <muhammad.syauqi1869@smk.belajar.id>"
+ */
+export function extractEmailAddress(raw: string): string {
+  const match = raw.match(/<([^>]+)>/);
+  return (match ? match[1] : raw).trim().toLowerCase();
+}
+
+/**
+ * Resolves the sender email for Brevo transactional email.
+ * Priority: BREVO_SENDER_EMAIL -> EMAIL_FROM -> DEFAULT_BREVO_SENDER
+ */
+export function resolveSenderEmail(): string {
+  const raw =
+    process.env.BREVO_SENDER_EMAIL?.trim() ||
+    process.env.EMAIL_FROM?.trim() ||
+    DEFAULT_BREVO_SENDER;
+  return extractEmailAddress(raw);
+}
 
 /**
  * Generate a cryptographically secure 6-digit OTP.
@@ -41,7 +65,7 @@ export function verifyOTP(
 /**
  * Helper to build responsive HTML email template with ZYBA branding
  */
-function buildOtpEmailHtml(otp: string, recipientEmail: string, purposeLabel: string): string {
+export function buildOtpEmailHtml(otp: string, recipientEmail: string, purposeLabel: string): string {
   return `
 <!DOCTYPE html>
 <html lang="id">
@@ -79,7 +103,7 @@ function buildOtpEmailHtml(otp: string, recipientEmail: string, purposeLabel: st
                 Halo! Masukkan 6 digit kode verifikasi berikut untuk melanjutkan:
               </p>
 
-              <!-- OTP Display Box — 6 digit, NO literal OTP in comments -->
+              <!-- OTP Display Box — 6 digit -->
               <div style="margin: 28px auto; padding: 20px 24px; max-width: 280px; background-color: #FCE3D3; border: 2px dashed #F2884B; border-radius: 20px; text-align: center;">
                 <span style="font-size: 38px; font-weight: 900; letter-spacing: 14px; color: #F2884B; font-family: 'Courier New', monospace; display: block; margin-left: 14px;">
                   ${otp}
@@ -126,163 +150,143 @@ function buildOtpEmailHtml(otp: string, recipientEmail: string, purposeLabel: st
 `;
 }
 
-/**
- * Create Nodemailer Transporter based on environment variables.
- * Priority: SMTP_HOST/PORT/USER/PASS → GMAIL_USER/GMAIL_APP_PASSWORD.
- * Resend API is NOT used.
- */
-function createSmtpTransporter() {
-  // Check for generic SMTP config first (recommended)
-  const smtpHost = process.env.SMTP_HOST;
-  const smtpPort = process.env.SMTP_PORT ? Number(process.env.SMTP_PORT) : 587;
-  const smtpUser = process.env.SMTP_USER;
-  const smtpPass = process.env.SMTP_PASS;
-  const smtpSecure = process.env.SMTP_SECURE === "true" || smtpPort === 465;
-
-  if (smtpHost && smtpUser && smtpPass) {
-    return nodemailer.createTransport({
-      host: smtpHost.trim(),
-      port: smtpPort,
-      secure: smtpSecure, // true for port 465 (SSL), false for 587 (STARTTLS)
-      auth: {
-        user: smtpUser.trim(),
-        // Bersihkan spasi dari App Password (mis. Google App Password format 4x4)
-        pass: smtpPass.trim().replace(/\s+/g, ""),
-      },
-      connectionTimeout: 10000, // 10 detik batas koneksi awal
-      greetingTimeout: 10000,   // 10 detik batas greeting SMTP
-      socketTimeout: 15000,     // 15 detik batas soket
-      // For STARTTLS (port 587): requireTLS ensures upgrade from plain to TLS
-      ...(smtpSecure ? {} : { requireTLS: smtpPort === 587 }),
-    });
-  }
-
-  // Fallback: Gmail shorthand using GMAIL_USER / GMAIL_APP_PASSWORD
-  const gmailUser = process.env.GMAIL_USER;
-  const gmailPass = process.env.GMAIL_APP_PASSWORD || process.env.GMAIL_PASS;
-
-  if (gmailUser && gmailPass) {
-    return nodemailer.createTransport({
-      service: "gmail",
-      auth: {
-        user: gmailUser.trim(),
-        // Remove all spaces from Google App Password (groups of 4 chars separated by spaces)
-        pass: gmailPass.trim().replace(/\s+/g, ""),
-      },
-      connectionTimeout: 10000,
-      greetingTimeout: 10000,
-      socketTimeout: 15000,
-    });
-  }
-
-  return null;
-}
-
-/**
- * Resolve the "from" address for outgoing emails.
- */
-function resolveFromAddress(): string {
-  if (process.env.EMAIL_FROM) {
-    return process.env.EMAIL_FROM;
-  }
-  // Build from SMTP_USER or GMAIL_USER
-  const senderAddr =
-    process.env.SMTP_USER ||
-    process.env.GMAIL_USER ||
-    "no-reply@zyba.app";
-  return `"ZYBA Wellness" <${senderAddr}>`;
-}
-
 export type OtpPurpose = "SIGNUP" | "RESET_PASSWORD";
 
 /**
- * Mengirim email kode OTP ke pengguna menggunakan SMTP.
- *
- * @param email  - Alamat email tujuan (akan dinormalisasi lowercase).
- * @param otp    - Kode OTP 6 digit yang sudah di-generate.
- * @param purpose - Tujuan OTP: "SIGNUP" | "RESET_PASSWORD".
+ * Send OTP email using Brevo's HTTPS transactional email API.
+ * Endpoint: POST https://api.brevo.com/v3/smtp/email
+ * The OTP/challenge lifecycle remains in the existing auth routes.
  */
 export async function sendOTPEmail(
   email: string,
   otp: string,
   purpose: OtpPurpose = "SIGNUP"
-): Promise<{ success: boolean; delivered: boolean; message: string }> {
+): Promise<{ success: boolean; delivered: boolean; message: string; messageId?: string }> {
   const normalizedEmail = email.toLowerCase().trim();
+  const apiKey = process.env.BREVO_API_KEY?.trim();
+  const senderEmail = resolveSenderEmail();
+
+  if (!apiKey) {
+    console.error("[EmailService] BREVO_API_KEY belum dikonfigurasi.");
+    return {
+      success: false,
+      delivered: false,
+      message: "Layanan email belum dikonfigurasi. Hubungi administrator.",
+    };
+  }
+
+  const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!EMAIL_REGEX.test(normalizedEmail)) {
+    return {
+      success: false,
+      delivered: false,
+      message: "Format alamat email penerima tidak valid.",
+    };
+  }
 
   const purposeLabel =
     purpose === "RESET_PASSWORD"
       ? "Kode Verifikasi Reset Password"
       : "Kode Verifikasi Pendaftaran";
-
   const subjectPrefix =
     purpose === "RESET_PASSWORD"
       ? "Reset Password ZYBA"
       : "Kode Verifikasi ZYBA";
 
-  const transporter = createSmtpTransporter();
-
-  if (!transporter) {
-    console.error(
-      "[EmailService] SMTP tidak dikonfigurasi. Set SMTP_HOST, SMTP_USER, SMTP_PASS " +
-      "atau GMAIL_USER, GMAIL_APP_PASSWORD di environment variables."
-    );
-    return {
-      success: false,
-      delivered: false,
-      message:
-        "Layanan email belum dikonfigurasi. Hubungi administrator untuk mengaktifkan pengiriman email.",
-    };
-  }
+  const subject = `[${subjectPrefix}] Kode 6 digit Anda`;
+  const textContent =
+    `Kode verifikasi ZYBA Anda adalah: ${otp}.\n\n` +
+    "Kode ini berlaku selama 10 menit.\n" +
+    "Jangan bagikan kode ini kepada siapa pun, termasuk tim ZYBA.";
 
   try {
-    const startMs = Date.now();
-    const domain = normalizedEmail.includes("@") ? normalizedEmail.split("@")[1] : "unknown";
-    // Log diagnostik aman (tanpa kode OTP dan tanpa kredensial)
-    console.log(
-      `[EmailService] Mengirim email OTP (${purpose}) ke domain @${domain} via SMTP...`
-    );
-
-    const info = await transporter.sendMail({
-      from: resolveFromAddress(),
-      to: normalizedEmail,
-      subject: `[${subjectPrefix}] Kode 6 digit Anda`,
-      text:
-        `Kode verifikasi ZYBA Anda adalah: ${otp}. ` +
-        `Kode ini berlaku selama 10 menit. ` +
-        `Jangan bagikan kode ini kepada siapa pun, termasuk tim ZYBA.`,
-      html: buildOtpEmailHtml(otp, normalizedEmail, purposeLabel),
+    const response = await fetch("https://api.brevo.com/v3/smtp/email", {
+      method: "POST",
+      headers: {
+        "accept": "application/json",
+        "api-key": apiKey,
+        "content-type": "application/json",
+      },
+      body: JSON.stringify({
+        sender: {
+          name: "ZYBA Wellness",
+          email: senderEmail,
+        },
+        to: [
+          {
+            email: normalizedEmail,
+          },
+        ],
+        subject,
+        textContent,
+        htmlContent: buildOtpEmailHtml(otp, normalizedEmail, purposeLabel),
+      }),
+      signal: AbortSignal.timeout(10000),
+      cache: "no-store",
     });
 
-    const durationMs = Date.now() - startMs;
-    // Log MessageId (metadata aman, bukan OTP)
+    if (!response.ok) {
+      const errorText = await response.text().catch(() => "");
+      let errorMessage = "";
+      try {
+        const parsed = JSON.parse(errorText);
+        errorMessage = parsed?.message || parsed?.code || "";
+      } catch {
+        errorMessage = errorText.slice(0, 200);
+      }
+
+      console.error(
+        `[EmailService] Brevo API rejected OTP email (HTTP ${response.status}): ${errorMessage}`
+      );
+
+      let clientMessage = "Email verifikasi belum berhasil dikirim. Silakan coba lagi beberapa saat.";
+      if (response.status === 401 || response.status === 403) {
+        clientMessage = "Konfigurasi layanan email tidak valid. Hubungi administrator.";
+      } else if (response.status === 429) {
+        clientMessage = "Layanan pengiriman email sedang sibuk. Silakan coba lagi beberapa saat.";
+      } else if (response.status === 400) {
+        clientMessage = "Gagal memproses pengiriman email verifikasi. Periksa kembali alamat email Anda.";
+      } else if (response.status >= 500) {
+        clientMessage = "Layanan email sedang mengalami gangguan. Silakan coba lagi beberapa saat.";
+      }
+
+      return {
+        success: false,
+        delivered: false,
+        message: clientMessage,
+      };
+    }
+
+    const data = (await response.json().catch(() => ({}))) as { messageId?: string };
+    const messageId = data?.messageId;
+
     console.log(
-      `[EmailService] ✅ Email OTP (${purpose}) terkirim ke domain @${domain} (${durationMs}ms). MessageId: ${info.messageId}`
+      `[EmailService] OTP email accepted by Brevo (purpose=${purpose}, status=${response.status}${
+        messageId ? `, messageId=${messageId}` : ""
+      }).`
     );
 
     return {
       success: true,
       delivered: true,
       message: "Email kode verifikasi berhasil dikirimkan ke kotak masuk Anda.",
+      messageId,
     };
   } catch (err: unknown) {
-    // Log pesan error TANPA menyertakan credentials (err.message sudah cukup)
-    const errMsg = err instanceof Error ? err.message : String(err);
-    const domain = normalizedEmail.includes("@") ? normalizedEmail.split("@")[1] : "unknown";
-    console.error(
-      `[EmailService] ❌ Gagal mengirim email OTP (${purpose}) ke domain @${domain}: ${errMsg}`
-    );
+    const isTimeout =
+      (err instanceof Error && (err.name === "TimeoutError" || err.name === "AbortError")) ||
+      String(err).includes("timeout");
+    const errName = err instanceof Error ? err.name : "UnknownError";
 
-    let clientMsg = "Gagal mengirim email verifikasi. Periksa alamat email Anda dan coba lagi dalam beberapa menit.";
-    if (errMsg.includes("EAUTH") || errMsg.includes("Invalid login") || errMsg.includes("Username and Password not accepted")) {
-      clientMsg = "Autentikasi akun email server gagal. Hubungi administrator sistem.";
-    } else if (errMsg.includes("ETIMEDOUT") || errMsg.includes("ESOCKETTIMEDOUT") || errMsg.includes("ECONNREFUSED")) {
-      clientMsg = "Koneksi ke server email timeout. Silakan periksa jaringan dan coba lagi.";
-    }
+    console.error(`[EmailService] Brevo API request failed (purpose=${purpose}, error=${errName}).`);
 
     return {
       success: false,
       delivered: false,
-      message: clientMsg,
+      message: isTimeout
+        ? "Koneksi ke layanan email timeout. Silakan coba lagi beberapa saat."
+        : "Koneksi ke layanan email gagal. Silakan coba lagi beberapa saat.",
     };
   }
 }
+

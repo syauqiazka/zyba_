@@ -123,7 +123,7 @@ export async function POST(req: NextRequest) {
       // Generate OTP kriptografis (6 digit)
       const generatedCode = generateOTP();
 
-      // Kirim via SMTP
+      // Kirim via Brevo HTTPS API
       const delivery = await sendOTPEmail(normalizedEmail, generatedCode, purpose);
       if (!delivery.delivered) {
         return NextResponse.json(
