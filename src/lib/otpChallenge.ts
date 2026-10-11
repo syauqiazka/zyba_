@@ -90,3 +90,34 @@ export function verifyOtpChallenge(
 }
 
 export { COOKIE_NAME, OTP_TTL_SECONDS };
+
+
+export function createOtpVerifiedProof(email: string): string {
+  const normalizedEmail = email.toLowerCase().trim();
+  const payload = Buffer.from(
+    JSON.stringify({ email: normalizedEmail, expiresAt: Math.floor(Date.now() / 1000) + OTP_TTL_SECONDS }),
+    "utf8"
+  ).toString("base64url");
+  return payload + "." + sign(payload);
+}
+
+export function verifyOtpVerifiedProof(token: string | undefined, email: string): boolean {
+  if (!token) return false;
+  const [payload, signature] = token.split(".");
+  if (!payload || !signature) return false;
+  try {
+    const expectedSignature = sign(payload);
+    const provided = Buffer.from(signature);
+    const expected = Buffer.from(expectedSignature);
+    if (provided.length !== expected.length || !timingSafeEqual(provided, expected)) return false;
+    const parsed = JSON.parse(Buffer.from(payload, "base64url").toString("utf8")) as {
+      email?: string;
+      expiresAt?: number;
+    };
+    return parsed.email === email.toLowerCase().trim()
+      && typeof parsed.expiresAt === "number"
+      && Math.floor(Date.now() / 1000) < parsed.expiresAt;
+  } catch {
+    return false;
+  }
+}
