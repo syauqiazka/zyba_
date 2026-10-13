@@ -11,7 +11,7 @@ type Tab = "assessment" | "journal";
 
 const TABS: { key: Tab; label: string }[] = [
     { key: "assessment", label: "Riwayat Assessment Harian" },
-    { key: "journal", label: "Riwayat Health Journal" },
+    { key: "journal", label: "Riwayat Jurnal Kesehatan" },
 ];
 
 export default function HistoryTabs({ assessment, journal }: HistoryTabsProps) {

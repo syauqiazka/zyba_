@@ -157,7 +157,7 @@ export default function DailyAssessmentPage() {
         <div>
           <div className="flex items-center gap-2 mb-1">
             <span className="text-[10px] sm:text-[11px] font-extrabold uppercase tracking-widest text-[#1B3C53] bg-[#1B3C53]/10 px-2.5 py-0.5 rounded-full">
-              Ritual Harian
+              Check-In Harian
             </span>
             <span className="text-xs text-brown-700/70" suppressHydrationWarning>
               Hari ini · sekitar 1–2 menit

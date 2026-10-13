@@ -312,12 +312,12 @@ export function DailyAssessmentForm({
 
   return (
     <div className="w-full max-w-[680px] mx-auto bg-white rounded-2xl border border-brown-900/10 p-4 sm:p-6 md:p-8 shadow-xs select-none">
-      {/* ── 1. Ritual Header & Progress ─────────────────────────────── */}
+      {/* ── 1. Header & Progress ─────────────────────────────── */}
       <div className="flex flex-col gap-3 pb-4 mb-5 border-b border-brown-900/10">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <span className="text-[10px] sm:text-[11px] font-extrabold uppercase tracking-widest text-[#1B3C53] bg-[#1B3C53]/10 px-2.5 py-0.5 rounded-full">
-              Ritual Harian
+              Check-In Harian
             </span>
             <span className="text-xs text-brown-700/70">
               Hari ini · 1–2 menit
@@ -356,7 +356,7 @@ export function DailyAssessmentForm({
           <div className="flex flex-col items-center text-center gap-4 sm:gap-5 animate-in fade-in duration-200">
             <div>
               <span className="text-[11px] sm:text-xs font-extrabold tracking-wider uppercase text-[#456882]">
-                MENTAL WELLBEING
+                KESEHATAN MENTAL
               </span>
               <h2 className="font-display text-lg sm:text-xl md:text-2xl font-bold text-brown-900 mt-1 max-w-[480px]">
                 Bagaimana perasaanmu hari ini?
@@ -401,7 +401,7 @@ export function DailyAssessmentForm({
           <div className="flex flex-col items-center text-center gap-4 sm:gap-5 animate-in fade-in duration-200">
             <div>
               <span className="text-[11px] sm:text-xs font-extrabold tracking-wider uppercase text-[#456882]">
-                STRESS REGULATION
+                REGULASI STRES
               </span>
               <h2 className="font-display text-lg sm:text-xl md:text-2xl font-bold text-brown-900 mt-1 max-w-[480px]">
                 Hari ini saya merasa banyak hal yang harus saya pikirkan secara bersamaan.
@@ -422,7 +422,7 @@ export function DailyAssessmentForm({
           <div className="flex flex-col items-center text-center gap-4 sm:gap-5 animate-in fade-in duration-200">
             <div>
               <span className="text-[11px] sm:text-xs font-extrabold tracking-wider uppercase text-[#456882]">
-                STRESS REGULATION
+                REGULASI STRES
               </span>
               <h2 className="font-display text-lg sm:text-xl md:text-2xl font-bold text-brown-900 mt-1 max-w-[480px]">
                 Seberapa sulit kamu menenangkan rasa cemas atau gelisah hari ini?
@@ -443,7 +443,7 @@ export function DailyAssessmentForm({
           <div className="flex flex-col items-center text-center gap-4 sm:gap-5 animate-in fade-in duration-200">
             <div>
               <span className="text-[11px] sm:text-xs font-extrabold tracking-wider uppercase text-[#456882]">
-                MEANING & PURPOSE
+                MAKNA & TUJUAN
               </span>
               <h2 className="font-display text-lg sm:text-xl md:text-2xl font-bold text-brown-900 mt-1 max-w-[480px]">
                 Seberapa puas kamu dengan apa yang berhasil kamu jalani hari ini?
@@ -464,7 +464,7 @@ export function DailyAssessmentForm({
           <div className="flex flex-col items-center text-center gap-4 sm:gap-5 animate-in fade-in duration-200">
             <div>
               <span className="text-[11px] sm:text-xs font-extrabold tracking-wider uppercase text-[#456882]">
-                FUTURE READINESS
+                KESIAPAN DIRI
               </span>
               <h2 className="font-display text-lg sm:text-xl md:text-2xl font-bold text-brown-900 mt-1 max-w-[480px]">
                 Seberapa fokus dan produktif kamu menjalani aktivitas hari ini?
@@ -485,7 +485,7 @@ export function DailyAssessmentForm({
           <div className="flex flex-col items-center text-center gap-4 sm:gap-5 animate-in fade-in duration-200">
             <div>
               <span className="text-[11px] sm:text-xs font-extrabold tracking-wider uppercase text-[#456882]">
-                LIFE BALANCE & RECOVERY
+                KESEIMBANGAN & PEMULIHAN
               </span>
               <h2 className="font-display text-lg sm:text-xl md:text-2xl font-bold text-brown-900 mt-1 max-w-[480px]">
                 Bagaimana kualitas dan durasi tidurmu semalam?
@@ -526,7 +526,7 @@ export function DailyAssessmentForm({
           <div className="flex flex-col items-center text-center gap-4 sm:gap-5 animate-in fade-in duration-200">
             <div>
               <span className="text-[11px] sm:text-xs font-extrabold tracking-wider uppercase text-[#456882]">
-                LIFE BALANCE & RECOVERY
+                KESEIMBANGAN & PEMULIHAN
               </span>
               <h2 className="font-display text-lg sm:text-xl md:text-2xl font-bold text-brown-900 mt-1 max-w-[480px]">
                 Seberapa berenergi dan bertenaga tubuhmu hari ini?
@@ -547,7 +547,7 @@ export function DailyAssessmentForm({
           <div className="flex flex-col items-center text-center gap-4 sm:gap-5 animate-in fade-in duration-200">
             <div>
               <span className="text-[11px] sm:text-xs font-extrabold tracking-wider uppercase text-[#456882]">
-                SELF-UNDERSTANDING
+                PEMAHAMAN DIRI
               </span>
               <h2 className="font-display text-lg sm:text-xl md:text-2xl font-bold text-brown-900 mt-1 max-w-[480px]">
                 Seberapa cukup waktu yang kamu berikan untuk dirimu sendiri hari ini?
@@ -568,7 +568,7 @@ export function DailyAssessmentForm({
           <div className="flex flex-col items-center text-center gap-4 sm:gap-5 animate-in fade-in duration-200">
             <div>
               <span className="text-[11px] sm:text-xs font-extrabold tracking-wider uppercase text-[#456882]">
-                SOCIAL CONNECTION
+                KONEKSI SOSIAL
               </span>
               <h2 className="font-display text-lg sm:text-xl md:text-2xl font-bold text-brown-900 mt-1 max-w-[480px]">
                 Seberapa terhubung dan didukung kamu oleh orang-orang di sekitarmu hari ini?
@@ -589,7 +589,7 @@ export function DailyAssessmentForm({
           <div className="flex flex-col items-center text-center gap-4 sm:gap-5 animate-in fade-in duration-200">
             <div>
               <span className="text-[11px] sm:text-xs font-extrabold tracking-wider uppercase text-[#456882]">
-                COMMUNITY INTERACTION
+                INTERAKSI KOMUNITAS
               </span>
               <h2 className="font-display text-lg sm:text-xl md:text-2xl font-bold text-brown-900 mt-1 max-w-[480px]">
                 Seberapa aktif kamu berinteraksi secara positif dengan lingkungan atau komunitasmu?

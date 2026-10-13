@@ -20,11 +20,11 @@ const MOOD_COLORS: Record<string, string> = {
 };
 
 const MOOD_LABEL_ID: Record<string, string> = {
-  DEPRESSED: "Depressed",
-  SAD: "Sad",
-  NEUTRAL: "Neutral",
-  HAPPY: "Happy",
-  OVERJOYED: "Overjoyed",
+  DEPRESSED: "Sangat Terpuruk",
+  SAD: "Sedih",
+  NEUTRAL: "Biasa",
+  HAPPY: "Senang",
+  OVERJOYED: "Sangat Bahagia",
 };
 
 const DAY_LABELS = ["Min", "Sen", "Sel", "Rab", "Kam", "Jum", "Sab"];

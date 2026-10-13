@@ -19,7 +19,7 @@ export default function JournalHistory({ journalList, embedded = false }: Journa
   const body = (
     <>
       <h3 className="font-display text-base font-bold text-brown-900">
-        Riwayat Health Journal
+        Riwayat Jurnal Kesehatan
         {embedded && (
           <span className="ml-2 text-xs font-normal text-brown-700">
             ({journalList.length} entri)

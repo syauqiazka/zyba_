@@ -38,7 +38,7 @@ const NAV_ITEMS: NavItem[] = [
   { href: "/companion", label: "Tanya Zyba", icon: Bot },
   { href: "/activity", label: "Kegiatan Rutin Harian", icon: Zap },
   { href: "/wellness-journey", label: "Ruang Sehat", icon: Heart },
-  { href: "/settings/zyba-plus/insights", label: "Deep Insights", icon: ChartNoAxesCombined, isPremium: true },
+  { href: "/settings/zyba-plus/insights", label: "Analisis Mendalam", icon: ChartNoAxesCombined, isPremium: true },
   { href: "/community", label: "Komunitas Zyba", icon: Users },
   { href: "/resources", label: "Wawasan", icon: Quote },
   { href: "/guidebook", label: "Buku Panduan", icon: BookOpen },
