@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
+import { Fingerprint } from "lucide-react";
 
 interface ProfileSecurityFlowProps {
   initialEmail?: string;
@@ -1010,24 +1011,15 @@ export default function ProfileSecurityFlow({
                 }`}
             >
               {/* SVG Sidik Jari Khas Figma */}
-              <svg
+              <Fingerprint
                 className={`w-16 h-16 transition-colors ${isFingerprintScanned
                   ? "text-green-500"
                   : isScanning
                     ? "text-orange-500"
                     : "text-brown-900/70 group-hover:text-brown-900"
                   }`}
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={1.5}
-                  d="M12 11c0 3.517-1.009 6.799-2.753 9.571m-3.44-2.04l.054-.09A13.916 13.916 0 008 11a4 4 0 118 0c0 1.017-.07 2.019-.203 3m-2.118 6.844A21.88 21.88 0 0015.171 17m3.839 1.132c.645-2.266.99-4.659.99-7.132A8 8 0 004 11m0 0c0 1.637.295 3.208.834 4.665M12 3a9 9 0 019 9c0 1.621-.32 3.167-.9 4.582"
-                />
-              </svg>
+                strokeWidth={1.5}
+              />
 
               {isScanning && (
                 <div className="absolute inset-x-2 h-1 bg-orange-500 rounded-full animate-bounce" />

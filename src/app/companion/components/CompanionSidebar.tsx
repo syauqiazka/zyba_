@@ -3,6 +3,25 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import {
+  Home,
+  PanelLeftClose,
+  PanelLeft,
+  FolderKanban,
+  FileText,
+  Code,
+  Sliders,
+  MessageSquare,
+  Search,
+  ArrowUpDown,
+  Plus,
+  X,
+  Trash2,
+  ChevronDown,
+  Download,
+  Settings,
+  ArrowLeft,
+} from "lucide-react";
 import { useCompanion, CompanionSection, SECTION_TO_SLUG } from "../context/CompanionContext";
 import { getPersonaById } from "@/backend/ai/personas";
 
@@ -18,7 +37,6 @@ interface CompanionSidebarProps {
   activeConvId: string | undefined;
   onSelectConv: (id: string) => void;
   onNewChat: () => void;
-  /** Sidebar visibility — passed from layout */
   sidebarVisible: boolean;
   onToggleSidebar: () => void;
   onClose?: () => void;
@@ -32,12 +50,6 @@ const MOOD_COLORS: Record<string, string> = {
   Tekanan: "bg-mood-depressed",
 };
 
-/**
- * CompanionSidebar — Claude.ai layout with:
- * - URL-based routing (/companion, /companion/projects, /companion/artifacts, etc.)
- * - Dashboard-matching hover styles (orange→green gradient, -translate-y-0.5)
- * - Hide sidebar button (collapses to icon rail)
- */
 export default function CompanionSidebar({
   conversations,
   activeConvId,
@@ -68,15 +80,12 @@ export default function CompanionSidebar({
     c.title.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  // ── Active check based on URL ────────────────────────────────────────────
   const isActive = (sec: CompanionSection) => {
     const slug = SECTION_TO_SLUG[sec];
     if (!slug) {
-      // "chat" section = root /companion or /companion/ (no sub-slug)
       return (
         pathname === "/companion" ||
         pathname === "/companion/" ||
-        // also active if a chat conv is open but no specific sub-section slug
         (!Object.values(SECTION_TO_SLUG)
           .filter(Boolean)
           .some((s) => pathname.startsWith(`/companion/${s}`)) &&
@@ -86,7 +95,6 @@ export default function CompanionSidebar({
     return pathname.startsWith(`/companion/${slug}`);
   };
 
-  // ── Shared nav item style (subtle active per AGENTS.md 10.8) ────────────
   const navItemClass = (active: boolean) =>
     `w-full flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-semibold transition-all duration-300 text-left
      ${
@@ -95,76 +103,13 @@ export default function CompanionSidebar({
          : "text-brown-700 hover:-translate-y-0.5 hover:bg-gradient-to-r hover:from-orange-100/80 hover:to-green-100/80 hover:text-brown-900 hover:shadow-sm"
      }`;
 
-  // ── Icon helpers ─────────────────────────────────────────────────────────
-  const icons = {
-    collapse: (
-      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-        <rect x="3" y="3" width="18" height="18" rx="2" />
-        <path d="M9 3v18" />
-      </svg>
-    ),
-    expand: (
-      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-        <rect x="3" y="3" width="18" height="18" rx="2" />
-        <path d="M15 3v18" />
-      </svg>
-    ),
-    projects: (
-      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z" />
-      </svg>
-    ),
-    artifacts: (
-      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-        <polyline points="14 2 14 8 20 8" />
-        <line x1="16" y1="13" x2="8" y2="13" />
-        <line x1="16" y1="17" x2="8" y2="17" />
-      </svg>
-    ),
-    code: (
-      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <polyline points="16 18 22 12 16 6" />
-        <polyline points="8 6 2 12 8 18" />
-      </svg>
-    ),
-    customize: (
-      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <circle cx="12" cy="12" r="3" />
-        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z" />
-      </svg>
-    ),
-    chat: (
-      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
-      </svg>
-    ),
-    search: (
-      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-        <circle cx="11" cy="11" r="8" />
-        <line x1="21" y1="21" x2="16.65" y2="16.65" />
-      </svg>
-    ),
-    sort: (
-      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
-        <line x1="4" y1="6" x2="16" y2="6" />
-        <line x1="4" y1="12" x2="12" y2="12" />
-        <line x1="4" y1="18" x2="8" y2="18" />
-      </svg>
-    ),
-  };
-
-  const NAV_SECTIONS: { id: CompanionSection; label: string; iconKey: keyof typeof icons; badge?: string }[] = [];
-  // Bagian 23.1: Proyek/Catatan/Kode/Pengaturan dihapus — scope creep
-
-  // ── Dynamic username from localStorage cache ─────────────────────────────
   const displayName = (() => {
     if (typeof window !== "undefined") {
       try {
         const cached = localStorage.getItem("zyba_user_cache");
         if (cached) {
           const parsed = JSON.parse(cached);
-          return parsed.name || "Pengguna";
+          if (parsed?.name) return parsed.name;
         }
       } catch {}
     }
@@ -183,10 +128,7 @@ export default function CompanionSidebar({
           className="p-2 rounded-xl text-brown-700/50 hover:text-brown-900 hover:bg-gradient-to-r hover:from-orange-100/80 hover:to-green-100/80 hover:shadow-sm transition-all duration-300"
           title="Kembali ke Dashboard ZYBA"
         >
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
-            <polyline points="9 22 9 12 15 12 15 22" />
-          </svg>
+          <Home size={16} />
         </Link>
 
         {/* Toggle back open */}
@@ -194,9 +136,9 @@ export default function CompanionSidebar({
           type="button"
           onClick={onToggleSidebar}
           className="p-2 rounded-xl text-brown-700/50 hover:text-brown-900 hover:bg-gradient-to-r hover:from-orange-100/80 hover:to-green-100/80 hover:shadow-sm transition-all duration-300"
-          title="Tampilkan sidebar"
+          title="Buka bilah sisi"
         >
-          {icons.expand}
+          <PanelLeft size={16} />
         </button>
 
         <div className="w-8 border-t border-brown-900/10 my-1" />
@@ -208,28 +150,8 @@ export default function CompanionSidebar({
           className="p-2 rounded-xl text-brown-700/50 hover:text-brown-900 hover:bg-gradient-to-r hover:from-orange-100/80 hover:to-green-100/80 transition-all duration-300"
           title="Percakapan Baru"
         >
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
-            <line x1="12" y1="5" x2="12" y2="19" />
-            <line x1="5" y1="12" x2="19" y2="12" />
-          </svg>
+          <Plus size={16} strokeWidth={2.5} />
         </button>
-
-        {/* Section icons */}
-        {NAV_SECTIONS.map((s) => (
-          <button
-            key={s.id}
-            type="button"
-            onClick={() => setActiveSection(s.id)}
-            title={s.label}
-            className={`p-2 rounded-xl transition-all duration-300 ${
-              isActive(s.id)
-                ? "bg-brown-900/8 text-brown-900"
-                : "text-brown-700/50 hover:text-brown-900 hover:bg-gradient-to-r hover:from-orange-100/80 hover:to-green-100/80"
-            }`}
-          >
-            {icons[s.iconKey]}
-          </button>
-        ))}
 
         {/* Chat icon */}
         <button
@@ -242,7 +164,7 @@ export default function CompanionSidebar({
               : "text-brown-700/50 hover:text-brown-900 hover:bg-gradient-to-r hover:from-orange-100/80 hover:to-green-100/80"
           }`}
         >
-          {icons.chat}
+          <MessageSquare size={16} />
         </button>
       </aside>
     );
@@ -257,9 +179,7 @@ export default function CompanionSidebar({
           className="flex items-center gap-2 group"
           title="Kembali ke Dashboard ZYBA"
         >
-          <span className="text-sm text-brown-700/60 group-hover:text-brown-900 group-hover:-translate-x-0.5 transition-transform">
-            ←
-          </span>
+          <ArrowLeft size={16} className="text-brown-700/60 group-hover:text-brown-900 group-hover:-translate-x-0.5 transition-transform" />
           <div className="flex items-center gap-1.5">
             <span className="font-display font-bold text-base text-brown-900 tracking-tight">
               Tanya Zyba
@@ -277,10 +197,7 @@ export default function CompanionSidebar({
               title="Tutup menu"
               aria-label="Tutup menu"
             >
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
-                <line x1="18" y1="6" x2="6" y2="18" />
-                <line x1="6" y1="6" x2="18" y2="18" />
-              </svg>
+              <X size={15} strokeWidth={2.5} />
             </button>
           )}
           {/* Hide sidebar button (desktop) */}
@@ -288,10 +205,10 @@ export default function CompanionSidebar({
             type="button"
             onClick={onToggleSidebar}
             className="hidden md:flex text-brown-700/40 hover:text-brown-900 p-1 rounded-md hover:bg-brown-900/5 transition-colors"
-            title="Hide sidebar"
-            aria-label="Hide sidebar"
+            title="Sembunyikan bilah sisi"
+            aria-label="Sembunyikan bilah sisi"
           >
-            {icons.collapse}
+            <PanelLeftClose size={16} />
           </button>
         </div>
       </div>
@@ -303,10 +220,7 @@ export default function CompanionSidebar({
           onClick={() => { setActiveSection("chat"); onNewChat(); }}
           className="w-full py-2.5 px-3.5 rounded-xl bg-white border border-brown-900/10 text-brown-900 text-xs font-bold hover:bg-gradient-to-r hover:from-orange-100/80 hover:to-green-100/80 hover:-translate-y-0.5 hover:shadow-sm transition-all duration-300 shadow-2xs active:scale-[0.99] flex items-center gap-2.5"
         >
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
-            <line x1="12" y1="5" x2="12" y2="19" />
-            <line x1="5" y1="12" x2="19" y2="12" />
-          </svg>
+          <Plus size={15} strokeWidth={2.5} />
           <span>Percakapan Baru</span>
         </button>
 
@@ -334,33 +248,7 @@ export default function CompanionSidebar({
         </button>
       </div>
 
-      {/* ── 3. Section Nav: Projects, Artifacts, Code, Customize ─────────── */}
-      <nav className="px-2 pb-2 space-y-0.5 shrink-0">
-        {NAV_SECTIONS.map((s) => (
-          <button
-            key={s.id}
-            type="button"
-            onClick={() =>
-              s.id === "customize"
-                ? (setActiveSection("customize"), setShowSettingsModal(true))
-                : setActiveSection(s.id)
-            }
-            className={`${navItemClass(isActive(s.id))} justify-between`}
-          >
-            <div className="flex items-center gap-3">
-              <span className="shrink-0 text-brown-700/70">{icons[s.iconKey]}</span>
-              <span>{s.label}</span>
-            </div>
-            {s.badge && (
-              <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-orange-100 text-orange-600">
-                {s.badge}
-              </span>
-            )}
-          </button>
-        ))}
-      </nav>
-
-      {/* ── 4. Riwayat Percakapan Section Header ─────────────────────────── */}
+      {/* ── 3. Riwayat Percakapan Section Header ─────────────────────────── */}
       <div className="px-4 pt-3 pb-1 flex items-center justify-between shrink-0 border-t border-brown-900/6">
         <button
           type="button"
@@ -376,16 +264,16 @@ export default function CompanionSidebar({
             type="button"
             onClick={() => setShowSearchInput(!showSearchInput)}
             className="text-brown-700/40 hover:text-brown-900 p-1 rounded transition-colors"
-            title="Search chats"
+            title="Cari percakapan"
           >
-            {icons.search}
+            <Search size={13} />
           </button>
           <button
             type="button"
             className="text-brown-700/40 hover:text-brown-900 p-1 rounded transition-colors"
-            title="Sort options"
+            title="Urutkan"
           >
-            {icons.sort}
+            <ArrowUpDown size={13} />
           </button>
         </div>
       </div>
@@ -404,7 +292,7 @@ export default function CompanionSidebar({
         </div>
       )}
 
-      {/* ── 5. Conversation List ─────────────────────────────────────────── */}
+      {/* ── 4. Conversation List ─────────────────────────────────────────── */}
       <div className="flex-1 overflow-y-auto px-2 py-1 space-y-0.5">
         {filtered.length === 0 ? (
           <p className="text-[11px] text-brown-700/40 px-3 py-4 text-center">
@@ -444,10 +332,7 @@ export default function CompanionSidebar({
                   title="Hapus percakapan"
                   aria-label={`Hapus ${conv.title}`}
                 >
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <polyline points="3 6 5 6 21 6" />
-                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
-                  </svg>
+                  <Trash2 size={13} />
                 </button>
               </div>
             );
@@ -455,7 +340,7 @@ export default function CompanionSidebar({
         )}
       </div>
 
-      {/* ── 6. Bottom User Bar ───────────────────────────────────────────── */}
+      {/* ── 5. Bottom User Bar ───────────────────────────────────────────── */}
       <div className="p-3 border-t border-brown-900/8 bg-[#FAF7F2] shrink-0 flex items-center justify-between">
         <button
           type="button"
@@ -466,11 +351,9 @@ export default function CompanionSidebar({
             {displayInitial}
           </div>
           <div className="text-left truncate">
-            <span className="text-xs font-bold text-brown-900 block truncate">{displayName} · Free</span>
+            <span className="text-xs font-bold text-brown-900 block truncate">{displayName} · Gratis</span>
           </div>
-          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="text-brown-700/40 shrink-0">
-            <polyline points="6 9 12 15 18 9" />
-          </svg>
+          <ChevronDown size={12} className="text-brown-700/40 shrink-0" />
         </button>
 
         <div className="flex items-center gap-1 text-brown-700/40">
@@ -478,24 +361,17 @@ export default function CompanionSidebar({
             type="button"
             onClick={() => setShowProModal(true)}
             className="p-1.5 hover:text-brown-900 hover:bg-brown-900/5 rounded-lg transition-colors"
-            title="Download desktop app"
+            title="Unduh aplikasi"
           >
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-              <polyline points="7 10 12 15 17 10" />
-              <line x1="12" y1="15" x2="12" y2="3" />
-            </svg>
+            <Download size={14} />
           </button>
           <button
             type="button"
             onClick={() => setShowSettingsModal(true)}
             className="p-1.5 hover:text-brown-900 hover:bg-brown-900/5 rounded-lg transition-colors"
-            title="Settings"
+            title="Pengaturan"
           >
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <circle cx="11" cy="11" r="8" />
-              <line x1="21" y1="21" x2="16.65" y2="16.65" />
-            </svg>
+            <Settings size={14} />
           </button>
         </div>
       </div>

@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import React, { useRef, useState } from "react";
 import ComposeBox from "./components/ComposeBox";
@@ -6,7 +6,7 @@ import PostCard from "./components/PostCard";
 import CreatePostModal from "./components/CreatePostModal";
 import CrisisBanner from "@/app/companion/components/CrisisBanner";
 import { useCommunity } from "./context/CommunityContext";
-import { Sprout } from "lucide-react";
+import { Sprout, MoreHorizontal, Plus } from "lucide-react";
 
 
 /**
@@ -54,11 +54,7 @@ export default function CommunityPage() {
               aria-label="Opsi feed"
               aria-expanded={feedMenuOpen}
             >
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                <circle cx="5" cy="12" r="2" />
-                <circle cx="12" cy="12" r="2" />
-                <circle cx="19" cy="12" r="2" />
-              </svg>
+              <MoreHorizontal size={16} />
             </button>
             {feedMenuOpen && (
               <div className="absolute right-0 top-full mt-1 z-[70] w-52 rounded-2xl border border-brown-900/10 bg-white p-1.5 shadow-xl">
@@ -146,10 +142,7 @@ export default function CommunityPage() {
         title="Tulis thread baru"
         aria-label="Tulis thread baru"
       >
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
-          <line x1="12" y1="5" x2="12" y2="19" />
-          <line x1="5" y1="12" x2="19" y2="12" />
-        </svg>
+        <Plus size={24} strokeWidth={2.5} />
       </button>
 
       {/* Create Post Modal */}

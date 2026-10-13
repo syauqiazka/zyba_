@@ -35,7 +35,7 @@ export default function FreeWeeklyInsight({ weekly, dataQuality }: FreeWeeklyIns
           </div>
           <div>
             <h3 className="font-display text-base font-bold text-brown-900 tracking-tight">
-              Weekly Insight
+              Wawasan Mingguan
             </h3>
             <p className="text-xs text-brown-700/70">
               Evaluasi ritme kesehatan 7 hari terakhir dari check-in aktualmu.

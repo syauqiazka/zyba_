@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import { Settings } from "lucide-react";
 
 interface SettingsBannerProps {
   onOpenProfileModal: () => void;
@@ -18,9 +19,9 @@ export default function SettingsBanner({
       <div>
         <div className="flex items-center gap-2 mb-1 flex-wrap">
           <span className="px-2.5 py-0.5 rounded-full bg-brown-900 text-white text-xs font-bold uppercase tracking-wider">
-            Account & Settings
+            Akun & Pengaturan
           </span>
-          <span className="text-xs text-brown-700">Zyba Settings</span>
+          <span className="text-xs text-brown-700">Pengaturan ZYBA</span>
         </div>
         <h1 className="font-display text-2xl sm:text-3xl font-extrabold text-brown-900">
           Pengaturan Akun & Presensi
@@ -36,7 +37,8 @@ export default function SettingsBanner({
           onClick={onOpenProfileModal}
           className="bg-brown-900 hover:bg-orange-500 text-white font-bold text-xs px-4 py-3 rounded-full transition-colors shadow-sm flex items-center justify-center gap-1.5 cursor-pointer"
         >
-          <span>⚙️ Pengaturan Profil</span>
+          <Settings size={14} />
+          <span>Pengaturan Profil</span>
         </button>
         <button
           onClick={onSave}

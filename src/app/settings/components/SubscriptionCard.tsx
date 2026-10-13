@@ -132,7 +132,7 @@ export default function SubscriptionCard({
               className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-orange-500 hover:bg-orange-600 text-white text-xs font-bold shadow-xs transition-all"
             >
               <Sparkles size={13} />
-              {isPlus ? "Kelola Plus" : "Upgrade Sekarang"}
+              {isPlus ? "Kelola Plus" : "Tingkatkan Sekarang"}
             </Link>
           </div>
         </div>
@@ -171,7 +171,7 @@ export default function SubscriptionCard({
                   href="/settings/zyba-plus/insights"
                   className="inline-flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl bg-brown-900 text-white text-xs font-bold hover:bg-orange-500 transition-colors"
                 >
-                  Deep Insights
+                  Analisis Mendalam
                   <ArrowRight size={13} />
                 </Link>
               </div>
@@ -196,7 +196,7 @@ export default function SubscriptionCard({
                   Buka Potensi Penuh Pendampingan ZYBA
                 </h4>
                 <p className="text-xs text-brown-700/80 leading-relaxed max-w-xl">
-                  Upgrade ke Zyba Plus untuk menikmati 60 chat/hari, respons AI sub-detik, memori wellness berkelanjutan, dan rekomendasi aktivitas yang dipersonalisasi khusus untukmu.
+                  Tingkatkan ke Zyba Plus untuk menikmati 60 chat/hari, respons AI sub-detik, memori kebugaran berkelanjutan, dan rekomendasi aktivitas yang dipersonalisasi khusus untukmu.
                 </p>
               </div>
 
@@ -206,7 +206,7 @@ export default function SubscriptionCard({
                   className="inline-flex items-center justify-center gap-1.5 px-5 py-2.5 rounded-xl bg-orange-500 text-white text-xs font-extrabold hover:bg-orange-600 shadow-sm transition-all"
                 >
                   <Sparkles size={13} />
-                  Upgrade Rp 59.000 / bln
+                  Tingkatkan Rp 59.000 / bln
                   <ArrowRight size={13} />
                 </Link>
               </div>
@@ -320,7 +320,7 @@ export default function SubscriptionCard({
                 onClick={() => setShowHistoryModal(false)}
                 className="font-bold text-orange-600 hover:underline"
               >
-                Halaman Billing Lengkap →
+                Halaman Tagihan Lengkap →
               </Link>
               <button
                 type="button"

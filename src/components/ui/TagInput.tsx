@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useRef, KeyboardEvent } from "react";
+import { X } from "lucide-react";
 
 interface TagInputProps {
   tags: string[];
@@ -77,14 +78,7 @@ export default function TagInput({
               className="flex-shrink-0 w-4 h-4 rounded-full flex items-center justify-center text-orange-400 hover:bg-orange-200 hover:text-orange-700 transition-colors"
               aria-label={`Hapus ${tag}`}
             >
-              <svg width="8" height="8" viewBox="0 0 10 10" fill="none">
-                <path
-                  d="M2 2l6 6M8 2l-6 6"
-                  stroke="currentColor"
-                  strokeWidth="1.8"
-                  strokeLinecap="round"
-                />
-              </svg>
+              <X size={10} strokeWidth={2.5} />
             </button>
           </span>
         ))}

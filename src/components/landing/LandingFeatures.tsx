@@ -35,7 +35,7 @@ const FEATURES = [
     icon: MessageCircle,
     tone: "feature-orange",
     loginPath: "/companion",
-    cta: "Mulai dengan Companion",
+    cta: "Mulai Bersama Companion",
   },
   {
     number: "03",
@@ -46,18 +46,18 @@ const FEATURES = [
     icon: HeartPulse,
     tone: "feature-green",
     loginPath: "/activity",
-    cta: "Mulai Activity Planner",
+    cta: "Mulai Rencana Aktivitas",
   },
   {
     number: "04",
     title: "Wellness Journey",
     desc: "Lihat perjalananmu, dari langkah kecil sampai perubahan yang mulai terbentuk.",
     detail:
-      "Wellness Journey membantu kamu melihat perjalanan secara lebih utuh melalui Goals, Progress, dan Achievements. Bukan tentang menjadi sempurna, tapi tentang melihat bahwa kamu terus bergerak.",
+      "Wellness Journey membantu kamu melihat perjalanan secara lebih utuh melalui Target, Progres, dan Pencapaian. Bukan tentang menjadi sempurna, tapi tentang melihat bahwa kamu terus bergerak.",
     icon: Heart,
     tone: "feature-green",
     loginPath: "/wellness-journey",
-    cta: "Lihat Wellness Journey",
+    cta: "Lihat Ruang Sehat",
   },
   {
     number: "05",
@@ -68,18 +68,18 @@ const FEATURES = [
     icon: UsersRound,
     tone: "feature-blue",
     loginPath: "/community",
-    cta: "Masuk ke Community",
+    cta: "Masuk ke Komunitas",
   },
   {
     number: "06",
-    title: "Resources",
+    title: "Wawasan",
     desc: "Temukan bacaan dan materi yang bisa membantu memahami dirimu lebih jauh.",
     detail:
-      "Resources menyediakan berbagai materi yang bisa kamu gunakan untuk belajar, memahami kondisi diri, dan menemukan informasi yang relevan dengan perjalanan wellness-mu.",
+      "Wawasan menyediakan berbagai materi yang bisa kamu gunakan untuk belajar, memahami kondisi diri, dan menemukan informasi yang relevan dengan perjalanan kebugaranmu.",
     icon: BookOpen,
     tone: "feature-lilac",
     loginPath: "/resources",
-    cta: "Buka Resources",
+    cta: "Buka Wawasan",
   },
   {
     number: "07",

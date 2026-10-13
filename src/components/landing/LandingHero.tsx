@@ -23,7 +23,7 @@ export default function LandingHero() {
         <div className="hero-copy">
           <div className="eyebrow hero-eyebrow">
             <span className="eyebrow-dot" />
-            Wellness companion untuk Gen Z
+            Sahabat Kebugaran Gen Z
           </div>
 
           <h1>
@@ -76,7 +76,7 @@ export default function LandingHero() {
             {/* HEADER */}
             <div className="hero-app-top">
               <div>
-                <small>Daily check-in</small>
+                <small>Check-in Harian</small>
 
                 <strong>
                   Hai, hari ini gimana?
@@ -102,7 +102,7 @@ export default function LandingHero() {
 
               <div className="checkin-copy">
                 <span className="status-chip">
-                  Good pace
+                  Ritme Baik
                 </span>
 
                 <h3>
@@ -128,8 +128,8 @@ export default function LandingHero() {
                   />
                 </span>
 
-                <small>Mind</small>
-                <strong>Check-in</strong>
+                <small>Pikiran</small>
+                <strong>Refleksi</strong>
               </div>
 
               <div className="hero-app-card">
@@ -140,8 +140,8 @@ export default function LandingHero() {
                   />
                 </span>
 
-                <small>Body</small>
-                <strong>12 min</strong>
+                <small>Tubuh</small>
+                <strong>12 menit</strong>
               </div>
 
               <div className="hero-app-card">
@@ -152,8 +152,8 @@ export default function LandingHero() {
                   />
                 </span>
 
-                <small>People</small>
-                <strong>Community</strong>
+                <small>Sosial</small>
+                <strong>Komunitas</strong>
               </div>
             </div>
 
@@ -184,7 +184,7 @@ export default function LandingHero() {
         aria-hidden="true"
       >
         <span />
-        Scroll untuk mengenal ZYBA
+        Gulir untuk mengenal ZYBA
       </div>
     </section>
   );

@@ -102,7 +102,7 @@ export default function CommunitySearchView() {
           type="text"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          placeholder="Search topics, creators, or conversations..."
+          placeholder="Cari topik, kreator, atau percakapan..."
           autoFocus
           className="w-full bg-white rounded-2xl pl-11 pr-20 py-3 text-xs md:text-sm text-brown-900 placeholder:text-brown-700/40 border border-brown-900/10 focus:outline-none focus:ring-2 focus:ring-orange-500 shadow-2xs"
         />
@@ -113,7 +113,7 @@ export default function CommunitySearchView() {
             className={`p-1.5 rounded-lg transition-colors ${
               type === "people" ? "text-orange-500 bg-orange-50" : "text-brown-700/40 hover:text-brown-900"
             }`}
-            title="People"
+            title="Orang"
           >
             <User size={14} />
           </button>
@@ -123,7 +123,7 @@ export default function CommunitySearchView() {
             className={`p-1.5 rounded-lg transition-colors ${
               type === "posts" ? "text-orange-500 bg-orange-50" : "text-brown-700/40 hover:text-brown-900"
             }`}
-            title="Posts"
+            title="Postingan"
           >
             <FileText size={14} />
           </button>
@@ -134,7 +134,7 @@ export default function CommunitySearchView() {
       {showSuggestions && !query && (
         <div className="bg-white rounded-2xl border border-brown-900/8 p-4 shadow-2xs">
           <h3 className="font-bold text-xs text-brown-900 mb-3 uppercase tracking-wider">
-            Trending in Komunitas Zyba
+            Tren di Komunitas ZYBA
           </h3>
           <div className="flex flex-wrap gap-2">
             {QUICK_TOPICS.map((t) => (
@@ -150,7 +150,7 @@ export default function CommunitySearchView() {
             ))}
           </div>
           <h3 className="font-bold text-xs text-brown-900 mb-3 uppercase tracking-wider mt-4">
-            Popular Creators
+            Kreator Populer
           </h3>
           <div className="space-y-2">
             {QUICK_CREATORS.map((c) => (
@@ -176,7 +176,7 @@ export default function CommunitySearchView() {
         <div>
           {loading ? (
             <div className="bg-white rounded-2xl border border-brown-900/8 p-8 text-center">
-              <div className="text-xs text-brown-700/60">Searching...</div>
+              <div className="text-xs text-brown-700/60">Mencari...</div>
             </div>
           ) : results.length > 0 ? (
             <div className="space-y-3">
@@ -205,10 +205,10 @@ export default function CommunitySearchView() {
                         {result.type === "people" ? (
                           <span className="font-bold text-sm text-brown-900">{result.name}</span>
                         ) : (
-                          <span className="font-medium text-sm text-brown-900">Post by {result.name}</span>
+                          <span className="font-medium text-sm text-brown-900">Postingan oleh {result.name}</span>
                         )}
                         {result.type === "people" && (
-                          <span className="text-[10px] text-green-600 bg-green-50 px-2 py-0.5 rounded-full">Verified</span>
+                          <span className="text-[10px] text-green-600 bg-green-50 px-2 py-0.5 rounded-full">Terverifikasi</span>
                         )}
                       </div>
                       {result.type === "people" ? (
@@ -227,10 +227,10 @@ export default function CommunitySearchView() {
                 <Search size={24} className="text-brown-700/40" />
               </div>
               <h3 className="font-bold text-sm text-brown-900 mb-1">
-                No results found
+                Tidak ada hasil ditemukan
               </h3>
               <p className="text-xs text-brown-700/60 max-w-xs mx-auto">
-                Try different keywords or check spelling.
+                Coba kata kunci lain atau periksa ejaan.
               </p>
             </div>
           )}

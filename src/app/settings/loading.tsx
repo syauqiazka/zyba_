@@ -12,7 +12,7 @@ export default function Loading() {
       </div>
       <div className="flex flex-col items-center gap-1">
         <span className="font-display font-extrabold text-sm text-brown-900">
-          Memuat Settings
+          Memuat Pengaturan
         </span>
         <span className="text-[11px] text-brown-700">
           Mengambil pengaturan akun...

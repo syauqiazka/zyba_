@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { useCommunity } from "../context/CommunityContext";
+import { Ban, VolumeX, AlertCircle, BellOff } from "lucide-react";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 interface UserEntry {
@@ -143,26 +144,13 @@ export default function PrivacyManagementView() {
                 key: "blocked" as Tab,
                 label: "Diblokir",
                 count: blockedUserIds.length,
-                icon: (
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <circle cx="12" cy="12" r="10" />
-                    <line x1="4.93" y1="4.93" x2="19.07" y2="19.07" />
-                  </svg>
-                ),
+                icon: <Ban size={14} />,
               },
               {
                 key: "muted" as Tab,
                 label: "Dibisukan",
                 count: mutedUserIds.length,
-                icon: (
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <line x1="1" y1="1" x2="23" y2="23" />
-                    <path d="M9 9v3a3 3 0 0 0 5.12 2.12M15 9.34V4a3 3 0 0 0-5.94-.6" />
-                    <path d="M17 16.95A7 7 0 0 1 5 12v-2m14 0v2a7 7 0 0 1-.11 1.23" />
-                    <line x1="12" y1="19" x2="12" y2="23" />
-                    <line x1="8" y1="23" x2="16" y2="23" />
-                  </svg>
-                ),
+                icon: <VolumeX size={14} />,
               },
             ] as const
           ).map((t) => (
@@ -196,11 +184,7 @@ export default function PrivacyManagementView() {
         {/* Info banner for blocked tab */}
         {tab === "blocked" && (
           <div className="mb-4 bg-orange-50 border border-orange-200/60 rounded-xl px-4 py-3 flex gap-3 items-start">
-            <svg className="shrink-0 mt-0.5 text-orange-500" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <circle cx="12" cy="12" r="10" />
-              <line x1="12" y1="8" x2="12" y2="12" />
-              <line x1="12" y1="16" x2="12.01" y2="16" />
-            </svg>
+            <AlertCircle className="shrink-0 mt-0.5 text-orange-500" size={15} />
             <p className="text-xs text-orange-800 leading-relaxed">
               Akun yang diblokir tidak bisa melihat postinganmu, mengirim pesan, atau berinteraksi denganmu di komunitas.
             </p>
@@ -209,11 +193,7 @@ export default function PrivacyManagementView() {
 
         {tab === "muted" && (
           <div className="mb-4 bg-amber-50 border border-amber-200/60 rounded-xl px-4 py-3 flex gap-3 items-start">
-            <svg className="shrink-0 mt-0.5 text-amber-600" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <circle cx="12" cy="12" r="10" />
-              <line x1="12" y1="8" x2="12" y2="12" />
-              <line x1="12" y1="16" x2="12.01" y2="16" />
-            </svg>
+            <AlertCircle className="shrink-0 mt-0.5 text-amber-600" size={15} />
             <p className="text-xs text-amber-800 leading-relaxed">
               Postingan dari akun yang dibisukan tidak muncul di feed kamu, tapi mereka tetap bisa berinteraksi denganmu.
             </p>
@@ -241,15 +221,9 @@ export default function PrivacyManagementView() {
             <div className="py-16 flex flex-col items-center text-center px-6">
               <div className="w-14 h-14 rounded-2xl bg-green-100 border border-green-200 flex items-center justify-center mb-3 shadow-xs">
                 {tab === "blocked" ? (
-                  <svg className="w-7 h-7 text-green-700" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <circle cx="12" cy="12" r="10" />
-                    <path d="M4.93 4.93l14.14 14.14" />
-                  </svg>
+                  <Ban className="w-7 h-7 text-green-700" />
                 ) : (
-                  <svg className="w-7 h-7 text-green-700" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
-                    <path d="M13.73 21a2 2 0 0 1-3.46 0" />
-                  </svg>
+                  <BellOff className="w-7 h-7 text-green-700" />
                 )}
               </div>
               <h3 className="font-bold text-sm text-brown-900 mb-1">

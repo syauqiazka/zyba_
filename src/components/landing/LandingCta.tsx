@@ -73,7 +73,7 @@ export default function LandingCta() {
 
           <span className="footer-note">
             <ShieldCheck size={14} />
-            Wellness support, bukan diagnosis medis.
+            Dukungan kebugaran, bukan diagnosis medis.
           </span>
 
           <span className="footer-copy">

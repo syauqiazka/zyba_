@@ -2,7 +2,7 @@
 
 import { useState, useRef } from "react";
 import { detectRisk } from "@/lib/crisisDetection";
-import { Image as ImageIcon, Loader2, X } from "lucide-react";
+import { Image as ImageIcon, Loader2, X, Lock, ChevronDown, ArrowRight } from "lucide-react";
 import UserAvatar from "@/components/ui/UserAvatar";
 
 interface ComposeBoxProps {
@@ -120,20 +120,18 @@ export default function ComposeBox({ onAddPost, onRiskDetected, currentUserIniti
       {/* Privacy notice banner */}
       <div className="flex items-center justify-between text-[11px] text-brown-700/70 px-4 pt-3 pb-2 border-b border-brown-900/6">
         <span className="flex items-center gap-1.5 font-medium">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-            <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
-            <path d="M7 11V7a5 5 0 0 1 10 0v4" />
-          </svg>
+          <Lock size={12} strokeWidth={2.5} />
           Terlihat oleh seluruh komunitas
         </span>
-        
       </div>
 
       {/* Upload error */}
       {uploadError && (
         <div className="mx-4 mt-2 bg-red-50 border border-red-200 text-red-700 text-xs px-3 py-2 rounded-xl flex items-center justify-between">
           <span>⚠ {uploadError}</span>
-          <button type="button" onClick={() => setUploadError(null)} className="text-red-500 hover:text-red-800 ml-2">✕</button>
+          <button type="button" onClick={() => setUploadError(null)} className="text-red-500 hover:text-red-800 ml-2">
+            <X size={13} />
+          </button>
         </div>
       )}
 
@@ -202,9 +200,7 @@ export default function ComposeBox({ onAddPost, onRiskDetected, currentUserIniti
               >
                 <span className="text-orange-500 font-bold">#</span>
                 <span>{selectedTag}</span>
-                <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="ml-0.5 opacity-60">
-                  <polyline points="6 9 12 15 18 9" />
-                </svg>
+                <ChevronDown size={10} className="ml-0.5 opacity-60" strokeWidth={2.5} />
               </button>
 
               {showTagPicker && (
@@ -313,7 +309,7 @@ export default function ComposeBox({ onAddPost, onRiskDetected, currentUserIniti
           ) : (
             <>
               <span>Posting</span>
-              <span>→</span>
+              <ArrowRight size={13} />
             </>
           )}
         </button>

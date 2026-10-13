@@ -142,11 +142,11 @@ export default function DashboardPage() {
     useState<
       Record<string, boolean>
     >({
-      "Zyba Hours (Breathing)": false,
-      "Health Journal Entry": false,
-      "Daily Resource Reading": false,
-      "Mental Journal Reflection": false,
-      "Community Activity": false,
+      "Zyba Hours (Latihan Napas)": false,
+      "Catatan Jurnal Kesehatan": false,
+      "Membaca Wawasan Harian": false,
+      "Refleksi Jurnal Mental": false,
+      "Aktivitas Komunitas": false,
     });
 
   const [todayFormatted, setTodayFormatted] =

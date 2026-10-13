@@ -3,7 +3,28 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { useCommunity } from "../context/CommunityContext";
-import { Check, X } from "lucide-react";
+import {
+  Check,
+  X,
+  Heart,
+  MessageSquare,
+  MessageSquareOff,
+  Repeat,
+  Share2,
+  MoreHorizontal,
+  CornerUpLeft,
+  Link2,
+  Bookmark,
+  EyeOff,
+  UserX,
+  Ban,
+  AlertCircle,
+  Trash2,
+  Edit3,
+  Archive,
+  Loader2,
+  User,
+} from "lucide-react";
 import { useUserStatus, UserStatusConfig } from "@/hooks/useUserStatus";
 import UserAvatar from "@/components/ui/UserAvatar";
 import ReportModal from "./ReportModal";
@@ -51,53 +72,24 @@ interface PostCardProps {
   currentUserId?: string | null;
 }
 
-// ─── SVG Icons ────────────────────────────────────────────────────────────────
+// ─── Action Icons ─────────────────────────────────────────────────────────────
 function IconHeart({ filled }: { filled?: boolean }) {
-  return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill={filled ? "currentColor" : "none"} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
-    </svg>
-  );
+  return <Heart size={18} className={filled ? "fill-current" : ""} />;
 }
 function IconComment({ disabled }: { disabled?: boolean }) {
-  return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" opacity={disabled ? 0.35 : 1}>
-      <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
-      {disabled && <line x1="3" y1="3" x2="21" y2="21" strokeWidth="1.5" />}
-    </svg>
-  );
+  return disabled ? <MessageSquareOff size={18} className="opacity-35" /> : <MessageSquare size={18} />;
 }
 function IconRepost() {
-  return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <polyline points="17 1 21 5 17 9" />
-      <path d="M3 11V9a4 4 0 0 1 4-4h14" />
-      <polyline points="7 23 3 19 7 15" />
-      <path d="M21 13v2a4 4 0 0 1-4 4H3" />
-    </svg>
-  );
+  return <Repeat size={18} />;
 }
 function IconShare() {
-  return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <line x1="22" y1="2" x2="11" y2="13" />
-      <polygon points="22 2 15 22 11 13 2 9 22 2" />
-    </svg>
-  );
+  return <Share2 size={18} />;
 }
 function IconMore() {
-  return (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-      <circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/>
-    </svg>
-  );
+  return <MoreHorizontal size={16} />;
 }
 function IconReply() {
-  return (
-    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <polyline points="9 17 4 12 9 7" /><path d="M20 18v-2a4 4 0 0 0-4-4H4" />
-    </svg>
-  );
+  return <CornerUpLeft size={13} />;
 }
 
 // ─── Render hashtags ────────────────────────────────────────────────────────
@@ -183,17 +175,17 @@ function MenuItem({
 }
 
 // ─── Icon SVGs for menu ────────────────────────────────────────────────────
-const IcLink = () => <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>;
-const IcBookmark = () => <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>;
-const IcEyeOff = () => <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>;
-const IcUserX = () => <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="18" y1="8" x2="23" y2="13"/><line x1="23" y1="8" x2="18" y2="13"/></svg>;
-const IcSlash = () => <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg>;
-const IcAlertCircle = () => <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>;
-const IcTrash = () => <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>;
-const IcEdit = () => <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>;
-const IcArchive = () => <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="21 8 21 21 3 21 3 8"/><rect x="1" y="3" width="22" height="5"/><line x1="10" y1="12" x2="14" y2="12"/></svg>;
-const IcMessageOff = () => <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h11"/><line x1="1" y1="1" x2="23" y2="23"/></svg>;
-const IcMessage = () => <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>;
+const IcLink = () => <Link2 size={16} />;
+const IcBookmark = () => <Bookmark size={16} />;
+const IcEyeOff = () => <EyeOff size={16} />;
+const IcUserX = () => <UserX size={16} />;
+const IcSlash = () => <Ban size={16} />;
+const IcAlertCircle = () => <AlertCircle size={16} />;
+const IcTrash = () => <Trash2 size={16} />;
+const IcEdit = () => <Edit3 size={16} />;
+const IcArchive = () => <Archive size={16} />;
+const IcMessageOff = () => <MessageSquareOff size={16} />;
+const IcMessage = () => <MessageSquare size={16} />;
 
 // ─── Confirm Dialog ────────────────────────────────────────────────────────
 function ConfirmPanel({
@@ -322,7 +314,7 @@ function EditModal({
             className="flex-1 py-2.5 rounded-xl bg-orange-500 text-white text-sm font-semibold hover:bg-orange-600 transition-colors disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2"
           >
             {saving ? (
-              <svg className="animate-spin w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10" strokeOpacity="0.25"/><path d="M12 2a10 10 0 0 1 10 10" /></svg>
+              <Loader2 className="animate-spin w-4 h-4" />
             ) : (
               "Simpan perubahan"
             )}
@@ -999,9 +991,7 @@ export default function PostCard({ post, onToggleLike, onToggleRepost, onAddComm
               aria-label={isSaved ? "Hapus dari Tersimpan" : "Simpan Thread"}
               aria-pressed={isSaved}
             >
-              <svg width="16" height="16" viewBox="0 0 24 24" fill={isSaved ? "currentColor" : "none"} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
-              </svg>
+              <Bookmark size={16} className={isSaved ? "fill-current" : ""} />
             </button>
           </div>
 
@@ -1016,10 +1006,7 @@ export default function PostCard({ post, onToggleLike, onToggleRepost, onAddComm
               >
                 {commentsLoading && (
                   <div className="flex items-center justify-center py-6">
-                    <svg className="animate-spin w-5 h-5 text-orange-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                      <circle cx="12" cy="12" r="10" strokeOpacity="0.25"/>
-                      <path d="M12 2a10 10 0 0 1 10 10" />
-                    </svg>
+                    <Loader2 className="animate-spin w-5 h-5 text-orange-400" />
                     <span className="ml-2 text-xs text-brown-700/50">Memuat komentar...</span>
                   </div>
                 )}
@@ -1089,7 +1076,7 @@ export default function PostCard({ post, onToggleLike, onToggleRepost, onAddComm
                     {currentUserAvatar ? (
                       <span>{currentUserAvatar}</span>
                     ) : (
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                      <User size={14} />
                     )}
                   </div>
 
@@ -1116,7 +1103,7 @@ export default function PostCard({ post, onToggleLike, onToggleRepost, onAddComm
                     className="rounded-pill bg-brown-900 text-white text-xs font-semibold px-3 sm:px-4 py-2 hover:bg-orange-500 transition-colors disabled:opacity-30 disabled:cursor-not-allowed shrink-0 flex items-center gap-1"
                   >
                     {commentSubmitting ? (
-                      <svg className="animate-spin w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10" strokeOpacity="0.25"/><path d="M12 2a10 10 0 0 1 10 10"/></svg>
+                      <Loader2 className="animate-spin w-3 h-3" />
                     ) : "Kirim"}
                   </button>
                 </div>

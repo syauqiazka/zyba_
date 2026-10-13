@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { ClipboardCheck, Wind, Headphones, ArrowRight } from "lucide-react";
 
 export default function QuickAccessCards() {
   return (
@@ -41,29 +42,7 @@ export default function QuickAccessCards() {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2.5">
               <div className="w-9 h-9 rounded-xl bg-orange-100 flex items-center justify-center shrink-0">
-                <svg
-                  className="w-4.5 h-4.5 text-orange-500"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  strokeWidth={2}
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"
-                  />
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M9 5a3 3 0 0 0 6 0"
-                  />
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="m9 13 2 2 4-4"
-                  />
-                </svg>
+                <ClipboardCheck className="w-5 h-5 text-orange-500" />
               </div>
 
               <span className="text-[11px] font-bold uppercase tracking-wider text-orange-500">
@@ -79,8 +58,7 @@ export default function QuickAccessCards() {
             </h3>
 
             <p className="text-xs leading-relaxed text-brown-700 mt-1.5 max-w-md">
-              Evaluasi kesehatan mental lengkap harian &amp; perbarui Zyba
-              Score kamu.
+              Evaluasi kesehatan mental lengkap harian &amp; perbarui Skor Zyba kamu.
             </p>
           </div>
 
@@ -105,7 +83,7 @@ export default function QuickAccessCards() {
               "
             >
               Mulai Asesmen
-              <span aria-hidden="true">→</span>
+              <ArrowRight size={13} />
             </Link>
           </div>
         </div>
@@ -134,13 +112,14 @@ export default function QuickAccessCards() {
         >
           {/* Header */}
           <div className="flex items-start justify-between gap-3">
-            <span className="text-[11px] font-bold uppercase tracking-wider text-orange-500">
-              Smart Activity Planner
-            </span>
-
-            <span className="text-4xl leading-none opacity-80 shrink-0">
-              🫁
-            </span>
+            <div className="flex items-center gap-2.5">
+              <div className="w-9 h-9 rounded-xl bg-orange-100 flex items-center justify-center shrink-0">
+                <Wind className="w-5 h-5 text-orange-500" />
+              </div>
+              <span className="text-[11px] font-bold uppercase tracking-wider text-orange-500">
+                Perencana Aktivitas
+              </span>
+            </div>
           </div>
 
           {/* Content */}
@@ -175,7 +154,7 @@ export default function QuickAccessCards() {
               "
             >
               Mulai Sesi
-              <span aria-hidden="true">→</span>
+              <ArrowRight size={13} />
             </Link>
           </div>
         </div>
@@ -204,13 +183,14 @@ export default function QuickAccessCards() {
         >
           {/* Header */}
           <div className="flex items-start justify-between gap-3">
-            <span className="text-[11px] font-bold uppercase tracking-wider text-green-600">
-              Rekomendasi Hari Ini
-            </span>
-
-            <span className="text-4xl leading-none opacity-75 shrink-0">
-              🎧
-            </span>
+            <div className="flex items-center gap-2.5">
+              <div className="w-9 h-9 rounded-xl bg-green-100 flex items-center justify-center shrink-0">
+                <Headphones className="w-5 h-5 text-green-600" />
+              </div>
+              <span className="text-[11px] font-bold uppercase tracking-wider text-green-600">
+                Rekomendasi Hari Ini
+              </span>
+            </div>
           </div>
 
           {/* Content */}
@@ -245,7 +225,7 @@ export default function QuickAccessCards() {
               "
             >
               Dengar Audio
-              <span aria-hidden="true">→</span>
+              <ArrowRight size={13} />
             </Link>
           </div>
         </div>

@@ -20,19 +20,19 @@ const sections = [
     description: "Pahami alur dasar setelah kamu masuk ke aplikasi.",
     icon: Sparkles,
     items: [
-      ["Dashboard", "Tempat melihat ringkasan kebugaran, skor zyba, aktivitas, dan akses cepat."],
+      ["Dashboard", "Tempat melihat ringkasan kebugaran, skor ZYBA, aktivitas, dan akses cepat."],
       ["Profil", "Lengkapi informasi dasar agar pengalaman kebugaran di ZYBA lebih relevan."],
-      ["Asesment Awal", "Asesment awal membantu ZYBA mendapatkan gambaran kondisi kebugaran kamu."],
+      ["Asesmen Awal", "Asesmen awal membantu ZYBA mendapatkan gambaran kondisi kebugaran kamu."],
     ],
   },
   {
-    title: "Asesment & Skor",
+    title: "Asesmen & Skor",
     description: "Ketahui bagaimana check-in kamu digunakan.",
     icon: CheckCircle2,
     items: [
-      ["Assessment Harian", "Isi check-in harian untuk memperbarui gambaran kondisi kebugaran kamu."],
-      ["skor Zyba", "Gunakan skor sebagai gambaran umum, bukan sebagai diagnosis medis."],
-      ["Stress & Mood", "Pantau perubahan mood dan stress dari waktu ke waktu."],
+      ["Check-In Harian", "Isi check-in harian untuk memperbarui gambaran kondisi kebugaran kamu."],
+      ["Skor ZYBA", "Gunakan skor sebagai gambaran umum, bukan sebagai diagnosis medis."],
+      ["Stres & Mood", "Pantau perubahan mood dan tingkat stres dari waktu ke waktu."],
     ],
   },
   {
@@ -50,7 +50,7 @@ const sections = [
     description: "Gunakan fitur harian untuk mendukung rutinitasmu.",
     icon: Zap,
     items: [
-      [" perencana aktivitas pintar", "Temukan aktivitas yang sesuai dengan kebutuhan dan kondisi kamu."],
+      ["Perencana Aktivitas Pintar", "Temukan aktivitas yang sesuai dengan kebutuhan dan kondisi kamu."],
       ["Zyba Hours", "Gunakan latihan seperti pernafasan untuk membantu membuat jeda dalam rutinitas."],
       ["Jurnal Kesehatan", "Catat pengalaman dan refleksi kebugaran kamu secara pribadi."],
       ["Wawasan", "Temukan materi dan sumber yang dapat membantu proses belajar kebugaran."],
@@ -73,7 +73,7 @@ const sections = [
     items: [
       ["Posting", "Bagikan pengalaman atau pemikiran yang ingin kamu diskusikan dengan komunitas."],
       ["Interaksi", "Berikan respons yang suportif dan tetap menghargai pengguna lain."],
-      ["Report", "Laporkan konten yang melanggar aturan komunitas."],
+      ["Laporan", "Laporkan konten yang melanggar aturan komunitas."],
     ],
   },
   {
@@ -98,7 +98,7 @@ export default function GuidebookPage() {
             Panduan ZYBA
           </span>
           <h1 className="mt-4 font-display text-3xl font-extrabold tracking-[-0.04em] text-brown-900 sm:text-4xl">
-            Guidebook ZYBA
+            Buku Panduan ZYBA
           </h1>
           <p className="mt-3 max-w-2xl text-sm leading-6 text-brown-700 sm:text-base">
             Panduan singkat untuk memahami fitur ZYBA dan mengetahui apa yang bisa kamu lakukan di setiap bagian aplikasi.
@@ -153,7 +153,7 @@ export default function GuidebookPage() {
               Masih bingung mulai dari mana?
             </h2>
             <p className="mt-1 text-xs leading-5 text-brown-700">
-              Mulai dari Dashboard, lalu lakukan Daily Assessment dan gunakan hasilnya untuk mengikuti perjalanan kebugaran kamu.
+              Mulai dari Dashboard, lalu lakukan Check-In Harian dan gunakan hasilnya untuk mengikuti perjalanan kebugaran kamu.
             </p>
           </div>
         </div>

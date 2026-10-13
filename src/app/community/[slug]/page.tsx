@@ -13,7 +13,7 @@ import ComposeBox from "../components/ComposeBox";
 import PostCard from "../components/PostCard";
 import CreatePostModal from "../components/CreatePostModal";
 import CrisisBanner from "@/app/companion/components/CrisisBanner";
-import { Sprout } from "lucide-react";
+import { Sprout, MoreHorizontal, Plus } from "lucide-react";
 
 /**
  * Community Sub-Route Page — /community/[slug]
@@ -111,15 +111,15 @@ export default function CommunitySlugPage() {
 
   // Feed Titles for feed-based views
   const VIEW_TITLES: Record<string, string> = {
-    FOR_YOU: "For you",
-    FOLLOWING: "Following",
-    SAVED: "Saved threads",
-    LIKED: "Liked threads",
-    GHOST_POSTS: "Ghost posts (Curhat Anonim)",
-    ARCHIVE: "Archive",
+    FOR_YOU: "Untuk Anda",
+    FOLLOWING: "Mengikuti",
+    SAVED: "Utas Tersimpan",
+    LIKED: "Utas Disukai",
+    GHOST_POSTS: "Ghost Posts (Curhat Anonim)",
+    ARCHIVE: "Arsip",
   };
 
-  const currentTitle = VIEW_TITLES[currentView] || "For you";
+  const currentTitle = VIEW_TITLES[currentView] || "Untuk Anda";
 
   return (
     <div className="flex-1 min-w-0 h-full overflow-y-auto flex justify-center py-4 px-3 sm:px-6 relative">
@@ -135,11 +135,7 @@ export default function CommunitySlugPage() {
             title="Opsi feed"
             aria-label="Opsi feed"
           >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-              <circle cx="5" cy="12" r="2" />
-              <circle cx="12" cy="12" r="2" />
-              <circle cx="19" cy="12" r="2" />
-            </svg>
+            <MoreHorizontal size={16} />
           </button>
         </div>
 
@@ -216,10 +212,7 @@ export default function CommunitySlugPage() {
         title="Tulis thread baru"
         aria-label="Tulis thread baru"
       >
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
-          <line x1="12" y1="5" x2="12" y2="19" />
-          <line x1="5" y1="12" x2="19" y2="12" />
-        </svg>
+        <Plus size={24} strokeWidth={2.5} />
       </button>
 
       {/* Create Post Modal */}

@@ -103,7 +103,7 @@ export default function LandingAbout() {
               </span>
 
               <strong>
-                Insight
+                Wawasan
               </strong>
 
               <small>
@@ -117,7 +117,7 @@ export default function LandingAbout() {
               </span>
 
               <strong>
-                Next step
+                Langkah Berikutnya
               </strong>
 
               <small>
@@ -128,7 +128,7 @@ export default function LandingAbout() {
             <div className="journey-lock">
               <LockKeyhole size={15} />
               <span>
-                Privat by design
+                Privat Sejak Awal
               </span>
             </div>
           </div>

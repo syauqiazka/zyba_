@@ -47,14 +47,14 @@ interface PinnedBadge {
 const CATEGORY_ITEMS: { id: AchievementCategory; label: string; icon: LucideIcon }[] = [
   { id: "ALL", label: "Semua", icon: Trophy },
   { id: "STREAK", label: "Streak", icon: Flame },
-  { id: "WELLNESS", label: "Wellness", icon: Heart },
+  { id: "WELLNESS", label: "Kesehatan", icon: Heart },
   { id: "COMPANION", label: "Companion", icon: MessageSquare },
   { id: "SOSIAL", label: "Sosial", icon: Users },
   { id: "AKTIVITAS", label: "Aktivitas", icon: Activity },
   { id: "SPESIAL", label: "Spesial", icon: Sparkles },
 ];
 
-const SLOT_LABELS = ["Badge 1", "Badge 2", "Badge 3"];
+const SLOT_LABELS = ["Lencana 1", "Lencana 2", "Lencana 3"];
 
 export default function AchievementsPage() {
   const [achievements, setAchievements] = useState<AchievementWithStatus[]>([]);
@@ -159,7 +159,7 @@ export default function AchievementsPage() {
       {/* ── Header ── */}
       <div>
         <h1 className="font-display font-bold text-2xl md:text-3xl text-brown-900">
-          Pencapaian & Badge
+          Pencapaian & Lencana
         </h1>
         <p className="text-xs sm:text-sm text-brown-700 mt-1">
           Rayakan perjalanan kesehatan fisik, mental, dan sosialmu bersama ZYBA.
@@ -171,7 +171,7 @@ export default function AchievementsPage() {
         <div className="bg-orange-50 border border-orange-200 rounded-2xl px-4 py-3 text-sm text-orange-700 flex items-center gap-2">
           <Sparkles size={15} className="shrink-0" />
           <span>
-            Gagal memuat badge: <strong>{apiError}</strong>.{" "}
+            Gagal memuat lencana: <strong>{apiError}</strong>.{" "}
             <button onClick={fetchData} className="underline font-bold">Coba lagi</button>
           </span>
         </div>
@@ -187,7 +187,7 @@ export default function AchievementsPage() {
         />
         <StatCard
           value={`${unlockedCount}`}
-          label="Badge Diraih"
+          label="Lencana Diraih"
           icon={Trophy}
           color="bg-green-100 text-green-700"
         />
@@ -204,10 +204,10 @@ export default function AchievementsPage() {
         <div className="flex items-center justify-between mb-4">
           <div>
             <h2 className="font-display font-bold text-base text-brown-900">
-              Badge Tampilan Profil
+              Lencana Tampilan Profil
             </h2>
             <p className="text-xs text-brown-700 mt-0.5">
-              Pilih hingga 3 badge kehormatan untuk disematkan di kartu profilmu.
+              Pilih hingga 3 lencana kehormatan untuk disematkan di kartu profilmu.
             </p>
           </div>
         </div>
@@ -237,8 +237,8 @@ export default function AchievementsPage() {
                       type="button"
                       onClick={() => handleRemoveBadge(slot)}
                       className="absolute top-1.5 right-1.5 min-h-[32px] min-w-[32px] rounded-full bg-white/90 hover:bg-rose-500 hover:text-white text-brown-700 flex items-center justify-center transition-colors shadow-xs"
-                      title="Hapus badge dari profil"
-                      aria-label="Hapus badge"
+                      title="Hapus lencana dari profil"
+                      aria-label="Hapus lencana"
                     >
                       <X size={14} />
                     </button>
@@ -246,8 +246,8 @@ export default function AchievementsPage() {
                       type="button"
                       onClick={() => setPickerSlot(slot)}
                       className="absolute bottom-1.5 right-1.5 min-h-[32px] min-w-[32px] rounded-full bg-white/90 hover:bg-orange-500 hover:text-white text-brown-700 flex items-center justify-center transition-colors shadow-xs"
-                      title="Ganti badge"
-                      aria-label="Ganti badge"
+                      title="Ganti lencana"
+                      aria-label="Ganti lencana"
                     >
                       <Edit3 size={14} />
                     </button>
@@ -272,10 +272,10 @@ export default function AchievementsPage() {
       <div className="bg-white rounded-3xl border border-brown-900/10 p-5 sm:p-6 shadow-xs">
         <div className="flex items-center justify-between mb-2">
           <span className="font-semibold text-sm text-brown-900">
-            Progress Koleksi Badge
+            Progres Koleksi Lencana
           </span>
           <span className="text-xs text-brown-700 font-bold">
-            {unlockedCount} / {maxBadges} Badge Diraih
+            {unlockedCount} / {maxBadges} Lencana Diraih
           </span>
         </div>
         <div className="h-3 bg-brown-900/8 rounded-full overflow-hidden">
@@ -326,7 +326,7 @@ export default function AchievementsPage() {
         ))}
         {filtered.length === 0 && (
           <div className="col-span-full py-12 text-center text-brown-700/60 text-sm">
-            Belum ada badge di kategori ini.
+            Belum ada lencana di kategori ini.
           </div>
         )}
       </div>

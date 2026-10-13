@@ -247,7 +247,7 @@ export default function PremiumInsightsPage() {
                 ZYBA Plus
               </span>
               <span className="text-[10px] font-bold text-brown-700/50">
-                Analisis Mendalam Kebugraan
+                Analisis Mendalam Kebugaran
               </span>
             </div>
             <h1 className="mt-1 font-display text-2xl sm:text-4xl font-extrabold tracking-tight text-brown-900">
@@ -274,7 +274,7 @@ export default function PremiumInsightsPage() {
         {/* 1. Ringkasan 4 Kartu Metrik Utama */}
         <section className="grid grid-cols-2 gap-3 sm:grid-cols-4">
           {[
-            ["Zyba Score Rata-rata", metric(data.summary.averageScore)],
+            ["Skor ZYBA Rata-rata", metric(data.summary.averageScore)],
             ["Mood Rata-rata", metric(data.summary.averageMood)],
             ["Tingkat Stres", metric(data.summary.averageStress, " / 5")],
             ["Kualitas Tidur", metric(data.summary.averageSleep, " / 5")],
@@ -297,7 +297,7 @@ export default function PremiumInsightsPage() {
               </div>
               <div>
                 <h2 className="font-display text-base font-extrabold text-brown-900 tracking-tight">
-                  Longitudinal Trajectory & Evaluasi Periode
+                  Tren Jangka Panjang & Evaluasi Periode
                 </h2>
                 <p className="text-xs text-brown-700/70">
                   Perbandingan tren stabilitas mental dalam rentang 30 hari ke belakang.
@@ -344,7 +344,7 @@ export default function PremiumInsightsPage() {
             <div className="flex items-center gap-2 pb-3 border-b border-brown-900/5">
               <ShieldAlert className="text-red-500" size={18} />
               <h2 className="font-display text-base font-extrabold text-brown-900">
-                Deteksi Pemicu Stres (Stress Triggers)
+                Deteksi Pemicu Stres
               </h2>
             </div>
             <div className="mt-4 space-y-2.5">
@@ -365,7 +365,7 @@ export default function PremiumInsightsPage() {
             <div className="flex items-center gap-2 pb-3 border-b border-brown-900/5">
               <Zap className="text-green-600" size={18} />
               <h2 className="font-display text-base font-extrabold text-brown-900">
-                Pendorong Pemulihan (Recovery Boosters)
+                Pendorong Pemulihan Energi
               </h2>
             </div>
             <div className="mt-4 space-y-2.5">
@@ -388,7 +388,7 @@ export default function PremiumInsightsPage() {
             <div className="flex items-center gap-2">
               <Activity className="text-orange-500" size={18} />
               <h2 className="font-display text-base font-extrabold text-brown-900">
-                Pattern Detection
+                Deteksi Pola Kebiasaan
               </h2>
             </div>
             <span className="text-[10px] font-bold text-brown-700/50">

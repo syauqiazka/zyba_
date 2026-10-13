@@ -17,7 +17,7 @@ const testimonials = [
   },
   {
     name: "Ucup",
-    role: "Content creator",
+    role: "Kreator Konten",
     quote:
       "Website ini sangat mudah digunakan Untuk pengguna baru untuk saya, semoga kedepannya bisa lebih banyak fitur yang bermanfaat untuk kesehatan mental.",
     mood: "Jauh lebih jelas",

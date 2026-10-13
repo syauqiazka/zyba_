@@ -218,7 +218,7 @@ function HistoryAccordion({
               href="/settings/billing"
               className="text-[11px] font-bold text-orange-600 hover:text-orange-700 underline underline-offset-2 transition-colors"
             >
-              Halaman Billing →
+              Halaman Tagihan →
             </Link>
           </div>
         </div>
@@ -277,8 +277,8 @@ export default function PremiumStatusWidget({ plan, subscription, premiumUntil }
         <div className="px-5 sm:px-6 py-4 grid grid-cols-1 sm:grid-cols-3 gap-2">
           {[
             "💬 60 Chat AI/hari",
-            "🧠 Wellness Memory",
-            "📊 Pattern Detection",
+            "🧠 Memori Kebugaran",
+            "📊 Deteksi Pola",
           ].map((label) => (
             <div
               key={label}
@@ -315,7 +315,7 @@ export default function PremiumStatusWidget({ plan, subscription, premiumUntil }
               Zyba Free
             </span>
             <span className="text-[10px] font-bold text-brown-700/50">
-              Upgrade untuk pengalaman lebih personal
+              Tingkatkan untuk pengalaman lebih personal
             </span>
           </div>
 
@@ -323,11 +323,11 @@ export default function PremiumStatusWidget({ plan, subscription, premiumUntil }
             Buka akses Zyba Plus
           </h2>
           <p className="mt-1 max-w-xl text-xs leading-5 text-brown-700 sm:text-sm">
-            Dapatkan 60 chat AI/hari, Wellness Memory, Pattern Detection, dan rencana personal 7 hari.
+            Dapatkan 60 chat AI/hari, Memori Kebugaran, Deteksi Pola, dan rencana personal 7 hari.
           </p>
 
           <div className="mt-3.5 flex flex-wrap gap-2">
-            {["60 AI chat/hari", "Wellness Memory", "Pattern Detection", "Personalized Plan"].map(
+            {["60 AI chat/hari", "Memori Kebugaran", "Deteksi Pola", "Rencana Personal"].map(
               (f) => (
                 <span
                   key={f}
@@ -346,7 +346,7 @@ export default function PremiumStatusWidget({ plan, subscription, premiumUntil }
             className="inline-flex items-center gap-2 rounded-2xl bg-orange-500 hover:bg-orange-600 active:scale-[0.98] px-5 py-2.5 text-sm font-extrabold text-white shadow-md shadow-orange-500/20 transition-all whitespace-nowrap"
           >
             <Sparkles size={14} />
-            Upgrade Sekarang
+            Tingkatkan Sekarang
             <ArrowRight size={14} />
           </Link>
           <span className="text-[10px] text-brown-700/50">Mulai dari Rp49.000/bln</span>

@@ -5,6 +5,7 @@ import { CommunityProvider } from "./context/CommunityContext";
 import CommunitySidebar from "./components/CommunitySidebar";
 import CommunityGuidelinesGate from "./components/CommunityGuidelinesGate";
 import BanRestrictionBanner from "./components/BanRestrictionBanner";
+import { Menu } from "lucide-react";
 
 /**
  * Community Layout — Instagram-style contextual sidebar + mobile off-canvas drawer.
@@ -26,19 +27,7 @@ function CommunityLayoutInner({ children }: { children: React.ReactNode }) {
         className="md:hidden fixed top-4 left-4 z-50 w-10 h-10 rounded-xl bg-white border border-brown-900/10 shadow-sm flex items-center justify-center text-brown-900 hover:bg-cream transition-colors"
         aria-label="Buka menu"
       >
-        <svg
-          width="18"
-          height="18"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2.5"
-          strokeLinecap="round"
-        >
-          <line x1="3" y1="6" x2="21" y2="6" />
-          <line x1="3" y1="12" x2="21" y2="12" />
-          <line x1="3" y1="18" x2="21" y2="18" />
-        </svg>
+        <Menu size={18} strokeWidth={2.5} />
       </button>
 
       {/* Mobile backdrop overlay */}

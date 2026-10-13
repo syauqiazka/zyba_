@@ -84,7 +84,7 @@ export default function ScoreSlider({
     min = 1,
     max = 5,
     inverted = false,
-    ariaLabel = "Score",
+    ariaLabel = "Skor",
 }: ScoreSliderProps) {
     const [display, setDisplay] = useState(value);
     const [dragging, setDragging] = useState(false);

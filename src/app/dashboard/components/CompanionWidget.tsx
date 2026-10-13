@@ -19,7 +19,7 @@ export default function CompanionWidget({ conversationCount = 0 }: CompanionWidg
           </span>
           <span className="flex items-center gap-1.5 text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-green-500 text-white">
             <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
-            Online AI
+            AI Aktif
           </span>
         </div>
         <div className="flex items-baseline gap-2 mt-1">
@@ -48,7 +48,7 @@ export default function CompanionWidget({ conversationCount = 0 }: CompanionWidg
             href={`/companion?initialMsg=${encodeURIComponent(quickInput)}`}
             className="bg-brown-900 text-cream px-3 py-1.5 rounded-xl text-xs font-bold hover:bg-orange-500 transition-colors shrink-0"
           >
-            Chat →
+            Kirim →
           </Link>
         </div>
       </div>
