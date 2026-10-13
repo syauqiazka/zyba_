@@ -308,7 +308,7 @@ export default function CommunitySidebar({ onClose }: { onClose?: () => void }) 
             title="Kembali ke ZYBA"
           >
             <span className="font-bold text-sm text-brown-900 tracking-tight whitespace-nowrap">
-              Zyba Community
+              Komunitas Zyba
             </span>
           </Link>
         </div>

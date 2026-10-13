@@ -262,7 +262,7 @@ export default function CompanionSidebar({
           </span>
           <div className="flex items-center gap-1.5">
             <span className="font-display font-bold text-base text-brown-900 tracking-tight">
-              Zyba Companion
+              Tanya Zyba
             </span>
           </div>
         </Link>

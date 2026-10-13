@@ -12,7 +12,7 @@ export default function Loading() {
       </div>
       <div className="flex flex-col items-center gap-1">
         <span className="font-display font-extrabold text-sm text-brown-900">
-          Memuat Zyba Community
+          Memuat Komunitas Zyba
         </span>
         <span className="text-[11px] text-brown-700">
           Memuat feed komunitas...

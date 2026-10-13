@@ -321,7 +321,7 @@ export default function CommunityMessagesView() {
             <div>
               <h3 className="font-display font-bold text-base text-brown-900">Pesan Komunitas</h3>
               <p className="text-xs text-brown-700 mt-1 max-w-sm">
-                Pilih percakapan di sebelah kiri atau buka profil teman di Zyba Community lalu tekan tombol &quot;Message&quot;.
+                Pilih percakapan di sebelah kiri atau buka profil teman di Komunitas Zyba lalu tekan tombol &quot;Message&quot;.
               </p>
             </div>
             <Link

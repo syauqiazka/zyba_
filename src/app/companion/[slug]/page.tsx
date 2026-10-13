@@ -95,7 +95,7 @@ export default function CompanionSlugPage() {
         <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-xs flex items-center justify-center p-4">
           <div className="bg-white rounded-3xl p-7 max-w-sm w-full shadow-2xl border border-brown-900/10 flex flex-col gap-5">
             <div className="flex items-center justify-between">
-              <h3 className="font-display font-extrabold text-base text-brown-900">Pengaturan Zyba Companion</h3>
+              <h3 className="font-display font-extrabold text-base text-brown-900">Pengaturan Tanya Zyba</h3>
               <button type="button" onClick={() => setShowSettingsModal(false)} className="text-brown-700 hover:text-brown-900 text-sm">✕</button>
             </div>
             <div className="flex flex-col gap-2">

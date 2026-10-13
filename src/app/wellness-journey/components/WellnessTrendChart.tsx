@@ -33,7 +33,7 @@ export default function WellnessTrendChart({ points }: TrendChartProps) {
 
   const METRIC_CONFIG = {
     score: {
-      label: "ZYBA Score",
+      label: "Skor Zyba",
       icon: Brain,
       min: 0,
       max: 100,

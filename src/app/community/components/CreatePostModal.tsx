@@ -372,7 +372,7 @@ export default function CreatePostModal({
       {/* Footer */}
       <div className="pt-3 border-t border-brown-900/6 flex items-center justify-between">
         <span className="text-[10px] text-brown-700/40">
-          Privasi: Semua anggota Zyba Community
+          Privasi: Semua anggota Komunitas Zyba
         </span>
         <div className="flex gap-2 items-center">
           <button

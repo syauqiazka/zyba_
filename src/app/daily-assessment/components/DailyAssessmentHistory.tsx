@@ -222,7 +222,7 @@ export default function DailyAssessmentHistory({
                 {score !== null ? (
                   <div className="bg-cream/60 rounded-xl p-2 border border-brown-900/5">
                     <p className="text-[9px] uppercase font-bold text-brown-700/70">
-                      Zyba Score
+                      Skor Zyba
                     </p>
                     <p className="text-xs font-extrabold text-brown-900 mt-0.5">
                       {score}
@@ -234,7 +234,7 @@ export default function DailyAssessmentHistory({
                 ) : (
                   <div className="bg-cream/60 rounded-xl p-2 border border-brown-900/5">
                     <p className="text-[9px] uppercase font-bold text-brown-700/70">
-                      Zyba Score
+                      skor zyba
                     </p>
                     <p className="text-xs font-extrabold text-brown-900 mt-0.5">-</p>
                   </div>

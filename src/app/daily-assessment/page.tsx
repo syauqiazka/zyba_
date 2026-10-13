@@ -139,7 +139,7 @@ export default function DailyAssessmentPage() {
       // Sinkronisasi kalender & streak di latar belakang tanpa menghambat UI
       reload().catch(() => {});
     } catch (err: any) {
-      console.error("Daily assessment submit error:", err);
+      console.error("assessment harian submit error:", err);
       alert(err.message || "Gagal menyimpan assessment harian");
     } finally {
       setIsSubmitting(false);
@@ -164,7 +164,7 @@ export default function DailyAssessmentPage() {
             </span>
           </div>
           <h1 className="font-display text-xl sm:text-2xl md:text-3xl font-extrabold text-brown-900 tracking-tight flex items-center gap-2">
-            <span>Daily Assessment</span>
+            <span>Assessment Harian</span>
           </h1>
         </div>
 

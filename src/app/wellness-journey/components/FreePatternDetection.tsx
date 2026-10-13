@@ -27,7 +27,7 @@ export default function FreePatternDetection({
               </div>
               <div>
                 <h3 className="font-display text-base font-bold text-brown-900 tracking-tight">
-                  Pattern Detection
+                   Deteksi Pola
                 </h3>
                 <p className="text-xs text-brown-700/70">
                   Korelasi nyata antara kebiasaan, tidur, dan suasana hatimu.

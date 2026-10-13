@@ -134,7 +134,7 @@ export default function CommunitySearchView() {
       {showSuggestions && !query && (
         <div className="bg-white rounded-2xl border border-brown-900/8 p-4 shadow-2xs">
           <h3 className="font-bold text-xs text-brown-900 mb-3 uppercase tracking-wider">
-            Trending in Zyba Community
+            Trending in Komunitas Zyba
           </h3>
           <div className="flex flex-wrap gap-2">
             {QUICK_TOPICS.map((t) => (

@@ -11,6 +11,7 @@ import {
   MessageCircle,
   ShieldCheck,
   Sparkles,
+  Zap,
 } from "lucide-react";
 
 const sections = [
@@ -19,54 +20,54 @@ const sections = [
     description: "Pahami alur dasar setelah kamu masuk ke aplikasi.",
     icon: Sparkles,
     items: [
-      ["Dashboard", "Tempat melihat ringkasan wellness, Zyba Score, aktivitas, dan akses cepat."],
-      ["Profil", "Lengkapi informasi dasar agar pengalaman wellness di ZYBA lebih relevan."],
-      ["Initial Assessment", "Assessment awal membantu ZYBA mendapatkan gambaran kondisi wellness kamu."],
+      ["Dashboard", "Tempat melihat ringkasan kebugaran, skor zyba, aktivitas, dan akses cepat."],
+      ["Profil", "Lengkapi informasi dasar agar pengalaman kebugaran di ZYBA lebih relevan."],
+      ["Asesment Awal", "Asesment awal membantu ZYBA mendapatkan gambaran kondisi kebugaran kamu."],
     ],
   },
   {
-    title: "Assessment & Zyba Score",
+    title: "Asesment & Skor",
     description: "Ketahui bagaimana check-in kamu digunakan.",
     icon: CheckCircle2,
     items: [
-      ["Daily Assessment", "Isi check-in harian untuk memperbarui gambaran kondisi wellness kamu."],
-      ["Zyba Score", "Gunakan skor sebagai gambaran umum, bukan sebagai diagnosis medis."],
+      ["Assessment Harian", "Isi check-in harian untuk memperbarui gambaran kondisi kebugaran kamu."],
+      ["skor Zyba", "Gunakan skor sebagai gambaran umum, bukan sebagai diagnosis medis."],
       ["Stress & Mood", "Pantau perubahan mood dan stress dari waktu ke waktu."],
     ],
   },
   {
-    title: "Wellness Journey",
-    description: "Bangun kebiasaan wellness secara bertahap.",
+    title: "Ruang Sehat",
+    description: "Bangun kebiasaan kebugaran secara bertahap.",
     icon: Heart,
     items: [
-      ["Goals", "Tentukan tujuan wellness yang ingin kamu capai."],
-      ["Progress", "Lihat perkembangan aktivitas dan kebiasaanmu."],
-      ["Achievements", "Kumpulkan pencapaian dari perjalanan wellness kamu."],
+      ["Tujuan", "Tentukan tujuan kebugaran yang ingin kamu capai."],
+      ["Progres", "Lihat perkembangan aktivitas dan kebiasaanmu."],
+      ["Pencapaian", "Kumpulkan pencapaian dari perjalanan kebugaran kamu."],
     ],
   },
   {
-    title: "Fitur Wellness",
+    title: "Fitur Kegiatan Rutin Harian",
     description: "Gunakan fitur harian untuk mendukung rutinitasmu.",
-    icon: BookOpen,
+    icon: Zap,
     items: [
-      ["Smart Activity Planner", "Temukan aktivitas yang sesuai dengan kebutuhan dan kondisi kamu."],
+      [" perencana aktivitas pintar", "Temukan aktivitas yang sesuai dengan kebutuhan dan kondisi kamu."],
       ["Zyba Hours", "Gunakan latihan seperti breathing untuk membantu membuat jeda dalam rutinitas."],
-      ["Health Journal", "Catat pengalaman dan refleksi wellness kamu secara pribadi."],
-      ["Resources", "Temukan materi dan sumber yang dapat membantu proses belajar wellness."],
+      ["Jurnal Kesehatan", "Catat pengalaman dan refleksi kebugaran kamu secara pribadi."],
+      ["Wawasan", "Temukan materi dan sumber yang dapat membantu proses belajar kebugaran."],
     ],
   },
   {
-    title: "Zyba Companion",
-    description: "Gunakan AI Companion sebagai pendamping percakapan.",
+    title: "Tanya ZYba",
+    description: "Gunakan AI ZYBA sebagai pendamping percakapan.",
     icon: Bot,
     items: [
       ["Cara menggunakan", "Ceritakan apa yang sedang kamu rasakan atau tanyakan hal yang ingin kamu pahami."],
       ["Konteks", "Semakin relevan konteks yang kamu berikan, semakin membantu respons Companion."],
-      ["Batasan AI", "Companion adalah AI dan bukan pengganti tenaga profesional atau layanan darurat."],
+      ["Batasan AI", "ZYBA adalah AI dan bukan pengganti tenaga profesional atau layanan darurat."],
     ],
   },
   {
-    title: "Community",
+    title: "Komunitas",
     description: "Berinteraksi dengan komunitas ZYBA dengan aman.",
     icon: MessageCircle,
     items: [
@@ -80,9 +81,9 @@ const sections = [
     description: "Kenali pengaturan akun dan data kamu.",
     icon: ShieldCheck,
     items: [
-      ["Account & Settings", "Kelola profil, keamanan, notifikasi, preferensi, dan data akun."],
-      ["Data & Privacy", "Periksa pengaturan privasi dan gunakan fitur pengelolaan data yang tersedia."],
-      ["Community Guidelines", "Ikuti aturan komunitas agar ruang ZYBA tetap aman dan suportif."],
+      ["Akun & Pengaturan", "Kelola profil, keamanan, notifikasi, preferensi, dan data akun."],
+      ["Data & Privasi", "Periksa pengaturan privasi dan gunakan fitur pengelolaan data yang tersedia."],
+      ["Panduan Komunitas", "Ikuti aturan komunitas agar ruang ZYBA tetap aman dan suportif."],
     ],
   },
 ];
@@ -152,7 +153,7 @@ export default function GuidebookPage() {
               Masih bingung mulai dari mana?
             </h2>
             <p className="mt-1 text-xs leading-5 text-brown-700">
-              Mulai dari Dashboard, lalu lakukan Daily Assessment dan gunakan hasilnya untuk mengikuti Wellness Journey kamu.
+              Mulai dari Dashboard, lalu lakukan Daily Assessment dan gunakan hasilnya untuk mengikuti perjalanan kebugaran kamu.
             </p>
           </div>
         </div>

@@ -262,7 +262,7 @@ export function DailyAssessmentForm({
       communityInteraction,
       gratitude: "",
       reflection: reflection.trim(),
-      goal: "Daily Wellness Check",
+      goal: "Pemeriksaan Kebugaran Harian",
       gender: "",
       age: "",
       weight: "",

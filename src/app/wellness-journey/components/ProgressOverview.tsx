@@ -92,7 +92,7 @@ export default function ProgressOverview({ data }: { data: ProgressMetricData })
               <span className="p-1 rounded-lg bg-orange-100/70 text-orange-600">
                 <Brain size={14} />
               </span>
-              <span>ZYBA Score</span>
+              <span>Skor Zyba</span>
             </div>
             {renderDelta(zybaScore.diff, false)}
           </div>

@@ -27,7 +27,7 @@ export default function CommunityInsightsView() {
           <h1 className="font-bold text-lg text-brown-900">Community Insights</h1>
         </div>
         <p className="text-xs text-brown-700/60 leading-relaxed">
-          Statistik kesehatan mental & denyut aktivitas kolektif sesama Gen Z di ZYBA Community.
+          Statistik kesehatan mental & denyut aktivitas kolektif sesama Gen Z di Komunitas Zyba.
         </p>
 
         <div className="grid grid-cols-2 gap-3 mt-5">

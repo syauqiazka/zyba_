@@ -126,9 +126,7 @@ export default function ComposeBox({ onAddPost, onRiskDetected, currentUserIniti
           </svg>
           Terlihat oleh seluruh komunitas
         </span>
-        <span className="text-[10px] text-orange-600 font-medium hidden sm:inline">
-          Curhat privat? Gunakan <span className="font-bold underline cursor-pointer">Zyba Companion →</span>
-        </span>
+        
       </div>
 
       {/* Upload error */}

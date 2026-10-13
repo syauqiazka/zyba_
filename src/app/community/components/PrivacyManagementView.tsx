@@ -131,7 +131,7 @@ export default function PrivacyManagementView() {
             Privasi &amp; Akun
           </h1>
           <p className="text-xs text-brown-700/60 mt-1">
-            Kelola akun yang kamu bisukan atau blokir di Zyba Community.
+            Kelola akun yang kamu bisukan atau blokir di Komunitas Zyba.
           </p>
         </div>
 
