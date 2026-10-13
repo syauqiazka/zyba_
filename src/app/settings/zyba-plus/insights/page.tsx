@@ -84,18 +84,18 @@ export default function PremiumInsightsPage() {
             href="/wellness-journey"
             className="inline-flex items-center gap-1.5 text-xs font-bold text-brown-700/60 hover:text-brown-900 transition-colors"
           >
-            <ArrowLeft size={14} /> Kembali ke Wellness Journey
+            <ArrowLeft size={14} /> Kembali ke Ruang Sehat 
           </Link>
 
           <div className="rounded-3xl border border-brown-900/10 bg-white p-6 sm:p-8 shadow-sm">
             <div className="flex items-center gap-2 mb-3">
               <span className="inline-flex items-center gap-1 text-[10px] font-extrabold uppercase tracking-widest px-3 py-1 rounded-full bg-orange-100 text-orange-600 border border-orange-500/20">
-                <Sparkles size={12} /> ZYBA Plus Deep Analytics
+                <Sparkles size={12} /> ZYBA Plus Analisis Mendalam
               </span>
             </div>
 
             <h1 className="font-display text-2xl sm:text-3xl font-extrabold text-brown-900 tracking-tight">
-              Insight Wellness Dasar Sudah Tersedia Gratis
+              Wawasan Kebugaran Dasar Sudah Tersedia Gratis
             </h1>
 
             <p className="mt-2 text-sm leading-6 text-brown-700">
@@ -118,7 +118,7 @@ export default function PremiumInsightsPage() {
                 href="/wellness-journey"
                 className="shrink-0 rounded-xl bg-green-700 hover:bg-green-800 text-white px-4 py-2 text-xs font-bold transition-colors text-center"
               >
-                Buka Wellness Journey →
+                Buka Ruang Sehat →
               </Link>
             </div>
 
@@ -167,7 +167,7 @@ export default function PremiumInsightsPage() {
                     <span>Integrasi Memori Tanya Zyba</span>
                   </div>
                   <p className="text-[11px] text-brown-700 leading-relaxed">
-                    Sinkronisasi konteks wellness langsung ke AI Companion sehingga sesi curhat
+                    Sinkronisasi konteks kebugaran  langsung ke AI Companion sehingga sesi curhat
                     lebih berempati dan mengerti perjalananmu.
                   </p>
                 </div>
@@ -217,7 +217,7 @@ export default function PremiumInsightsPage() {
               href="/wellness-journey"
               className="flex-1 rounded-xl border border-brown-900/15 bg-white px-3 py-2.5 text-center text-xs font-bold text-brown-900 hover:bg-cream"
             >
-              Wellness Journey
+              Ruang Sehat 
             </Link>
           </div>
         </div>
@@ -240,18 +240,18 @@ export default function PremiumInsightsPage() {
               href="/wellness-journey"
               className="inline-flex items-center gap-1 text-xs font-bold text-brown-700/60 hover:text-brown-900 transition-colors"
             >
-              <ArrowLeft size={14} /> Wellness Journey
+              <ArrowLeft size={14} /> Ruang Sehat
             </Link>
             <div className="flex items-center gap-2 mt-3">
               <span className="text-[10px] font-extrabold uppercase tracking-widest px-2.5 py-0.5 rounded-full bg-orange-100 text-orange-600 border border-orange-500/20">
                 ZYBA Plus
               </span>
               <span className="text-[10px] font-bold text-brown-700/50">
-                Deep Wellness Analytics
+                Analisis Mendalam Kebugraan
               </span>
             </div>
             <h1 className="mt-1 font-display text-2xl sm:text-4xl font-extrabold tracking-tight text-brown-900">
-              Personalized Wellness Analytics
+              Personalisasi Analisis Kebugaran 
             </h1>
             <p className="mt-1.5 max-w-2xl text-xs sm:text-sm leading-6 text-brown-700">
               Analisis longitudinal mendalam, deteksi pemicu stres, dan rencana pemulihan 7 hari
@@ -430,7 +430,7 @@ export default function PremiumInsightsPage() {
             <Target className="text-orange-500" size={18} />
             <div>
               <h2 className="font-display text-base font-extrabold text-brown-900">
-                Adaptive 7-Day Wellness Plan
+                Rencana Kebugaran 7 Hari yang Adaptif
               </h2>
               <p className="text-xs text-brown-700/70">
                 Rencana adaptif bertahap yang disesuaikan dengan pola stres dan energimu.
@@ -474,7 +474,7 @@ export default function PremiumInsightsPage() {
                 Integrasi Konteks Tanya Zyba (Companion)
               </h2>
               <p className="text-xs text-white/70">
-                Konteks wellness ini siap dipakai oleh AI Companion agar percakapanmu lebih kontekstual.
+                Konteks Kebugaran ini siap dipakai oleh AI Companion agar percakapanmu lebih kontekstual.
               </p>
             </div>
           </div>
