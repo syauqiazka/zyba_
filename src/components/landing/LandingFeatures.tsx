@@ -28,14 +28,14 @@ const FEATURES = [
   },
   {
     number: "02",
-    title: "Zyba Companion",
+    title: "Tanya Zyba",
     desc: "Tempat untuk menuangkan pikiran tanpa harus mencari kata yang sempurna.",
     detail:
-      "Ceritakan apa yang sedang ada di kepalamu tanpa harus menyusunnya dengan sempurna. Zyba Companion membantu kamu menuangkan pikiran, memahami apa yang sedang dirasakan, lalu melihat langkah kecil yang bisa dilakukan.",
+      "Ceritakan apa yang sedang ada di kepalamu tanpa harus menyusunnya dengan sempurna. Tanya Zyba membantu kamu menuangkan pikiran, memahami apa yang sedang dirasakan, lalu melihat langkah kecil yang bisa dilakukan.",
     icon: MessageCircle,
     tone: "feature-orange",
     loginPath: "/companion",
-    cta: "Mulai Bersama Zyba Companion",
+    cta: "Mulai Tanya Zyba",
   },
   {
     number: "03",

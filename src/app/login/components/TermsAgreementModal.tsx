@@ -91,8 +91,8 @@ export default function TermsAgreementModal({
                             </div>
 
                             <p className="text-xs leading-6 text-brown-700/80">
-                                ZYBA menyediakan fitur wellness seperti assessment,
-                                journaling, aktivitas, komunitas, dan ZYBA Companion
+                                ZYBA menyediakan fitur kesehatan seperti asesmen,
+                                pencatatan jurnal, aktivitas, komunitas, dan Tanya Zyba
                                 untuk membantu kamu memahami keseharian dan membangun
                                 kebiasaan positif.
                             </p>

@@ -13,7 +13,7 @@ import {
 const POINTS = [
   {
     icon: MessageCircle,
-    title: "Zyba Companion",
+    title: "Tanya Zyba",
     text: "Ruang untuk cerita tanpa harus menyusun semuanya dengan sempurna.",
   },
   {

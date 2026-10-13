@@ -1092,7 +1092,7 @@ export default function ProfileSecurityFlow({
                       Notifikasi Chatbot
                     </span>
                     <span className="text-[10px] text-brown-700">
-                      Pengingat sesi curhat Zyba Companion
+                      Pengingat sesi curhat Tanya Zyba
                     </span>
                   </div>
                 </div>
