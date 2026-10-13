@@ -269,6 +269,8 @@ export async function POST(req: NextRequest) {
       quotaRemaining: Math.max(0, quotaCheck.remaining - 1),
       quotaLimit: quotaCheck.limit,
       plan: quotaCheck.plan,
+    }, {
+      headers: { "Cache-Control": "private, no-cache, no-store, max-age=0, must-revalidate" },
     });
   } catch (err: any) {
     console.error("[API Companion Error]:", err);

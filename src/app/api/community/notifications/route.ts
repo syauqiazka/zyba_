@@ -69,6 +69,8 @@ export async function GET(req: NextRequest) {
         };
       }),
       nextCursor: hasMore ? items[items.length - 1].id : null,
+    }, {
+      headers: { "Cache-Control": "private, no-cache, no-store, max-age=0, must-revalidate" },
     });
   } catch (error: any) {
     console.error("Get notifications error:", error);

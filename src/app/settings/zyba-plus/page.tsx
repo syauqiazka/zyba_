@@ -302,7 +302,7 @@ export default function ZybaPlusPage() {
             <p className="font-display text-xl font-extrabold text-white mb-2">
               Mulai perjalanan wellness yang lebih bermakna
             </p>
-            <p className="text-sm text-white/60 mb-5">Hanya Rp49.000/bulan. Bisa dibatalkan kapan saja.</p>
+            <p className="text-sm text-white/60 mb-5">Hanya Rp59.000/bulan. Bisa dibatalkan kapan saja.</p>
             <button
               type="button"
               onClick={handleUpgrade}

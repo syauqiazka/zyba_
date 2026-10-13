@@ -64,7 +64,9 @@ export async function GET(req: NextRequest) {
       data: { readAt: new Date() },
     }).catch((err) => console.warn("[DM Notif Mark Read error]:", err));
 
-    return NextResponse.json({ messages });
+    return NextResponse.json({ messages }, {
+      headers: { "Cache-Control": "private, no-cache, no-store, max-age=0, must-revalidate" },
+    });
   } catch (err: any) {
     console.error("[DM Get Messages]:", err);
     return NextResponse.json({ error: err.message }, { status: 500 });

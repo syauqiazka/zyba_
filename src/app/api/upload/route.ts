@@ -32,6 +32,12 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    const { checkRateLimit, rateLimitResponse } = await import("@/lib/server/rateLimit");
+    const uploadLimit = await checkRateLimit(`upload:${session.userId}`, 20, 60);
+    if (!uploadLimit.allowed) {
+      return rateLimitResponse(uploadLimit.retryAfterSec, "Terlalu banyak unggahan file. Silakan tunggu.");
+    }
+
     const formData = await req.formData();
     const file = formData.get("file") as File | null;
     if (!file) {

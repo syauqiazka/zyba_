@@ -1,7 +1,11 @@
 .next
 node_modules
 .env
+.env.lb
 .env*.local
+.env*.backup
+*.save
+*.bak
 .history
 
 # Local fallback data (berisi hash password demo, jangan pernah di-commit ke git)

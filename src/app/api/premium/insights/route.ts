@@ -61,7 +61,7 @@ export async function GET(req: NextRequest) {
     if (cached && cached.expiresAt.getTime() > Date.now()) {
       return NextResponse.json(cached.data as PremiumWellnessInsights, {
         headers: {
-          "Cache-Control": "private, max-age=30, stale-while-revalidate=60",
+          "Cache-Control": "private, no-cache, no-store, max-age=0, must-revalidate",
         },
       });
     }
@@ -119,7 +119,7 @@ export async function GET(req: NextRequest) {
 
     return NextResponse.json(data, {
       headers: {
-        "Cache-Control": "private, max-age=30, stale-while-revalidate=60",
+        "Cache-Control": "private, no-cache, no-store, max-age=0, must-revalidate",
       },
     });
   } catch (error) {

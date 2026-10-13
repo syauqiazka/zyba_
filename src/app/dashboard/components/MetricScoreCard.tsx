@@ -39,7 +39,7 @@ export default function MetricScoreCard({
     <div className="glass-card glass-card-hover rounded-3xl p-6 flex flex-col justify-between relative overflow-hidden">
       <div className="flex items-center justify-between">
         <span className="text-xs font-bold text-brown-700 uppercase tracking-wider">
-          Zyba Score
+          Skor Zyba
         </span>
         <span className={`text-xs font-bold px-2.5 py-0.5 rounded-full ${badgeClass}`}>
           {isEvaluated ? condition : "Belum Dinilai"}
@@ -86,7 +86,7 @@ export default function MetricScoreCard({
       ) : (
         <div className="text-center flex flex-col items-center gap-2">
           <p className="text-xs text-brown-700">
-            Belum ada data evaluasi awal. Lengkapi asesmen untuk melihat Zyba Score personalmu.
+            Belum ada data evaluasi awal. Lengkapi asesmen untuk melihat skor Zyba  personalmu.
           </p>
           <Link
             href="/assessment"

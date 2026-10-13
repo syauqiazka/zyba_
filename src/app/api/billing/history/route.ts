@@ -39,7 +39,9 @@ export async function GET(req: NextRequest) {
       },
     });
 
-    return NextResponse.json({ payments });
+    return NextResponse.json({ payments }, {
+      headers: { "Cache-Control": "private, no-cache, no-store, max-age=0, must-revalidate" },
+    });
   } catch (err: any) {
     console.error("[Billing History] Error:", err);
     return NextResponse.json({ error: err.message || "Internal server error" }, { status: 500 });

@@ -157,6 +157,10 @@ export async function GET(req: NextRequest) {
       totalPointsEarned,
       completedCount: todayActivities.filter((a) => a.completed).length,
       habitStats,
+    }, {
+      headers: {
+        "Cache-Control": "private, no-cache, no-store, max-age=0, must-revalidate",
+      },
     });
   } catch (error: any) {
     console.error("[Activity API GET] Error:", error);

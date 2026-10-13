@@ -15,7 +15,7 @@ export default function CompanionWidget({ conversationCount = 0 }: CompanionWidg
       <div>
         <div className="flex items-center justify-between mb-2">
           <span className="text-xs font-bold text-brown-700 uppercase tracking-wider">
-            Zyba Companion
+             Tanya Zyba 
           </span>
           <span className="flex items-center gap-1.5 text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-green-500 text-white">
             <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
@@ -26,7 +26,7 @@ export default function CompanionWidget({ conversationCount = 0 }: CompanionWidg
           <span className="font-display text-3xl font-extrabold text-brown-900">
             {conversationCount.toLocaleString("id-ID")}
           </span>
-          <span className="text-xs text-brown-700 font-medium">Conversations Logged</span>
+          <span className="text-xs text-brown-700 font-medium">Riwayat percakapan</span>
         </div>
         <p className="text-xs text-brown-700 mt-2">
           {conversationCount > 0

@@ -120,7 +120,9 @@ export async function GET(req: NextRequest) {
       };
     });
 
-    return NextResponse.json({ conversations });
+    return NextResponse.json({ conversations }, {
+      headers: { "Cache-Control": "private, no-cache, no-store, max-age=0, must-revalidate" },
+    });
   } catch (err: any) {
     console.error("[DM Conversations]:", err);
     return NextResponse.json({ error: err.message }, { status: 500 });

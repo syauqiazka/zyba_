@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import fs from "fs/promises";
 import path from "path";
 import { verifySessionToken } from "@/lib/auth";
+import { checkRateLimit, rateLimitResponse } from "@/lib/server/rateLimit";
 
 export async function POST(req: NextRequest) {
   try {
@@ -9,6 +10,11 @@ export async function POST(req: NextRequest) {
     if (!token) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     const session = await verifySessionToken(token);
     if (!session?.userId) return NextResponse.json({ error: "Invalid session" }, { status: 401 });
+
+    const uploadLimit = await checkRateLimit(`upload:${session.userId}`, 15, 60);
+    if (!uploadLimit.allowed) {
+      return rateLimitResponse(uploadLimit.retryAfterSec, "Terlalu banyak permintaan unggah bukti pembayaran.");
+    }
 
     const formData = await req.formData();
     const file = formData.get("file");

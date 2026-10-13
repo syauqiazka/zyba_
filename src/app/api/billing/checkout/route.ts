@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { verifySessionToken } from "@/lib/auth";
 import { accountDb } from "@/backend/db/accountClient";
+import { checkRateLimit, rateLimitResponse } from "@/lib/server/rateLimit";
 
 const PRICE = 49_000;
 
@@ -11,6 +12,11 @@ export async function POST(req: NextRequest) {
 
     const session = await verifySessionToken(token);
     if (!session?.userId) return NextResponse.json({ error: "Invalid session" }, { status: 401 });
+
+    const checkoutLimit = await checkRateLimit(`checkout:${session.userId}`, 10, 60);
+    if (!checkoutLimit.allowed) {
+      return rateLimitResponse(checkoutLimit.retryAfterSec, "Terlalu banyak permintaan pembuatan pembayaran.");
+    }
 
     const body = await req.json().catch(() => ({}));
     if (body.plan !== "monthly") {

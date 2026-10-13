@@ -38,7 +38,9 @@ export async function GET(req: NextRequest) {
     });
 
 
-    return NextResponse.json({ conversations });
+    return NextResponse.json({ conversations }, {
+      headers: { "Cache-Control": "private, no-cache, no-store, max-age=0, must-revalidate" },
+    });
   } catch (err: any) {
     console.error("[GET Conversations]:", err);
     return NextResponse.json({ error: "Gagal memuat percakapan." }, { status: 500 });
@@ -67,7 +69,9 @@ export async function POST(req: NextRequest) {
       },
     });
 
-    return NextResponse.json({ conversation });
+    return NextResponse.json({ conversation }, {
+      headers: { "Cache-Control": "private, no-cache, no-store, max-age=0, must-revalidate" },
+    });
   } catch (err: any) {
     console.error("[POST Conversation]:", err);
     return NextResponse.json({ error: "Gagal membuat percakapan baru." }, { status: 500 });

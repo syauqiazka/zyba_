@@ -10,9 +10,13 @@ export async function GET(req: NextRequest) {
     const session = await verifySessionToken(token);
     if (!session) return NextResponse.json({ error: "Session tidak valid" }, { status: 401 });
     const entries = await accountDb.journalEntry.findMany({ where: { userId: session.userId }, orderBy: { createdAt: "desc" }, take: 30 });
-    return NextResponse.json({ success: true, entries });
+    return NextResponse.json({ success: true, entries }, {
+      headers: { "Cache-Control": "private, no-cache, no-store, max-age=0, must-revalidate" },
+    });
   } catch {
-    return NextResponse.json({ success: true, entries: [] });
+    return NextResponse.json({ success: true, entries: [] }, {
+      headers: { "Cache-Control": "private, no-cache, no-store, max-age=0, must-revalidate" },
+    });
   }
 }
 
@@ -55,6 +59,8 @@ export async function POST(req: NextRequest) {
       crisisResources: isRisk ? CRISIS_RESOURCES : null,
       entry: savedEntry || { id: `j-${Date.now()}`, title: title || "Entri Mood Harian", content, mood: mood || "NEUTRAL", createdAt: new Date().toISOString() },
       unlockedBadges,
+    }, {
+      headers: { "Cache-Control": "private, no-cache, no-store, max-age=0, must-revalidate" },
     });
   } catch (err: any) {
     console.error("[Journal POST Error]:", err);

@@ -21,6 +21,8 @@ export async function GET(req: NextRequest) {
       remaining: quotaCheck.remaining,
       limit: quotaCheck.limit,
       plan: quotaCheck.plan,
+    }, {
+      headers: { "Cache-Control": "private, no-cache, no-store, max-age=0, must-revalidate" },
     });
   } catch (err: any) {
     console.error("[Quota Check Error]:", err);

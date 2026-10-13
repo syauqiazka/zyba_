@@ -93,7 +93,9 @@ export async function GET(req: NextRequest) {
       orderBy: { createdAt: "desc" },
     });
 
-    return NextResponse.json({ bookmarks });
+    return NextResponse.json({ bookmarks }, {
+      headers: { "Cache-Control": "private, no-cache, no-store, max-age=0, must-revalidate" },
+    });
   } catch (error: any) {
     console.error("Get bookmarks error:", error);
     return NextResponse.json(

@@ -55,10 +55,21 @@ export async function checkRateLimit(
       };
     }
   } catch (dbErr) {
-    console.warn("[RateLimit DB fallback to in-memory]:", dbErr);
+    console.warn("[RateLimit SECURITY WARNING]: Database rate limiter unavailable, falling back to strict in-memory limit:", dbErr);
   }
 
-  // Safe Fallback: Enforce limit using in-memory bucket so protection never opens completely
+  // Safe Fallback: Enforce limit using in-memory bucket so protection never opens completely.
+  // In multi-instance Docker environments, each instance keeps local memory buckets.
+  // To avoid doubling the threshold across 2 instances during DB cold-start/outage,
+  // enforce conservative limits for sensitive endpoints (auth, otp, reset, export).
+  const isSensitiveEndpoint =
+    normalizedKey.startsWith("login:") ||
+    normalizedKey.startsWith("signup:") ||
+    normalizedKey.startsWith("otp_") ||
+    normalizedKey.startsWith("reset_pw:") ||
+    normalizedKey.startsWith("export:");
+  const effectiveLimit = isSensitiveEndpoint ? Math.max(1, Math.floor(limit / 2)) : limit;
+
   const nowMs = now.getTime();
   let memBucket = memoryBuckets.get(normalizedKey);
 
@@ -67,14 +78,14 @@ export async function checkRateLimit(
     memoryBuckets.set(normalizedKey, memBucket);
     return {
       allowed: true,
-      remaining: Math.max(0, limit - 1),
+      remaining: Math.max(0, effectiveLimit - 1),
       retryAfterSec: 0,
     };
   }
 
   memBucket.hitCount += 1;
   const elapsedMs = nowMs - memBucket.windowStart;
-  const allowed = memBucket.hitCount <= limit;
+  const allowed = memBucket.hitCount <= effectiveLimit;
 
   // Cleanup old memory keys periodically
   if (memoryBuckets.size > 2000) {
@@ -87,45 +98,61 @@ export async function checkRateLimit(
 
   return {
     allowed,
-    remaining: Math.max(0, limit - memBucket.hitCount),
+    remaining: Math.max(0, effectiveLimit - memBucket.hitCount),
     retryAfterSec: allowed ? 0 : Math.max(1, Math.ceil((windowMs - elapsedMs) / 1000)),
   };
 }
 
+const IPV4_REGEX = /^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
+const IPV6_REGEX = /^(?:[a-fA-F0-9]{1,4}:){7}[a-fA-F0-9]{1,4}$|^::1$|^::$/;
+
+function sanitizeIp(rawIp: string | null | undefined): string | null {
+  if (!rawIp) return null;
+  const trimmed = rawIp.trim();
+  // Strip port if present (e.g., 1.2.3.4:5678)
+  const withoutPort = trimmed.includes(":") && !trimmed.includes("::") && trimmed.split(":").length === 2
+    ? trimmed.split(":")[0]
+    : trimmed;
+  if (IPV4_REGEX.test(withoutPort) || IPV6_REGEX.test(withoutPort)) {
+    return withoutPort;
+  }
+  return null;
+}
+
 /**
  * Extracts client IP with priority to trusted socket IP & verified proxy headers.
- * Prevents trivial rate limit evasion via arbitrary spoofed headers.
+ * Protects against arbitrary spoofed headers (CF-Connecting-IP, True-Client-IP, X-Forwarded-For)
+ * by verifying against reverse-proxy configuration and IP address format.
  */
 export function getClientIp(req: NextRequest): string {
   // 1. Next.js socket-level verified IP
   if (req.ip) {
-    return req.ip;
+    const verified = sanitizeIp(req.ip);
+    if (verified) return verified;
   }
 
-  // 2. Cloudflare verified connecting IP
-  const cfIp = req.headers.get("cf-connecting-ip");
-  if (cfIp) {
-    return cfIp.trim();
+  // 2. Reverse proxy header set and sanitized by Apache/Nginx (e.g. RequestHeader set X-Real-IP "%{REMOTE_ADDR}s")
+  const realIp = sanitizeIp(req.headers.get("x-real-ip"));
+  if (realIp) {
+    return realIp;
   }
 
-  // 3. True-Client-IP header (Akamai / Cloudflare Enterprise)
-  const trueClientIp = req.headers.get("true-client-ip");
-  if (trueClientIp) {
-    return trueClientIp.trim();
+  // 3. Cloudflare verified connecting IP ONLY if explicitly behind verified Cloudflare proxy
+  if (process.env.TRUST_CLOUDFLARE_PROXY === "true") {
+    const cfIp = sanitizeIp(req.headers.get("cf-connecting-ip"));
+    if (cfIp) return cfIp;
+
+    const trueClientIp = sanitizeIp(req.headers.get("true-client-ip"));
+    if (trueClientIp) return trueClientIp;
   }
 
-  // 4. Standard X-Forwarded-For: Take the LAST untrusted proxy or first hop
+  // 4. Standard X-Forwarded-For: Extract first hop and validate format strictly
   const forwarded = req.headers.get("x-forwarded-for");
   if (forwarded) {
-    const parts = forwarded.split(",").map((p) => p.trim()).filter(Boolean);
-    if (parts.length > 0) {
+    const parts = forwarded.split(",").map((p) => sanitizeIp(p)).filter(Boolean);
+    if (parts.length > 0 && parts[0]) {
       return parts[0];
     }
-  }
-
-  const realIp = req.headers.get("x-real-ip");
-  if (realIp) {
-    return realIp.trim();
   }
 
   return "127.0.0.1";
