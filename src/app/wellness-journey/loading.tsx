@@ -12,7 +12,8 @@ export default function Loading() {
       </div>
       <div className="flex flex-col items-center gap-1">
         <span className="font-display font-extrabold text-sm text-brown-900">
-          Memuat Wellness Journey
+          Memuat Jurnal Kesehatan
+
         </span>
         <span className="text-[11px] text-brown-700">
           Menganalisis perjalanan kesehatan...

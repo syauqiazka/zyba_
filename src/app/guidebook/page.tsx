@@ -51,7 +51,7 @@ const sections = [
     icon: Zap,
     items: [
       [" perencana aktivitas pintar", "Temukan aktivitas yang sesuai dengan kebutuhan dan kondisi kamu."],
-      ["Zyba Hours", "Gunakan latihan seperti breathing untuk membantu membuat jeda dalam rutinitas."],
+      ["Zyba Hours", "Gunakan latihan seperti pernafasan untuk membantu membuat jeda dalam rutinitas."],
       ["Jurnal Kesehatan", "Catat pengalaman dan refleksi kebugaran kamu secara pribadi."],
       ["Wawasan", "Temukan materi dan sumber yang dapat membantu proses belajar kebugaran."],
     ],

@@ -564,7 +564,8 @@ export default function WellnessJourneyPage() {
             </span>
           </div>
           <h1 className="font-display text-2xl sm:text-3xl font-extrabold text-brown-900 tracking-tight">
-            Wellness Journey
+            Jurnal Kesehatan
+
           </h1>
           <p className="text-xs sm:text-sm text-brown-700 mt-1 max-w-xl">
             Lihat bagaimana kondisi, kestabilan emosi, dan kebiasaanmu berkembang dari waktu ke waktu.
