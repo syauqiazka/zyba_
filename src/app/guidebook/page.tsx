@@ -57,7 +57,7 @@ const sections = [
     ],
   },
   {
-    title: "Tanya ZYba",
+    title: "Tanya Zyba",
     description: "Gunakan AI ZYBA sebagai pendamping percakapan.",
     icon: Bot,
     items: [
