@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { Check, CreditCard, ShieldCheck, Sparkles, Zap, ArrowRight, TrendingUp, Brain, Activity } from "lucide-react";
 import Link from "next/link";
 
-const PRICE = 49_000;
+const PRICE = 59_000;
 
 const COMPARE = [
   {

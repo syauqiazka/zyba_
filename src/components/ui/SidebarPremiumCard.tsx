@@ -370,7 +370,7 @@ export default function SidebarPremiumCard({ plan, subscription, premiumUntil, o
                       className="w-full py-2.5 px-4 rounded-xl bg-orange-500 hover:bg-orange-600 active:scale-98 text-white text-center text-xs font-bold transition-all shadow-xs flex items-center justify-center gap-1.5"
                     >
                       <Sparkles size={14} />
-                      Upgrade ke Zyba Plus (Rp49.000/bln)
+                      Upgrade ke Zyba Plus (Rp59.000/bln)
                       <ArrowRight size={14} />
                     </Link>
                   )}

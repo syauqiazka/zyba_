@@ -987,7 +987,7 @@ const PLANS = [
   {
     id: "monthly",
     label: "Bulanan",
-    price: "Rp 49.000",
+    price: "Rp 59.000",
     period: "/ bulan",
     desc: "Fleksibel, bayar manual setiap bulan",
   },

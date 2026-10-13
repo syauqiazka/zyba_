@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { ArrowLeft, CheckCircle2, Copy, ImagePlus, ShieldCheck, Upload, XCircle } from "lucide-react";
 
-const PRICE = 49_000;
+const PRICE = 59_000;
 
 const bankName = process.env.NEXT_PUBLIC_PAYMENT_BANK_NAME || "Bank belum dikonfigurasi";
 const bankAccount = process.env.NEXT_PUBLIC_PAYMENT_BANK_ACCOUNT || "";

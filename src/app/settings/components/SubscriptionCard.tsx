@@ -206,7 +206,7 @@ export default function SubscriptionCard({
                   className="inline-flex items-center justify-center gap-1.5 px-5 py-2.5 rounded-xl bg-orange-500 text-white text-xs font-extrabold hover:bg-orange-600 shadow-sm transition-all"
                 >
                   <Sparkles size={13} />
-                  Upgrade Rp 49.000 / bln
+                  Upgrade Rp 59.000 / bln
                   <ArrowRight size={13} />
                 </Link>
               </div>
