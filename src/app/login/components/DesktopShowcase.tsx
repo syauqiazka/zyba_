@@ -13,17 +13,17 @@ import {
 const POINTS = [
   {
     icon: MessageCircle,
-    title: "Companion",
+    title: "Zyba Companion",
     text: "Ruang untuk cerita tanpa harus menyusun semuanya dengan sempurna.",
   },
   {
     icon: Brain,
-    title: "Daily Check-in",
+    title: "Check-In Harian",
     text: "Kenali keadaanmu dan lihat perubahan dari waktu ke waktu.",
   },
   {
     icon: HeartPulse,
-    title: "Langkah kecil",
+    title: "Langkah Kecil",
     text: "Ubah apa yang kamu pahami menjadi tindakan yang realistis.",
   },
 ];
@@ -46,7 +46,7 @@ export default function DesktopShowcase() {
       {/* HERO COPY */}
       <div className="relative z-10">
         <p className="text-[11px] font-extrabold uppercase tracking-[0.18em] text-brown-700/70">
-          Wellness companion untuk Gen Z
+          Sahabat Kebugaran Gen Z
         </p>
 
         <h1 className="mt-5 max-w-[600px] font-display text-5xl font-extrabold leading-[0.96] tracking-[-0.06em] text-brown-900 xl:text-6xl">
@@ -145,11 +145,11 @@ export default function DesktopShowcase() {
 
       {/* FOOTER */}
       <div className="relative z-10 flex flex-wrap items-center gap-x-5 gap-y-2 text-xs font-semibold text-brown-700/60">
-        <span>Companion</span>
-        <span>Check-in</span>
-        <span>Activity</span>
-        <span>Journey</span>
-        <span>Community</span>
+        <span>Tanya Zyba</span>
+        <span>Check-In</span>
+        <span>Aktivitas</span>
+        <span>Ruang Sehat</span>
+        <span>Komunitas</span>
       </div>
     </div>
   );

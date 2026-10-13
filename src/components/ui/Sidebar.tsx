@@ -34,7 +34,7 @@ type NavItem = {
 
 const NAV_ITEMS: NavItem[] = [
   { href: "/dashboard", label: "Dashboard", icon: Home },
-  { href: "/daily-assessment", label: "Assessment Harian", icon: CalendarCheck },
+  { href: "/daily-assessment", label: "Check-In Harian", icon: CalendarCheck },
   { href: "/companion", label: "Tanya Zyba", icon: Bot },
   { href: "/activity", label: "Kegiatan Rutin Harian", icon: Zap },
   { href: "/wellness-journey", label: "Ruang Sehat", icon: Heart },

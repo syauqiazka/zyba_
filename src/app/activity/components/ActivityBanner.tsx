@@ -21,7 +21,7 @@ export default function ActivityBanner({ activityProgress, targetProgress }: Act
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-2 mb-1 flex-wrap">
             <span className="px-2.5 py-0.5 rounded-full bg-green-500 text-white text-xs font-bold uppercase tracking-wider whitespace-nowrap">
-              Smart Activity Planner
+              Perencana Aktivitas Pintar
             </span>
             <span className="text-xs text-brown-700">{today}</span>
           </div>

@@ -17,32 +17,32 @@ import {
 const FEATURES = [
   {
     number: "01",
-    title: "Assessment Harian",
+    title: "Check-In Harian",
     desc: "Kenali keadaanmu hari ini dan lihat polanya dari waktu ke waktu.",
     detail:
-      "Catat kondisi mental, fisik, dan sosialmu secara rutin. Dari check-in sederhana ini, kamu bisa mulai memahami perubahan dan pola keseharianmu dari waktu ke waktu.",
+      "Catat kondisi mental, fisik, dan sosialmu secara rutin. Dari check-in harian sederhana ini, kamu bisa mulai memahami perubahan dan pola keseharianmu dari waktu ke waktu.",
     icon: Brain,
     tone: "feature-lilac",
     loginPath: "/daily-assessment",
-    cta: "Mulai Assessment Harian",
+    cta: "Mulai Check-In Harian",
   },
   {
     number: "02",
     title: "Zyba Companion",
     desc: "Tempat untuk menuangkan pikiran tanpa harus mencari kata yang sempurna.",
     detail:
-      "Ceritakan apa yang sedang ada di kepalamu tanpa harus menyusunnya dengan sempurna. Companion membantu kamu menuangkan pikiran, memahami apa yang sedang dirasakan, lalu melihat langkah kecil yang bisa dilakukan.",
+      "Ceritakan apa yang sedang ada di kepalamu tanpa harus menyusunnya dengan sempurna. Zyba Companion membantu kamu menuangkan pikiran, memahami apa yang sedang dirasakan, lalu melihat langkah kecil yang bisa dilakukan.",
     icon: MessageCircle,
     tone: "feature-orange",
     loginPath: "/companion",
-    cta: "Mulai Bersama Companion",
+    cta: "Mulai Bersama Zyba Companion",
   },
   {
     number: "03",
-    title: "Smart Activity Planner",
+    title: "Perencana Aktivitas Pintar",
     desc: "Ubah niat menjadi langkah kecil yang realistis untuk keseharianmu.",
     detail:
-      "Activity Planner membantu mengubah niat menjadi tindakan yang lebih realistis. Kamu bisa menemukan aktivitas sederhana yang sesuai dengan kondisi, energi, dan kebutuhanmu hari itu.",
+      "Perencana Aktivitas membantu mengubah niat menjadi tindakan yang lebih realistis. Kamu bisa menemukan aktivitas sederhana yang sesuai dengan kondisi, energi, dan kebutuhanmu hari itu.",
     icon: HeartPulse,
     tone: "feature-green",
     loginPath: "/activity",
@@ -50,21 +50,21 @@ const FEATURES = [
   },
   {
     number: "04",
-    title: "Wellness Journey",
+    title: "Ruang Sehat",
     desc: "Lihat perjalananmu, dari langkah kecil sampai perubahan yang mulai terbentuk.",
     detail:
-      "Wellness Journey membantu kamu melihat perjalanan secara lebih utuh melalui Target, Progres, dan Pencapaian. Bukan tentang menjadi sempurna, tapi tentang melihat bahwa kamu terus bergerak.",
+      "Ruang Sehat membantu kamu melihat perjalanan secara lebih utuh melalui Target, Progres, dan Pencapaian. Bukan tentang menjadi sempurna, tapi tentang melihat bahwa kamu terus bergerak.",
     icon: Heart,
     tone: "feature-green",
     loginPath: "/wellness-journey",
-    cta: "Lihat Ruang Sehat",
+    cta: "Buka Ruang Sehat",
   },
   {
     number: "05",
-    title: "Zyba Community",
+    title: "Komunitas Zyba",
     desc: "Terhubung dengan orang lain tanpa harus kehilangan ruang privatmu.",
     detail:
-      "Community menjadi ruang untuk berbagi pengalaman, menemukan percakapan yang relevan, dan merasa terhubung dengan orang lain tanpa harus membuka semuanya tentang dirimu.",
+      "Komunitas ZYBA menjadi ruang untuk berbagi pengalaman, menemukan percakapan yang relevan, dan merasa terhubung dengan orang lain tanpa harus membuka semuanya tentang dirimu.",
     icon: UsersRound,
     tone: "feature-blue",
     loginPath: "/community",

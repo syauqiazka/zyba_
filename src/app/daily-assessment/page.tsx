@@ -164,7 +164,7 @@ export default function DailyAssessmentPage() {
             </span>
           </div>
           <h1 className="font-display text-xl sm:text-2xl md:text-3xl font-extrabold text-brown-900 tracking-tight flex items-center gap-2">
-            <span>Assessment Harian</span>
+            <span>Check-In Harian</span>
           </h1>
         </div>
 

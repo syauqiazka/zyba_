@@ -46,7 +46,7 @@ export default function QuickAccessCards() {
               </div>
 
               <span className="text-[11px] font-bold uppercase tracking-wider text-orange-500">
-                Assessment Harian
+                Check-In Harian
               </span>
             </div>
           </div>
