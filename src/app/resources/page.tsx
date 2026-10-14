@@ -41,7 +41,7 @@ const RESOURCES_DATA: ResourceItem[] = [
     type: "AUDIO",
     title: "Pemulihan Insomnia & Relaksasi Deep Sleep Alami",
     author: "Institut Kualitas Tidur Nusantara",
-    duration: "12:00 Menit",
+    duration: "2:21 Menit",
     category: "Kualitas Tidur",
     isPro: true,
     iconName: "moon",
