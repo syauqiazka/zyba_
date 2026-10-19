@@ -190,7 +190,7 @@ const config = {
       "value": "prisma-client-js"
     },
     "output": {
-      "value": "C:\\Users\\user\\OneDrive\\Documents\\syauqi_nitip\\zyba_\\src\\generated\\companion-client",
+      "value": "C:\\Users\\PC 1\\Documents\\Syauqi\\zyba\\zyba_\\src\\generated\\companion-client",
       "fromEnvVar": null
     },
     "config": {
@@ -209,10 +209,14 @@ const config = {
       {
         "fromEnvVar": null,
         "value": "debian-openssl-1.1.x"
+      },
+      {
+        "fromEnvVar": null,
+        "value": "rhel-openssl-3.0.x"
       }
     ],
     "previewFeatures": [],
-    "sourceFilePath": "C:\\Users\\user\\OneDrive\\Documents\\syauqi_nitip\\zyba_\\prisma\\companion\\schema.prisma",
+    "sourceFilePath": "C:\\Users\\PC 1\\Documents\\Syauqi\\zyba\\zyba_\\prisma\\companion\\schema.prisma",
     "isCustomOutput": true
   },
   "relativeEnvPaths": {
@@ -235,8 +239,8 @@ const config = {
       }
     }
   },
-  "inlineSchema": "generator client {\n  provider      = \"prisma-client-js\"\n  binaryTargets = [\"native\", \"debian-openssl-3.0.x\", \"debian-openssl-1.1.x\"]\n  output        = \"../../src/generated/companion-client\"\n}\n\ndatasource db {\n  provider  = \"postgresql\"\n  url       = env(\"DATABASE_URL_COMPANION\")\n  directUrl = env(\"DIRECT_URL_COMPANION\")\n}\n\nmodel Conversation {\n  id         String   @id @default(cuid())\n  userId     String // TANPA @relation — user ada di Account DB\n  title      String   @default(\"New Conversation\")\n  emotionTag String?\n  createdAt  DateTime @default(now())\n  updatedAt  DateTime @updatedAt\n\n  messages Message[]\n\n  @@index([userId])\n  @@index([userId, updatedAt])\n  @@map(\"conversations\")\n}\n\nmodel Message {\n  id               String       @id @default(cuid())\n  conversationId   String\n  conversation     Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)\n  role             String\n  content          String?\n  modelUsed        String?\n  attachmentType   String?\n  attachmentUrl    String?\n  audioDurationSec Int?\n  stickerId        String?\n  flaggedForRisk   Boolean      @default(false)\n  ttsAudioUrl      String?\n  ttsProvider      String?\n  ttsModel         String?\n  ttsGeneratedAt   DateTime?\n  createdAt        DateTime     @default(now())\n\n  @@index([conversationId, createdAt])\n  @@index([role, createdAt, conversationId])\n  @@map(\"messages\")\n}\n\nmodel DailyMessageQuota {\n  id           String   @id\n  userId       String\n  date         String\n  messageCount Int      @default(0)\n  createdAt    DateTime @default(now())\n  updatedAt    DateTime @updatedAt\n\n  @@unique([userId, date])\n  @@index([date])\n  @@map(\"daily_message_quotas\")\n}\n\nmodel RateLimitBucket {\n  id          String   @id\n  key         String   @unique\n  windowStart DateTime\n  windowMs    Int\n  hitCount    Int      @default(0)\n  createdAt   DateTime @default(now())\n  updatedAt   DateTime @updatedAt\n\n  @@index([windowStart])\n  @@map(\"rate_limit_buckets\")\n}\n\nmodel PremiumInsightCache {\n  id        String   @id\n  userId    String   @unique\n  expiresAt DateTime\n  data      Json\n  createdAt DateTime @default(now())\n  updatedAt DateTime @updatedAt\n\n  @@index([expiresAt])\n  @@map(\"premium_insight_cache\")\n}\n",
-  "inlineSchemaHash": "3405fcd9ce944c60ac8796cb7c6f75d4817d60962457aded87dbfd2009308dc8",
+  "inlineSchema": "generator client {\n  provider      = \"prisma-client-js\"\n  binaryTargets = [\"native\", \"debian-openssl-3.0.x\", \"debian-openssl-1.1.x\", \"rhel-openssl-3.0.x\"]\n  output        = \"../../src/generated/companion-client\"\n}\n\ndatasource db {\n  provider  = \"postgresql\"\n  url       = env(\"DATABASE_URL_COMPANION\")\n  directUrl = env(\"DIRECT_URL_COMPANION\")\n}\n\nmodel Conversation {\n  id         String   @id @default(cuid())\n  userId     String // TANPA @relation — user ada di Account DB\n  title      String   @default(\"New Conversation\")\n  emotionTag String?\n  createdAt  DateTime @default(now())\n  updatedAt  DateTime @updatedAt\n\n  messages Message[]\n\n  @@index([userId])\n  @@index([userId, updatedAt])\n  @@map(\"conversations\")\n}\n\nmodel Message {\n  id               String       @id @default(cuid())\n  conversationId   String\n  conversation     Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)\n  role             String\n  content          String?\n  modelUsed        String?\n  attachmentType   String?\n  attachmentUrl    String?\n  audioDurationSec Int?\n  stickerId        String?\n  flaggedForRisk   Boolean      @default(false)\n  ttsAudioUrl      String?\n  ttsProvider      String?\n  ttsModel         String?\n  ttsGeneratedAt   DateTime?\n  createdAt        DateTime     @default(now())\n\n  @@index([conversationId, createdAt])\n  @@index([role, createdAt, conversationId])\n  @@map(\"messages\")\n}\n\nmodel DailyMessageQuota {\n  id           String   @id\n  userId       String\n  date         String\n  messageCount Int      @default(0)\n  createdAt    DateTime @default(now())\n  updatedAt    DateTime @updatedAt\n\n  @@unique([userId, date])\n  @@index([date])\n  @@map(\"daily_message_quotas\")\n}\n\nmodel RateLimitBucket {\n  id          String   @id\n  key         String   @unique\n  windowStart DateTime\n  windowMs    Int\n  hitCount    Int      @default(0)\n  createdAt   DateTime @default(now())\n  updatedAt   DateTime @updatedAt\n\n  @@index([windowStart])\n  @@map(\"rate_limit_buckets\")\n}\n\nmodel PremiumInsightCache {\n  id        String   @id\n  userId    String   @unique\n  expiresAt DateTime\n  data      Json\n  createdAt DateTime @default(now())\n  updatedAt DateTime @updatedAt\n\n  @@index([expiresAt])\n  @@map(\"premium_insight_cache\")\n}\n",
+  "inlineSchemaHash": "6a275b892e306aef0ff9d7430fd8848c94fe0beed3e350350e320b6cc89c5ed7",
   "copyEngine": true
 }
 
@@ -284,6 +288,10 @@ path.join(process.cwd(), "src/generated/companion-client/libquery_engine-debian-
 // file annotations for bundling tools to include these files
 path.join(__dirname, "libquery_engine-debian-openssl-1.1.x.so.node");
 path.join(process.cwd(), "src/generated/companion-client/libquery_engine-debian-openssl-1.1.x.so.node")
+
+// file annotations for bundling tools to include these files
+path.join(__dirname, "libquery_engine-rhel-openssl-3.0.x.so.node");
+path.join(process.cwd(), "src/generated/companion-client/libquery_engine-rhel-openssl-3.0.x.so.node")
 // file annotations for bundling tools to include these files
 path.join(__dirname, "schema.prisma");
 path.join(process.cwd(), "src/generated/companion-client/schema.prisma")
