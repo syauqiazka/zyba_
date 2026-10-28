@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "node --require ./eperm-patch.js node_modules/next/dist/bin/next build",
+    "build": "pnpm run db:generate:all && node --require ./eperm-patch.js node_modules/next/dist/bin/next build",
     "start": "next start -p 30000",
     "lint": "next lint",
     "postinstall": "pnpm run db:generate:all",
