@@ -21,20 +21,14 @@ export default function Loading() {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-[70vh] w-full py-12 animate-in fade-in duration-300">
-      {/* Brand Splash 4-Petal Floral Logomark (Orange & Green) */}
-      <div className="relative w-20 h-20 flex items-center justify-center mb-6">
-        <div className="absolute w-8 h-8 rounded-full bg-orange-500 -top-1 left-1/2 -translate-x-1/2 animate-ping opacity-75" />
-        <div className="absolute w-8 h-8 rounded-full bg-green-500 -bottom-1 left-1/2 -translate-x-1/2 animate-ping opacity-75 delay-150" />
-        <div className="absolute w-8 h-8 rounded-full bg-orange-500 -left-1 top-1/2 -translate-y-1/2 animate-ping opacity-75 delay-300" />
-        <div className="absolute w-8 h-8 rounded-full bg-green-500 -right-1 top-1/2 -translate-y-1/2 animate-ping opacity-75 delay-500" />
-        
-        {/* Core Flower Logomark */}
-        <div className="relative w-16 h-16 rounded-3xl bg-cream border border-orange-500/20 shadow-lg flex items-center justify-center z-10 animate-bounce">
-          <div className="absolute w-5 h-5 rounded-full bg-orange-500 -top-1 left-1/2 -translate-x-1/2 shadow-xs" />
-          <div className="absolute w-5 h-5 rounded-full bg-green-500 -bottom-1 left-1/2 -translate-x-1/2 shadow-xs" />
-          <div className="absolute w-5 h-5 rounded-full bg-orange-500 -left-1 top-1/2 -translate-y-1/2 shadow-xs" />
-          <div className="absolute w-5 h-5 rounded-full bg-green-500 -right-1 top-1/2 -translate-y-1/2 shadow-xs" />
-          <div className="w-4 h-4 rounded-full bg-brown-900 z-20" />
+      {/* Brand 4-Petal Floral Logomark (Orange & Green) - Calm Breathing Motion */}
+      <div className="relative w-16 h-16 flex items-center justify-center mb-6">
+        <div className="relative w-14 h-14 rounded-2xl bg-cream border border-brown-900/10 shadow-xs flex items-center justify-center z-10 motion-safe:animate-pulse motion-reduce:animate-none">
+          <div className="absolute w-4 h-4 rounded-full bg-orange-500 -top-1 left-1/2 -translate-x-1/2" />
+          <div className="absolute w-4 h-4 rounded-full bg-green-500 -bottom-1 left-1/2 -translate-x-1/2" />
+          <div className="absolute w-4 h-4 rounded-full bg-orange-500 -left-1 top-1/2 -translate-y-1/2" />
+          <div className="absolute w-4 h-4 rounded-full bg-green-500 -right-1 top-1/2 -translate-y-1/2" />
+          <div className="w-3.5 h-3.5 rounded-full bg-brown-900 z-20" />
         </div>
       </div>
 

@@ -706,7 +706,7 @@ export default function PostCard({ post, onToggleLike, onToggleRepost, onAddComm
       <article
         id={`post-${post.id}`}
         style={{ zIndex: menuOpen ? 45 : 1 }}
-        className="relative flex gap-3 sm:gap-3.5 px-3 sm:px-5 py-4 border-b border-brown-900/[0.06] hover:bg-[#faf7f2]/50 transition-colors group last:border-b-0"
+        className="relative flex gap-3 sm:gap-3.5 px-3 sm:px-5 py-4 border-b border-brown-900/[0.06] hover:bg-cream/50 transition-colors group last:border-b-0"
       >
         {/* Left: Avatar + thread line */}
         <div className="flex flex-col items-center shrink-0">

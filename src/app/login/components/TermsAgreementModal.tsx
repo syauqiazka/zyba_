@@ -41,11 +41,11 @@ export default function TermsAgreementModal({
             />
 
             {/* Modal */}
-            <div className="relative z-10 flex max-h-[calc(100dvh-2rem)] w-full max-w-lg flex-col overflow-hidden rounded-[28px] border border-brown-900/10 bg-[#F7F2E7] shadow-2xl">
+            <div className="relative z-10 flex max-h-[calc(100dvh-2rem)] w-full max-w-lg flex-col overflow-hidden rounded-[28px] border border-brown-900/10 bg-cream shadow-2xl">
                 {/* Header */}
                 <div className="flex items-start justify-between gap-4 px-6 pt-6 pb-4 sm:px-8 sm:pt-8">
                     <div className="flex items-start gap-4">
-                        <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-[#E2EBD2] text-green-700">
+                        <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-green-100 text-green-700">
                             <ShieldCheck size={22} strokeWidth={2} />
                         </div>
 
@@ -262,7 +262,7 @@ export default function TermsAgreementModal({
                         </section>
 
                         {/* Versi */}
-                        <div className="rounded-xl border border-brown-900/10 bg-[#F7F2E7] px-4 py-3">
+                        <div className="rounded-xl border border-brown-900/10 bg-cream px-4 py-3">
                             <p className="text-[10px] leading-5 text-brown-700/60">
                                 Versi Terms: <strong>1.0</strong>
                             </p>

@@ -34,15 +34,15 @@ type NavItem = {
 
 const NAV_ITEMS: NavItem[] = [
   { href: "/dashboard", label: "Dashboard", icon: Home },
-  { href: "/daily-assessment", label: "Check-In Harian", icon: CalendarCheck },
+  { href: "/daily-assessment", label: "Mood Check-In", icon: CalendarCheck },
   { href: "/companion", label: "Tanya Zyba", icon: Bot },
-  { href: "/activity", label: "Kegiatan Rutin Harian", icon: Zap },
-  { href: "/wellness-journey", label: "Ruang Sehat", icon: Heart },
-  { href: "/settings/zyba-plus/insights", label: "Analisis Mendalam", icon: ChartNoAxesCombined, isPremium: true },
+  { href: "/activity", label: "Smart Planner", icon: Zap },
   { href: "/community", label: "Komunitas Zyba", icon: Users },
   { href: "/resources", label: "Wawasan", icon: Quote },
-  { href: "/guidebook", label: "Buku Panduan", icon: BookOpen },
+  { href: "/wellness-journey", label: "Ruang Sehat", icon: Heart },
   { href: "/achievements", label: "Pencapaian", icon: Trophy },
+  { href: "/guidebook", label: "Buku Panduan", icon: BookOpen },
+  { href: "/settings/zyba-plus/insights", label: "Analisis Mendalam", icon: ChartNoAxesCombined, isPremium: true },
 ];
 
 export default function Sidebar({ onClose }: { onClose?: () => void }) {
@@ -238,7 +238,7 @@ export default function Sidebar({ onClose }: { onClose?: () => void }) {
                 className={`group/link relative px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 flex items-center justify-start md:justify-center lg:justify-start gap-3 ${
                   isActive
                     ? "bg-brown-900 text-cream shadow-md shadow-brown-900/15 font-semibold"
-                    : "text-brown-700 hover:-translate-y-0.5 hover:bg-gradient-to-r hover:from-orange-100/80 hover:to-green-100/80 hover:text-brown-900 hover:shadow-xs"
+                    : "text-brown-700 hover:bg-cream/90 hover:text-brown-900 border border-transparent hover:border-brown-900/5"
                 }`}
               >
                 <div className="relative shrink-0 flex items-center justify-center">

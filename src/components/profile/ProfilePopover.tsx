@@ -176,7 +176,7 @@ export default function ProfilePopover({
           md:left-[88px] md:right-auto md:bottom-4 md:w-80
           /* Desktop (lg): anchor left after full sidebar */
           lg:left-[272px]
-          rounded-3xl bg-[#FAF7F2] text-brown-900 shadow-2xl border border-brown-900/15
+          rounded-3xl bg-cream text-brown-900 shadow-2xl border border-brown-900/15
           overflow-hidden animate-in fade-in slide-in-from-bottom-3 duration-200
           select-none font-body max-h-[88vh] overflow-y-auto
         "
@@ -184,10 +184,10 @@ export default function ProfilePopover({
           boxShadow: "0 20px 40px -15px rgba(59, 42, 32, 0.35), 0 0 0 1px rgba(59, 42, 32, 0.08)",
         }}
       >
-        {/* ── 1. Top Banner (Discord Style with ZYBA Palette) ───────── */}
-        <div className="h-24 w-full bg-gradient-to-tr from-[#E67E22] via-[#F2884B] to-[#8FAE5D] relative overflow-hidden">
+        {/* ── 1. Top Banner (Warm Brand Gradient) ───────── */}
+        <div className="h-24 w-full bg-gradient-to-r from-orange-500 to-green-500 relative overflow-hidden">
         {/* Subtle decorative background pattern */}
-        <div className="absolute inset-0 opacity-15 bg-[radial-gradient(#FAF7F2_1px,transparent_1px)] [background-size:12px_12px]" />
+        <div className="absolute inset-0 opacity-15 bg-[radial-gradient(#F7F2E7_1px,transparent_1px)] [background-size:12px_12px]" />
         
         {/* Top-Right Badge: ZYBA PRO / FREE */}
         <div className="absolute top-2.5 right-3 flex items-center gap-1.5 z-10">
@@ -216,7 +216,7 @@ export default function ProfilePopover({
             }}
             title="Klik untuk edit profil"
           >
-            <div className="w-20 h-20 rounded-full bg-[#FAF7F2] p-1.5 shadow-lg border-4 border-[#FAF7F2] relative">
+            <div className="w-20 h-20 rounded-full bg-cream p-1.5 shadow-lg border-4 border-cream relative">
               <UserAvatar
                 src={user.avatarUrl}
                 name={user.name}
@@ -232,16 +232,16 @@ export default function ProfilePopover({
 
             {/* Discord-style Status Icon at 4 o'clock */}
             <div
-              className={`absolute bottom-1.5 right-1.5 w-5 h-5 rounded-full border-[3px] border-[#FAF7F2] flex items-center justify-center shadow-xs ${statusColors[onlineStatus]}`}
+              className={`absolute bottom-1.5 right-1.5 w-5 h-5 rounded-full border-[3px] border-cream flex items-center justify-center shadow-xs ${statusColors[onlineStatus]}`}
             >
               {onlineStatus === "dnd" && (
                 <div className="w-2 h-0.5 bg-white rounded-full" />
               )}
               {onlineStatus === "idle" && (
-                <div className="w-2 h-2 rounded-full border-r border-b border-[#FAF7F2] -rotate-45" />
+                <div className="w-2 h-2 rounded-full border-r border-b border-cream -rotate-45" />
               )}
               {onlineStatus === "invisible" && (
-                <div className="w-1.5 h-1.5 rounded-full bg-[#FAF7F2]" />
+                <div className="w-1.5 h-1.5 rounded-full bg-cream" />
               )}
             </div>
           </div>

@@ -203,7 +203,7 @@ export default function CommunityActivityView() {
                 )}
 
                 {n.targetText && (
-                  <p className="text-xs text-brown-700/80 mt-1 line-clamp-2 bg-[#FAF7F2] p-2 rounded-xl border border-brown-900/5">
+                  <p className="text-xs text-brown-700/80 mt-1 line-clamp-2 bg-cream p-2 rounded-xl border border-brown-900/5">
                     {n.targetText}
                   </p>
                 )}

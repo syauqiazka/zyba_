@@ -413,7 +413,7 @@ const config = {
       "value": "prisma-client-js"
     },
     "output": {
-      "value": "C:\\Users\\PC 1\\Documents\\Syauqi\\zyba\\zyba_\\src\\generated\\account-client",
+      "value": "E:\\syauqi\\zyba_\\zyba_\\src\\generated\\account-client",
       "fromEnvVar": null
     },
     "config": {
@@ -439,12 +439,11 @@ const config = {
       }
     ],
     "previewFeatures": [],
-    "sourceFilePath": "C:\\Users\\PC 1\\Documents\\Syauqi\\zyba\\zyba_\\prisma\\account\\schema.prisma",
+    "sourceFilePath": "E:\\syauqi\\zyba_\\zyba_\\prisma\\account\\schema.prisma",
     "isCustomOutput": true
   },
   "relativeEnvPaths": {
-    "rootEnvPath": null,
-    "schemaEnvPath": "../../../.env"
+    "rootEnvPath": null
   },
   "relativePath": "../../../prisma/account",
   "clientVersion": "5.22.0",

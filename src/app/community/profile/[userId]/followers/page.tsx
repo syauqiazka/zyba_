@@ -42,7 +42,7 @@ export default function FollowersPage() {
         ) : (
           <div className="bg-white rounded-2xl border border-brown-900/10 divide-y divide-brown-900/6">
             {followers.map((f) => (
-              <Link key={f.userId} href={`/community/profile/${f.userId}`} className="flex items-center gap-3 px-4 py-3 hover:bg-[#faf7f2]/50 transition-colors">
+              <Link key={f.userId} href={`/community/profile/${f.userId}`} className="flex items-center gap-3 px-4 py-3 hover:bg-cream/50 transition-colors">
                 <div className="w-10 h-10 rounded-full bg-cream border border-brown-900/10 flex items-center justify-center font-bold text-sm shrink-0">
                   {f.name ? f.name.split(" ").map((n: string) => n[0]).join("").toUpperCase().slice(0, 2) : f.username?.slice(0, 2).toUpperCase() || "?"}
                 </div>

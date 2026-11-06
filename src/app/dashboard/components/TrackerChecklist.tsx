@@ -31,7 +31,7 @@ export default function TrackerChecklist({
             Daftar Rutinitas Harian
           </h2>
           <p className="text-xs text-brown-700 mt-0.5">
-            Selesaikan rutinitas harianmu untuk menjaga Skor Zyba tetap optimal.
+            Aktivitas mikro untuk merawat keseimbangan emosional dan fisikmu hari ini.
           </p>
         </div>
 

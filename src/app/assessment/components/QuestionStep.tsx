@@ -153,7 +153,7 @@ export default function QuestionStep({
                     value={age}
                     onChange={(e) => setAge(e.target.value.replace(/[^0-9]/g, ""))}
                     placeholder="Contoh: 21"
-                    className="w-full mt-1.5 rounded-2xl border border-brown-900/12 bg-[#fbf9f5] px-4 py-3.5 text-xs text-brown-900 font-medium placeholder:text-brown-700/35 outline-none transition-all focus:border-orange-500/60 focus:bg-white focus:ring-4 focus:ring-orange-500/10"
+                    className="w-full mt-1.5 rounded-2xl border border-brown-900/12 bg-cream px-4 py-3.5 text-xs text-brown-900 font-medium placeholder:text-brown-700/35 outline-none transition-all focus:border-orange-500/60 focus:bg-white focus:ring-4 focus:ring-orange-500/10"
                   />
                   {ageError ? (
                     <span className="text-[11px] font-semibold text-red-500 mt-1 block">
@@ -173,7 +173,7 @@ export default function QuestionStep({
                     value={weight}
                     onChange={(e) => setWeight(e.target.value.replace(/[^0-9]/g, ""))}
                     placeholder="Contoh: 65"
-                    className="w-full mt-1.5 rounded-2xl border border-brown-900/12 bg-[#fbf9f5] px-4 py-3.5 text-xs text-brown-900 font-medium placeholder:text-brown-700/35 outline-none transition-all focus:border-orange-500/60 focus:bg-white focus:ring-4 focus:ring-orange-500/10"
+                    className="w-full mt-1.5 rounded-2xl border border-brown-900/12 bg-cream px-4 py-3.5 text-xs text-brown-900 font-medium placeholder:text-brown-700/35 outline-none transition-all focus:border-orange-500/60 focus:bg-white focus:ring-4 focus:ring-orange-500/10"
                   />
                   <span className="text-[10px] text-brown-700/60 mt-1 block">
                     Estimasi berat badan dalam kilogram
@@ -304,7 +304,7 @@ export default function QuestionStep({
                 value={customPhysicalSymptom}
                 onChange={(e) => setCustomPhysicalSymptom(e.target.value)}
                 placeholder="Ketik gejala fisik lain jika ada (misal: asam lambung, tremor, mual)..."
-                className="w-full rounded-2xl border border-brown-900/12 bg-[#fbf9f5] px-4 py-3.5 text-xs text-brown-900 font-medium placeholder:text-brown-700/35 outline-none transition-all focus:border-orange-500/60 focus:bg-white focus:ring-4 focus:ring-orange-500/10"
+                className="w-full rounded-2xl border border-brown-900/12 bg-cream px-4 py-3.5 text-xs text-brown-900 font-medium placeholder:text-brown-700/35 outline-none transition-all focus:border-orange-500/60 focus:bg-white focus:ring-4 focus:ring-orange-500/10"
               />
               <span className="text-[10px] text-brown-700/60">
                 💡 Kosongkan dan langsung klik Lanjut jika pilihan di atas sudah mencukupi.
@@ -481,7 +481,7 @@ export default function QuestionStep({
                 value={customMentalSymptom}
                 onChange={(e) => setCustomMentalSymptom(e.target.value)}
                 placeholder="Ketik gejala mental lain jika ada (misal: overthinking larut malam, panik, mudah sensitif)..."
-                className="w-full rounded-2xl border border-brown-900/12 bg-[#fbf9f5] px-4 py-3.5 text-xs text-brown-900 font-medium placeholder:text-brown-700/35 outline-none transition-all focus:border-orange-500/60 focus:bg-white focus:ring-4 focus:ring-orange-500/10"
+                className="w-full rounded-2xl border border-brown-900/12 bg-cream px-4 py-3.5 text-xs text-brown-900 font-medium placeholder:text-brown-700/35 outline-none transition-all focus:border-orange-500/60 focus:bg-white focus:ring-4 focus:ring-orange-500/10"
               />
               <span className="text-[10px] text-brown-700/60">
                 💡 Kosongkan dan langsung klik Lanjut jika pilihan di atas sudah mencukupi.
@@ -511,7 +511,7 @@ export default function QuestionStep({
               onChange={(e) => setExpressionText(e.target.value)}
               rows={4}
               placeholder="Contoh: Akhir-akhir ini saya merasa sedikit lelah karena beban tugas kuliah/kerja menumpuk dan jam tidur berkurang..."
-              className="w-full rounded-2xl border border-brown-900/12 bg-[#fbf9f5] p-4 text-xs font-medium text-brown-900 placeholder:text-brown-700/35 outline-none transition-all focus:border-green-500/60 focus:bg-white focus:ring-4 focus:ring-green-500/10"
+              className="w-full rounded-2xl border border-brown-900/12 bg-cream p-4 text-xs font-medium text-brown-900 placeholder:text-brown-700/35 outline-none transition-all focus:border-green-500/60 focus:bg-white focus:ring-4 focus:ring-green-500/10"
             />
             <span className="text-[10px] text-brown-700/70">
               *Teks ini diproses secara rahasia oleh sistem Zyba AI untuk melengkapi evaluasi skor awalmu.

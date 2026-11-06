@@ -121,7 +121,7 @@ export default function CompanionSidebar({
   // ── When collapsed, show a slim icon rail ───────────────────────────────
   if (!sidebarVisible) {
     return (
-      <aside className="flex flex-col w-14 shrink-0 bg-[#FAF7F2] border-r border-brown-900/10 h-screen items-center py-3 gap-2 select-none transition-all duration-300 z-20">
+      <aside className="flex flex-col w-14 shrink-0 bg-cream border-r border-brown-900/10 h-screen items-center py-3 gap-2 select-none transition-all duration-300 z-20">
         {/* Back to Dashboard */}
         <Link
           href="/dashboard"
@@ -171,7 +171,7 @@ export default function CompanionSidebar({
   }
 
   return (
-    <aside className="flex flex-col w-[82vw] max-w-[290px] md:w-64 lg:w-72 shrink-0 bg-[#FAF7F2] border-r border-brown-900/10 h-screen select-none transition-all duration-300 z-60">
+    <aside className="flex flex-col w-[82vw] max-w-[290px] md:w-64 lg:w-72 shrink-0 bg-cream border-r border-brown-900/10 h-screen select-none transition-all duration-300 z-60">
       {/* ── 1. Top Header ──────────────────────────────────────────────── */}
       <div className="flex items-center justify-between px-4 py-3.5 border-b border-brown-900/8 shrink-0">
         <Link
@@ -341,7 +341,7 @@ export default function CompanionSidebar({
       </div>
 
       {/* ── 5. Bottom User Bar ───────────────────────────────────────────── */}
-      <div className="p-3 border-t border-brown-900/8 bg-[#FAF7F2] shrink-0 flex items-center justify-between">
+      <div className="p-3 border-t border-brown-900/8 bg-cream shrink-0 flex items-center justify-between">
         <button
           type="button"
           onClick={() => setShowProModal(true)}

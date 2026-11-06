@@ -155,7 +155,7 @@ export default function ProgressOverview({ data }: { data: ProgressMetricData })
         <div className="rounded-2xl border border-brown-900/10 bg-white/80 p-4 sm:p-5 flex flex-col justify-between gap-3 shadow-xs hover:border-brown-900/20 transition-colors sm:col-span-2 lg:col-span-1">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2 text-xs font-semibold text-brown-700">
-              <span className="p-1 rounded-lg bg-mood-depressed/20 text-[#6B5645]">
+              <span className="p-1 rounded-lg bg-mood-depressed/20 text-mood-neutral">
                 <Moon size={14} />
               </span>
               <span>Kualitas Istirahat</span>

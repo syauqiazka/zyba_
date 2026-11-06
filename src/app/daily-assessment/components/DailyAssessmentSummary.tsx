@@ -34,10 +34,10 @@ const MOOD_META: Record<
   string,
   { label: string; icon: React.ElementType; tint: string }
 > = {
-  DEPRESSED: { label: "Depressed", icon: CloudRain, tint: "#8B5CF6" },
-  SAD: { label: "Sedih", icon: Cloud, tint: "#F97316" },
+  DEPRESSED: { label: "Depressed", icon: CloudRain, tint: "#A99BE0" },
+  SAD: { label: "Sedih", icon: Cloud, tint: "#EE8A5E" },
   NEUTRAL: { label: "Netral", icon: Minus, tint: "#6B5645" },
-  HAPPY: { label: "Bahagia", icon: Smile, tint: "#EAB308" },
+  HAPPY: { label: "Bahagia", icon: Smile, tint: "#E8C24A" },
   OVERJOYED: { label: "Berenergi", icon: Sparkles, tint: "#8FAE5D" },
 };
 
@@ -84,12 +84,12 @@ export default function DailyAssessmentSummary({ record }: SummaryProps) {
   const futureReadinessScore = Math.round((productivityVal / 5) * 100);
 
   const indicators = [
-    { label: "Mental Wellbeing", val: mentalScore, color: "bg-[#8FAE5D]" },
-    { label: "Stress Regulation", val: stressRegulationScore, color: "bg-[#456882]" },
-    { label: "Meaning & Purpose", val: meaningScore, color: "bg-[#D4AF37]" },
-    { label: "Life Balance & Recovery", val: recoveryScore, color: "bg-[#1B3C53]" },
-    { label: "Self-Understanding", val: selfUnderstandingScore, color: "bg-[#8B5CF6]" },
-    { label: "Future Readiness", val: futureReadinessScore, color: "bg-[#F97316]" },
+    { label: "Mental Wellbeing", val: mentalScore, color: "bg-green-500" },
+    { label: "Stress Regulation", val: stressRegulationScore, color: "bg-orange-500" },
+    { label: "Meaning & Purpose", val: meaningScore, color: "bg-mood-happy" },
+    { label: "Life Balance & Recovery", val: recoveryScore, color: "bg-brown-900" },
+    { label: "Self-Understanding", val: selfUnderstandingScore, color: "bg-mood-depressed" },
+    { label: "Future Readiness", val: futureReadinessScore, color: "bg-mood-sad" },
   ];
 
   // Warm, supportive, non-clinical insight generator
@@ -123,7 +123,7 @@ export default function DailyAssessmentSummary({ record }: SummaryProps) {
       <div className="bg-white rounded-2xl p-4 sm:p-6 border border-brown-900/10 shadow-xs">
         <div className="flex items-center justify-between pb-3 border-b border-brown-900/10 mb-4">
           <div className="flex items-center gap-2">
-            <span className="text-[10px] sm:text-[11px] font-extrabold uppercase tracking-widest text-[#1B3C53] bg-[#1B3C53]/10 px-2.5 py-0.5 rounded-full">
+            <span className="text-[10px] sm:text-[11px] font-extrabold uppercase tracking-widest text-orange-500 bg-orange-100 px-2.5 py-0.5 rounded-full">
               Assessment Selesai
             </span>
             <span className="text-xs text-brown-700/70">
@@ -138,23 +138,23 @@ export default function DailyAssessmentSummary({ record }: SummaryProps) {
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
             <h2 className="font-display text-xl sm:text-2xl font-bold text-brown-900">
-              "Pencatatan Masuk Hari Ini
+              Pencatatan Masuk Hari Ini
             </h2>
             <p className="text-xs sm:text-sm text-brown-700/80 mt-0.5">
               Gambaran keseimbangan mental, fisik, dan sosialmu hari ini.
             </p>
           </div>
 
-          <div className="flex items-center gap-3 bg-[#FAF7F2] p-3 rounded-2xl border border-brown-900/10 self-start sm:self-center shrink-0">
+          <div className="flex items-center gap-3 bg-cream p-3 rounded-2xl border border-brown-900/10 self-start sm:self-center shrink-0">
             <div className="text-right">
               <span className="text-[10px] font-bold uppercase tracking-wider text-brown-700/60 block">
                 Zyba Score
               </span>
-              <span className="font-display text-2xl sm:text-3xl font-extrabold text-[#1B3C53] leading-none">
+              <span className="font-display text-2xl sm:text-3xl font-extrabold text-brown-900 leading-none">
                 {finalZybaScore}
               </span>
             </div>
-            <div className="w-9 h-9 rounded-xl bg-[#1B3C53] text-white flex items-center justify-center shrink-0">
+            <div className="w-9 h-9 rounded-xl bg-brown-900 text-cream flex items-center justify-center shrink-0">
               <MoodIcon size={20} />
             </div>
           </div>
@@ -164,7 +164,7 @@ export default function DailyAssessmentSummary({ record }: SummaryProps) {
       {/* ── 2. Compact Horizontal Bars: 6 Domains ──────────────────── */}
       <div className="bg-white rounded-2xl p-4 sm:p-5 border border-brown-900/10 shadow-xs">
         <h3 className="font-display text-xs sm:text-sm font-bold text-brown-900 mb-3 flex items-center gap-1.5">
-          <Compass size={14} className="text-[#456882]" />
+          <Compass size={14} className="text-brown-700" />
           <span>Indikator Kesejahteraan Harian</span>
         </h3>
 
@@ -188,7 +188,7 @@ export default function DailyAssessmentSummary({ record }: SummaryProps) {
 
       {/* ── 3. Today's Insight (Warm, Human, Supportive) ────────────── */}
       <div className="bg-white rounded-2xl p-4 sm:p-5 border border-brown-900/10 shadow-xs flex items-start gap-3">
-        <div className="w-8 h-8 rounded-xl bg-[#D4AF37]/15 text-[#927318] flex items-center justify-center shrink-0 mt-0.5">
+        <div className="w-8 h-8 rounded-xl bg-orange-100 text-orange-500 flex items-center justify-center shrink-0 mt-0.5">
           <Lightbulb size={18} />
         </div>
         <div className="flex-1">
@@ -204,7 +204,7 @@ export default function DailyAssessmentSummary({ record }: SummaryProps) {
       {/* ── 4. Reflection Quote Box ─────────────────────────────────── */}
       {record.reflection && (
         <div className="bg-white rounded-2xl p-4 border border-brown-900/10 shadow-xs flex items-start gap-3">
-          <Quote size={16} className="text-[#1B3C53] shrink-0 mt-0.5" />
+          <Quote size={16} className="text-brown-900 shrink-0 mt-0.5" />
           <div className="flex-1">
             <span className="text-[10px] font-extrabold uppercase tracking-wider text-brown-700/60 block mb-1">
               Refleksi Hari Ini

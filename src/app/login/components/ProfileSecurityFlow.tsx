@@ -355,7 +355,7 @@ export default function ProfileSecurityFlow({
       {step === "SELECT_AVATAR" && (
         <div className="flex flex-col">
           {/* Header Kubah Organik Hijau */}
-          <div className="relative w-full bg-[#E2EBD2] pt-8 pb-10 px-6 flex flex-col items-center">
+          <div className="relative w-full bg-green-100 pt-8 pb-10 px-6 flex flex-col items-center">
             <span className="text-xs font-bold uppercase tracking-widest text-brown-700/70">
               Langkah 6 dari 6 • Foto Profil
             </span>
@@ -366,7 +366,7 @@ export default function ProfileSecurityFlow({
 
           <div className="p-4 sm:p-8 flex flex-col items-center gap-6 bg-white -mt-4 rounded-t-3xl z-10 text-center">
             {/* Avatar Preview Besar dengan Ring Ornamen khas Figma */}
-            <div className="relative w-28 h-28 rounded-full bg-gradient-to-tr from-[#E2EBD2] to-orange-100 border-4 border-white shadow-xl flex items-center justify-center text-5xl">
+            <div className="relative w-28 h-28 rounded-full bg-gradient-to-tr from-green-100 to-orange-100 border-4 border-white shadow-xl flex items-center justify-center text-5xl">
               <span>{AVATAR_EMOJI_MAP[avatar] || "🦊"}</span>
               <div className="absolute -bottom-1 -right-1 w-8 h-8 rounded-full bg-orange-500 text-white flex items-center justify-center text-xs font-bold shadow-sm">
                 ✨
@@ -418,7 +418,7 @@ export default function ProfileSecurityFlow({
       {step === "PROFILE_SETUP" && (
         <div className="flex flex-col">
           {/* Header Kubah dengan Avatar Lingkaran di tengah persis Figma Frame Pengaturan Profil */}
-          <div className="relative w-full bg-[#E2EBD2] pt-6 pb-12 px-6 flex flex-col items-center">
+          <div className="relative w-full bg-green-100 pt-6 pb-12 px-6 flex flex-col items-center">
             <button
               type="button"
               onClick={() => setStep("PROFILE_SETUP")}
@@ -723,7 +723,7 @@ export default function ProfileSecurityFlow({
       {/* ========================================================================= */}
       {step === "PASSWORD_STRENGTH" && (
         <div className="flex flex-col">
-          <div className="relative w-full bg-[#E2EBD2] pt-6 pb-8 px-6 flex flex-col items-center">
+          <div className="relative w-full bg-green-100 pt-6 pb-8 px-6 flex flex-col items-center">
             <button
               type="button"
               onClick={() => setStep("PROFILE_SETUP")}
@@ -883,7 +883,7 @@ export default function ProfileSecurityFlow({
       {/* ========================================================================= */}
       {step === "OTP_VERIFY" && (
         <div className="flex flex-col">
-          <div className="relative w-full bg-[#E2EBD2] pt-6 pb-8 px-6 flex flex-col items-center">
+          <div className="relative w-full bg-green-100 pt-6 pb-8 px-6 flex flex-col items-center">
             <button
               type="button"
               onClick={() => { setStep("PASSWORD_STRENGTH"); setOtpError(""); }}
@@ -982,7 +982,7 @@ export default function ProfileSecurityFlow({
       {/* ========================================================================= */}
       {step === "FINGERPRINT" && (
         <div className="flex flex-col">
-          <div className="relative w-full bg-[#E2EBD2] pt-6 pb-8 px-6 flex flex-col items-center">
+          <div className="relative w-full bg-green-100 pt-6 pb-8 px-6 flex flex-col items-center">
             <button
               type="button"
               onClick={() => setStep("PASSWORD_STRENGTH")}
@@ -1022,7 +1022,7 @@ export default function ProfileSecurityFlow({
               />
 
               {isScanning && (
-                <div className="absolute inset-x-2 h-1 bg-orange-500 rounded-full animate-bounce" />
+                <div className="absolute inset-x-2 h-1 bg-orange-500 rounded-full motion-safe:animate-pulse" />
               )}
             </button>
 
@@ -1057,7 +1057,7 @@ export default function ProfileSecurityFlow({
       {/* ========================================================================= */}
       {step === "NOTIFICATIONS" && (
         <div className="flex flex-col">
-          <div className="relative w-full bg-[#E2EBD2] pt-6 pb-8 px-6 flex flex-col items-center">
+          <div className="relative w-full bg-green-100 pt-6 pb-8 px-6 flex flex-col items-center">
             <button
               type="button"
               onClick={() => setStep("FINGERPRINT")}
@@ -1168,7 +1168,7 @@ export default function ProfileSecurityFlow({
       {/* 7. COMPILING DATA... (Orange Screen khas Figma) */}
       {/* ========================================================================= */}
       {step === "COMPILING" && (
-        <div className="w-full min-h-[460px] bg-gradient-to-br from-orange-500 to-[#F2884B] p-4 sm:p-8 flex flex-col items-center justify-center text-center text-white relative overflow-hidden">
+        <div className="w-full min-h-[460px] bg-orange-500 p-4 sm:p-8 flex flex-col items-center justify-center text-center text-white relative overflow-hidden">
           {/* Ornamen Lingkaran Halus */}
           <div className="absolute -top-12 -right-12 w-40 h-40 rounded-full bg-white/10 blur-xl pointer-events-none" />
           <div className="absolute -bottom-12 -left-12 w-40 h-40 rounded-full bg-black/10 blur-xl pointer-events-none" />
@@ -1206,7 +1206,7 @@ export default function ProfileSecurityFlow({
       {/* 8. AKUN SIAP — arahkan ke assessment dulu, bukan tampilkan skor palsu */}
       {/* ========================================================================= */}
       {step === "ALL_SET_UP" && (
-        <div className="flex flex-col bg-[#EAF2DD] min-h-[460px] p-8 items-center justify-between text-center relative overflow-hidden">
+        <div className="flex flex-col bg-green-100 min-h-[460px] p-8 items-center justify-between text-center relative overflow-hidden">
           {/* Ornamen latar */}
           <div className="absolute -top-10 -right-10 w-40 h-40 rounded-full bg-green-500/10 blur-2xl pointer-events-none" />
           <div className="absolute -bottom-10 -left-10 w-40 h-40 rounded-full bg-orange-500/10 blur-2xl pointer-events-none" />

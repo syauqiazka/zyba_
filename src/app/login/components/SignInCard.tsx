@@ -119,7 +119,7 @@ export default function SignInCard({
               }
               placeholder="nama@email.com"
               autoComplete="email"
-              className="w-full rounded-2xl border border-brown-900/12 bg-[#fbf9f5] py-3.5 pl-11 pr-4 text-sm font-medium text-brown-900 outline-none transition-all placeholder:text-brown-700/35 focus:border-orange-500/60 focus:bg-white focus:ring-4 focus:ring-orange-500/10"
+              className="w-full rounded-2xl border border-brown-900/12 bg-cream/60 py-3.5 pl-11 pr-4 text-sm font-medium text-brown-900 outline-none transition-all placeholder:text-brown-700/35 focus:border-orange-500/60 focus:bg-white focus:ring-4 focus:ring-orange-500/10"
             />
           </div>
         </label>
@@ -162,7 +162,7 @@ export default function SignInCard({
               }
               placeholder="Masukkan kata sandi"
               autoComplete="current-password"
-              className="w-full rounded-2xl border border-brown-900/12 bg-[#fbf9f5] py-3.5 pl-11 pr-12 text-sm font-medium text-brown-900 outline-none transition-all placeholder:text-brown-700/35 focus:border-orange-500/60 focus:bg-white focus:ring-4 focus:ring-orange-500/10"
+              className="w-full rounded-2xl border border-brown-900/12 bg-cream/60 py-3.5 pl-11 pr-12 text-sm font-medium text-brown-900 outline-none transition-all placeholder:text-brown-700/35 focus:border-orange-500/60 focus:bg-white focus:ring-4 focus:ring-orange-500/10"
             />
 
             <button
@@ -236,7 +236,7 @@ export default function SignInCard({
           setIsGoogleLoading(true);
           onGoogleClick();
         }}
-        className="flex min-h-12 w-full items-center justify-center gap-3 rounded-2xl border border-brown-900/12 bg-white px-4 text-sm font-bold text-brown-900 transition-all hover:border-brown-900/20 hover:bg-[#fbf9f5] disabled:cursor-not-allowed disabled:opacity-60"
+        className="flex min-h-12 w-full items-center justify-center gap-3 rounded-2xl border border-brown-900/12 bg-white px-4 text-sm font-bold text-brown-900 transition-all hover:border-brown-900/20 hover:bg-cream/60 disabled:cursor-not-allowed disabled:opacity-60"
       >
         {isGoogleLoading ? (
           <>

@@ -32,7 +32,7 @@ export default function CommunityInsightsView() {
 
         <div className="grid grid-cols-2 gap-3 mt-5">
           {STATS.map((s, i) => (
-            <div key={i} className="p-3.5 rounded-2xl bg-[#FAF7F2] border border-brown-900/6">
+            <div key={i} className="p-3.5 rounded-2xl bg-cream border border-brown-900/6">
               <p className="text-[11px] text-brown-700/70">{s.label}</p>
               <p className="font-bold text-xl text-brown-900 mt-1">{s.value}</p>
               <p className="text-[10px] font-semibold text-green-600 mt-0.5">{s.change}</p>

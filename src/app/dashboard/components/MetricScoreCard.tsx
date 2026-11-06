@@ -20,7 +20,7 @@ export default function MetricScoreCard({
 
   // Warna dinamis sesuai rentang skor
   const ringColor = !isEvaluated
-    ? "#D8E3C6"
+    ? "#E4EED2"
     : validScore >= 80
     ? "#8FAE5D"
     : validScore >= 60
@@ -52,7 +52,7 @@ export default function MetricScoreCard({
             cx="72"
             cy="72"
             r="60"
-            stroke="#F5EFE6"
+            stroke="#F7F2E7"
             strokeWidth="12"
             fill="transparent"
           />

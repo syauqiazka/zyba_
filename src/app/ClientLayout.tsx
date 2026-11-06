@@ -56,24 +56,14 @@ function SidebarSkeleton() {
 
 function PageLoadingFallback() {
   return (
-    <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4 animate-in fade-in duration-300">
-      <div className="relative w-16 h-16 flex items-center justify-center">
-        <div className="absolute w-7 h-7 rounded-full bg-orange-500/30 -top-1 left-1/2 -translate-x-1/2 animate-ping" />
-        <div className="absolute w-7 h-7 rounded-full bg-green-500/30 -bottom-1 left-1/2 -translate-x-1/2 animate-ping delay-150" />
-        <div className="absolute w-7 h-7 rounded-full bg-orange-500/30 -left-1 top-1/2 -translate-y-1/2 animate-ping delay-300" />
-        <div className="absolute w-7 h-7 rounded-full bg-green-500/30 -right-1 top-1/2 -translate-y-1/2 animate-ping delay-500" />
-
-        <div className="relative w-12 h-12 rounded-2xl bg-cream border border-orange-500/20 shadow-md flex items-center justify-center z-10 animate-bounce">
-          <div className="absolute w-4 h-4 rounded-full bg-orange-500 -top-0.5 left-1/2 -translate-x-1/2" />
-          <div className="absolute w-4 h-4 rounded-full bg-green-500 -bottom-0.5 left-1/2 -translate-x-1/2" />
-          <div className="absolute w-4 h-4 rounded-full bg-orange-500 -left-0.5 top-1/2 -translate-y-1/2" />
-          <div className="absolute w-4 h-4 rounded-full bg-green-500 -right-0.5 top-1/2 -translate-y-1/2" />
-          <div className="w-3 h-3 rounded-full bg-brown-900 z-20" />
+    <div className="flex flex-col items-center justify-center min-h-[60vh] gap-3 animate-in fade-in duration-300">
+      <div className="relative w-12 h-12 flex items-center justify-center">
+        <div className="w-10 h-10 rounded-2xl bg-cream border border-brown-900/10 shadow-xs flex items-center justify-center motion-safe:animate-pulse">
+          <div className="w-4 h-4 rounded-full border-2 border-orange-500/30 border-t-orange-500 motion-safe:animate-spin motion-reduce:animate-none" />
         </div>
       </div>
-
-      <p className="text-xs font-semibold text-brown-700">
-        Memuat halaman...
+      <p className="text-xs font-medium text-brown-700/80">
+        Menyiapkan ruang tenang...
       </p>
     </div>
   );

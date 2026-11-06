@@ -259,7 +259,7 @@ export default function AvatarCropModal({
 
   return (
     <div className="fixed inset-0 z-[200] flex items-center justify-center p-3 sm:p-4 bg-black/85 backdrop-blur-md animate-in fade-in duration-200">
-      <div className="bg-[#1f1610] text-white w-full max-w-lg rounded-3xl overflow-hidden shadow-2xl border border-white/10 flex flex-col max-h-[92vh]">
+      <div className="bg-brown-900 text-cream w-full max-w-lg rounded-3xl overflow-hidden shadow-2xl border border-white/10 flex flex-col max-h-[92vh]">
         {/* Header Toolbar */}
         <div className="flex items-center justify-between px-4 py-3.5 border-b border-white/10 bg-brown-900/90 z-20">
           <div className="flex items-center gap-2">
@@ -344,7 +344,7 @@ export default function AvatarCropModal({
               onTouchMove={handleTouchMove}
               onTouchEnd={handleTouchEnd}
               onWheel={handleWheel}
-              className="relative w-full h-[320px] sm:h-[380px] bg-[#120d09] flex items-center justify-center overflow-hidden cursor-grab active:cursor-grabbing touch-none select-none"
+              className="relative w-full h-[320px] sm:h-[380px] bg-black/90 flex items-center justify-center overflow-hidden cursor-grab active:cursor-grabbing touch-none select-none"
             >
               {/* Invisible reference image to compute natural dimensions */}
               <img
@@ -421,7 +421,7 @@ export default function AvatarCropModal({
           <div className="p-6 flex flex-col items-center text-center gap-5 animate-in fade-in duration-200">
             {/* Cropped Preview — perfectly centered circular avatar */}
             <div className="relative">
-              <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-orange-500 shadow-xl bg-[#120d09] flex items-center justify-center">
+              <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-orange-500 shadow-xl bg-black/90 flex items-center justify-center">
                 {previewBlobUrl && (
                   <img
                     src={previewBlobUrl}

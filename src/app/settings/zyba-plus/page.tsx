@@ -128,7 +128,7 @@ export default function ZybaPlusPage() {
           <div className="mb-6 h-28 animate-pulse rounded-3xl border border-brown-900/10 bg-white" />
         ) : isPlus ? (
           /* Active Plus member card */
-          <section className="mb-6 overflow-hidden rounded-3xl border border-green-200 bg-gradient-to-br from-[#f0f7e6] via-white to-[#fef7f0] p-4 sm:p-7 shadow-sm">
+          <section className="mb-6 overflow-hidden rounded-3xl border border-green-200 bg-gradient-to-br from-green-100/50 via-white to-orange-100/40 p-4 sm:p-7 shadow-sm">
             <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
               <div className="flex items-start gap-3 sm:gap-4">
                 <div className="w-11 h-11 sm:w-12 sm:h-12 shrink-0 rounded-2xl bg-brown-900 flex items-center justify-center text-white shadow-sm">

@@ -3,6 +3,7 @@ import { useFreshDataSignal } from "@/hooks/useFreshData";
 
 import { useEffect, useState, useRef, useCallback } from "react";
 import Link from "next/link";
+import { Flame, Sparkles } from "lucide-react";
 
 import MetricScoreCard from "./components/MetricScoreCard";
 import StressLevelChart from "./components/StressLevelChart";
@@ -833,13 +834,13 @@ export default function DashboardPage() {
             >
               {userData.hasAssessment ? (
                 <>
-                  <span className="shrink-0 leading-none">🔥</span>
+                  <Flame className="w-5 h-5 text-white shrink-0" />
                   <span className="shrink-0 leading-none">
                     {userData.streak}
                   </span>
                 </>
               ) : (
-                <span className="shrink-0 leading-none">🌱</span>
+                <Sparkles className="w-5 h-5 text-white shrink-0" />
               )}
             </div>
           </div>

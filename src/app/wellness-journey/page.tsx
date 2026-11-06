@@ -328,7 +328,7 @@ export default function WellnessJourneyPage() {
         score: currentMoodScore,
         previousScore: prevMoodScore,
         icon: Heart,
-        barColor: "bg-[#8FAE5D]",
+        barColor: "bg-green-500",
       },
       {
         id: "stress-regulation",
@@ -337,7 +337,7 @@ export default function WellnessJourneyPage() {
         score: currentStressReg,
         previousScore: prevStressReg,
         icon: ShieldCheck,
-        barColor: "bg-[#456882]",
+        barColor: "bg-orange-500",
       },
       {
         id: "recovery-balance",
@@ -346,7 +346,7 @@ export default function WellnessJourneyPage() {
         score: currentRecovScore,
         previousScore: prevRecovScore,
         icon: Sparkles,
-        barColor: "bg-[#F2884B]",
+        barColor: "bg-mood-happy",
       },
       {
         id: "self-understanding",
@@ -355,7 +355,7 @@ export default function WellnessJourneyPage() {
         score: currentSelfScore,
         previousScore: prevSelfScore,
         icon: Feather,
-        barColor: "bg-[#8B5CF6]",
+        barColor: "bg-mood-depressed",
       },
     ];
 

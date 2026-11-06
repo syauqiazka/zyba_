@@ -28,27 +28,27 @@ const MOOD_MAP: Record<
   DEPRESSED: {
     emoji: "😞",
     label: "Sangat Terpuruk",
-    color: "text-[#A99BE0]",
+    color: "text-mood-depressed",
   },
   SAD: {
     emoji: "🙁",
     label: "Sedih",
-    color: "text-[#EE8A5E]",
+    color: "text-mood-sad",
   },
   NEUTRAL: {
     emoji: "😐",
     label: "Biasa",
-    color: "text-brown-700",
+    color: "text-mood-neutral",
   },
   HAPPY: {
     emoji: "🙂",
     label: "Senang",
-    color: "text-[#E8C24A]",
+    color: "text-mood-happy",
   },
   OVERJOYED: {
     emoji: "😄",
     label: "Sangat Bahagia",
-    color: "text-green-500",
+    color: "text-mood-overjoyed",
   },
 };
 

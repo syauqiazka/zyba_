@@ -72,9 +72,9 @@ export default function WellnessTrendChart({ points }: TrendChartProps) {
       min: 1,
       max: 5,
       unit: "/5.0",
-      stroke: "#456882",
-      fillStart: "rgba(69, 104, 130, 0.25)",
-      fillEnd: "rgba(69, 104, 130, 0.0)",
+      stroke: "#A99BE0",
+      fillStart: "rgba(169, 155, 224, 0.25)",
+      fillEnd: "rgba(169, 155, 224, 0.0)",
       ticks: [1, 2, 3, 4, 5],
       formatter: (v: number) => v.toFixed(1),
       statusText: (v: number) => {

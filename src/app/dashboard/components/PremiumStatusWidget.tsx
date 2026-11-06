@@ -301,10 +301,10 @@ export default function PremiumStatusWidget({ plan, subscription, premiumUntil }
 
   /* ── FREE ── */
   return (
-    <div className="relative overflow-hidden rounded-3xl border border-orange-300/40 bg-gradient-to-br from-[#fff7ed] via-white to-[#f5f0ff] shadow-sm">
-      {/* Decorative blurs */}
-      <div className="pointer-events-none absolute -right-10 -top-10 h-32 w-32 rounded-full bg-orange-200/30 blur-2xl" />
-      <div className="pointer-events-none absolute -left-6 bottom-0 h-24 w-24 rounded-full bg-purple-200/20 blur-xl" />
+    <div className="relative overflow-hidden rounded-3xl border border-orange-500/20 bg-white/95 shadow-xs">
+      {/* Decorative calm tint */}
+      <div className="pointer-events-none absolute -right-10 -top-10 h-32 w-32 rounded-full bg-orange-100/40 blur-2xl" />
+      <div className="pointer-events-none absolute -left-6 bottom-0 h-24 w-24 rounded-full bg-green-100/30 blur-xl" />
 
       {/* Main content */}
       <div className="relative flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between p-5 sm:p-6">

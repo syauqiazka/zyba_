@@ -38,12 +38,12 @@ export default function CommunityGuidelinesModal({
             <div className="absolute inset-0 bg-brown-900/55 backdrop-blur-sm" />
 
             {/* Modal */}
-            <div className="relative z-10 w-full max-w-lg flex flex-col max-h-[92svh] max-h-[92vh] overflow-hidden rounded-[28px] bg-[#F7F2E7] border border-brown-900/10 shadow-2xl">
+            <div className="relative z-10 w-full max-w-lg flex flex-col max-h-[92svh] max-h-[92vh] overflow-hidden rounded-[28px] bg-cream border border-brown-900/10 shadow-2xl">
 
                 {/* Header */}
                 <div className="px-6 pt-6 pb-4 sm:px-8 sm:pt-8 shrink-0">
                     <div className="flex items-start gap-4">
-                        <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-[#E2EBD2] text-green-700">
+                        <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-green-100 text-green-700">
                             <ShieldCheck size={22} strokeWidth={2} />
                         </div>
 
@@ -316,7 +316,7 @@ export default function CommunityGuidelinesModal({
                         </section>
 
                         {/* Version */}
-                        <div className="rounded-xl border border-brown-900/10 bg-[#F7F2E7] px-4 py-3">
+                        <div className="rounded-xl border border-brown-900/10 bg-cream px-4 py-3">
                             <p className="text-[10px] leading-5 text-brown-700/60">
                                 Community Guidelines Version:{" "}
                                 <strong>1.0</strong>

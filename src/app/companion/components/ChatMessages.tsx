@@ -122,7 +122,7 @@ export default function ChatMessages({
               </button>
 
               {setChatMode && (
-                <div className="flex bg-[#F5EFEB] rounded-full p-0.5 border border-brown-900/8 shrink-0">
+                <div className="flex bg-cream rounded-full p-0.5 border border-brown-900/8 shrink-0">
                   <button
                     type="button"
                     onClick={() => setChatMode("curhat")}

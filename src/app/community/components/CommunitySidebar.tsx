@@ -206,7 +206,7 @@ export default function CommunitySidebar({ onClose }: { onClose?: () => void }) 
     }
 
     return (
-      <span className="absolute top-1 right-2 min-w-[16px] h-4 px-1 rounded-full bg-orange-500 text-white text-[9px] flex items-center justify-center font-bold border border-[#FAF7F2]">
+      <span className="absolute top-1 right-2 min-w-[16px] h-4 px-1 rounded-full bg-orange-500 text-white text-[9px] flex items-center justify-center font-bold border border-cream">
         {badgeText}
       </span>
     );
@@ -217,7 +217,7 @@ export default function CommunitySidebar({ onClose }: { onClose?: () => void }) 
       onMouseEnter={() => isDesktop && setExpanded(true)}
       onMouseLeave={() => isDesktop && setExpanded(false)}
       style={{ width: isDesktop ? (expanded ? 240 : 64) : 260 }}
-      className="flex flex-col shrink-0 bg-[#FAF7F2] border-r border-brown-900/10 h-[100dvh] min-h-0 select-none transition-[width] duration-300 ease-in-out overflow-hidden z-30 relative shadow-lg md:shadow-none"
+      className="flex flex-col shrink-0 bg-cream border-r border-brown-900/10 h-[100dvh] min-h-0 select-none transition-[width] duration-300 ease-in-out overflow-hidden z-30 relative shadow-lg md:shadow-none"
     >
       {/* Mobile close button */}
       {onClose && (

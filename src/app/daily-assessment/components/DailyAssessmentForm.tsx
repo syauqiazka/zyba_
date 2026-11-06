@@ -131,50 +131,50 @@ const RITUAL_MOODS = [
     label: "Tertekan",
     sub: "Sangat lelah & berat",
     icon: CloudRain,
-    color: "#8B5CF6", // purple
-    bg: "bg-purple-50",
-    border: "border-purple-300",
-    text: "text-purple-700",
+    color: "#A99BE0", // mood.depressed
+    bg: "bg-mood-depressed/10",
+    border: "border-mood-depressed/30",
+    text: "text-mood-depressed",
   },
   {
     value: "SAD",
     label: "Sedih",
     sub: "Murung atau resah",
     icon: Cloud,
-    color: "#F97316", // orange
-    bg: "bg-orange-50",
-    border: "border-orange-300",
-    text: "text-orange-700",
+    color: "#EE8A5E", // mood.sad
+    bg: "bg-mood-sad/10",
+    border: "border-mood-sad/30",
+    text: "text-mood-sad",
   },
   {
     value: "NEUTRAL",
     label: "Biasa",
     sub: "Tenang & datar",
     icon: Minus,
-    color: "#6B5645", // brown/amber
-    bg: "bg-amber-50/60",
-    border: "border-amber-300",
-    text: "text-amber-800",
+    color: "#6B5645", // mood.neutral
+    bg: "bg-mood-neutral/10",
+    border: "border-mood-neutral/30",
+    text: "text-mood-neutral",
   },
   {
     value: "HAPPY",
     label: "Senang",
     sub: "Nyaman & bersemangat",
     icon: Smile,
-    color: "#EAB308", // warm yellow
-    bg: "bg-yellow-50",
-    border: "border-yellow-400",
-    text: "text-yellow-800",
+    color: "#E8C24A", // mood.happy
+    bg: "bg-mood-happy/10",
+    border: "border-mood-happy/30",
+    text: "text-mood-happy",
   },
   {
     value: "OVERJOYED",
     label: "Berenergi",
     sub: "Sangat antusias",
     icon: Sparkles,
-    color: "#8FAE5D", // zyba green
-    bg: "bg-green-50",
-    border: "border-green-400",
-    text: "text-green-800",
+    color: "#8FAE5D", // mood.overjoyed
+    bg: "bg-green-100",
+    border: "border-green-500/30",
+    text: "text-green-500",
   },
 ];
 
@@ -293,7 +293,7 @@ export function DailyAssessmentForm({
                 onClick={() => onChange(val)}
                 className={`h-11 sm:h-12 rounded-xl flex items-center justify-center font-display text-sm sm:text-base font-bold transition-all duration-200 border cursor-pointer ${
                   isSelected
-                    ? "bg-[#1B3C53] text-white border-[#1B3C53] shadow-sm scale-102"
+                    ? "bg-brown-900 text-cream border-brown-900 shadow-sm scale-102"
                     : "bg-white text-brown-900/80 border-brown-900/15 hover:border-brown-900/30 hover:bg-cream/40"
                 }`}
               >
@@ -316,14 +316,14 @@ export function DailyAssessmentForm({
       <div className="flex flex-col gap-3 pb-4 mb-5 border-b border-brown-900/10">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <span className="text-[10px] sm:text-[11px] font-extrabold uppercase tracking-widest text-[#1B3C53] bg-[#1B3C53]/10 px-2.5 py-0.5 rounded-full">
+            <span className="text-[10px] sm:text-[11px] font-extrabold uppercase tracking-widest text-orange-500 bg-orange-100 px-2.5 py-0.5 rounded-full">
               Check-In Harian
             </span>
             <span className="text-xs text-brown-700/70">
               Hari ini · 1–2 menit
             </span>
           </div>
-          <span className="text-xs font-bold text-[#1B3C53]">
+          <span className="text-xs font-bold text-brown-900">
             {currentStep <= 10 ? `${currentStep} dari 10` : "Refleksi"}
           </span>
         </div>
@@ -338,9 +338,9 @@ export function DailyAssessmentForm({
                 key={step}
                 className={`transition-all duration-300 rounded-full ${
                   isCurrent
-                    ? "w-5 h-2 bg-[#1B3C53]"
+                    ? "w-5 h-2 bg-brown-900"
                     : isCompleted
-                    ? "w-2 h-2 bg-[#8FAE5D]"
+                    ? "w-2 h-2 bg-green-500"
                     : "w-2 h-2 bg-brown-900/15"
                 }`}
               />
@@ -355,7 +355,7 @@ export function DailyAssessmentForm({
         {currentStep === 1 && (
           <div className="flex flex-col items-center text-center gap-4 sm:gap-5 animate-in fade-in duration-200">
             <div>
-              <span className="text-[11px] sm:text-xs font-extrabold tracking-wider uppercase text-[#456882]">
+              <span className="text-[11px] sm:text-xs font-extrabold tracking-wider uppercase text-brown-700">
                 KESEHATAN MENTAL
               </span>
               <h2 className="font-display text-lg sm:text-xl md:text-2xl font-bold text-brown-900 mt-1 max-w-[480px]">
@@ -374,7 +374,7 @@ export function DailyAssessmentForm({
                     onClick={() => handleSelectMood(m.value)}
                     className={`flex flex-col items-center justify-center p-2 sm:p-3 rounded-2xl border transition-all duration-200 cursor-pointer ${
                       isSelected
-                        ? "bg-[#1B3C53] text-white border-[#1B3C53] shadow-xs scale-103"
+                        ? "bg-brown-900 text-cream border-brown-900 shadow-xs scale-103"
                         : "bg-white text-brown-900/80 border-brown-900/15 hover:border-brown-900/30 hover:bg-cream/40"
                     }`}
                   >
@@ -400,7 +400,7 @@ export function DailyAssessmentForm({
         {currentStep === 2 && (
           <div className="flex flex-col items-center text-center gap-4 sm:gap-5 animate-in fade-in duration-200">
             <div>
-              <span className="text-[11px] sm:text-xs font-extrabold tracking-wider uppercase text-[#456882]">
+              <span className="text-[11px] sm:text-xs font-extrabold tracking-wider uppercase text-brown-700">
                 REGULASI STRES
               </span>
               <h2 className="font-display text-lg sm:text-xl md:text-2xl font-bold text-brown-900 mt-1 max-w-[480px]">
@@ -421,7 +421,7 @@ export function DailyAssessmentForm({
         {currentStep === 3 && (
           <div className="flex flex-col items-center text-center gap-4 sm:gap-5 animate-in fade-in duration-200">
             <div>
-              <span className="text-[11px] sm:text-xs font-extrabold tracking-wider uppercase text-[#456882]">
+              <span className="text-[11px] sm:text-xs font-extrabold tracking-wider uppercase text-brown-700">
                 REGULASI STRES
               </span>
               <h2 className="font-display text-lg sm:text-xl md:text-2xl font-bold text-brown-900 mt-1 max-w-[480px]">
@@ -442,7 +442,7 @@ export function DailyAssessmentForm({
         {currentStep === 4 && (
           <div className="flex flex-col items-center text-center gap-4 sm:gap-5 animate-in fade-in duration-200">
             <div>
-              <span className="text-[11px] sm:text-xs font-extrabold tracking-wider uppercase text-[#456882]">
+              <span className="text-[11px] sm:text-xs font-extrabold tracking-wider uppercase text-brown-700">
                 MAKNA & TUJUAN
               </span>
               <h2 className="font-display text-lg sm:text-xl md:text-2xl font-bold text-brown-900 mt-1 max-w-[480px]">
@@ -463,7 +463,7 @@ export function DailyAssessmentForm({
         {currentStep === 5 && (
           <div className="flex flex-col items-center text-center gap-4 sm:gap-5 animate-in fade-in duration-200">
             <div>
-              <span className="text-[11px] sm:text-xs font-extrabold tracking-wider uppercase text-[#456882]">
+              <span className="text-[11px] sm:text-xs font-extrabold tracking-wider uppercase text-brown-700">
                 KESIAPAN DIRI
               </span>
               <h2 className="font-display text-lg sm:text-xl md:text-2xl font-bold text-brown-900 mt-1 max-w-[480px]">
@@ -484,7 +484,7 @@ export function DailyAssessmentForm({
         {currentStep === 6 && (
           <div className="flex flex-col items-center text-center gap-4 sm:gap-5 animate-in fade-in duration-200">
             <div>
-              <span className="text-[11px] sm:text-xs font-extrabold tracking-wider uppercase text-[#456882]">
+              <span className="text-[11px] sm:text-xs font-extrabold tracking-wider uppercase text-brown-700">
                 KESEIMBANGAN & PEMULIHAN
               </span>
               <h2 className="font-display text-lg sm:text-xl md:text-2xl font-bold text-brown-900 mt-1 max-w-[480px]">
@@ -503,7 +503,7 @@ export function DailyAssessmentForm({
                     onClick={() => handleSelectSleep(item.rating, item.label)}
                     className={`flex sm:flex-col items-center justify-between sm:justify-center p-2.5 sm:p-3 rounded-xl border transition-all duration-200 cursor-pointer ${
                       isSelected
-                        ? "bg-[#1B3C53] text-white border-[#1B3C53] shadow-xs"
+                        ? "bg-brown-900 text-cream border-brown-900 shadow-xs"
                         : "bg-white text-brown-900 border-brown-900/15 hover:bg-cream/40"
                     }`}
                   >
@@ -525,7 +525,7 @@ export function DailyAssessmentForm({
         {currentStep === 7 && (
           <div className="flex flex-col items-center text-center gap-4 sm:gap-5 animate-in fade-in duration-200">
             <div>
-              <span className="text-[11px] sm:text-xs font-extrabold tracking-wider uppercase text-[#456882]">
+              <span className="text-[11px] sm:text-xs font-extrabold tracking-wider uppercase text-brown-700">
                 KESEIMBANGAN & PEMULIHAN
               </span>
               <h2 className="font-display text-lg sm:text-xl md:text-2xl font-bold text-brown-900 mt-1 max-w-[480px]">
@@ -546,7 +546,7 @@ export function DailyAssessmentForm({
         {currentStep === 8 && (
           <div className="flex flex-col items-center text-center gap-4 sm:gap-5 animate-in fade-in duration-200">
             <div>
-              <span className="text-[11px] sm:text-xs font-extrabold tracking-wider uppercase text-[#456882]">
+              <span className="text-[11px] sm:text-xs font-extrabold tracking-wider uppercase text-brown-700">
                 PEMAHAMAN DIRI
               </span>
               <h2 className="font-display text-lg sm:text-xl md:text-2xl font-bold text-brown-900 mt-1 max-w-[480px]">
@@ -567,7 +567,7 @@ export function DailyAssessmentForm({
         {currentStep === 9 && (
           <div className="flex flex-col items-center text-center gap-4 sm:gap-5 animate-in fade-in duration-200">
             <div>
-              <span className="text-[11px] sm:text-xs font-extrabold tracking-wider uppercase text-[#456882]">
+              <span className="text-[11px] sm:text-xs font-extrabold tracking-wider uppercase text-brown-700">
                 KONEKSI SOSIAL
               </span>
               <h2 className="font-display text-lg sm:text-xl md:text-2xl font-bold text-brown-900 mt-1 max-w-[480px]">
@@ -588,7 +588,7 @@ export function DailyAssessmentForm({
         {currentStep === 10 && (
           <div className="flex flex-col items-center text-center gap-4 sm:gap-5 animate-in fade-in duration-200">
             <div>
-              <span className="text-[11px] sm:text-xs font-extrabold tracking-wider uppercase text-[#456882]">
+              <span className="text-[11px] sm:text-xs font-extrabold tracking-wider uppercase text-brown-700">
                 INTERAKSI KOMUNITAS
               </span>
               <h2 className="font-display text-lg sm:text-xl md:text-2xl font-bold text-brown-900 mt-1 max-w-[480px]">
@@ -609,7 +609,7 @@ export function DailyAssessmentForm({
         {currentStep === 11 && (
           <div className="flex flex-col items-center text-center gap-3 sm:gap-4 animate-in fade-in duration-200">
             <div>
-              <span className="text-[11px] sm:text-xs font-extrabold tracking-wider uppercase text-[#D4AF37]">
+              <span className="text-[11px] sm:text-xs font-extrabold tracking-wider uppercase text-orange-500">
                 REFLEKSI SINGKAT
               </span>
               <h2 className="font-display text-lg sm:text-xl md:text-2xl font-bold text-brown-900 mt-1 max-w-[480px]">
@@ -626,7 +626,7 @@ export function DailyAssessmentForm({
                 onChange={(e) => setReflection(e.target.value)}
                 rows={3}
                 placeholder="Tuliskan apa yang kamu syukuri atau hal yang ingin kamu luapkan hari ini..."
-                className="w-full rounded-xl border border-brown-900/15 p-3 text-xs sm:text-sm text-brown-900 placeholder:text-brown-700/40 focus:outline-hidden focus:ring-1 focus:ring-[#1B3C53] resize-none"
+                className="w-full rounded-xl border border-brown-900/15 p-3 text-xs sm:text-sm text-brown-900 placeholder:text-brown-700/40 focus:outline-hidden focus:ring-1 focus:ring-orange-500/40 resize-none"
               />
             </div>
           </div>
@@ -653,7 +653,7 @@ export function DailyAssessmentForm({
           <button
             type="button"
             onClick={handleNext}
-            className="h-10 sm:h-11 px-5 sm:px-6 rounded-full bg-[#1B3C53] text-white text-xs sm:text-sm font-semibold hover:bg-[#1B3C53]/90 transition-all flex items-center gap-1.5 cursor-pointer shadow-xs"
+            className="h-10 sm:h-11 px-5 sm:px-6 rounded-full bg-brown-900 text-cream text-xs sm:text-sm font-semibold hover:bg-brown-900/90 transition-all flex items-center gap-1.5 cursor-pointer shadow-xs"
           >
             <span>{currentStep === 10 ? "Lanjut ke Refleksi" : "Lanjut"}</span>
             <ArrowRight size={14} />
@@ -663,7 +663,7 @@ export function DailyAssessmentForm({
             type="button"
             onClick={() => handleSubmit()}
             disabled={isSubmitting}
-            className="h-10 sm:h-11 px-6 sm:px-7 rounded-full bg-[#1B3C53] text-white text-xs sm:text-sm font-semibold hover:bg-[#1B3C53]/90 transition-all flex items-center gap-2 cursor-pointer shadow-xs disabled:opacity-50"
+            className="h-10 sm:h-11 px-6 sm:px-7 rounded-full bg-orange-500 text-white text-xs sm:text-sm font-semibold hover:bg-orange-500/90 transition-all flex items-center gap-2 cursor-pointer shadow-xs disabled:opacity-50"
           >
             {isSubmitting ? (
               <span className="flex items-center gap-2">

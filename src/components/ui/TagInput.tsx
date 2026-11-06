@@ -59,7 +59,7 @@ export default function TagInput({
     <div className={`flex flex-col gap-1.5 ${className}`}>
       {/* Container chip + input */}
       <div
-        className="min-h-[52px] w-full rounded-2xl border border-brown-900/12 bg-[#fbf9f5] px-3 py-2.5 flex flex-wrap gap-2 items-center cursor-text transition-all focus-within:border-orange-500/60 focus-within:bg-white focus-within:ring-4 focus-within:ring-orange-500/10"
+        className="min-h-[52px] w-full rounded-2xl border border-brown-900/12 bg-cream px-3 py-2.5 flex flex-wrap gap-2 items-center cursor-text transition-all focus-within:border-orange-500/60 focus-within:bg-white focus-within:ring-4 focus-within:ring-orange-500/10"
         onClick={() => inputRef.current?.focus()}
       >
         {/* Chips */}

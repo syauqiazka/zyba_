@@ -91,7 +91,7 @@ export default function WelcomeTour() {
         </div>
 
         {/* Big Emoji Illustration */}
-        <div className="w-24 h-24 md:w-32 md:h-32 rounded-3xl bg-cream border-2 border-brown-900/10 shadow-md flex items-center justify-center text-5xl md:text-6xl animate-bounce duration-1000 my-2">
+        <div className="w-24 h-24 md:w-32 md:h-32 rounded-3xl bg-cream border-2 border-brown-900/10 shadow-md flex items-center justify-center text-5xl md:text-6xl motion-safe:animate-pulse motion-reduce:animate-none my-2">
           {slide.emoji}
         </div>
 

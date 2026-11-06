@@ -1,6 +1,7 @@
 "use client";
 
 import { CRISIS_RESOURCES } from "@/backend/crisis/crisisDetection";
+import { HeartHandshake, X } from "lucide-react";
 
 interface CrisisBannerProps {
   onClose: () => void;
@@ -9,7 +10,7 @@ interface CrisisBannerProps {
 /**
  * Banner krisis tenang sesuai AGENTS.md Bagian 10.5 & 12:
  * - Muncul di atas jendela chat (bukan popup mengagetkan/modal interuptif).
- * - Background lembut netral (bukan warna promosi orange-500).
+ * - Background lembut netral cream (bukan warna promosi orange-500).
  * - Teks tenang, suportif, tanpa nuansa playful/marketing.
  * - Tidak auto-dismiss (tetap ada sampai pengguna menutup secara manual).
  */
@@ -17,18 +18,16 @@ export default function CrisisBanner({ onClose }: CrisisBannerProps) {
   return (
     <div
       role="alert"
-      className="mx-6 mt-4 p-4 rounded-2xl bg-[#F0EDE4] border border-brown-900/15 text-brown-900 shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 transition-all"
+      className="mx-6 mt-4 p-4 rounded-2xl bg-cream border border-brown-900/15 text-brown-900 shadow-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 transition-all"
     >
       <div className="flex items-start gap-3">
-        <span className="text-xl shrink-0 mt-0.5" aria-hidden="true">
-          🌱
-        </span>
+        <HeartHandshake className="w-5 h-5 text-green-500 shrink-0 mt-0.5" aria-hidden="true" />
         <div className="flex flex-col gap-1">
           <div className="flex items-center gap-2">
             <h4 className="font-display font-bold text-xs text-brown-900">
               Layanan Pendampingan & Bantuan Bebas Pulsa
             </h4>
-            <span className="text-[10px] bg-white/80 px-2 py-0.5 rounded-full border border-brown-900/10 text-brown-700 font-medium">
+            <span className="text-[10px] bg-white px-2 py-0.5 rounded-full border border-brown-900/10 text-brown-700 font-medium">
               24/7 Resmi
             </span>
           </div>
@@ -52,10 +51,11 @@ export default function CrisisBanner({ onClose }: CrisisBannerProps) {
       <button
         onClick={onClose}
         type="button"
-        className="self-end sm:self-center shrink-0 px-3 py-1.5 rounded-pill border border-brown-900/20 text-xs font-semibold text-brown-700 hover:bg-white hover:text-brown-900 transition-colors"
+        className="self-end sm:self-center shrink-0 px-3 py-1.5 rounded-pill border border-brown-900/20 text-xs font-semibold text-brown-700 hover:bg-white hover:text-brown-900 transition-colors flex items-center gap-1 cursor-pointer"
         aria-label="Tutup banner pendampingan"
       >
-        ✕ Tutup
+        <X size={13} />
+        <span>Tutup</span>
       </button>
     </div>
   );

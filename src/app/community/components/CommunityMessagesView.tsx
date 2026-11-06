@@ -256,7 +256,7 @@ export default function CommunityMessagesView() {
                 type="button"
                 onClick={() => setActiveConvId(c.id)}
                 className={`w-full flex items-center gap-3 px-4 py-3 transition-colors text-left border-b border-brown-900/4 ${
-                  activeConvId === c.id ? "bg-orange-50/60 border-l-4 border-l-orange-500" : "hover:bg-cream/40"
+                  activeConvId === c.id ? "bg-orange-100/60 text-brown-900 font-semibold" : "hover:bg-cream/50 text-brown-700"
                 }`}
               >
                 {/* Avatar with status dot for current user's conversations */}

@@ -1,6 +1,7 @@
 "use client";
 
 import { CRISIS_RESOURCES } from "@/backend/crisis/crisisDetection";
+import { HeartHandshake } from "lucide-react";
 
 interface Props {
   crisisAlert: boolean;
@@ -14,8 +15,8 @@ export default function CrisisModal({ crisisAlert, setCrisisAlert }: Props) {
     <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm flex items-center justify-center p-4">
       <div className="bg-white rounded-3xl p-8 max-w-md w-full shadow-2xl border border-brown-900/10 flex flex-col gap-5">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-2xl bg-orange-100 text-orange-500 font-bold flex items-center justify-center text-xl">
-            🤝
+          <div className="w-10 h-10 rounded-2xl bg-orange-100 flex items-center justify-center shrink-0">
+            <HeartHandshake className="w-5 h-5 text-orange-500" />
           </div>
           <div>
             <h3 className="font-display font-extrabold text-lg text-brown-900">

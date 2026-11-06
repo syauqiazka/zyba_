@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import { CheckCircle2 } from "lucide-react";
 
 interface CompletedStateProps {
   score?: number;
@@ -25,11 +26,13 @@ export default function CompletedState({ score = 80, condition = "Kondisi Baik" 
     <div className="flex flex-col items-center justify-center my-auto text-center gap-6 py-8 animate-in fade-in zoom-in duration-300">
       {/* Celebration banner */}
       <div className="flex flex-col items-center gap-2">
-        <div className="text-5xl animate-bounce">🎉</div>
+        <div className="w-14 h-14 rounded-3xl bg-green-100 flex items-center justify-center shadow-xs">
+          <CheckCircle2 className="w-8 h-8 text-green-500" />
+        </div>
         <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-green-100 border border-green-500/30">
-          <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+          <span className="w-2 h-2 rounded-full bg-green-500" />
           <span className="text-xs font-bold uppercase tracking-wider text-green-600">
-            Asesmen Selesai! ✧(≧∀≦)✧
+            Asesmen Berhasil Diselesaikan
           </span>
         </div>
       </div>

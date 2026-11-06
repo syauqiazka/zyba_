@@ -160,7 +160,7 @@ export default function LogSessionModal({
                     onClick={() => setSelectedType(type)}
                     className={`py-3 px-2 rounded-2xl border text-center flex flex-col items-center gap-1.5 transition-all cursor-pointer ${
                       isSelected
-                        ? "bg-[#1B3C53] text-white border-[#1B3C53] shadow-sm scale-102"
+                        ? "bg-brown-900 text-cream border-brown-900 shadow-sm scale-102"
                         : "bg-cream/40 text-brown-900 border-brown-900/10 hover:border-brown-900/30"
                     }`}
                   >
@@ -176,7 +176,7 @@ export default function LogSessionModal({
           <div className="flex flex-col gap-2.5">
             <div className="flex items-center justify-between">
               <label className="text-xs font-bold text-brown-900 flex items-center gap-1.5">
-                <Timer size={14} className="text-[#456882]" />
+                <Timer size={14} className="text-brown-700" />
                 <span>Durasi Aktivitas (Menit)</span>
               </label>
               <div className="flex items-center gap-1.5">
@@ -186,7 +186,7 @@ export default function LogSessionModal({
                   max="300"
                   value={customInput}
                   onChange={handleCustomChange}
-                  className="w-16 h-8 text-center text-xs font-bold rounded-lg border border-brown-900/20 bg-cream/30 text-brown-900 focus:outline-hidden focus:ring-1 focus:ring-[#1B3C53]"
+                  className="w-16 h-8 text-center text-xs font-bold rounded-lg border border-brown-900/20 bg-cream/30 text-brown-900 focus:outline-hidden focus:ring-1 focus:ring-orange-500/40"
                 />
                 <span className="text-xs font-semibold text-brown-700">menit</span>
               </div>
@@ -215,7 +215,7 @@ export default function LogSessionModal({
           </div>
 
           {/* 3. Real-Time Calculation Card */}
-          <div className="bg-[#FAF7F2] rounded-2xl p-4 border border-brown-900/10 flex flex-col gap-3">
+          <div className="bg-cream rounded-2xl p-4 border border-brown-900/10 flex flex-col gap-3">
             <div className="flex items-center justify-between">
               <span className="text-[11px] font-bold text-brown-700/70 uppercase tracking-wider">
                 Kalkulasi Real-Time
@@ -228,7 +228,7 @@ export default function LogSessionModal({
             <div className="grid grid-cols-3 gap-2 pt-1 border-t border-brown-900/5 text-center">
               {/* Langkah / Reps */}
               <div className="flex flex-col items-center bg-white p-2.5 rounded-xl border border-brown-900/5">
-                <Footprints size={15} className="text-[#8FAE5D] mb-1" />
+                <Footprints size={15} className="text-green-500 mb-1" />
                 <span className="text-[10px] text-brown-700/70 font-medium">
                   {selectedType === "WORKOUT" ? "Setara Langkah" : "Estimasi Langkah"}
                 </span>
@@ -251,9 +251,9 @@ export default function LogSessionModal({
               {/* Jarak / Poin */}
               <div className="flex flex-col items-center bg-white p-2.5 rounded-xl border border-brown-900/5">
                 {selectedType === "WORKOUT" ? (
-                  <Flame size={15} className="text-blue-500 mb-1" />
+                  <Flame size={15} className="text-orange-500 mb-1" />
                 ) : (
-                  <MapPin size={15} className="text-[#456882] mb-1" />
+                  <MapPin size={15} className="text-brown-700 mb-1" />
                 )}
                 <span className="text-[10px] text-brown-700/70 font-medium">
                   {selectedType === "WORKOUT" ? "Poin Kebugaran" : "Jarak Tempuh"}

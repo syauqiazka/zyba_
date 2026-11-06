@@ -92,13 +92,13 @@ export default function DesktopShowcase() {
               return (
                 <div
                   key={point.title}
-                  className="flex items-center gap-3 rounded-2xl border border-brown-900/10 bg-[#fbf9f5] px-3.5 py-3"
+                  className="flex items-center gap-3 rounded-2xl border border-brown-900/10 bg-cream px-3.5 py-3"
                 >
                   <div
                     className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ${index === 0
                       ? "bg-orange-100 text-orange-500"
                       : index === 1
-                        ? "bg-[#eee8f8] text-[#8771ad]"
+                        ? "bg-mood-depressed/20 text-mood-depressed"
                         : "bg-green-100 text-green-700"
                       }`}
                   >

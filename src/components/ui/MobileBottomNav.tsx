@@ -12,9 +12,9 @@ import {
 } from "lucide-react";
 
 const NAV_TABS = [
-  { href: "/dashboard", label: "Home", icon: Home },
-  { href: "/daily-assessment", label: "Check-In", icon: CalendarCheck },
-  { href: "/companion", label: "Companion", icon: Bot },
+  { href: "/dashboard", label: "Dashboard", icon: Home },
+  { href: "/daily-assessment", label: "Mood", icon: CalendarCheck },
+  { href: "/companion", label: "Tanya Zyba", icon: Bot },
   { href: "/activity", label: "Planner", icon: Zap },
   { href: "/community", label: "Komunitas", icon: Users },
 ];
