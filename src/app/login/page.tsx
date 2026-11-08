@@ -357,7 +357,7 @@ function LoginContent({
             <div className="grid w-full items-stretch gap-8 lg:grid-cols-[1.02fr_0.78fr] xl:gap-12">
 
               {/* LEFT */}
-              <section className="hidden min-h-[650px] overflow-hidden rounded-[32px] border border-brown-900/10 bg-cream lg:flex">
+              <section className="hidden min-h-[650px] overflow-hidden rounded-[28px] border border-brown-900/10 bg-cream/70 lg:flex">
                 <DesktopShowcase />
               </section>
 

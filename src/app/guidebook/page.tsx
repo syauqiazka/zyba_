@@ -91,7 +91,7 @@ const sections = [
 export default function GuidebookPage() {
   return (
     <div className="mx-auto flex w-full max-w-5xl flex-col gap-8 pb-12">
-      <section className="overflow-hidden rounded-[32px] border border-brown-900/10 bg-white/95 p-6 shadow-xs sm:p-8 md:p-10 relative">
+      <section className="overflow-hidden rounded-[24px] border border-brown-900/10 bg-white/95 p-6 shadow-xs sm:p-8 md:p-10 relative">
         <div className="max-w-3xl">
           <span className="inline-flex items-center gap-2 rounded-full bg-brown-900 px-3 py-1.5 text-[10px] font-extrabold uppercase tracking-[0.16em] text-white">
             <BookOpen size={13} />
@@ -112,7 +112,7 @@ export default function GuidebookPage() {
           return (
             <section
               key={section.title}
-              className="rounded-[32px] border border-brown-900/10 bg-white/95 p-6 shadow-xs sm:p-7 transition-all"
+              className="rounded-[20px] border border-brown-900/10 bg-white/95 p-6 shadow-xs sm:p-7 transition-all"
             >
               <div className="flex items-start gap-3">
                 <div className="flex size-10 shrink-0 items-center justify-center rounded-2xl bg-cream text-brown-900">

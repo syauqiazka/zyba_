@@ -348,7 +348,7 @@ export default function ProfileSecurityFlow({
   };
 
   return (
-    <div className="w-full max-w-md mx-auto bg-white rounded-3xl shadow-xl border border-brown-900/10 flex flex-col transition-all duration-300 relative">
+    <div className="w-full max-w-md mx-auto bg-white/95 rounded-[24px] shadow-xs border border-brown-900/10 flex flex-col transition-all duration-300 relative overflow-hidden">
       {/* ========================================================================= */}
       {/* 1. SELECT YOUR AVATAR */}
       {/* ========================================================================= */}

@@ -134,7 +134,7 @@ export default function CommunitySearchView() {
 
       {/* Quick Topics */}
       {showSuggestions && !query && (
-        <div className="bg-white/95 rounded-[32px] border border-brown-900/10 p-5 sm:p-6 shadow-xs">
+        <div className="bg-white/95 rounded-[20px] border border-brown-900/10 p-5 sm:p-6 shadow-xs">
           <h3 className="font-bold text-xs text-brown-900 mb-3 uppercase tracking-wider">
             Tren di Komunitas ZYBA
           </h3>

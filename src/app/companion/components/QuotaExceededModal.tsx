@@ -27,8 +27,8 @@ export default function QuotaExceededModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
-      <div className="bg-cream rounded-3xl p-8 max-w-md w-full mx-4 border border-brown-900/10 shadow-2xl">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-xs">
+      <div className="bg-white rounded-[24px] p-8 max-w-md w-full mx-4 border border-brown-900/10 shadow-2xl">
         <div className="flex flex-col items-center text-center">
           {/* Icon */}
           <div className="w-16 h-16 rounded-full bg-orange-100 flex items-center justify-center mb-4">
@@ -50,7 +50,7 @@ export default function QuotaExceededModal({
 
           {/* Benefits */}
           {plan === "FREE" && (
-          <div className="bg-white/70 rounded-2xl p-4 mb-6 w-full text-left border border-brown-900/10">
+          <div className="bg-cream/60 rounded-xl p-4 mb-6 w-full text-left border border-brown-900/10">
             <p className="font-bold text-brown-900 mb-2 text-sm">Dengan Zyba Plus:</p>
             <ul className="space-y-1.5 text-sm text-brown-700">
               <li className="flex items-start gap-2">

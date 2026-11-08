@@ -234,7 +234,7 @@ export default function ForgotPasswordCard({
   }
 
   return (
-    <div className="w-full max-w-md mx-auto bg-white/95 rounded-[32px] shadow-xs border border-brown-900/10 overflow-hidden flex flex-col transition-all duration-300">
+    <div className="w-full max-w-md mx-auto bg-white/95 rounded-[24px] shadow-xs border border-brown-900/10 overflow-hidden flex flex-col transition-all duration-300">
       {/* Header */}
       <div className="relative w-full bg-green-100 pt-6 pb-8 px-6 flex flex-col items-center">
         <button

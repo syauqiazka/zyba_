@@ -161,7 +161,7 @@ export default function CompanionSidebar({
           className={`p-2 rounded-xl transition-all duration-300 ${
             isActive("chat")
               ? "bg-brown-900/8 text-brown-900"
-              : "text-brown-700/50 hover:text-brown-900 hover:bg-gradient-to-r hover:from-orange-100/80 hover:to-green-100/80"
+              : "text-brown-700/50 hover:text-brown-900 hover:bg-brown-900/5"
           }`}
         >
           <MessageSquare size={16} />
@@ -345,7 +345,7 @@ export default function CompanionSidebar({
         <button
           type="button"
           onClick={() => setShowProModal(true)}
-          className="flex items-center gap-2 hover:bg-gradient-to-r hover:from-orange-100/80 hover:to-green-100/80 hover:-translate-y-0.5 p-1.5 rounded-xl transition-all duration-300 min-w-0"
+          className="flex items-center gap-2 hover:bg-brown-900/5 hover:border-brown-900/10 p-1.5 rounded-xl border border-transparent transition-all duration-200 min-w-0"
         >
           <div className="w-6 h-6 rounded-full bg-brown-900 text-white flex items-center justify-center text-[10px] font-bold shrink-0">
             {displayInitial}

@@ -41,7 +41,7 @@ export default function BadgePickerModal({ slot, unlockedAchievements, currentBa
       <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={onClose} />
 
       {/* Modal */}
-      <div className="relative w-full sm:max-w-md bg-white rounded-t-[32px] sm:rounded-[32px] border border-brown-900/10 shadow-2xl flex flex-col max-h-[90vh] overflow-hidden animate-in slide-in-from-bottom-4 duration-300">
+      <div className="relative w-full sm:max-w-md bg-white rounded-t-[24px] sm:rounded-[24px] border border-brown-900/10 shadow-2xl flex flex-col max-h-[90vh] overflow-hidden animate-in slide-in-from-bottom-4 duration-300">
         {/* Handle */}
         <div className="flex justify-center pt-3 pb-1 sm:hidden">
           <div className="w-10 h-1 rounded-full bg-brown-900/15" />

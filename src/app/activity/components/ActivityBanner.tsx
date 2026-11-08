@@ -15,7 +15,7 @@ export default function ActivityBanner({ activityProgress, targetProgress }: Act
   });
 
   return (
-    <div className="rounded-[32px] p-6 sm:p-8 border border-brown-900/10 bg-white/95 flex flex-col gap-4 shadow-xs relative overflow-hidden">
+    <div className="rounded-[24px] p-6 sm:p-8 border border-brown-900/10 bg-white/95 flex flex-col gap-4 shadow-xs relative overflow-hidden">
       <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
         {/* Left: Label + Heading + Description */}
         <div className="min-w-0 flex-1">

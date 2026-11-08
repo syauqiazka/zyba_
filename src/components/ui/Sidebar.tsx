@@ -184,13 +184,13 @@ export default function Sidebar({ onClose }: { onClose?: () => void }) {
   };
 
   return (
-    <aside className="w-[82vw] max-w-[290px] md:w-20 lg:w-[252px] shrink-0 md:my-4 md:ml-4 md:h-[calc(100vh-2rem)] md:rounded-[32px] md:border md:border-brown-900/10 md:bg-white/90 md:backdrop-blur-md md:shadow-[0_4px_24px_-4px_rgba(59,42,32,0.06)] bg-cream p-4 md:p-3 lg:p-4 flex flex-col sticky top-0 h-[100dvh] shadow-xl md:shadow-xs transition-all duration-300 overflow-y-auto scrollbar-none pb-6 md:pb-4 border-r border-brown-900/10 md:border-r-0">
+    <aside className="w-[82vw] max-w-[290px] md:w-[76px] lg:w-[76px] shrink-0 md:my-4 md:ml-4 md:h-[calc(100vh-2rem)] md:rounded-[28px] md:border md:border-brown-900/10 md:bg-white/90 md:backdrop-blur-md md:shadow-[0_4px_24px_-4px_rgba(59,42,32,0.06)] bg-cream p-4 md:px-2 md:py-4 flex flex-col sticky top-0 h-[100dvh] shadow-xl md:shadow-xs transition-all duration-300 overflow-y-auto scrollbar-none pb-6 md:pb-4 border-r border-brown-900/10 md:border-r-0">
       {/* Top section: Logo + Nav */}
       <div className="flex flex-col gap-5 flex-1">
         {/* Brand Logo & Close button row */}
-        <div className="flex items-center justify-between px-1 pt-1 pb-1 shrink-0">
-          <Link href="/dashboard" className="flex items-center gap-3 group justify-start md:justify-center lg:justify-start" title="ZYBA Wellness">
-            <div className="relative w-9 h-9 shrink-0 flex items-center justify-center rounded-2xl bg-cream border border-orange-500/20 shadow-sm group-hover:scale-105 transition-transform">
+        <div className="flex items-center justify-between md:justify-center px-1 pt-1 pb-1 shrink-0">
+          <Link href="/dashboard" className="flex items-center gap-3 md:gap-0 group" title="ZYBA Wellness">
+            <div className="relative w-10 h-10 shrink-0 flex items-center justify-center rounded-2xl bg-cream border border-orange-500/20 shadow-xs group-hover:scale-105 transition-transform">
               {/* 4-petal floral logomark (Orange & Green) */}
               <div className="absolute w-3.5 h-3.5 rounded-full bg-orange-500 -top-0.5 left-1/2 -translate-x-1/2 opacity-90" />
               <div className="absolute w-3.5 h-3.5 rounded-full bg-green-500 -bottom-0.5 left-1/2 -translate-x-1/2 opacity-90" />
@@ -198,7 +198,7 @@ export default function Sidebar({ onClose }: { onClose?: () => void }) {
               <div className="absolute w-3.5 h-3.5 rounded-full bg-green-500 -right-0.5 top-1/2 -translate-y-1/2 opacity-90" />
               <div className="w-2.5 h-2.5 rounded-full bg-brown-900 z-10" />
             </div>
-            <div className="flex flex-col md:hidden lg:flex">
+            <div className="flex flex-col md:hidden">
               <span className="font-display font-extrabold text-xl tracking-tight text-brown-900 leading-tight">
                 ZYBA
               </span>
@@ -221,7 +221,7 @@ export default function Sidebar({ onClose }: { onClose?: () => void }) {
         </div>
 
         {/* Navigation links */}
-        <nav className="flex flex-col gap-1.5">
+        <nav className="flex flex-col gap-1.5 md:items-center">
           {NAV_ITEMS.map((item) => {
             const Icon = item.icon;
             const isActive = pathname === item.href || (item.href !== "/dashboard" && pathname?.startsWith(item.href));
@@ -235,46 +235,54 @@ export default function Sidebar({ onClose }: { onClose?: () => void }) {
                 href={item.href}
                 onClick={onClose}
                 title={item.label}
-                className={`group/link relative px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 flex items-center justify-start md:justify-center lg:justify-start gap-3 ${
+                className={`group/link relative w-full md:w-11 md:h-11 px-3.5 py-2.5 md:p-0 rounded-2xl text-sm font-medium transition-all duration-200 flex items-center justify-start md:justify-center gap-3 ${
                   isActive
-                    ? "bg-brown-900 text-cream shadow-md shadow-brown-900/15 font-semibold"
+                    ? "bg-brown-900 text-cream shadow-xs font-semibold"
                     : "text-brown-700 hover:bg-cream/90 hover:text-brown-900 border border-transparent hover:border-brown-900/5"
                 }`}
               >
                 <div className="relative shrink-0 flex items-center justify-center">
                   <Icon
-                    size={18}
-                    strokeWidth={isActive ? 2.4 : 2}
-                    className={isActive ? "text-cream shrink-0" : "text-brown-700 shrink-0"}
+                    size={19}
+                    strokeWidth={isActive ? 2.3 : 1.8}
+                    className={isActive ? "text-cream shrink-0" : "text-brown-700 shrink-0 group-hover/link:text-brown-900 transition-colors"}
                   />
                   {/* Red dot badge: shown above icon on all sizes for community */}
                   {showCommunityBadge && (
                     <span
-                      className="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-red-500 border border-cream shadow-xs animate-pulse"
+                      className="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-orange-500 border-2 border-white shadow-xs animate-pulse"
                       title={`${communityBadgeCount} notifikasi komunitas baru`}
                     />
                   )}
                 </div>
 
-                <span className="md:hidden lg:inline truncate">{item.label}</span>
+                <span className="md:hidden truncate">{item.label}</span>
 
-                {/* BETA badge for companion */}
+                {/* Floating Zen Pill Tooltip on desktop hover */}
+                <span className="hidden md:flex absolute left-full ml-3 px-3 py-1.5 rounded-full bg-brown-900 text-cream text-xs font-semibold whitespace-nowrap shadow-md opacity-0 pointer-events-none group-hover/link:opacity-100 transition-all duration-150 z-50 items-center gap-1.5">
+                  <span>{item.label}</span>
+                  {item.isPremium && isPlus && (
+                    <span className="text-[9px] font-bold text-orange-400">PLUS</span>
+                  )}
+                </span>
+
+                {/* BETA badge for companion in drawer */}
                 {item.href === "/companion" && (
-                  <span className="ml-auto text-[10px] font-semibold tracking-wide px-2 py-0.5 rounded-full bg-orange-100 text-orange-500 md:hidden lg:inline">
+                  <span className="ml-auto text-[10px] font-semibold tracking-wide px-2 py-0.5 rounded-full bg-orange-100 text-orange-500 md:hidden">
                     BETA
                   </span>
                 )}
 
-                {/* PLUS dot badge for premium nav items — tiny, non-intrusive */}
+                {/* PLUS dot badge for premium nav items in drawer */}
                 {item.isPremium && isPlus && (
-                  <span className="ml-auto inline-flex items-center gap-0.5 shrink-0 text-[8px] font-extrabold tracking-widest text-orange-500/80 md:hidden lg:inline-flex">
+                  <span className="ml-auto inline-flex items-center gap-0.5 shrink-0 text-[8px] font-extrabold tracking-widest text-orange-500/80 md:hidden">
                     PLUS
                   </span>
                 )}
 
-                {/* Community count badge */}
+                {/* Community count badge in drawer */}
                 {showCommunityBadge && (
-                  <span className="ml-auto text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-red-500 text-white shadow-2xs leading-none md:hidden lg:inline-flex items-center justify-center">
+                  <span className="ml-auto text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-red-500 text-white shadow-2xs leading-none md:hidden items-center justify-center">
                     {communityBadgeCount > 99 ? "99+" : communityBadgeCount}
                   </span>
                 )}
@@ -285,9 +293,9 @@ export default function Sidebar({ onClose }: { onClose?: () => void }) {
 
         {/* Admin section — only shown for admin users */}
         {isAdmin && (
-          <div className="mt-1">
-            <div className="px-3 mb-1">
-              <span className="text-[9px] font-extrabold uppercase tracking-[0.18em] text-orange-500/80 md:hidden lg:inline">
+          <div className="mt-1 md:flex md:flex-col md:items-center">
+            <div className="px-3 mb-1 md:hidden">
+              <span className="text-[9px] font-extrabold uppercase tracking-[0.18em] text-orange-500/80">
                 Admin
               </span>
             </div>
@@ -303,9 +311,9 @@ export default function Sidebar({ onClose }: { onClose?: () => void }) {
                   href={item.href}
                   onClick={onClose}
                   title={item.label}
-                  className={`group/link relative px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 flex items-center justify-start md:justify-center lg:justify-start gap-3 ${
+                  className={`group/link relative w-full md:w-11 md:h-11 px-3.5 py-2.5 md:p-0 rounded-2xl text-sm font-medium transition-all duration-200 flex items-center justify-start md:justify-center gap-3 ${
                     isActive
-                      ? "bg-orange-500 text-white shadow-md shadow-orange-500/25 font-semibold"
+                      ? "bg-orange-500 text-white shadow-xs font-semibold"
                       : "text-orange-600 hover:bg-orange-100/70 hover:text-orange-700"
                   }`}
                 >
@@ -314,7 +322,10 @@ export default function Sidebar({ onClose }: { onClose?: () => void }) {
                     strokeWidth={isActive ? 2.4 : 2}
                     className={isActive ? "text-white shrink-0" : "text-orange-500 shrink-0"}
                   />
-                  <span className="md:hidden lg:inline truncate">{item.label}</span>
+                  <span className="md:hidden truncate">{item.label}</span>
+                  <span className="hidden md:flex absolute left-full ml-3 px-3 py-1.5 rounded-full bg-brown-900 text-cream text-xs font-semibold whitespace-nowrap shadow-md opacity-0 pointer-events-none group-hover/link:opacity-100 transition-all duration-150 z-50">
+                    {item.label}
+                  </span>
                 </Link>
               );
             })}
@@ -323,17 +334,19 @@ export default function Sidebar({ onClose }: { onClose?: () => void }) {
       </div>
 
       {/* Footer Profile */}
-      <div className="flex flex-col gap-2.5 pt-3 border-t border-brown-900/10 shrink-0">
-        {/* Status Langganan & Riwayat Pembayaran (di atas akun pengguna) */}
-        <SidebarPremiumCard
-          plan={currentUser.plan || "FREE"}
-          subscription={subscription}
-          premiumUntil={premiumUntil}
-          onRefreshUser={loadUser}
-        />
+      <div className="flex flex-col gap-2.5 pt-3 border-t border-brown-900/10 shrink-0 md:items-center">
+        {/* Status Langganan & Riwayat Pembayaran (di atas akun pengguna di mobile drawer) */}
+        <div className="md:hidden">
+          <SidebarPremiumCard
+            plan={currentUser.plan || "FREE"}
+            subscription={subscription}
+            premiumUntil={premiumUntil}
+            onRefreshUser={loadUser}
+          />
+        </div>
 
         {/* Profile User Control Bar */}
-        <div className="relative">
+        <div className="relative w-full md:w-auto">
           {/* Profile Popover */}
           <ProfilePopover
             user={currentUser}
@@ -346,16 +359,41 @@ export default function Sidebar({ onClose }: { onClose?: () => void }) {
             onLogout={handleLogout}
           />
 
-          {/* Profile card — flex layout, no absolute badge, safe on all widths */}
-          <div className={currentUser.plan === "PLUS"
-            ? "flex items-center gap-2 rounded-2xl border border-orange-300/70 bg-gradient-to-br from-orange-50 via-white to-green-50 p-1.5 lg:p-2 shadow-[0_8px_24px_-16px_rgba(233,130,85,0.7)] min-w-0"
-            : "bg-white/80 hover:bg-white border border-brown-900/10 rounded-2xl p-1.5 lg:p-2 flex items-center gap-2 transition-colors shadow-xs min-w-0"}>
+          {/* Desktop compact dock trigger */}
+          <div className="hidden md:flex flex-col items-center gap-2">
+            <button
+              type="button"
+              onClick={() => setIsProfilePopoverOpen(!isProfilePopoverOpen)}
+              className="w-11 h-11 rounded-2xl flex items-center justify-center p-0.5 border border-brown-900/10 hover:border-orange-500/50 bg-white/95 hover:bg-cream transition-all group/prof cursor-pointer shadow-xs relative"
+              title="Profil Pengguna"
+            >
+              <UserAvatar
+                src={currentUser.avatarUrl}
+                name={currentUser.name}
+                size="sm"
+                className="w-8 h-8 rounded-xl object-cover"
+                statusConfig={{
+                  status: "online",
+                  hexColor: "#8FAE5D",
+                  label: "Aktif",
+                }}
+              />
+              <span className="absolute left-full ml-3 px-3 py-1.5 rounded-full bg-brown-900 text-cream text-xs font-semibold whitespace-nowrap shadow-md opacity-0 pointer-events-none group-hover/prof:opacity-100 transition-all duration-150 z-50">
+                {currentUser.name}
+              </span>
+            </button>
+          </div>
+
+          {/* Mobile drawer full card */}
+          <div className={`md:hidden ${currentUser.plan === "PLUS"
+            ? "flex items-center gap-2 rounded-2xl border border-orange-300/70 bg-gradient-to-br from-orange-50 via-white to-green-50 p-2 shadow-xs min-w-0"
+            : "bg-white/90 hover:bg-white border border-brown-900/10 rounded-2xl p-2 flex items-center gap-2 transition-colors shadow-xs min-w-0"}`}>
 
             {/* Left: User Avatar + Name + Handle */}
             <button
               type="button"
               onClick={() => setIsProfilePopoverOpen(!isProfilePopoverOpen)}
-              className="flex items-center justify-start md:justify-center lg:justify-start gap-2 p-1 rounded-xl hover:bg-green-100/60 transition-colors text-left flex-1 min-w-0 cursor-pointer group"
+              className="flex items-center justify-start gap-2.5 p-1 rounded-xl hover:bg-green-100/60 transition-colors text-left flex-1 min-w-0 cursor-pointer group"
               title="Buka profil"
             >
               <UserAvatar
@@ -364,18 +402,16 @@ export default function Sidebar({ onClose }: { onClose?: () => void }) {
                 size="sm"
                 statusConfig={{
                   status: "online",
-                  hexColor: "#23a55a",
+                  hexColor: "#8FAE5D",
                   label: "Aktif",
                 }}
               />
 
-              {/* Name + username — shown on mobile (drawer) and desktop, hidden on tablet icon-only */}
-              <div className="flex flex-col min-w-0 flex-1 md:hidden lg:flex">
+              <div className="flex flex-col min-w-0 flex-1">
                 <div className="flex items-center gap-1.5 min-w-0">
                   <span className="text-xs font-bold text-brown-900 truncate leading-tight group-hover:text-orange-500 transition-colors">
                     {currentUser.name}
                   </span>
-                  {/* PLUS badge: inline next to name, only on mobile & desktop (not tablet icon-only) */}
                   {currentUser.plan === "PLUS" && (
                     <span className="inline-flex items-center gap-0.5 shrink-0 rounded-full bg-brown-900 px-1.5 py-0.5 text-[8px] font-extrabold tracking-wide text-white">
                       <Sparkles size={7} />PLUS
@@ -383,16 +419,16 @@ export default function Sidebar({ onClose }: { onClose?: () => void }) {
                   )}
                 </div>
                 <span className="text-[10px] text-brown-700/80 truncate">
-                  @{currentUser.email ? currentUser.email.split("@")[0] : "schatz_232"}
+                  @{currentUser.email ? currentUser.email.split("@")[0] : "pengguna"}
                 </span>
               </div>
             </button>
 
-            {/* Right: Settings Gear — hidden on tablet icon-only mode */}
+            {/* Right: Settings Gear */}
             <button
               type="button"
               onClick={() => setIsSettingsModalOpen(true)}
-              className="p-2 rounded-xl text-brown-700/70 hover:text-brown-900 hover:bg-brown-900/10 transition-colors cursor-pointer shrink-0 md:hidden lg:block"
+              className="p-2 rounded-xl text-brown-700/70 hover:text-brown-900 hover:bg-brown-900/10 transition-colors cursor-pointer shrink-0"
               title="Pengaturan Akun"
             >
               <Settings className="w-4 h-4" />
@@ -409,14 +445,14 @@ export default function Sidebar({ onClose }: { onClose?: () => void }) {
           onLogout={handleLogout}
         />
 
-        {/* Logout */}
+        {/* Logout (Mobile Drawer only) */}
         <button
           type="button"
           onClick={handleLogout}
-          className="flex items-center gap-2 px-2 py-2 rounded-2xl w-full text-left text-xs font-semibold text-brown-700/60 hover:text-danger hover:bg-orange-50 transition-colors group"
+          className="md:hidden flex items-center gap-2 px-3 py-2 rounded-2xl w-full text-left text-xs font-semibold text-brown-700/60 hover:text-danger hover:bg-orange-50 transition-colors group cursor-pointer"
         >
           <LogOut className="w-4 h-4 text-brown-700/50 group-hover:text-danger transition-colors" />
-          Keluar
+          <span>Keluar</span>
         </button>
       </div>
     </aside>

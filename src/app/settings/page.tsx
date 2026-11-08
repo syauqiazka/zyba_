@@ -228,7 +228,7 @@ export default function SettingsPage() {
       />
 
       {/* Bagian 24.1: Privasi Data */}
-      <div className="bg-white/95 rounded-[32px] p-6 sm:p-8 border border-brown-900/10 shadow-xs flex flex-col gap-4">
+      <div className="bg-white/95 rounded-[20px] p-6 sm:p-8 border border-brown-900/10 shadow-xs flex flex-col gap-4">
         <h3 className="font-display text-base font-bold text-brown-900 border-b border-brown-900/10 pb-3">
           4. Privasi & Data
         </h3>
@@ -268,7 +268,7 @@ export default function SettingsPage() {
       {/* Konfirmasi hapus akun */}
       {showDeleteConfirm && (
         <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white/95 rounded-[32px] p-6 sm:p-7 max-w-sm w-full shadow-2xl border border-brown-900/10 flex flex-col gap-4">
+          <div className="bg-white/95 rounded-[24px] p-6 sm:p-7 max-w-sm w-full shadow-2xl border border-brown-900/10 flex flex-col gap-4">
             <h3 className="font-display font-bold text-base text-brown-900">Hapus Akun?</h3>
             <p className="text-xs text-brown-700 leading-relaxed">
               Semua data kamu (mood, jurnal, percakapan, post komunitas) akan dihapus permanen dari seluruh layanan ZYBA.

@@ -44,11 +44,14 @@
   - Body Text: `text-sm sm:text-base font-normal text-brown-700 leading-relaxed`
   - Micro / Meta: `text-xs font-medium text-brown-700/80`
 
-### B. Geometri & Bahasa Bentuk (Soft Organic Curves)
-- **Container Utama / Kartu Besar:** `rounded-3xl` (24px) hingga `rounded-[32px]` (32px), menciptakan siluet ramah tanpa sudut tajam.
-- **Kartu Sub-modul / Input:** `rounded-2xl` (16px) hingga `rounded-xl` (12px).
-- **Elemen Kontrol & Tombol:** `rounded-pill` (`rounded-full`), memberikan kesan pebble halus yang ergonomis.
+### B. Geometri & Bahasa Bentuk (Hierarki Radius Proporsional)
+- **Floating Zen Dock / Shell Container:** `rounded-[28px]`, dermaga mengapung ramping yang menyatu lembut dengan margin layar.
+- **Major Sanctuary Anchor Cards (Hero/Banner):** `rounded-[24px]`, menciptakan kanvas refleksi berwibawa tanpa sudut kaku.
+- **Content Cards & Interactive Widgets:** `rounded-[20px]`, ukuran ideal kartu fungsional yang mudah dibaca.
+- **Kartu Sub-modul, Row Items & Form Inputs:** `rounded-2xl` (16px) hingga `rounded-xl` (12px).
+- **Elemen Kontrol, Pills & Action Buttons:** `rounded-full`, memberikan kesan pebble halus yang ergonomis.
 - **Hairline Tactile Borders:** Menggantikan border tebal dengan garis kontak kertas tipis: `border border-brown-900/10` atau `border-brown-900/15`.
+- **Anti-Pattern Guard:** Menolak penerapan seragam `rounded-[32px]` pada seluruh elemen. Setiap modul memiliki radius proporsional sesuai tingkat hierarkinya.
 
 ### C. Elevasi & Tekstur Material (Paper Material Depth)
 - **Menolak Shadow Melayang Kaku:** Dilarang menggunakan shadow gelap tebal ala dashboard SaaS tradisional.

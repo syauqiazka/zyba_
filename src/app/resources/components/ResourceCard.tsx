@@ -125,7 +125,7 @@ export default function ResourceCard({
   return (
     <div
       onClick={onClick}
-      className="rounded-[32px] p-6 sm:p-7 border border-brown-900/10 cursor-pointer flex flex-col justify-between bg-white/95 group relative overflow-hidden transition-all duration-300 shadow-xs hover:border-brown-900/25"
+      className="rounded-[20px] p-6 sm:p-7 border border-brown-900/10 cursor-pointer flex flex-col justify-between bg-white/95 group relative overflow-hidden transition-all duration-300 shadow-xs hover:border-brown-900/25"
     >
       {item.isPro && (
         <span className="absolute top-4 right-4 text-[10px] font-extrabold px-2.5 py-0.5 rounded-full bg-orange-500 text-white shadow-sm flex items-center gap-1">

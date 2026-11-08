@@ -715,9 +715,9 @@ export default function DashboardPage() {
       />
 
       {/* =================================================
-          TOP BANNER
+          TOP BANNER: SANCTUARY GREETING
       ================================================= */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-5 glass-card p-6 rounded-3xl border border-brown-900/10 bg-gradient-to-r from-cream via-white to-green-100/40 shadow-sm relative overflow-hidden">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-5 p-6 sm:p-7 rounded-[24px] border border-brown-900/10 bg-white/95 shadow-xs relative overflow-hidden">
 
         {/* Hidden file input for avatar upload */}
         <input
@@ -846,11 +846,7 @@ export default function DashboardPage() {
         {/* Main Focus Column (65%) */}
         <div className="lg:col-span-7 xl:col-span-8 flex flex-col gap-6 sm:gap-8">
           {/* 1. Mindful Assessment Ritual Hero Card */}
-          <div className="rounded-[32px] bg-white/95 border border-brown-900/10 p-6 sm:p-8 shadow-xs flex flex-col justify-between relative overflow-hidden">
-            {/* Subtle paper tint glow */}
-            <div className="pointer-events-none absolute -right-12 -top-12 h-44 w-44 rounded-full bg-orange-100/40 blur-3xl" />
-            <div className="pointer-events-none absolute -left-10 bottom-0 h-36 w-36 rounded-full bg-green-100/35 blur-2xl" />
-
+          <div className="rounded-[24px] bg-white/95 border border-brown-900/10 p-6 sm:p-8 shadow-xs flex flex-col justify-between relative">
             <div className="relative flex flex-col gap-4 sm:gap-5">
               <div className="flex items-center justify-between gap-3 flex-wrap">
                 <div className="flex items-center gap-2">

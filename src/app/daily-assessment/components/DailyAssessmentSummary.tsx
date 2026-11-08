@@ -120,7 +120,7 @@ export default function DailyAssessmentSummary({ record }: SummaryProps) {
   return (
     <div className="w-full max-w-[680px] mx-auto flex flex-col gap-4 select-none animate-in fade-in duration-200">
       {/* ── 1. Header Card: Today's Check-in & Overall Score ────────── */}
-      <div className="bg-white/95 rounded-[32px] p-5 sm:p-7 border border-brown-900/10 shadow-xs">
+      <div className="bg-white/95 rounded-[24px] p-5 sm:p-7 border border-brown-900/10 shadow-xs">
         <div className="flex items-center justify-between pb-3 border-b border-brown-900/10 mb-4">
           <div className="flex items-center gap-2">
             <span className="text-[10px] sm:text-[11px] font-extrabold uppercase tracking-widest text-orange-500 bg-orange-100 px-2.5 py-0.5 rounded-full">

@@ -83,7 +83,7 @@ export default function CommunityProfileView() {
   return (
     <div className="w-full max-w-[620px] mx-auto py-4 px-2 space-y-4 animate-in fade-in duration-200">
       {/* Profile Header */}
-      <div className="bg-white/95 rounded-[32px] border border-brown-900/10 p-6 sm:p-7 shadow-xs">
+      <div className="bg-white/95 rounded-[24px] border border-brown-900/10 p-6 sm:p-7 shadow-xs">
         <div className="flex items-start justify-between gap-4 mb-3">
           <div>
             <h1 className="font-bold text-xl text-brown-900">{userName}</h1>
@@ -151,7 +151,7 @@ export default function CommunityProfileView() {
       </div>
 
       {/* Tab Contents */}
-      <div className="bg-white/95 rounded-[32px] border border-brown-900/10 shadow-xs overflow-hidden">
+      <div className="bg-white/95 rounded-[20px] border border-brown-900/10 shadow-xs overflow-hidden">
         {activeTab === "SAVED" ? (
           mySaved.length === 0 ? (
             <div className="py-12 text-center text-xs text-brown-700/50">

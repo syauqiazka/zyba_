@@ -32,7 +32,7 @@ export default function SettingsToggles({
   return (
     <div className="lg:col-span-5 flex flex-col gap-6">
       {/* Bagian 21: Persona picker */}
-      <div className="rounded-[32px] p-6 sm:p-7 border border-brown-900/10 shadow-xs flex flex-col gap-4 bg-white/95">
+      <div className="rounded-[20px] p-6 sm:p-7 border border-brown-900/10 shadow-xs flex flex-col gap-4 bg-white/95">
         <h3 className="font-display text-base font-bold text-brown-900 border-b border-brown-900/10 pb-2">
           2. Karakter Zyba Companion
         </h3>
@@ -41,7 +41,7 @@ export default function SettingsToggles({
       </div>
 
       {/* Notifikasi — Bagian 24.1 */}
-      <div className="rounded-[32px] p-6 sm:p-7 border border-brown-900/10 shadow-xs flex flex-col gap-4 bg-white/95">
+      <div className="rounded-[20px] p-6 sm:p-7 border border-brown-900/10 shadow-xs flex flex-col gap-4 bg-white/95">
         <h3 className="font-display text-base font-bold text-brown-900 border-b border-brown-900/10 pb-2">
           3. Keamanan & Notifikasi
         </h3>

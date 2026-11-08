@@ -41,7 +41,7 @@ export default function DailyPlan({
   };
 
   return (
-    <section className="rounded-[32px] p-6 md:p-8 border border-brown-900/10 bg-white/95 shadow-xs">
+    <section className="rounded-[20px] p-6 md:p-8 border border-brown-900/10 bg-white/95 shadow-xs">
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>

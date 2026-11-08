@@ -1,4 +1,4 @@
-import { Volume2, VolumeX, Settings2, Trash2, Zap, Menu } from "lucide-react";
+import { Volume2, VolumeX, Settings2, Trash2, Zap, Menu, Sparkles, ChevronDown } from "lucide-react";
 import { PersonaId, getPersonaById } from "@/backend/ai/personas";
 import { getMoodColor } from "./ConversationList";
 import { useCompanion } from "../context/CompanionContext";
@@ -100,7 +100,7 @@ export default function ChatHeader({
             >
               <span>{persona.emoji}</span>
               <span className="hidden sm:inline">Ganti Karakter</span>
-              <span className="text-[8px]">▾</span>
+              <ChevronDown size={10} className="text-orange-500" />
             </button>
             <span className="hidden md:flex items-center gap-1 text-[11px] text-green-500 font-semibold shrink-0">
               <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
@@ -123,10 +123,10 @@ export default function ChatHeader({
       <div className="flex items-center gap-1 sm:gap-2 shrink-0">
         {/* Dynamic Emotion Chip — hidden on mobile, visible md+ */}
         <span
-          className={`hidden md:flex rounded-pill ${moodColor}/10 text-xs font-semibold px-2.5 py-1 items-center gap-1`}
+          className={`hidden md:flex rounded-full ${moodColor}/10 text-xs font-semibold px-2.5 py-1 items-center gap-1.5`}
           title="Emosi terdeteksi dari pesan terbaru"
         >
-          <span>✨</span>
+          <Sparkles size={12} className="text-orange-500" />
           <span>{currentEmotion}</span>
         </span>
 
@@ -173,7 +173,9 @@ export default function ChatHeader({
               <option value="edge">Edge TTS (Free)</option>
               <option value="elevenlabs">ElevenLabs (Premium)</option>
             </select>
-            <div className="absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none text-brown-700 text-xs">▼</div>
+            <div className="absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none text-brown-700">
+              <ChevronDown size={12} />
+            </div>
           </div>
         )}
 

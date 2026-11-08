@@ -24,7 +24,7 @@ export default function TrackerChecklist({
   toggleTracker,
 }: TrackerChecklistProps) {
   return (
-    <section className="rounded-[32px] bg-white/95 border border-brown-900/10 p-6 sm:p-7 shadow-xs flex flex-col gap-4">
+    <section className="rounded-[20px] bg-white/95 border border-brown-900/10 p-6 sm:p-7 shadow-xs flex flex-col gap-4">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-2 border-b border-brown-900/10">
         <div>
           <h2 className="font-display text-base sm:text-lg font-bold text-brown-900">

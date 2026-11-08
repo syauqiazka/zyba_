@@ -37,7 +37,7 @@ export default function MetricScoreCard({
     : "bg-mood-depressed/20 text-mood-depressed border border-mood-depressed/30";
 
   return (
-    <div className="rounded-[32px] bg-white/95 border border-brown-900/10 p-6 sm:p-7 shadow-xs flex flex-col justify-between relative overflow-hidden transition-all duration-300">
+    <div className="rounded-[20px] bg-white/95 border border-brown-900/10 p-6 sm:p-7 shadow-xs flex flex-col justify-between relative overflow-hidden transition-all duration-300">
       <div className="flex items-center justify-between">
         <span className="text-[11px] font-extrabold text-brown-700 uppercase tracking-widest">
           Skor Kesejahteraan

@@ -97,7 +97,7 @@ export default function SubscriptionCard({
 
   return (
     <>
-      <div className="rounded-[32px] p-6 sm:p-8 border border-brown-900/10 bg-white/95 shadow-xs transition-all flex flex-col gap-5">
+      <div className="rounded-[24px] p-6 sm:p-8 border border-brown-900/10 bg-white/95 shadow-xs transition-all flex flex-col gap-5">
         {/* Section Header */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-brown-900/10">
           <div className="flex items-center gap-3">
@@ -223,7 +223,7 @@ export default function SubscriptionCard({
           onClick={() => setShowHistoryModal(false)}
         >
           <div
-            className="w-full max-w-lg overflow-hidden rounded-[32px] border border-brown-900/10 bg-white p-6 sm:p-8 shadow-2xl transition-all"
+            className="w-full max-w-lg overflow-hidden rounded-[24px] border border-brown-900/10 bg-white p-6 sm:p-8 shadow-2xl transition-all"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-center justify-between pb-3.5 border-b border-brown-900/10">

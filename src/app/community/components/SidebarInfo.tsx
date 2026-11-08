@@ -3,7 +3,7 @@ import { Shield } from "lucide-react";
 export default function SidebarInfo() {
   return (
     <div className="lg:col-span-4 flex flex-col gap-6">
-      <div className="rounded-[32px] p-6 sm:p-7 border border-brown-900/10 bg-white/95 shadow-xs flex flex-col gap-4">
+      <div className="rounded-[20px] p-6 sm:p-7 border border-brown-900/10 bg-white/95 shadow-xs flex flex-col gap-4">
         <h3 className="font-display text-base font-bold text-brown-900 flex items-center gap-2">
           <Shield size={16} className="text-orange-500 shrink-0" /> Aturan Komunitas Zyba
         </h3>

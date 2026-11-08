@@ -112,7 +112,7 @@ export default function WelcomeTour() {
       </div>
 
       {/* Main Interactive Carousel Card */}
-      <div className="w-full bg-white/95 rounded-[32px] p-6 sm:p-10 md:p-12 border border-brown-900/10 shadow-xs flex flex-col items-center text-center gap-6 relative overflow-hidden">
+      <div className="w-full bg-white/95 rounded-[24px] p-6 sm:p-10 md:p-12 border border-brown-900/10 shadow-xs flex flex-col items-center text-center gap-6 relative overflow-hidden">
         {/* Slide Tag & Step indicator */}
         <div className="flex items-center justify-between w-full pb-4 border-b border-brown-900/10">
           <span className="text-xs font-bold uppercase tracking-wider text-orange-600 bg-orange-100 px-3 py-1 rounded-full">

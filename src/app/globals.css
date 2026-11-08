@@ -20,7 +20,7 @@
 }
 
 * {
-  border-color: rgba(41, 35, 31, 0.1);
+  border-color: rgba(59, 42, 32, 0.1);
   box-sizing: border-box;
 }
 
@@ -95,13 +95,13 @@ main select:focus {
 }
 
 .zyba-pill-control {
-  border: 1px solid rgba(41, 35, 31, 0.1);
-  background: rgba(255, 255, 255, 0.8);
-  box-shadow: 0 2px 8px -4px rgba(41, 35, 31, 0.15);
+  border: 1px solid rgba(59, 42, 32, 0.1);
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 2px 8px -4px rgba(59, 42, 32, 0.08);
 }
 
 .zyba-pill-control button:hover {
-  background: rgba(233, 130, 85, 0.12);
+  background: rgba(242, 136, 75, 0.12);
   color: var(--zyba-brown-900);
 }
 
@@ -125,7 +125,7 @@ main select:focus {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(41, 35, 31, 0.18);
+  background: rgba(59, 42, 32, 0.18);
   border-radius: 999px;
 }
 
@@ -133,13 +133,13 @@ main select:focus {
   background: var(--zyba-orange-500);
 }
 
-/* Glass card dioptimasi untuk GPU kentang: opacity lebih tinggi + blur ringan (6px vs 18px sebelumnya) */
+/* Tactile Paper Surface (halus, hangat, tidak membebani GPU) */
 .glass-card {
-  background: rgba(255, 255, 255, 0.88);
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
-  border: 1px solid rgba(41, 35, 31, 0.08);
-  box-shadow: 0 4px 16px -8px rgba(41, 35, 31, 0.12);
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  border: 1px solid rgba(59, 42, 32, 0.10);
+  box-shadow: 0 2px 12px -2px rgba(59, 42, 32, 0.05);
   contain: paint;
 }
 
@@ -149,8 +149,8 @@ main select:focus {
 
 .glass-card-hover:hover {
   transform: translateY(-2px);
-  border-color: rgba(233, 130, 85, 0.3);
-  box-shadow: 0 8px 24px -12px rgba(41, 35, 31, 0.2);
+  border-color: rgba(242, 136, 75, 0.35);
+  box-shadow: 0 6px 20px -6px rgba(59, 42, 32, 0.09);
 }
 
 @keyframes breathe {
@@ -2429,7 +2429,7 @@ main select:focus {
 
   padding: 22px;
 
-  border: 1px solid rgba(41, 35, 31, 0.10);
+  border: 1px solid rgba(59, 42, 32, 0.10);
   border-radius: 26px;
 
   /*
@@ -2438,8 +2438,8 @@ main select:focus {
   background: rgba(255, 255, 255, 0.96);
 
   box-shadow:
-    0 28px 70px rgba(41, 35, 31, 0.12),
-    0 8px 24px rgba(41, 35, 31, 0.06);
+    0 28px 70px rgba(59, 42, 32, 0.08),
+    0 8px 24px rgba(59, 42, 32, 0.04);
 
   backdrop-filter: none;
   -webkit-backdrop-filter: none;
@@ -2699,8 +2699,8 @@ main select:focus {
     border-radius: 21px;
 
     box-shadow:
-      0 22px 50px rgba(41, 35, 31, 0.13),
-      0 6px 18px rgba(41, 35, 31, 0.06);
+      0 22px 50px rgba(59, 42, 32, 0.08),
+      0 6px 18px rgba(59, 42, 32, 0.04);
   }
 
   .hero-app-top strong {
@@ -3092,7 +3092,7 @@ html {
    without affecting global page scrolling. */
 .zyba-scrollbar {
   scrollbar-width: thin;
-  scrollbar-color: rgba(109, 98, 91, 0.45) rgba(251, 248, 241, 0.85);
+  scrollbar-color: rgba(90, 70, 54, 0.45) rgba(247, 242, 231, 0.85);
 }
 
 .zyba-scrollbar::-webkit-scrollbar {
@@ -3100,18 +3100,18 @@ html {
 }
 
 .zyba-scrollbar::-webkit-scrollbar-track {
-  background: rgba(251, 248, 241, 0.85);
+  background: rgba(247, 242, 231, 0.85);
   border-radius: 999px;
 }
 
 .zyba-scrollbar::-webkit-scrollbar-thumb {
-  background: rgba(109, 98, 91, 0.45);
+  background: rgba(90, 70, 54, 0.45);
   border-radius: 999px;
-  border: 2px solid rgba(251, 248, 241, 0.85);
+  border: 2px solid rgba(247, 242, 231, 0.85);
 }
 
 .zyba-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: rgba(109, 98, 91, 0.65);
+  background: rgba(90, 70, 54, 0.65);
 }
 
 

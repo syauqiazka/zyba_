@@ -12,7 +12,7 @@ export default function CompanionWidget({ conversationCount = 0 }: CompanionWidg
   const [quickInput, setQuickInput] = useState("");
 
   return (
-    <div className="rounded-[32px] bg-white/95 border border-brown-900/10 p-6 sm:p-7 shadow-xs flex flex-col justify-between transition-all duration-300 relative overflow-hidden">
+    <div className="rounded-[20px] bg-white/95 border border-brown-900/10 p-6 sm:p-7 shadow-xs flex flex-col justify-between transition-all duration-300 relative overflow-hidden">
       <div>
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-2">

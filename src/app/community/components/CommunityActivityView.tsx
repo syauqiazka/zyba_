@@ -134,7 +134,7 @@ export default function CommunityActivityView() {
       </div>
 
       {/* Notifications List */}
-      <div className="bg-white/95 rounded-[32px] border border-brown-900/10 divide-y divide-brown-900/6 shadow-xs overflow-hidden">
+      <div className="bg-white/95 rounded-[20px] border border-brown-900/10 divide-y divide-brown-900/6 shadow-xs overflow-hidden">
         {filteredNotifs.length === 0 ? (
           <div className="py-16 text-center text-xs text-brown-700/50 flex flex-col items-center justify-center gap-2">
             <UserPlus size={28} className="opacity-30" />

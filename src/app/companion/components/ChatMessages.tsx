@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { Mic, Plus, ArrowRight } from "lucide-react";
+import { Mic, Plus, ArrowRight, PenTool, Lightbulb, Target, Coffee, Sparkles, Volume2, Square, Loader2 } from "lucide-react";
 import { AIModelType } from "@/backend/ai/aiModelManager";
 import { PersonaId, getPersonaById } from "@/backend/ai/personas";
 import ModelSelector from "./ModelSelector";
@@ -36,15 +36,15 @@ interface Props {
 }
 
 /**
- * 5 Prompt starter chips matching Claude.ai (Image 1):
+ * 5 Prompt starter chips matching Claude.ai:
  * [ Curhat Bebas | Pahami Emosi | Rencana Aksi | Obrolan Santai | Rekomendasi Zyba ]
  */
 const CLAUDE_PROMPTS = [
-  { icon: "✍️", label: "Curhat Bebas", prompt: "Aku ingin curhat tentang hal yang mengganjal di pikiranku hari ini." },
-  { icon: "💡", label: "Pahami Emosi", prompt: "Bantu aku memahami kenapa belakangan ini aku mudah merasa lelah dan cemas." },
-  { icon: "🎯", label: "Rencana Aksi", prompt: "Berikan aku 3 langkah praktis untuk menghentikan kebiasaan menunda pekerjaan (prokrastinasi)." },
-  { icon: "☕", label: "Obrolan Santai", prompt: "Butuh obrolan santai penenang pikiran setelah seharian beraktivitas padat." },
-  { icon: "✨", label: "Rekomendasi Zyba", prompt: "Pandu aku melakukan latihan mindfulness relaksasi pernapasan 5 menit sekarang." },
+  { icon: PenTool, label: "Curhat Bebas", prompt: "Aku ingin curhat tentang hal yang mengganjal di pikiranku hari ini." },
+  { icon: Lightbulb, label: "Pahami Emosi", prompt: "Bantu aku memahami kenapa belakangan ini aku mudah merasa lelah dan cemas." },
+  { icon: Target, label: "Rencana Aksi", prompt: "Berikan aku 3 langkah praktis untuk menghentikan kebiasaan menunda pekerjaan (prokrastinasi)." },
+  { icon: Coffee, label: "Obrolan Santai", prompt: "Butuh obrolan santai penenang pikiran setelah seharian beraktivitas padat." },
+  { icon: Sparkles, label: "Rekomendasi Zyba", prompt: "Pandu aku melakukan latihan mindfulness relaksasi pernapasan 5 menit sekarang." },
 ];
 
 export default function ChatMessages({
@@ -82,7 +82,7 @@ export default function ChatMessages({
         {/* Emblem + Greeting */}
         <div className="flex flex-col items-center justify-center gap-2 mb-4 sm:mb-7">
           {/* Zyba Character Avatar */}
-          <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-3xl bg-cream border-2 border-orange-500/20 flex items-center justify-center text-2xl sm:text-3xl shadow-sm select-none">
+          <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-[20px] bg-cream border-2 border-orange-500/20 flex items-center justify-center text-2xl sm:text-3xl shadow-xs select-none">
             {persona.emoji}
           </div>
           <h1 className="font-display font-extrabold text-lg sm:text-2xl md:text-3xl text-brown-900 tracking-tight">
@@ -93,8 +93,8 @@ export default function ChatMessages({
           </p>
         </div>
 
-        {/* Floating Center Input Box — Exact Claude.ai card */}
-        <div className="w-full max-w-2xl bg-white rounded-3xl border border-brown-900/12 shadow-sm p-3.5 sm:p-4 text-left transition-all focus-within:shadow-md focus-within:border-brown-900/25 box-border overflow-visible">
+        {/* Floating Center Input Box — Warm tactile paper card */}
+        <div className="w-full max-w-2xl bg-white rounded-[24px] border border-brown-900/10 shadow-xs p-3.5 sm:p-4 text-left transition-all focus-within:shadow-md focus-within:border-brown-900/20 box-border overflow-visible">
           <textarea
             value={centerInput}
             onChange={(e) => setCenterInput(e.target.value)}
@@ -187,22 +187,25 @@ export default function ChatMessages({
           </div>
         </div>
 
-        {/* 5 Prompt Starter Chips (Claude.ai: Write, Learn, Code, Life stuff, Claude's choice) */}
+        {/* 5 Prompt Starter Chips */}
         <div className="mt-4 sm:mt-5 flex flex-wrap items-center justify-center gap-1.5 sm:gap-2 max-w-2xl px-1">
-          {CLAUDE_PROMPTS.map((item, idx) => (
-            <button
-              key={idx}
-              type="button"
-              onClick={() => {
-                if (onSelectPromptStarter) onSelectPromptStarter(item.prompt);
-                else if (onSendMessage) onSendMessage(item.prompt);
-              }}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white border border-brown-900/10 text-[11px] sm:text-xs font-semibold text-brown-900 hover:bg-cream hover:border-brown-900/25 transition-all shadow-2xs active:scale-95"
-            >
-              <span>{item.icon}</span>
-              <span>{item.label}</span>
-            </button>
-          ))}
+          {CLAUDE_PROMPTS.map((item, idx) => {
+            const IconComp = item.icon;
+            return (
+              <button
+                key={idx}
+                type="button"
+                onClick={() => {
+                  if (onSelectPromptStarter) onSelectPromptStarter(item.prompt);
+                  else if (onSendMessage) onSendMessage(item.prompt);
+                }}
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white border border-brown-900/10 text-[11px] sm:text-xs font-semibold text-brown-900 hover:bg-cream hover:border-brown-900/25 transition-all shadow-2xs active:scale-95"
+              >
+                <IconComp size={12} className="text-orange-500 shrink-0" />
+                <span>{item.label}</span>
+              </button>
+            );
+          })}
         </div>
       </div>
     );
@@ -266,7 +269,13 @@ export default function ChatMessages({
                     className="mt-2 p-1.5 rounded-lg border border-brown-900/10 hover:bg-orange-50 hover:border-orange-500/30 transition-colors text-brown-700 hover:text-orange-600 disabled:opacity-50"
                     title={isPlaying ? "Stop audio" : "Play audio"}
                   >
-                    {isLoading ? "⏳" : isPlaying ? "⏸️" : "🔊"}
+                    {isLoading ? (
+                      <Loader2 size={13} className="animate-spin text-orange-500" />
+                    ) : isPlaying ? (
+                      <Square size={13} className="text-orange-600 fill-current" />
+                    ) : (
+                      <Volume2 size={13} className="text-brown-700" />
+                    )}
                   </button>
                 )}
               </div>

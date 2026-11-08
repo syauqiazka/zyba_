@@ -20,6 +20,12 @@ ZYBA adalah antitesis dari dua kutub antarmuka yang salah kaprah dalam aplikasi 
 - **Kertas Linen & Tinta Tanah**: Kanvas Cream (`#F7F2E7`) sebagai 75% permukaan visual, teks Brown 900 (`#3B2A20`) yang pekat dan berwibawa layaknya tinta cetak di atas kertas berkualitas tinggi.
 - **Asymmetric Golden Spread**: Tata letak asimetris (65% zona reflektif utama : 35% zona aksi tenang), menyisakan ruang napas (*whitespace*) lapang yang disengaja.
 - **Tactile Material Depth**: Menolak bayangan hitam buram tebal ala template AI. Menggunakan garis kontak kertas tipis 1px (`border-brown-900/10`) dipadu bayangan kontak lembut (`shadow-[0_2px_12px_-2px_rgba(59,42,32,0.04)]`).
+- **Hierarki Radius Proporsional (Anti-Slop Radius)**: Dilarang menyeragamkan `rounded-[32px]` pada seluruh kartu. Menerapkan skala radius berjenjang:
+  - *Floating Zen Dock / Shell Container*: `rounded-[28px]`
+  - *Major Sanctuary Anchor Cards (Hero/Banner)*: `rounded-[24px]`
+  - *Content Cards & Widgets*: `rounded-[20px]`
+  - *Sub-cards, Row Items & Form Inputs*: `rounded-2xl` (16px) hingga `rounded-xl` (12px)
+  - *Pills, Badges & Action Buttons*: `rounded-full`
 - **Ritme Pernapasan (*Breathing Rhythm*)**: Micro-interaction halus dan transisi tenang (300ms–500ms `cubic-bezier(0.16, 1, 0.3, 1)`), selalu mematuhi `motion-reduce:transition-none`.
 
 ---
@@ -66,10 +72,10 @@ ZYBA adalah antitesis dari dua kutub antarmuka yang salah kaprah dalam aplikasi 
 ## 4. Pola Navigasi Baru: Floating Zen Dock
 
 Menggantikan `Sidebar.tsx` lama 260px yang kaku.
-- **Desktop (≥ 1024px):** **Floating Zen Dock** (lebar 76px mengapung dengan margin 20px, sudut `rounded-3xl`, latar `bg-white/85 backdrop-blur-md`, border `border-brown-900/10`).
+- **Desktop (≥ 768px):** **Floating Zen Dock** (lebar 76px mengapung dengan margin 16px–20px, sudut `rounded-[28px]`, latar `bg-white/90 backdrop-blur-md`, border `border-brown-900/10`).
   - Menghilangkan kesan ruang dashboard terbelah dua.
-  - Alur 7 menu utama ditampilkan dalam ikon Lucide garis halus 1.5px dengan hover label mengambang (*pill tooltip*).
-- **Mobile (< 1024px):** **Ergonomic Bottom Pill Nav** (tinggi 56px, sudut `rounded-full`, floating dengan jarak 16px dari tepi bawah layar, touch target $\ge 48\text{px}$).
+  - Alur menu utama ditampilkan dalam ikon Lucide garis halus 1.8px dengan hover label mengambang (*floating pill tooltip* ke arah kanan).
+- **Mobile (< 768px):** **Ergonomic Bottom Pill Nav** (tinggi 56px, sudut `rounded-full`, floating dengan jarak 12px dari tepi bawah layar, touch target $\ge 44\text{px}$). Sliding drawer tersedia jika dibuka via tombol menu header untuk navigasi berlabel penuh.
 
 ---
 

@@ -186,7 +186,7 @@ export default function ResourcesPage() {
   return (
     <div className="flex flex-col gap-8 pb-12">
       {/* Top Banner */}
-      <div className="rounded-[32px] p-6 sm:p-8 md:p-9 border border-brown-900/10 bg-white/95 flex flex-col md:flex-row md:items-center justify-between gap-6 shadow-xs relative overflow-hidden">
+      <div className="rounded-[24px] p-6 sm:p-8 md:p-9 border border-brown-900/10 bg-white/95 flex flex-col md:flex-row md:items-center justify-between gap-6 shadow-xs relative overflow-hidden">
         <div>
           <div className="flex items-center gap-2 mb-1.5">
             <span className="px-3 py-0.5 rounded-full bg-green-500 text-white text-xs font-bold uppercase tracking-wider">

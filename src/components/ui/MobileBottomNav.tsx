@@ -45,7 +45,7 @@ export default function MobileBottomNav({
           <Link
             key={tab.href}
             href={tab.href}
-            className={`flex flex-col items-center justify-center py-1 px-3 rounded-xl transition-all duration-200 select-none min-w-[56px] ${
+            className={`flex flex-col items-center justify-center py-1 px-3 rounded-full transition-all duration-200 select-none min-w-[56px] min-h-[44px] ${
               isActive
                 ? "text-orange-500 font-bold scale-[1.04]"
                 : "text-brown-700/60 hover:text-brown-900"

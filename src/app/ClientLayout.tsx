@@ -30,22 +30,15 @@ function isProtectedPath(pathname: string | null) {
 
 function SidebarSkeleton() {
   return (
-    <aside className="w-[82vw] max-w-[290px] md:w-20 lg:w-[252px] shrink-0 md:my-4 md:ml-4 md:h-[calc(100vh-2rem)] md:rounded-[28px] border border-brown-900/10 bg-white/70 backdrop-blur-md p-4 lg:p-5 flex flex-col justify-between sticky top-0 h-[100dvh] z-30 animate-pulse">
-      <div className="flex flex-col gap-7">
-        <div className="flex items-center gap-3 px-2">
-          <div className="w-9 h-9 rounded-2xl bg-cream border border-brown-900/10" />
+    <aside className="w-[82vw] max-w-[290px] md:w-[76px] lg:w-[76px] shrink-0 md:my-4 md:ml-4 md:h-[calc(100vh-2rem)] md:rounded-[28px] border border-brown-900/10 bg-white/70 backdrop-blur-md p-4 md:px-2 md:py-4 flex flex-col justify-between sticky top-0 h-[100dvh] z-30 animate-pulse">
+      <div className="flex flex-col gap-6 items-center">
+        <div className="w-9 h-9 rounded-2xl bg-cream border border-brown-900/10" />
 
-          <div className="flex flex-col gap-1 md:hidden lg:flex">
-            <div className="w-16 h-4 bg-cream rounded" />
-            <div className="w-20 h-2 bg-cream rounded" />
-          </div>
-        </div>
-
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-col gap-2.5 w-full items-center">
           {Array.from({ length: 7 }).map((_, i) => (
             <div
               key={i}
-              className="h-10 bg-cream rounded-2xl"
+              className="w-11 h-11 bg-cream rounded-2xl"
             />
           ))}
         </div>

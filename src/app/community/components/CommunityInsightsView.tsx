@@ -21,7 +21,7 @@ export default function CommunityInsightsView() {
 
   return (
     <div className="w-full max-w-[620px] mx-auto py-4 px-2 space-y-4 animate-in fade-in duration-200">
-      <div className="bg-white/95 rounded-[32px] border border-brown-900/10 p-6 sm:p-7 shadow-xs">
+      <div className="bg-white/95 rounded-[24px] border border-brown-900/10 p-6 sm:p-7 shadow-xs">
         <div className="flex items-center gap-2 mb-1">
           <BarChart3 className="w-5 h-5 text-brown-900" />
           <h1 className="font-bold text-lg text-brown-900">Community Insights</h1>
@@ -41,7 +41,7 @@ export default function CommunityInsightsView() {
         </div>
       </div>
 
-      <div className="bg-white/95 rounded-[32px] border border-brown-900/10 p-6 shadow-xs">
+      <div className="bg-white/95 rounded-[20px] border border-brown-900/10 p-6 shadow-xs">
         <h3 className="font-bold text-xs text-brown-900 uppercase tracking-wider mb-3">
           Diskusi Terhangat Minggu Ini
         </h3>

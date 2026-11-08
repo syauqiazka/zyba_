@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import { Trash2 } from "lucide-react";
 import ChatHeader from "./components/ChatHeader";
 import ChatMessages from "./components/ChatMessages";
 import ChatInput from "./components/ChatInput";
@@ -62,7 +63,7 @@ export default function CompanionPage() {
   return (
     <div className="flex flex-col h-full min-h-0 overflow-hidden">
       {/* Chat Window — fills the remaining height, no rounded corners on mobile */}
-      <div className="flex-1 min-h-0 flex flex-col bg-white md:rounded-3xl border-0 md:border border-brown-900/10 overflow-hidden shadow-sm">
+      <div className="flex-1 min-h-0 flex flex-col bg-white md:rounded-[24px] border-0 md:border border-brown-900/10 overflow-hidden shadow-xs">
           <ChatHeader
             activeConv={activeConv}
             selectedModel={selectedModel}
@@ -140,7 +141,7 @@ export default function CompanionPage() {
       {/* Persona Selection Modal */}
       {(showSettingsModal || showPersonaModal) && (
         <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in duration-150">
-          <div className="bg-white rounded-3xl p-7 max-w-lg w-full shadow-2xl border border-brown-900/10 flex flex-col gap-5">
+          <div className="bg-white rounded-[24px] p-7 max-w-lg w-full shadow-2xl border border-brown-900/10 flex flex-col gap-5">
             <div className="flex items-center justify-between">
               <div>
                 <span className="text-xs font-bold uppercase tracking-wider text-orange-500">
@@ -196,9 +197,9 @@ export default function CompanionPage() {
       {/* Delete Modal */}
       {showDeleteModal && (
         <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in zoom-in-95 duration-150">
-          <div className="bg-white rounded-3xl p-6 max-w-sm w-full shadow-xl border border-brown-900/10 flex flex-col gap-4">
-            <div className="w-12 h-12 rounded-2xl bg-danger/10 text-danger flex items-center justify-center text-2xl mx-auto">
-              🗑️
+          <div className="bg-white rounded-[24px] p-6 max-w-sm w-full shadow-xl border border-brown-900/10 flex flex-col gap-4">
+            <div className="w-12 h-12 rounded-2xl bg-danger/10 text-danger flex items-center justify-center mx-auto">
+              <Trash2 className="w-6 h-6 text-danger" />
             </div>
             <h3 className="font-display font-extrabold text-base text-brown-900 text-center">
               Hapus Percakapan Ini?

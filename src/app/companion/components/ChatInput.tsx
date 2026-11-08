@@ -91,7 +91,7 @@ export default function ChatInput({
     >
       {/* Voice input active feedback */}
       {isVoiceActive && (
-        <div className="mb-2 flex items-center justify-between bg-orange-100 text-orange-500 px-4 py-2 rounded-pill text-xs animate-pulse">
+        <div className="mb-2 flex items-center justify-between bg-orange-100 text-orange-500 px-4 py-2 rounded-full text-xs animate-pulse">
           <span className="font-semibold flex min-w-0 flex-1 items-center gap-2 leading-4 break-words">
             <span className="w-2 h-2 rounded-full bg-orange-500 motion-safe:animate-pulse motion-reduce:animate-none" />
             Mendengarkan suaramu... Ucapkan perasaanmu.
@@ -107,7 +107,7 @@ export default function ChatInput({
       )}
 
       {/* 10.4 Rounded-pill input full-width with attachment & voice icons on the left, orange-500 circle send button */}
-      <div className="relative flex items-center w-full bg-cream/70 rounded-pill focus-within:ring-1 focus-within:ring-brown-900/10 focus-within:bg-white transition-all pl-3 pr-2 py-1.5 shadow-sm">
+      <div className="relative flex items-center w-full bg-cream/70 rounded-full focus-within:ring-1 focus-within:ring-brown-900/10 focus-within:bg-white transition-all pl-3 pr-2 py-1.5 shadow-sm">
         {/* Attachment Icon */}
         <button
           type="button"

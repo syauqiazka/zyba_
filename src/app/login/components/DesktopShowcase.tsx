@@ -66,7 +66,7 @@ export default function DesktopShowcase() {
       </div>
 
       {/* ZYBA FLOW */}
-      <div className="relative z-10 my-9 rounded-[26px] border border-brown-900/10 bg-white/90 p-5 shadow-[0_24px_60px_rgba(41,35,31,0.08)]">
+      <div className="relative z-10 my-9 rounded-[22px] border border-brown-900/10 bg-white/95 p-5 sm:p-6 shadow-xs">
 
         <div className="flex items-center justify-between border-b border-brown-900/10 pb-4">
           <div>

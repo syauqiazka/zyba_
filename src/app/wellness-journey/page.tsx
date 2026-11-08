@@ -674,7 +674,7 @@ export default function WellnessJourneyPage() {
           {/* 8. ZYBA PLUS VALUE ADD PROPOSITION BANNER */}
           <Link
             href="/settings/zyba-plus/insights"
-            className="group relative overflow-hidden rounded-[32px] border border-orange-500/20 bg-white/95 p-6 shadow-xs transition-all hover:border-orange-500/40 sm:p-7"
+            className="group relative overflow-hidden rounded-[24px] border border-orange-500/20 bg-white/95 p-6 shadow-xs transition-all hover:border-orange-500/40 sm:p-7"
           >
             <div className="relative flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
               <div>

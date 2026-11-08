@@ -206,7 +206,7 @@ export default function ProfileSection({
   const isImg = isAvatarUrl(avatarUrl);
 
   return (
-    <div className="lg:col-span-7 rounded-[32px] p-5 sm:p-7 md:p-8 border border-brown-900/10 shadow-xs flex flex-col gap-6 bg-white/95">
+    <div className="lg:col-span-7 rounded-[20px] p-5 sm:p-7 md:p-8 border border-brown-900/10 shadow-xs flex flex-col gap-6 bg-white/95">
       <h2 className="font-display text-lg font-bold text-brown-900 border-b border-brown-900/10 pb-3">
         1. Profil Pengguna
       </h2>

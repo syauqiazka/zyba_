@@ -27,7 +27,7 @@ export default function FreeWeeklyInsight({ weekly, dataQuality }: FreeWeeklyIns
   };
 
   return (
-    <div className="rounded-[32px] border border-brown-900/10 bg-white/95 p-6 sm:p-8 shadow-xs flex flex-col gap-4 transition-all">
+    <div className="rounded-[20px] border border-brown-900/10 bg-white/95 p-6 sm:p-8 shadow-xs flex flex-col gap-4 transition-all">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-brown-900/5">
         <div className="flex items-center gap-2.5">
           <div className="w-8 h-8 rounded-xl bg-green-100 text-green-700 flex items-center justify-center shrink-0">

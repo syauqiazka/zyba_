@@ -200,7 +200,7 @@ export default function AchievementsPage() {
       </div>
 
       {/* ── Pinned Badges (Badge Tampilan Profil) ── */}
-      <div className="bg-white/95 rounded-[32px] border border-brown-900/10 p-5 sm:p-7 shadow-xs">
+      <div className="bg-white/95 rounded-[20px] border border-brown-900/10 p-5 sm:p-7 shadow-xs">
         <div className="flex items-center justify-between mb-4">
           <div>
             <h2 className="font-display font-bold text-base text-brown-900">
@@ -269,7 +269,7 @@ export default function AchievementsPage() {
       </div>
 
       {/* ── Progress Bar Berdasarkan Real UserBadge ── */}
-      <div className="bg-white/95 rounded-[32px] border border-brown-900/10 p-5 sm:p-6 shadow-xs">
+      <div className="bg-white/95 rounded-[20px] border border-brown-900/10 p-5 sm:p-6 shadow-xs">
         <div className="flex items-center justify-between mb-2">
           <span className="font-semibold text-sm text-brown-900">
             Progres Koleksi Lencana

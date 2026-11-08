@@ -125,10 +125,10 @@ export default function ZybaPlusPage() {
 
         {/* ── Plan status card ── */}
         {planLoading ? (
-          <div className="mb-6 h-28 animate-pulse rounded-[32px] border border-brown-900/10 bg-white/95" />
+          <div className="mb-6 h-28 animate-pulse rounded-[24px] border border-brown-900/10 bg-white/95" />
         ) : isPlus ? (
           /* Active Plus member card */
-          <section className="mb-6 overflow-hidden rounded-[32px] border border-green-500/30 bg-white/95 p-5 sm:p-8 shadow-xs">
+          <section className="mb-6 overflow-hidden rounded-[24px] border border-green-500/30 bg-white/95 p-5 sm:p-8 shadow-xs">
             <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
               <div className="flex items-start gap-3 sm:gap-4">
                 <div className="w-12 h-12 shrink-0 rounded-2xl bg-brown-900 flex items-center justify-center text-white shadow-xs">
@@ -173,7 +173,7 @@ export default function ZybaPlusPage() {
           </section>
         ) : (
           /* Upgrade CTA card */
-          <section className="mb-6 rounded-[32px] border border-orange-500/25 bg-white/95 p-5 sm:p-8 shadow-xs">
+          <section className="mb-6 rounded-[24px] border border-orange-500/25 bg-white/95 p-5 sm:p-8 shadow-xs">
             <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
               <div>
                 <p className="text-[10px] sm:text-[11px] font-extrabold uppercase tracking-[0.18em] text-orange-600 mb-0.5 sm:mb-1">Upgrade Sekarang</p>
@@ -202,7 +202,7 @@ export default function ZybaPlusPage() {
         )}
 
         {/* ── Free vs Plus comparison ── */}
-        <section className="rounded-[32px] border border-brown-900/10 bg-white/95 shadow-xs overflow-hidden">
+        <section className="rounded-[20px] border border-brown-900/10 bg-white/95 shadow-xs overflow-hidden">
           {/* Mobile Hint */}
           <div className="sm:hidden px-4 py-2 bg-orange-50/70 border-b border-orange-100/80 flex items-center justify-between text-[11px] font-medium text-orange-800">
             <span className="flex items-center gap-1.5">
@@ -265,7 +265,7 @@ export default function ZybaPlusPage() {
         </section>
 
         {/* ── Trust / transparency ── */}
-        <section className="mt-5 rounded-[32px] border border-brown-900/10 bg-white/95 p-5 sm:p-7 shadow-xs">
+        <section className="mt-5 rounded-[20px] border border-brown-900/10 bg-white/95 p-5 sm:p-7 shadow-xs">
           <div className="flex gap-3 items-start">
             <ShieldCheck className="text-green-600 shrink-0 mt-0.5" size={20} />
             <div>

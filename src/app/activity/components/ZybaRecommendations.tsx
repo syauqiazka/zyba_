@@ -19,7 +19,7 @@ export default function ZybaRecommendations({
   onAdd,
 }: ZybaRecommendationsProps) {
   return (
-    <div className="xl:col-span-7 rounded-[32px] p-6 md:p-8 border border-brown-900/10 bg-white/95 shadow-xs">
+    <div className="xl:col-span-7 rounded-[20px] p-6 md:p-8 border border-brown-900/10 bg-white/95 shadow-xs">
       <div className="flex items-center justify-between gap-4">
         <div>
           <span className="text-[11px] font-extrabold uppercase tracking-widest text-green-700 bg-green-100 px-3 py-0.5 rounded-full">
