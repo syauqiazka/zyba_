@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import { CloudRain, Cloud, Minus, Smile, Sparkles, ClipboardCheck } from "lucide-react";
 import {
   calculateDailyZybaScore,
 } from "@/lib/assessmentMetrics";
@@ -20,35 +21,41 @@ interface HistoryProps {
 const MOOD_MAP: Record<
   string,
   {
-    emoji: string;
+    icon: React.ElementType;
     label: string;
     color: string;
+    bg: string;
   }
 > = {
   DEPRESSED: {
-    emoji: "😞",
+    icon: CloudRain,
     label: "Sangat Terpuruk",
     color: "text-mood-depressed",
+    bg: "bg-mood-depressed/15",
   },
   SAD: {
-    emoji: "🙁",
+    icon: Cloud,
     label: "Sedih",
     color: "text-mood-sad",
+    bg: "bg-mood-sad/15",
   },
   NEUTRAL: {
-    emoji: "😐",
+    icon: Minus,
     label: "Biasa",
     color: "text-mood-neutral",
+    bg: "bg-mood-neutral/15",
   },
   HAPPY: {
-    emoji: "🙂",
+    icon: Smile,
     label: "Senang",
     color: "text-mood-happy",
+    bg: "bg-mood-happy/15",
   },
   OVERJOYED: {
-    emoji: "😄",
+    icon: Sparkles,
     label: "Sangat Bahagia",
-    color: "text-mood-overjoyed",
+    color: "text-green-600",
+    bg: "bg-green-100",
   },
 };
 
@@ -122,11 +129,10 @@ export default function DailyAssessmentHistory({
 
   if (history.length === 0) {
     return (
-      <div className="text-center py-10 text-brown-700 text-sm">
-        <span className="text-4xl block mb-2">
-          📋
-        </span>
-
+      <div className="text-center py-10 text-brown-700 text-sm flex flex-col items-center justify-center gap-2">
+        <div className="w-10 h-10 rounded-2xl bg-cream flex items-center justify-center border border-brown-900/10 text-brown-700/60 mb-1">
+          <ClipboardCheck size={20} />
+        </div>
         Belum ada riwayat Assessment Harian.
       </div>
     );
@@ -136,7 +142,6 @@ export default function DailyAssessmentHistory({
     <div className="flex flex-col gap-4">
       <h3 className="font-display text-base font-bold text-brown-900">
         Riwayat Assessment Harian
-
         <span className="ml-2 text-xs font-normal text-brown-700">
           ({pagination.total} entri)
         </span>
@@ -152,10 +157,12 @@ export default function DailyAssessmentHistory({
         {history.map((record) => {
           const mood =
             MOOD_MAP[record.mood] ?? {
-              emoji: "😐",
+              icon: Minus,
               label: record.mood,
               color: "text-brown-700",
+              bg: "bg-cream",
             };
+          const MoodIcon = mood.icon;
 
           const sleep =
             SLEEP_OPTIONS.find(
@@ -163,7 +170,6 @@ export default function DailyAssessmentHistory({
                 o.rating ===
                 record.sleepRating
             );
-
 
           const score =
             calculateDailyZybaScore({
@@ -182,13 +188,13 @@ export default function DailyAssessmentHistory({
             <div
               key={record.id}
               className={`
-                glass-card
                 rounded-2xl
                 p-4
                 border
-                transition-shadow
+                bg-white/95
+                transition-all
                 ${isToday
-                  ? "border-orange-500/30 shadow-sm"
+                  ? "border-orange-500/30 shadow-xs"
                   : "border-brown-900/10"
                 }
               `}
@@ -196,9 +202,9 @@ export default function DailyAssessmentHistory({
               {/* Card Header: Mood + Date + Hari Ini Badge */}
               <div className="flex items-center justify-between gap-2">
                 <div className="flex items-center gap-2.5 min-w-0">
-                  <span className="text-2xl shrink-0 leading-none">
-                    {mood.emoji}
-                  </span>
+                  <div className={`w-8 h-8 rounded-xl flex items-center justify-center shrink-0 ${mood.bg}`}>
+                    <MoodIcon size={16} className={mood.color} />
+                  </div>
 
                   <div className="min-w-0">
                     <p className="text-xs font-bold text-brown-900 truncate">

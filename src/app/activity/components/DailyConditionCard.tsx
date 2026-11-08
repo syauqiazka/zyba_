@@ -71,7 +71,7 @@ export default function DailyConditionCard({ initialCondition }: DailyConditionC
       : "bg-green-100 text-green-700";
 
   return (
-    <div className="xl:col-span-5 glass-card rounded-3xl p-4 sm:p-6 md:p-7 border border-brown-900/10 bg-gradient-to-b from-white to-cream/40 flex flex-col justify-between shadow-xs min-w-0">
+    <div className="xl:col-span-5 rounded-[32px] p-5 sm:p-7 md:p-8 border border-brown-900/10 bg-white/95 flex flex-col justify-between shadow-xs min-w-0">
       <div>
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2.5 sm:gap-3">
           <div>

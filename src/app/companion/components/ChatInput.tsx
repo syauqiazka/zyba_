@@ -93,7 +93,7 @@ export default function ChatInput({
       {isVoiceActive && (
         <div className="mb-2 flex items-center justify-between bg-orange-100 text-orange-500 px-4 py-2 rounded-pill text-xs animate-pulse">
           <span className="font-semibold flex min-w-0 flex-1 items-center gap-2 leading-4 break-words">
-            <span className="w-2 h-2 rounded-full bg-orange-500 animate-ping" />
+            <span className="w-2 h-2 rounded-full bg-orange-500 motion-safe:animate-pulse motion-reduce:animate-none" />
             Mendengarkan suaramu... Ucapkan perasaanmu.
           </span>
           <button

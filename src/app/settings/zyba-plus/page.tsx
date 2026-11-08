@@ -125,14 +125,14 @@ export default function ZybaPlusPage() {
 
         {/* ── Plan status card ── */}
         {planLoading ? (
-          <div className="mb-6 h-28 animate-pulse rounded-3xl border border-brown-900/10 bg-white" />
+          <div className="mb-6 h-28 animate-pulse rounded-[32px] border border-brown-900/10 bg-white/95" />
         ) : isPlus ? (
           /* Active Plus member card */
-          <section className="mb-6 overflow-hidden rounded-3xl border border-green-200 bg-gradient-to-br from-green-100/50 via-white to-orange-100/40 p-4 sm:p-7 shadow-sm">
+          <section className="mb-6 overflow-hidden rounded-[32px] border border-green-500/30 bg-white/95 p-5 sm:p-8 shadow-xs">
             <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
               <div className="flex items-start gap-3 sm:gap-4">
-                <div className="w-11 h-11 sm:w-12 sm:h-12 shrink-0 rounded-2xl bg-brown-900 flex items-center justify-center text-white shadow-sm">
-                  <Sparkles size={18} />
+                <div className="w-12 h-12 shrink-0 rounded-2xl bg-brown-900 flex items-center justify-center text-white shadow-xs">
+                  <Sparkles size={20} />
                 </div>
                 <div>
                   <p className="text-[10px] sm:text-[11px] font-extrabold uppercase tracking-[0.18em] text-green-700">ZYBA PLUS AKTIF</p>
@@ -163,7 +163,7 @@ export default function ZybaPlusPage() {
               </div>
               <Link
                 href="/settings/zyba-plus/insights"
-                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-2xl bg-brown-900 text-white px-5 py-3 text-xs sm:text-sm font-extrabold hover:bg-orange-500 transition-colors shrink-0"
+                className="w-full sm:w-auto min-h-[44px] inline-flex items-center justify-center gap-2 rounded-full bg-brown-900 text-white px-5 py-3 text-xs sm:text-sm font-extrabold hover:bg-brown-800 transition-colors shrink-0"
               >
                 <TrendingUp size={15} />
                 Deep Insights
@@ -173,7 +173,7 @@ export default function ZybaPlusPage() {
           </section>
         ) : (
           /* Upgrade CTA card */
-          <section className="mb-6 rounded-3xl border border-orange-200 bg-gradient-to-br from-orange-50 via-white to-cream p-4.5 sm:p-7 shadow-sm">
+          <section className="mb-6 rounded-[32px] border border-orange-500/25 bg-white/95 p-5 sm:p-8 shadow-xs">
             <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
               <div>
                 <p className="text-[10px] sm:text-[11px] font-extrabold uppercase tracking-[0.18em] text-orange-600 mb-0.5 sm:mb-1">Upgrade Sekarang</p>
@@ -188,7 +188,7 @@ export default function ZybaPlusPage() {
                   type="button"
                   onClick={handleUpgrade}
                   disabled={loading}
-                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-2xl bg-orange-500 px-6 sm:px-7 py-3 sm:py-3.5 text-xs sm:text-sm font-extrabold text-white hover:bg-orange-400 active:scale-95 disabled:cursor-not-allowed disabled:opacity-50 transition-all shadow-md shadow-orange-500/25"
+                  className="w-full sm:w-auto min-h-[48px] inline-flex items-center justify-center gap-2 rounded-full bg-orange-500 px-6 sm:px-7 py-3 text-xs sm:text-sm font-extrabold text-white hover:bg-orange-600 active:scale-95 disabled:cursor-not-allowed disabled:opacity-50 transition-all shadow-xs"
                 >
                   <CreditCard size={15} />
                   {loading ? "Menyiapkan..." : "Upgrade ke Plus →"}
@@ -202,7 +202,7 @@ export default function ZybaPlusPage() {
         )}
 
         {/* ── Free vs Plus comparison ── */}
-        <section className="rounded-3xl border border-brown-900/10 bg-white shadow-sm overflow-hidden">
+        <section className="rounded-[32px] border border-brown-900/10 bg-white/95 shadow-xs overflow-hidden">
           {/* Mobile Hint */}
           <div className="sm:hidden px-4 py-2 bg-orange-50/70 border-b border-orange-100/80 flex items-center justify-between text-[11px] font-medium text-orange-800">
             <span className="flex items-center gap-1.5">
@@ -265,7 +265,7 @@ export default function ZybaPlusPage() {
         </section>
 
         {/* ── Trust / transparency ── */}
-        <section className="mt-5 rounded-3xl border border-brown-900/10 bg-white p-5 sm:p-6">
+        <section className="mt-5 rounded-[32px] border border-brown-900/10 bg-white/95 p-5 sm:p-7 shadow-xs">
           <div className="flex gap-3 items-start">
             <ShieldCheck className="text-green-600 shrink-0 mt-0.5" size={20} />
             <div>

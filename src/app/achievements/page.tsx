@@ -200,7 +200,7 @@ export default function AchievementsPage() {
       </div>
 
       {/* ── Pinned Badges (Badge Tampilan Profil) ── */}
-      <div className="bg-white rounded-3xl border border-brown-900/10 p-5 sm:p-6 shadow-xs">
+      <div className="bg-white/95 rounded-[32px] border border-brown-900/10 p-5 sm:p-7 shadow-xs">
         <div className="flex items-center justify-between mb-4">
           <div>
             <h2 className="font-display font-bold text-base text-brown-900">
@@ -221,9 +221,9 @@ export default function AchievementsPage() {
               <div key={slot} className="relative group">
                 {def ? (
                   <div
-                    className={`rounded-2xl p-4 flex flex-col items-center gap-2 border border-brown-900/10 ${def.badgeColor} transition-all`}
+                    className={`rounded-[24px] p-4 flex flex-col items-center gap-2 border border-brown-900/10 ${def.badgeColor} transition-all`}
                   >
-                    <div className="w-10 h-10 rounded-xl bg-white/80 flex items-center justify-center shadow-xs">
+                    <div className="w-11 h-11 rounded-2xl bg-white/90 flex items-center justify-center shadow-xs">
                       <BadgeLucideIcon name={def.icon} className={`w-6 h-6 ${def.badgeTextColor}`} />
                     </div>
                     <span
@@ -232,31 +232,31 @@ export default function AchievementsPage() {
                       {badge?.customLabel || def.title}
                     </span>
 
-                    {/* Action buttons with touch friendly min 44px */}
+                    {/* Action buttons with touch friendly min 36px-44px */}
                     <button
                       type="button"
                       onClick={() => handleRemoveBadge(slot)}
-                      className="absolute top-1.5 right-1.5 min-h-[32px] min-w-[32px] rounded-full bg-white/90 hover:bg-rose-500 hover:text-white text-brown-700 flex items-center justify-center transition-colors shadow-xs"
+                      className="absolute top-2 right-2 min-h-[36px] min-w-[36px] rounded-full bg-white/90 hover:bg-rose-500 hover:text-white text-brown-700 flex items-center justify-center transition-colors shadow-xs"
                       title="Hapus lencana dari profil"
                       aria-label="Hapus lencana"
                     >
-                      <X size={14} />
+                      <X size={15} />
                     </button>
                     <button
                       type="button"
                       onClick={() => setPickerSlot(slot)}
-                      className="absolute bottom-1.5 right-1.5 min-h-[32px] min-w-[32px] rounded-full bg-white/90 hover:bg-orange-500 hover:text-white text-brown-700 flex items-center justify-center transition-colors shadow-xs"
+                      className="absolute bottom-2 right-2 min-h-[36px] min-w-[36px] rounded-full bg-white/90 hover:bg-orange-500 hover:text-white text-brown-700 flex items-center justify-center transition-colors shadow-xs"
                       title="Ganti lencana"
                       aria-label="Ganti lencana"
                     >
-                      <Edit3 size={14} />
+                      <Edit3 size={15} />
                     </button>
                   </div>
                 ) : (
                   <button
                     type="button"
                     onClick={() => setPickerSlot(slot)}
-                    className="w-full min-h-[110px] rounded-2xl p-4 flex flex-col items-center justify-center gap-2 border-2 border-dashed border-brown-900/15 hover:border-orange-500/50 hover:bg-orange-50/50 transition-all text-brown-700/60 hover:text-orange-600 active:scale-95"
+                    className="w-full min-h-[110px] rounded-[24px] p-4 flex flex-col items-center justify-center gap-2 border-2 border-dashed border-brown-900/15 hover:border-orange-500/50 hover:bg-orange-50/50 transition-all text-brown-700/60 hover:text-orange-600 active:scale-95"
                   >
                     <Plus size={22} className="opacity-40" />
                     <span className="text-xs font-bold">{SLOT_LABELS[slot]}</span>
@@ -269,7 +269,7 @@ export default function AchievementsPage() {
       </div>
 
       {/* ── Progress Bar Berdasarkan Real UserBadge ── */}
-      <div className="bg-white rounded-3xl border border-brown-900/10 p-5 sm:p-6 shadow-xs">
+      <div className="bg-white/95 rounded-[32px] border border-brown-900/10 p-5 sm:p-6 shadow-xs">
         <div className="flex items-center justify-between mb-2">
           <span className="font-semibold text-sm text-brown-900">
             Progres Koleksi Lencana
@@ -298,7 +298,7 @@ export default function AchievementsPage() {
               key={cat.id}
               type="button"
               onClick={() => setActiveCategory(cat.id)}
-              className={`min-h-[40px] shrink-0 px-4 py-2 rounded-full text-xs font-bold transition-all flex items-center gap-1.5 active:scale-95 ${
+              className={`min-h-[44px] shrink-0 px-4 py-2 rounded-full text-xs font-bold transition-all flex items-center gap-1.5 active:scale-95 ${
                 isSelected
                   ? "bg-brown-900 text-white shadow-sm"
                   : "bg-white border border-brown-900/10 text-brown-700 hover:bg-cream"
@@ -358,7 +358,7 @@ function StatCard({
 }) {
   return (
     <div
-      className={`rounded-2xl p-4 flex flex-col items-center gap-1.5 border border-brown-900/8 ${
+      className={`rounded-[28px] p-4 flex flex-col items-center gap-1.5 border border-brown-900/10 ${
         color.split(" ")[0]
       } shadow-xs`}
     >
@@ -384,7 +384,7 @@ function AchievementCard({
     <div
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
-      className={`relative rounded-3xl p-5 flex flex-col items-center text-center gap-2.5 border transition-all duration-200 ${
+      className={`relative rounded-[28px] p-5 sm:p-6 flex flex-col items-center text-center gap-3 border transition-all duration-200 ${
         achievement.unlocked
           ? `${achievement.badgeColor} border-brown-900/10 shadow-xs hover:shadow-md hover:-translate-y-0.5`
           : "bg-white/80 border-brown-900/8 opacity-60 grayscale"
@@ -422,7 +422,7 @@ function AchievementCard({
       </p>
 
       {achievement.unlocked && achievement.unlockedAt && (
-        <span className="text-[10px] font-semibold text-green-700 bg-white/70 px-2 py-0.5 rounded-full mt-1">
+        <span className="text-[10px] font-semibold text-green-700 bg-white/70 px-2.5 py-0.5 rounded-full mt-1">
           Diraih pada{" "}
           {new Date(achievement.unlockedAt).toLocaleDateString("id-ID", {
             day: "numeric",
@@ -436,7 +436,7 @@ function AchievementCard({
         <button
           type="button"
           onClick={() => onPin(achievement.key)}
-          className={`min-h-[36px] min-w-[36px] rounded-full bg-orange-500 text-white flex items-center justify-center text-xs shadow-sm hover:bg-orange-600 transition-all ${
+          className={`min-h-[40px] min-w-[40px] rounded-full bg-orange-500 text-white flex items-center justify-center text-xs shadow-sm hover:bg-orange-600 transition-all ${
             hovered ? "opacity-100 scale-100" : "opacity-0 scale-90 sm:opacity-0"
           } absolute top-3 right-3`}
           title="Pasang ke profil"

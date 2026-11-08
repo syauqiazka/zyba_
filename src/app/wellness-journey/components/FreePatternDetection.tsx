@@ -18,7 +18,7 @@ export default function FreePatternDetection({
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
       {/* Kartu Pattern Detection */}
-      <div className="rounded-3xl border border-brown-900/10 bg-white/90 p-5 sm:p-6 shadow-xs flex flex-col justify-between gap-4">
+      <div className="rounded-[32px] border border-brown-900/10 bg-white/95 p-6 sm:p-7 shadow-xs flex flex-col justify-between gap-4 transition-all">
         <div>
           <div className="flex items-center justify-between pb-3 border-b border-brown-900/5">
             <div className="flex items-center gap-2">
@@ -75,7 +75,7 @@ export default function FreePatternDetection({
       </div>
 
       {/* Kartu Rekomendasi Terarah */}
-      <div className="rounded-3xl border border-brown-900/10 bg-white/90 p-5 sm:p-6 shadow-xs flex flex-col justify-between gap-4">
+      <div className="rounded-[32px] border border-brown-900/10 bg-white/95 p-6 sm:p-7 shadow-xs flex flex-col justify-between gap-4 transition-all">
         <div>
           <div className="flex items-center justify-between pb-3 border-b border-brown-900/5">
             <div className="flex items-center gap-2">

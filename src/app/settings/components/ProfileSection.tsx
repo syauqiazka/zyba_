@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import React, { useRef, useState, useEffect, useCallback } from "react";
 import { isAvatarUrl, resolveAvatar } from "@/lib/avatarUtils";
@@ -206,7 +206,7 @@ export default function ProfileSection({
   const isImg = isAvatarUrl(avatarUrl);
 
   return (
-    <div className="lg:col-span-7 glass-card rounded-3xl p-4 sm:p-6 md:p-7 border border-brown-900/10 flex flex-col gap-6 bg-white">
+    <div className="lg:col-span-7 rounded-[32px] p-5 sm:p-7 md:p-8 border border-brown-900/10 shadow-xs flex flex-col gap-6 bg-white/95">
       <h2 className="font-display text-lg font-bold text-brown-900 border-b border-brown-900/10 pb-3">
         1. Profil Pengguna
       </h2>

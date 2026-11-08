@@ -3,7 +3,7 @@ import { useFreshDataSignal } from "@/hooks/useFreshData";
 
 import { useEffect, useState, useRef, useCallback } from "react";
 import Link from "next/link";
-import { Flame, Sparkles } from "lucide-react";
+import { Flame, Sparkles, Camera, ArrowRight, CheckCircle2 } from "lucide-react";
 
 import MetricScoreCard from "./components/MetricScoreCard";
 import StressLevelChart from "./components/StressLevelChart";
@@ -734,14 +734,14 @@ export default function DashboardPage() {
             <button
               type="button"
               onClick={() => window.dispatchEvent(new CustomEvent("zyba_open_profile"))}
-              className="rounded-full focus:outline-none focus:ring-2 focus:ring-orange-400 block transition-transform group-hover:scale-105 active:scale-95"
+              className="rounded-full focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-orange-500 block transition-transform group-hover:scale-105 active:scale-95"
               title="Buka profil lengkap"
             >
               <UserAvatar
                 src={userData.avatarUrl}
                 name={userData.name}
                 size="lg"
-                className="w-16 h-16 rounded-full border-2 border-orange-300 shadow-md cursor-pointer"
+                className="w-14 h-14 sm:w-16 sm:h-16 rounded-full border-2 border-brown-900/10 shadow-xs cursor-pointer object-cover"
                 showStatus={false}
               />
             </button>
@@ -753,95 +753,81 @@ export default function DashboardPage() {
               title={
                 cooldownInfo && !cooldownInfo.canChange
                   ? `Cooldown: ${cooldownInfo.remainingText}`
-                  : "Ubah foto profil (Crop & Cooldown)"
+                  : "Ubah foto profil"
               }
             >
-              <span className="text-[10px] font-bold">📷 Ubah</span>
+              <Camera size={16} />
             </button>
-            {/* Mobile/Quick camera badge */}
             <button
               type="button"
               onClick={handleAvatarClick}
-              className="absolute -bottom-1 -right-1 w-6 h-6 rounded-full bg-orange-500 text-white flex items-center justify-center text-xs shadow-md border-2 border-white cursor-pointer hover:bg-orange-600 active:scale-95 transition-transform"
+              className="absolute -bottom-1 -right-1 w-6 h-6 rounded-full bg-brown-900 hover:bg-orange-500 text-cream flex items-center justify-center shadow-xs border-2 border-cream cursor-pointer transition-colors"
               title="Ubah foto profil"
+              aria-label="Ubah foto profil"
             >
-              📷
+              <Camera size={11} />
             </button>
           </div>
 
           <div>
             <div className="flex items-center gap-2 mb-1 flex-wrap">
               <span
-                className={`px-2.5 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider ${userData.hasAssessment
-                    ? "bg-orange-100 text-orange-500"
-                    : "bg-green-100 text-green-500"
-                  }`}
+                className={`px-3 py-0.5 rounded-full text-[11px] font-extrabold uppercase tracking-widest ${
+                  userData.hasAssessment
+                    ? "bg-orange-100 text-orange-700"
+                    : "bg-green-100 text-green-700"
+                }`}
               >
-                {userData.hasAssessment ? "Welcome back (｡•̀ᴗ-)✧" : "Selamat Datang! ✨"}
+                {userData.hasAssessment ? "Ruang Hadir" : "Selamat Bergabung"}
               </span>
 
-              <span className="text-xs text-brown-700" suppressHydrationWarning>
-                | {todayFormatted}
+              <span className="text-xs text-brown-700/80 font-medium" suppressHydrationWarning>
+                · {todayFormatted}
               </span>
 
               {/* Cooldown badge if active */}
               {cooldownInfo && !cooldownInfo.canChange && (
                 <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-100 text-amber-800 border border-amber-300/50">
-                  ⏳ Cooldown: {cooldownInfo.remainingText}
+                  Cooldown foto: {cooldownInfo.remainingText}
                 </span>
               )}
             </div>
 
-            <h1 className="font-display text-xl sm:text-2xl md:text-3xl font-extrabold text-brown-900 leading-tight">
-              <span className="inline-flex items-center gap-1.5 whitespace-nowrap">
-                Hai <span className="animate-wave">👋</span>,
-              </span>{" "}
-              <span className="break-words">{userData.name}!</span>
+            <h1 className="font-display text-2xl sm:text-3xl font-extrabold text-brown-900 tracking-tight leading-tight">
+              Hai, <span className="break-words">{userData.name}</span>
             </h1>
-
-            {!userData.hasAssessment && (
-              <div className="mt-3">
-                <Link
-                  href="/assessment"
-                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-orange-500 hover:bg-brown-900 text-white font-bold text-xs shadow-sm transition-all active:scale-95"
-                >
-                  <span>Mulai Asesmen Awal</span>
-                  <span>→</span>
-                </Link>
-              </div>
-            )}
+            <p className="text-xs sm:text-sm text-brown-700 mt-0.5 font-normal">
+              Tarik napas perlahan. Hadir seutuhnya di ruang tenangmu hari ini.
+            </p>
           </div>
         </div>
 
         <div className="flex items-center gap-3">
-          <div className="flex items-center gap-3" title="Daily Streak">
-            <div className="flex flex-col items-end">
-              <span className="text-xs font-bold text-brown-900">
-                {userData.hasAssessment ? "Daily Streak" : "Status Pengguna"}
-              </span>
-              <span className="text-xs text-brown-700">
-                {userData.hasAssessment
-                  ? `${userData.streak}/365 Hari Aktif`
-                  : "Baru Bergabung"}
-              </span>
-            </div>
-
+          <div
+            className="flex items-center gap-3 px-4 py-2.5 rounded-2xl bg-white/95 border border-brown-900/10 shadow-xs"
+            title={userData.hasAssessment ? `${userData.streak} hari konsisten merawat diri` : "Pengguna baru ZYBA"}
+          >
             <div
-              className={`min-w-[64px] h-12 px-2 rounded-2xl text-white font-display font-extrabold flex items-center justify-center gap-1 text-xl shadow-lg whitespace-nowrap ${userData.hasAssessment
-                  ? "bg-orange-500 shadow-orange-500/20"
-                  : "bg-green-500 shadow-green-500/20"
-                }`}
+              className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 ${
+                userData.hasAssessment
+                  ? "bg-orange-100 text-orange-500"
+                  : "bg-green-100 text-green-500"
+              }`}
             >
               {userData.hasAssessment ? (
-                <>
-                  <Flame className="w-5 h-5 text-white shrink-0" />
-                  <span className="shrink-0 leading-none">
-                    {userData.streak}
-                  </span>
-                </>
+                <Flame className="w-5 h-5 shrink-0" />
               ) : (
-                <Sparkles className="w-5 h-5 text-white shrink-0" />
+                <Sparkles className="w-5 h-5 shrink-0" />
               )}
+            </div>
+
+            <div className="flex flex-col">
+              <span className="text-xs font-bold text-brown-900 leading-tight">
+                {userData.hasAssessment ? `${userData.streak} Hari Hadir` : "Baru Hadir"}
+              </span>
+              <span className="text-[10px] text-brown-700/70">
+                {userData.hasAssessment ? "Ritual konsisten" : "Awal perjalanan"}
+              </span>
             </div>
           </div>
         </div>
@@ -854,54 +840,112 @@ export default function DashboardPage() {
       )}
 
       {/* =================================================
-          METRICS
+          SANCTUARY ASYMMETRIC GRID (65% : 35%)
       ================================================= */}
-      <section className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-start">
+        {/* Main Focus Column (65%) */}
+        <div className="lg:col-span-7 xl:col-span-8 flex flex-col gap-6 sm:gap-8">
+          {/* 1. Mindful Assessment Ritual Hero Card */}
+          <div className="rounded-[32px] bg-white/95 border border-brown-900/10 p-6 sm:p-8 shadow-xs flex flex-col justify-between relative overflow-hidden">
+            {/* Subtle paper tint glow */}
+            <div className="pointer-events-none absolute -right-12 -top-12 h-44 w-44 rounded-full bg-orange-100/40 blur-3xl" />
+            <div className="pointer-events-none absolute -left-10 bottom-0 h-36 w-36 rounded-full bg-green-100/35 blur-2xl" />
 
-        <MetricScoreCard
-          score={
-            userData.zybaScore
-          }
-          condition={
-            userData.condition
-          }
-          hasAssessment={
-            userData.hasAssessment
-          }
-        />
+            <div className="relative flex flex-col gap-4 sm:gap-5">
+              <div className="flex items-center justify-between gap-3 flex-wrap">
+                <div className="flex items-center gap-2">
+                  <span className="text-[11px] font-extrabold uppercase tracking-widest text-orange-500 bg-orange-100 px-3 py-1 rounded-full">
+                    Ritual Harian
+                  </span>
+                  <span className="text-xs text-brown-700/80">
+                    10 Domain Kesejahteraan
+                  </span>
+                </div>
+                {userData.hasAssessment && (
+                  <span className="text-xs font-semibold text-green-700 bg-green-100 px-3 py-1 rounded-full flex items-center gap-1.5 border border-green-500/20">
+                    <CheckCircle2 size={13} />
+                    Sudah Tercatat Hari Ini
+                  </span>
+                )}
+              </div>
 
-        <StressLevelChart initialHistory={assessmentHistory} />
+              <div>
+                <h2 className="font-display text-xl sm:text-2xl font-bold text-brown-900 leading-snug">
+                  {userData.hasAssessment
+                    ? "Evaluasi emosionalmu hari ini telah tersimpan."
+                    : "Bagaimana keadaan batin dan tubuhmu hari ini?"}
+                </h2>
+                <p className="text-xs sm:text-sm text-brown-700 mt-2 max-w-xl leading-relaxed">
+                  {userData.hasAssessment
+                    ? `Kondisi suasana hatimu hari ini: ${userData.condition}. Rawat keseimbanganmu dengan tidak menuntut hal yang berlebihan.`
+                    : "Luangkan jeda hening 1–2 menit untuk mengamati perasaan, energi fisik, dan kebutuhanmu tanpa menghakimi."}
+                </p>
+              </div>
 
-        <CompanionWidget
-          conversationCount={
-            userData.conversationCount
-          }
-        />
+              <div className="pt-2 flex items-center gap-3 flex-wrap">
+                <Link
+                  href="/daily-assessment"
+                  className="inline-flex items-center gap-2 px-6 py-2.5 rounded-full bg-orange-500 hover:bg-brown-900 text-white text-xs sm:text-sm font-semibold transition-all duration-200 active:scale-[0.98] shadow-xs cursor-pointer"
+                >
+                  <span>{userData.hasAssessment ? "Lihat Hasil Asesmen" : "Mulai Check-In Hari Ini"}</span>
+                  <ArrowRight size={14} />
+                </Link>
+                <Link
+                  href="/wellness-journey"
+                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-cream hover:bg-cream/70 text-brown-900 text-xs sm:text-sm font-semibold transition-colors duration-200 border border-brown-900/10 cursor-pointer"
+                >
+                  <span>Riwayat Tren</span>
+                </Link>
+              </div>
+            </div>
+          </div>
 
-      </section>
+          {/* 2. Tanya Zyba Private Gateway */}
+          <CompanionWidget
+            conversationCount={
+              userData.conversationCount
+            }
+          />
 
-      {/* =================================================
-          TRACKER
-      ================================================= */}
-      <TrackerChecklist
-        trackerState={
-          trackerState
-        }
-        completedCount={
-          completedCount
-        }
-        totalTrackers={
-          totalTrackers
-        }
-        toggleTracker={
-          toggleTracker
-        }
-      />
+          {/* 3. Stress Level & Mood Waveform */}
+          <StressLevelChart initialHistory={assessmentHistory} />
+        </div>
 
-      {/* =================================================
-          QUICK ACCESS
-      ================================================= */}
-      <QuickAccessCards />
+        {/* Side Companion Column (35%) */}
+        <div className="lg:col-span-5 xl:col-span-4 flex flex-col gap-6 sm:gap-8">
+          {/* 1. Score Overview */}
+          <MetricScoreCard
+            score={
+              userData.zybaScore
+            }
+            condition={
+              userData.condition
+            }
+            hasAssessment={
+              userData.hasAssessment
+            }
+          />
+
+          {/* 2. Gentle Routine Checklist */}
+          <TrackerChecklist
+            trackerState={
+              trackerState
+            }
+            completedCount={
+              completedCount
+            }
+            totalTrackers={
+              totalTrackers
+            }
+            toggleTracker={
+              toggleTracker
+            }
+          />
+
+          {/* 3. Quick Access / Safety Net */}
+          <QuickAccessCards />
+        </div>
+      </div>
 
       {/* Avatar Crop Modal */}
       <AvatarCropModal

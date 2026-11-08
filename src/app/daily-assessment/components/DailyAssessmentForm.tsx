@@ -311,7 +311,7 @@ export function DailyAssessmentForm({
   };
 
   return (
-    <div className="w-full max-w-[680px] mx-auto bg-white rounded-2xl border border-brown-900/10 p-4 sm:p-6 md:p-8 shadow-xs select-none">
+    <div className="w-full max-w-[680px] mx-auto bg-white/95 rounded-[32px] border border-brown-900/10 p-5 sm:p-7 md:p-8 shadow-xs select-none relative overflow-hidden transition-all duration-300">
       {/* ── 1. Header & Progress ─────────────────────────────── */}
       <div className="flex flex-col gap-3 pb-4 mb-5 border-b border-brown-900/10">
         <div className="flex items-center justify-between">

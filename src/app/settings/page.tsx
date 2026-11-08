@@ -228,21 +228,21 @@ export default function SettingsPage() {
       />
 
       {/* Bagian 24.1: Privasi Data */}
-      <div className="rounded-3xl p-6 border border-brown-900/10 bg-white flex flex-col gap-4">
-        <h3 className="font-display text-base font-bold text-brown-900 border-b border-brown-900/10 pb-2">
+      <div className="bg-white/95 rounded-[32px] p-6 sm:p-8 border border-brown-900/10 shadow-xs flex flex-col gap-4">
+        <h3 className="font-display text-base font-bold text-brown-900 border-b border-brown-900/10 pb-3">
           4. Privasi & Data
         </h3>
         <div className="flex flex-col sm:flex-row gap-3">
           <button type="button" onClick={handleExportData}
-            className="flex-1 py-2.5 rounded-xl border border-brown-900/15 text-xs font-bold text-brown-900 hover:bg-cream transition-colors">
+            className="flex-1 min-h-[44px] py-2.5 px-4 rounded-2xl border border-brown-900/15 text-xs font-bold text-brown-900 hover:bg-cream transition-colors">
             Ekspor Semua Data Saya (JSON)
           </button>
           <button type="button" onClick={() => setShowDeleteConfirm(true)}
-            className="flex-1 py-2.5 rounded-xl border border-danger/30 text-xs font-bold text-danger hover:bg-danger/5 transition-colors">
+            className="flex-1 min-h-[44px] py-2.5 px-4 rounded-2xl border border-danger/30 text-xs font-bold text-danger hover:bg-danger/5 transition-colors">
             Hapus Akun Saya
           </button>
         </div>
-        <p className="text-[10px] text-brown-700/60">
+        <p className="text-[11px] text-brown-700/60 leading-relaxed">
           Ekspor mengunduh semua data mood, jurnal, percakapan, dan post komunitas dalam format JSON.
           Hapus akun bersifat permanen dan menghapus data dari seluruh layanan ZYBA.
         </p>
@@ -267,20 +267,20 @@ export default function SettingsPage() {
 
       {/* Konfirmasi hapus akun */}
       {showDeleteConfirm && (
-        <div className="fixed inset-0 z-50 bg-black/40 flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl p-6 max-w-sm w-full shadow-xl flex flex-col gap-4">
-            <h3 className="font-display font-extrabold text-base text-brown-900">Hapus Akun?</h3>
-            <p className="text-xs text-brown-700">
+        <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white/95 rounded-[32px] p-6 sm:p-7 max-w-sm w-full shadow-2xl border border-brown-900/10 flex flex-col gap-4">
+            <h3 className="font-display font-bold text-base text-brown-900">Hapus Akun?</h3>
+            <p className="text-xs text-brown-700 leading-relaxed">
               Semua data kamu (mood, jurnal, percakapan, post komunitas) akan dihapus permanen dari seluruh layanan ZYBA.
               Aksi ini tidak bisa dibatalkan.
             </p>
             <div className="flex gap-3">
               <button type="button" onClick={() => setShowDeleteConfirm(false)}
-                className="flex-1 py-2.5 rounded-full border border-brown-900/15 text-xs font-bold text-brown-700 hover:bg-cream">
+                className="flex-1 min-h-[44px] py-2.5 rounded-full border border-brown-900/15 text-xs font-bold text-brown-700 hover:bg-cream transition-colors">
                 Batal
               </button>
               <button type="button" onClick={handleDeleteAccount} disabled={isDeleting}
-                className="flex-1 py-2.5 rounded-full bg-danger text-white text-xs font-bold hover:opacity-90 disabled:opacity-50">
+                className="flex-1 min-h-[44px] py-2.5 rounded-full bg-danger text-white text-xs font-bold hover:opacity-90 disabled:opacity-50 transition-colors">
                 {isDeleting ? "Menghapus..." : "Ya, Hapus Akun"}
               </button>
             </div>

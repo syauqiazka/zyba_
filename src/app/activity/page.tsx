@@ -457,7 +457,7 @@ export default function SmartActivityPlannerPage() {
           />
         </div>
 
-        <div className="xl:col-span-4 glass-card rounded-3xl p-6 border border-brown-900/10 bg-white">
+        <div className="xl:col-span-4 rounded-[32px] p-6 sm:p-7 border border-brown-900/10 bg-white/95 shadow-xs">
           <div className="flex items-center justify-between gap-3">
             <div>
               <span className="text-xs font-bold uppercase tracking-wider text-green-500">

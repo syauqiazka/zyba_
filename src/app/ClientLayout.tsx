@@ -30,7 +30,7 @@ function isProtectedPath(pathname: string | null) {
 
 function SidebarSkeleton() {
   return (
-    <aside className="w-64 md:w-20 lg:w-64 shrink-0 border-r border-brown-900/10 bg-white/70 backdrop-blur-md min-h-screen p-4 lg:p-6 flex flex-col justify-between sticky top-0 h-screen z-30 animate-pulse">
+    <aside className="w-[82vw] max-w-[290px] md:w-20 lg:w-[252px] shrink-0 md:my-4 md:ml-4 md:h-[calc(100vh-2rem)] md:rounded-[28px] border border-brown-900/10 bg-white/70 backdrop-blur-md p-4 lg:p-5 flex flex-col justify-between sticky top-0 h-[100dvh] z-30 animate-pulse">
       <div className="flex flex-col gap-7">
         <div className="flex items-center gap-3 px-2">
           <div className="w-9 h-9 rounded-2xl bg-cream border border-brown-900/10" />
@@ -298,10 +298,12 @@ export default function ClientLayout({
         </div>
 
         {/* Main Content Area */}
-        <main className="flex-1 min-w-0 px-3.5 pt-[68px] pb-24 sm:px-6 md:px-6 md:pt-6 md:pb-12 lg:px-10 lg:pt-8 overflow-x-hidden">
-          <Suspense fallback={<PageLoadingFallback />}>
-            {children}
-          </Suspense>
+        <main className="flex-1 min-w-0 px-3.5 pt-[68px] pb-24 sm:px-6 md:px-6 md:pt-6 md:pb-12 lg:px-8 lg:pt-6 xl:px-10 overflow-x-hidden">
+          <div className="max-w-7xl mx-auto w-full">
+            <Suspense fallback={<PageLoadingFallback />}>
+              {children}
+            </Suspense>
+          </div>
         </main>
       </div>
 

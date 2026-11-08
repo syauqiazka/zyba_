@@ -144,7 +144,7 @@ export default function WellnessTrendChart({ points }: TrendChartProps) {
   const isNearLeftEdge = activePoint ? (activePoint.x / svgWidth) < 0.22 : false;
 
   return (
-    <div className="rounded-3xl border border-brown-900/10 bg-white/80 p-4 sm:p-6 shadow-xs flex flex-col gap-4">
+    <div className="rounded-[32px] border border-brown-900/10 bg-white/95 p-6 sm:p-8 shadow-xs flex flex-col gap-4 transition-all">
       {/* Chart Header & Metric Selectors */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-brown-900/5">
         <div>

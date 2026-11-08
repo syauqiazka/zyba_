@@ -28,9 +28,9 @@ export default function MobileBottomNav({
 
   return (
     <nav
-      className={`md:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-lg border-t border-brown-900/10 px-2 py-1.5 flex items-center justify-around shadow-[0_-4px_24px_rgba(0,0,0,0.06)] pb-[max(0.375rem,env(safe-area-inset-bottom))] transition-all duration-300 ${
+      className={`md:hidden fixed bottom-3 left-3 right-3 z-40 max-w-md mx-auto bg-white/95 backdrop-blur-xl border border-brown-900/10 rounded-full px-2 py-1.5 flex items-center justify-around shadow-[0_8px_30px_rgba(59,42,32,0.12)] transition-all duration-300 ${
         hiddenWhenSidebarOpen
-          ? "translate-y-full opacity-0 pointer-events-none"
+          ? "translate-y-20 opacity-0 pointer-events-none"
           : "translate-y-0 opacity-100"
       }`}
       aria-label="Navigasi Utama Mobile"

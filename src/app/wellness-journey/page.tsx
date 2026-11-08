@@ -674,24 +674,24 @@ export default function WellnessJourneyPage() {
           {/* 8. ZYBA PLUS VALUE ADD PROPOSITION BANNER */}
           <Link
             href="/settings/zyba-plus/insights"
-            className="group relative overflow-hidden rounded-3xl border border-orange-300/40 bg-gradient-to-r from-white via-orange-50/70 to-purple-50/70 p-5 shadow-xs transition-all hover:-translate-y-0.5 hover:shadow-md sm:p-6"
+            className="group relative overflow-hidden rounded-[32px] border border-orange-500/20 bg-white/95 p-6 shadow-xs transition-all hover:border-orange-500/40 sm:p-7"
           >
             <div className="relative flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
               <div>
                 <div className="flex flex-wrap items-center gap-2">
-                  <span className="inline-flex items-center gap-1 rounded-full bg-orange-500 px-2.5 py-1 text-[10px] font-extrabold uppercase tracking-wider text-white">
-                    ✨ ZYBA Plus Deep Analytics
+                  <span className="inline-flex items-center gap-1 rounded-full bg-orange-100 border border-orange-500/20 px-3 py-1 text-[10px] font-extrabold uppercase tracking-wider text-orange-700">
+                    ZYBA Plus Deep Analytics
                   </span>
-                  <span className="text-[10px] font-bold text-brown-700/50">Fitur Lanjutan</span>
+                  <span className="text-[10px] font-bold text-brown-700/60">Fitur Lanjutan</span>
                 </div>
-                <h3 className="mt-2 font-display text-lg font-extrabold text-brown-900 sm:text-xl">
-                  Tingkatkan ke Analisis Mendalam & Adaptive 7-Day Plan
+                <h3 className="mt-2 font-display text-lg font-bold text-brown-900 sm:text-xl">
+                  Tingkatkan ke Analisis Mendalam &amp; Adaptive 7-Day Plan
                 </h3>
-                <p className="mt-1 max-w-2xl text-xs leading-5 text-brown-700 sm:text-sm">
+                <p className="mt-1 max-w-2xl text-xs leading-relaxed text-brown-700 sm:text-sm">
                   Dapatkan Analisis Longitudinal 90 Hari, Deteksi Pemicu Stres Terperinci, Rencana Pemulihan 7 Hari Adaptif, dan Integrasi Memori Wellness dengan Tanya Zyba.
                 </p>
               </div>
-              <span className="inline-flex shrink-0 items-center justify-center rounded-full bg-brown-900 px-4 py-2.5 text-xs font-extrabold text-white group-hover:bg-orange-500 transition-colors">
+              <span className="inline-flex shrink-0 items-center justify-center rounded-full bg-brown-900 px-5 py-2.5 text-xs font-semibold text-white group-hover:bg-orange-500 transition-colors shadow-2xs">
                 Buka ZYBA Plus Insights →
               </span>
             </div>

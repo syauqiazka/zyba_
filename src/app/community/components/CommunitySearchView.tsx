@@ -104,35 +104,37 @@ export default function CommunitySearchView() {
           onChange={(e) => setQuery(e.target.value)}
           placeholder="Cari topik, kreator, atau percakapan..."
           autoFocus
-          className="w-full bg-white rounded-2xl pl-11 pr-20 py-3 text-xs md:text-sm text-brown-900 placeholder:text-brown-700/40 border border-brown-900/10 focus:outline-none focus:ring-2 focus:ring-orange-500 shadow-2xs"
+          className="w-full bg-white/95 rounded-[28px] pl-11 pr-24 py-3.5 text-xs md:text-sm text-brown-900 placeholder:text-brown-700/40 border border-brown-900/10 focus:outline-none focus:ring-2 focus:ring-orange-500 shadow-xs"
         />
-        <div className="absolute right-2 top-1/2 -translate-y-1/2 flex gap-1">
+        <div className="absolute right-3 top-1/2 -translate-y-1/2 flex gap-1">
           <button
             type="button"
             onClick={() => setType("people")}
-            className={`p-1.5 rounded-lg transition-colors ${
+            className={`min-h-[32px] p-1.5 rounded-full transition-colors ${
               type === "people" ? "text-orange-500 bg-orange-50" : "text-brown-700/40 hover:text-brown-900"
             }`}
             title="Orang"
+            aria-label="Filter orang"
           >
-            <User size={14} />
+            <User size={15} />
           </button>
           <button
             type="button"
             onClick={() => setType("posts")}
-            className={`p-1.5 rounded-lg transition-colors ${
+            className={`min-h-[32px] p-1.5 rounded-full transition-colors ${
               type === "posts" ? "text-orange-500 bg-orange-50" : "text-brown-700/40 hover:text-brown-900"
             }`}
             title="Postingan"
+            aria-label="Filter postingan"
           >
-            <FileText size={14} />
+            <FileText size={15} />
           </button>
         </div>
       </div>
 
       {/* Quick Topics */}
       {showSuggestions && !query && (
-        <div className="bg-white rounded-2xl border border-brown-900/8 p-4 shadow-2xs">
+        <div className="bg-white/95 rounded-[32px] border border-brown-900/10 p-5 sm:p-6 shadow-xs">
           <h3 className="font-bold text-xs text-brown-900 mb-3 uppercase tracking-wider">
             Tren di Komunitas ZYBA
           </h3>
@@ -142,14 +144,14 @@ export default function CommunitySearchView() {
                 key={t}
                 type="button"
                 onClick={() => handleQuickTopicClick(t)}
-                className="px-3 py-1.5 rounded-xl text-xs font-semibold border transition-all flex items-center gap-2 bg-cream text-brown-900 border-brown-900/8 hover:border-orange-500"
+                className="min-h-[38px] px-3.5 py-1.5 rounded-full text-xs font-semibold border transition-all flex items-center gap-2 bg-cream text-brown-900 border-brown-900/10 hover:border-orange-500"
               >
-                <Sprout size={10} className="text-green-600" />
+                <Sprout size={12} className="text-green-600" />
                 <span>#{t}</span>
               </button>
             ))}
           </div>
-          <h3 className="font-bold text-xs text-brown-900 mb-3 uppercase tracking-wider mt-4">
+          <h3 className="font-bold text-xs text-brown-900 mb-3 uppercase tracking-wider mt-5">
             Kreator Populer
           </h3>
           <div className="space-y-2">
@@ -158,13 +160,13 @@ export default function CommunitySearchView() {
                 key={c}
                 type="button"
                 onClick={() => handleQuickCreatorClick(c)}
-                className="w-full text-left p-2.5 rounded-lg hover:bg-brown-900/5 transition-colors flex items-center gap-3"
+                className="w-full text-left p-3 rounded-2xl hover:bg-cream/60 transition-colors flex items-center gap-3 border border-transparent hover:border-brown-900/8"
               >
                 <div className="w-8 h-8 rounded-full bg-orange-100 border border-orange-200 flex items-center justify-center font-bold text-xs text-orange-600">
                   {c.split(" ")[0][0]}{c.split(" ")[1][0]}
                 </div>
                 <span className="text-sm font-medium text-brown-900">{c}</span>
-                <Check size={12} className="text-green-600 ml-auto" />
+                <Check size={14} className="text-green-600 ml-auto" />
               </button>
             ))}
           </div>

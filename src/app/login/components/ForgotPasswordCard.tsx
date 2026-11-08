@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
+import { ArrowLeft, CheckCircle2, Lock, Mail } from "lucide-react";
 
 interface ForgotPasswordCardProps {
   onBack: () => void;
@@ -233,7 +234,7 @@ export default function ForgotPasswordCard({
   }
 
   return (
-    <div className="w-full max-w-md mx-auto bg-white rounded-3xl shadow-xl border border-brown-900/10 overflow-hidden flex flex-col transition-all duration-300">
+    <div className="w-full max-w-md mx-auto bg-white/95 rounded-[32px] shadow-xs border border-brown-900/10 overflow-hidden flex flex-col transition-all duration-300">
       {/* Header */}
       <div className="relative w-full bg-green-100 pt-6 pb-8 px-6 flex flex-col items-center">
         <button
@@ -246,14 +247,21 @@ export default function ForgotPasswordCard({
               : onBack
           }
           disabled={isLoading}
-          className="absolute left-5 top-5 w-8 h-8 rounded-full bg-white/80 hover:bg-white text-brown-900 flex items-center justify-center text-sm shadow-xs transition-colors disabled:opacity-50"
+          className="absolute left-5 top-5 min-h-[36px] min-w-[36px] rounded-full bg-white/90 hover:bg-white text-brown-900 flex items-center justify-center text-sm shadow-xs transition-colors disabled:opacity-50"
           title="Kembali"
+          aria-label="Kembali"
         >
-          ←
+          <ArrowLeft size={16} />
         </button>
 
-        <div className="w-10 h-10 rounded-2xl bg-white/90 shadow-sm flex items-center justify-center text-xl mb-1">
-          {step === "SUCCESS" ? "✅" : step === "INPUT_NEW_PASS" ? "🔒" : "📧"}
+        <div className="w-12 h-12 rounded-2xl bg-white/95 shadow-xs flex items-center justify-center text-green-700 mb-2">
+          {step === "SUCCESS" ? (
+            <CheckCircle2 size={24} className="text-green-700" />
+          ) : step === "INPUT_NEW_PASS" ? (
+            <Lock size={22} className="text-brown-900" />
+          ) : (
+            <Mail size={22} className="text-brown-900" />
+          )}
         </div>
         <span className="text-[10px] font-bold uppercase tracking-widest text-brown-700/70">
           {step === "INPUT_EMAIL" && "Lupa Password · Langkah 1/3"}

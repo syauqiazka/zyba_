@@ -97,7 +97,7 @@ export default function SubscriptionCard({
 
   return (
     <>
-      <div className="rounded-3xl p-6 sm:p-7 border border-brown-900/10 bg-white shadow-xs transition-all flex flex-col gap-5">
+      <div className="rounded-[32px] p-6 sm:p-8 border border-brown-900/10 bg-white/95 shadow-xs transition-all flex flex-col gap-5">
         {/* Section Header */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-brown-900/10">
           <div className="flex items-center gap-3">
@@ -122,14 +122,14 @@ export default function SubscriptionCard({
             <button
               type="button"
               onClick={handleOpenHistory}
-              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl border border-brown-900/15 hover:bg-cream text-xs font-bold text-brown-900 transition-colors cursor-pointer"
+              className="inline-flex items-center gap-1.5 px-3.5 py-2 min-h-[40px] rounded-full border border-brown-900/15 hover:bg-cream text-xs font-bold text-brown-900 transition-colors cursor-pointer"
             >
               <Receipt size={14} className="text-orange-500" />
               Riwayat Pembayaran
             </button>
             <Link
               href={isPlus ? "/settings/zyba-plus" : "/settings/zyba-plus"}
-              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-orange-500 hover:bg-orange-600 text-white text-xs font-bold shadow-xs transition-all"
+              className="inline-flex items-center gap-1.5 px-4 py-2 min-h-[40px] rounded-full bg-orange-500 hover:bg-orange-600 text-white text-xs font-bold shadow-xs transition-all"
             >
               <Sparkles size={13} />
               {isPlus ? "Kelola Plus" : "Tingkatkan Sekarang"}
@@ -140,7 +140,7 @@ export default function SubscriptionCard({
         {/* Status Body */}
         {isPlus ? (
           /* Active Zyba Plus Box */
-          <div className="rounded-2xl border border-green-500/30 bg-gradient-to-br from-green-50/70 via-white to-orange-50/40 p-4 sm:p-5">
+          <div className="rounded-[28px] border border-green-500/30 bg-white/90 p-5 sm:p-6 shadow-xs">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
               <div className="flex flex-col gap-1.5">
                 <div className="flex items-center gap-2 flex-wrap">
@@ -149,8 +149,9 @@ export default function SubscriptionCard({
                     Zyba Plus Aktif
                   </span>
                   {daysLeft !== null && (
-                    <span className="text-xs font-bold text-green-700 bg-green-100 px-2.5 py-0.5 rounded-full">
-                      ⏳ Sisa {daysLeft} Hari Lagi
+                    <span className="text-xs font-bold text-green-700 bg-green-100 px-2.5 py-0.5 rounded-full inline-flex items-center gap-1">
+                      <Clock size={12} />
+                      Sisa {daysLeft} Hari Lagi
                     </span>
                   )}
                 </div>
@@ -169,7 +170,7 @@ export default function SubscriptionCard({
               <div className="flex items-center gap-2 shrink-0">
                 <Link
                   href="/settings/zyba-plus/insights"
-                  className="inline-flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl bg-brown-900 text-white text-xs font-bold hover:bg-orange-500 transition-colors"
+                  className="inline-flex items-center justify-center gap-1.5 px-4 py-2.5 min-h-[44px] rounded-full bg-brown-900 text-white text-xs font-bold hover:bg-brown-800 transition-colors"
                 >
                   Analisis Mendalam
                   <ArrowRight size={13} />
@@ -179,7 +180,7 @@ export default function SubscriptionCard({
           </div>
         ) : (
           /* Free Tier Box */
-          <div className="rounded-2xl border border-orange-500/25 bg-gradient-to-br from-orange-50/60 via-white to-cream p-4 sm:p-5">
+          <div className="rounded-[28px] border border-orange-500/25 bg-white/90 p-5 sm:p-6 shadow-xs">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
               <div className="flex flex-col gap-1">
                 <div className="flex items-center gap-2 flex-wrap">
@@ -203,7 +204,7 @@ export default function SubscriptionCard({
               <div className="flex items-center gap-2 shrink-0">
                 <Link
                   href="/settings/zyba-plus"
-                  className="inline-flex items-center justify-center gap-1.5 px-5 py-2.5 rounded-xl bg-orange-500 text-white text-xs font-extrabold hover:bg-orange-600 shadow-sm transition-all"
+                  className="inline-flex items-center justify-center gap-1.5 px-5 py-2.5 min-h-[44px] rounded-full bg-orange-500 text-white text-xs font-extrabold hover:bg-orange-600 shadow-sm transition-all"
                 >
                   <Sparkles size={13} />
                   Tingkatkan Rp 59.000 / bln
@@ -222,7 +223,7 @@ export default function SubscriptionCard({
           onClick={() => setShowHistoryModal(false)}
         >
           <div
-            className="w-full max-w-lg overflow-hidden rounded-3xl border border-brown-900/10 bg-cream p-5 sm:p-6 shadow-2xl transition-all"
+            className="w-full max-w-lg overflow-hidden rounded-[32px] border border-brown-900/10 bg-white p-6 sm:p-8 shadow-2xl transition-all"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-center justify-between pb-3.5 border-b border-brown-900/10">

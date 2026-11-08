@@ -184,7 +184,7 @@ export default function Sidebar({ onClose }: { onClose?: () => void }) {
   };
 
   return (
-    <aside className="w-[82vw] max-w-[290px] md:w-20 lg:w-64 shrink-0 border-r border-brown-900/10 bg-cream p-3 md:p-3 lg:p-5 flex flex-col sticky top-0 h-[100dvh] md:h-screen shadow-[12px_0_36px_-28px_rgba(59,42,32,0.5)] transition-all duration-300 overflow-y-auto scrollbar-none pb-6 md:pb-5">
+    <aside className="w-[82vw] max-w-[290px] md:w-20 lg:w-[252px] shrink-0 md:my-4 md:ml-4 md:h-[calc(100vh-2rem)] md:rounded-[32px] md:border md:border-brown-900/10 md:bg-white/90 md:backdrop-blur-md md:shadow-[0_4px_24px_-4px_rgba(59,42,32,0.06)] bg-cream p-4 md:p-3 lg:p-4 flex flex-col sticky top-0 h-[100dvh] shadow-xl md:shadow-xs transition-all duration-300 overflow-y-auto scrollbar-none pb-6 md:pb-4 border-r border-brown-900/10 md:border-r-0">
       {/* Top section: Logo + Nav */}
       <div className="flex flex-col gap-5 flex-1">
         {/* Brand Logo & Close button row */}

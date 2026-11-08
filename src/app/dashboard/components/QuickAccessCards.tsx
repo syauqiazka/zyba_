@@ -1,233 +1,93 @@
 "use client";
 
 import Link from "next/link";
-import { ClipboardCheck, Wind, Headphones, ArrowRight } from "lucide-react";
+import { Wind, Headphones, HeartHandshake, ArrowRight } from "lucide-react";
 
 export default function QuickAccessCards() {
   return (
-    <section className="flex flex-col gap-4">
-      {/* Section Header */}
-      <div className="flex items-center gap-3">
-        <h2 className="font-display text-base font-bold text-brown-900 whitespace-nowrap">
-          Akses Cepat
-        </h2>
-        <div className="h-px flex-1 bg-brown-900/10" />
+    <section className="flex flex-col gap-3">
+      <div className="flex items-center justify-between">
+        <h3 className="font-display text-sm font-bold text-brown-900">
+          Akses Ruang Pendukung
+        </h3>
+        <span className="text-[11px] text-brown-700/70">Pilihan cepat</span>
       </div>
 
-      {/* Quick Access Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-        {/* ==================== ASSESSMENT ==================== */}
-        <div
-          className="
-            group
-            glass-card
-            rounded-3xl
-            p-5
-            flex
-            flex-col
-            min-h-[215px]
-            border
-            border-orange-500/15
-            bg-gradient-to-br
-            from-white
-            via-cream/80
-            to-orange-50/50
-            hover:shadow-md
-            hover:-translate-y-0.5
-            transition-all
-            duration-200
-          "
-        >
-          {/* Header */}
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2.5">
-              <div className="w-9 h-9 rounded-xl bg-orange-100 flex items-center justify-center shrink-0">
-                <ClipboardCheck className="w-5 h-5 text-orange-500" />
-              </div>
-
-              <span className="text-[11px] font-bold uppercase tracking-wider text-orange-500">
-                Check-In Harian
-              </span>
+      <div className="flex flex-col gap-3">
+        {/* Latihan Pernapasan */}
+        <div className="rounded-2xl p-4 bg-white/95 border border-brown-900/10 shadow-xs flex items-center justify-between hover:border-orange-500/30 transition-all duration-200 group">
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 rounded-xl bg-orange-100 flex items-center justify-center shrink-0">
+              <Wind className="w-4 h-4 text-orange-500" />
+            </div>
+            <div>
+              <h4 className="text-xs font-bold text-brown-900 group-hover:text-orange-500 transition-colors">
+                Latihan Napas 3 Menit
+              </h4>
+              <p className="text-[11px] text-brown-700/80">
+                Meredakan ketegangan fisik & memusatkan pikiran.
+              </p>
             </div>
           </div>
-
-          {/* Content */}
-          <div className="mt-4">
-            <h3 className="font-display text-[17px] font-bold text-brown-900">
-              Check-in Asesmen
-            </h3>
-
-            <p className="text-xs leading-relaxed text-brown-700 mt-1.5 max-w-md">
-              Evaluasi kesehatan mental lengkap harian &amp; perbarui Skor Zyba kamu.
-            </p>
-          </div>
-
-          {/* Action */}
-          <div className="mt-auto pt-4">
-            <Link
-              href="/daily-assessment"
-              className="
-                inline-flex
-                items-center
-                gap-1.5
-                bg-orange-500
-                hover:bg-brown-900
-                text-white
-                px-4
-                py-2.5
-                rounded-full
-                text-xs
-                font-bold
-                transition-colors
-                shadow-sm
-              "
-            >
-              Mulai Asesmen
-              <ArrowRight size={13} />
-            </Link>
-          </div>
+          <Link
+            href="/activity"
+            className="w-7 h-7 rounded-full bg-cream hover:bg-brown-900 hover:text-white flex items-center justify-center text-brown-900 shrink-0 transition-colors"
+            title="Buka Planner"
+          >
+            <ArrowRight size={13} />
+          </Link>
         </div>
 
-        {/* ==================== ACTIVITY ==================== */}
-        <div
-          className="
-            group
-            glass-card
-            rounded-3xl
-            p-5
-            flex
-            flex-col
-            min-h-[215px]
-            border
-            border-orange-500/15
-            bg-gradient-to-br
-            from-orange-50/70
-            via-cream/70
-            to-white
-            hover:shadow-md
-            hover:-translate-y-0.5
-            transition-all
-            duration-200
-          "
-        >
-          {/* Header */}
-          <div className="flex items-start justify-between gap-3">
-            <div className="flex items-center gap-2.5">
-              <div className="w-9 h-9 rounded-xl bg-orange-100 flex items-center justify-center shrink-0">
-                <Wind className="w-5 h-5 text-orange-500" />
-              </div>
-              <span className="text-[11px] font-bold uppercase tracking-wider text-orange-500">
-                Perencana Aktivitas
-              </span>
+        {/* Audio Relaksasi */}
+        <div className="rounded-2xl p-4 bg-white/95 border border-brown-900/10 shadow-xs flex items-center justify-between hover:border-green-500/30 transition-all duration-200 group">
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 rounded-xl bg-green-100 flex items-center justify-center shrink-0">
+              <Headphones className="w-4 h-4 text-green-700" />
+            </div>
+            <div>
+              <h4 className="text-xs font-bold text-brown-900 group-hover:text-green-700 transition-colors">
+                Mindfulness & Audio Hening
+              </h4>
+              <p className="text-[11px] text-brown-700/80">
+                Panduan suara tenang untuk rehat dari overthinking.
+              </p>
             </div>
           </div>
-
-          {/* Content */}
-          <div className="mt-3">
-            <h3 className="font-display text-[17px] font-bold text-brown-900 leading-snug">
-              Sesi Latihan Pernapasan 3 Menit
-            </h3>
-
-            <p className="text-xs leading-relaxed text-brown-700 mt-1.5">
-              Turunkan tingkat kortisol dan kembalikan fokus belajar/kerjamu.
-            </p>
-          </div>
-
-          {/* Action */}
-          <div className="mt-auto pt-4">
-            <Link
-              href="/activity"
-              className="
-                inline-flex
-                items-center
-                gap-1.5
-                bg-brown-900
-                hover:bg-orange-500
-                text-white
-                px-4
-                py-2.5
-                rounded-full
-                text-xs
-                font-bold
-                transition-colors
-                shadow-sm
-              "
-            >
-              Mulai Sesi
-              <ArrowRight size={13} />
-            </Link>
-          </div>
+          <Link
+            href="/resources"
+            className="w-7 h-7 rounded-full bg-cream hover:bg-green-700 hover:text-white flex items-center justify-center text-brown-900 shrink-0 transition-colors"
+            title="Dengarkan Audio"
+          >
+            <ArrowRight size={13} />
+          </Link>
         </div>
 
-        {/* ==================== RESOURCES ==================== */}
-        <div
-          className="
-            group
-            glass-card
-            rounded-3xl
-            p-5
-            flex
-            flex-col
-            min-h-[215px]
-            border
-            border-green-500/15
-            bg-gradient-to-br
-            from-green-50/70
-            via-cream/70
-            to-white
-            hover:shadow-md
-            hover:-translate-y-0.5
-            transition-all
-            duration-200
-          "
-        >
-          {/* Header */}
-          <div className="flex items-start justify-between gap-3">
-            <div className="flex items-center gap-2.5">
-              <div className="w-9 h-9 rounded-xl bg-green-100 flex items-center justify-center shrink-0">
-                <Headphones className="w-5 h-5 text-green-600" />
+        {/* Akses Bantuan Krisis Cepat */}
+        <div className="rounded-2xl p-4 bg-cream border border-brown-900/15 shadow-2xs flex items-center justify-between group">
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 rounded-xl bg-white border border-brown-900/10 flex items-center justify-center shrink-0">
+              <HeartHandshake className="w-4 h-4 text-green-600" />
+            </div>
+            <div>
+              <div className="flex items-center gap-1.5">
+                <h4 className="text-xs font-bold text-brown-900">
+                  Layanan Bantuan 24/7
+                </h4>
+                <span className="text-[9px] font-bold px-1.5 py-0.2 rounded bg-white text-brown-700 border border-brown-900/10">
+                  Resmi
+                </span>
               </div>
-              <span className="text-[11px] font-bold uppercase tracking-wider text-green-600">
-                Rekomendasi Hari Ini
-              </span>
+              <p className="text-[11px] text-brown-700/80">
+                Hotline Sejiwa Kemenkes 119 ext. 8 (Bebas Pulsa).
+              </p>
             </div>
           </div>
-
-          {/* Content */}
-          <div className="mt-3">
-            <h3 className="font-display text-[17px] font-bold text-brown-900 leading-snug">
-              Mindfulness 101: Mengatasi Overthinking
-            </h3>
-
-            <p className="text-xs leading-relaxed text-brown-700 mt-1.5">
-              Audio panduan 5:55 menit untuk meredakan kecemasan akademik.
-            </p>
-          </div>
-
-          {/* Action */}
-          <div className="mt-auto pt-4">
-            <Link
-              href="/resources"
-              className="
-                inline-flex
-                items-center
-                gap-1.5
-                bg-green-600
-                hover:bg-brown-900
-                text-white
-                px-4
-                py-2.5
-                rounded-full
-                text-xs
-                font-bold
-                transition-colors
-                shadow-sm
-              "
-            >
-              Dengar Audio
-              <ArrowRight size={13} />
-            </Link>
-          </div>
+          <a
+            href="tel:119,8"
+            className="px-2.5 py-1 rounded-full bg-white hover:bg-brown-900 hover:text-white border border-brown-900/15 text-[11px] font-semibold text-brown-900 transition-colors shrink-0"
+          >
+            Hubungi
+          </a>
         </div>
       </div>
     </section>

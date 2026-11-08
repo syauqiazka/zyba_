@@ -152,39 +152,42 @@ export default function DailyAssessmentPage() {
 
   return (
     <div className="flex flex-col gap-4 sm:gap-6 pb-12 max-w-[1240px] mx-auto select-none">
-      {/* ── 1. Page Header (Calm, Focused, Minimal) ─────────────────── */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-brown-900/10">
+      {/* ── 1. Page Header (Tactile Sanctuary Header) ─────────────────── */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-brown-900/10">
         <div>
           <div className="flex items-center gap-2 mb-1">
-            <span className="text-[10px] sm:text-[11px] font-extrabold uppercase tracking-widest text-orange-500 bg-orange-100 px-2.5 py-0.5 rounded-full">
-              Check-In Harian
+            <span className="text-[10px] sm:text-[11px] font-extrabold uppercase tracking-widest text-orange-500 bg-orange-100 px-3 py-0.5 rounded-full">
+              Ritual Harian · 10 Domain
             </span>
             <span className="text-xs text-brown-700/70" suppressHydrationWarning>
-              Hari ini · sekitar 1–2 menit
+              Hari ini · 1–2 menit
             </span>
           </div>
-          <h1 className="font-display text-xl sm:text-2xl md:text-3xl font-extrabold text-brown-900 tracking-tight flex items-center gap-2">
-            <span>Check-In Harian</span>
+          <h1 className="font-display text-2xl sm:text-3xl font-extrabold text-brown-900 tracking-tight">
+            Check-In &amp; Refleksi Harian
           </h1>
+          <p className="text-xs sm:text-sm text-brown-700 mt-0.5 font-normal">
+            Ruang hening untuk mengenali kondisi fisik, emosi, dan kebutuhanmu hari ini.
+          </p>
         </div>
 
         {/* Streak & Status Badges */}
-        <div className="flex items-center gap-2 self-start sm:self-center">
-          <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white border border-brown-900/10 shadow-2xs">
-            <Flame size={15} className="text-orange-500 fill-orange-500 shrink-0" />
+        <div className="flex items-center gap-2.5 self-start sm:self-center">
+          <div className="flex items-center gap-2 px-3.5 py-1.5 rounded-2xl bg-white/95 border border-brown-900/10 shadow-xs">
+            <Flame size={16} className="text-orange-500 shrink-0" />
             <span className="text-xs font-bold text-brown-900">
-              {streak} Hari Aktif
+              {streak} Hari Hadir
             </span>
           </div>
 
           {pageState === "summary" ? (
-            <div className="flex items-center gap-1 px-3 py-1.5 rounded-full bg-green-100 text-green-700 border border-green-500/20 text-xs font-bold shadow-2xs">
-              <CheckCircle2 size={13} className="shrink-0" />
-              <span>Selesai</span>
+            <div className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-2xl bg-green-100 text-green-700 border border-green-500/20 text-xs font-bold shadow-xs">
+              <CheckCircle2 size={14} className="shrink-0" />
+              <span>Tercatat</span>
             </div>
           ) : (
-            <div className="flex items-center gap-1 px-3 py-1.5 rounded-full bg-amber-100/80 text-amber-800 border border-amber-300/40 text-xs font-bold shadow-2xs">
-              <Calendar size={13} className="shrink-0" />
+            <div className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-2xl bg-cream text-brown-900 border border-brown-900/10 text-xs font-bold shadow-xs">
+              <Calendar size={14} className="shrink-0" />
               <span>Hari Ini</span>
             </div>
           )}

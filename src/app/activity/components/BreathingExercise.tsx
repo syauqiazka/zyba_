@@ -111,7 +111,7 @@ export default function BreathingExercise({
   };
 
   return (
-    <div className="w-full glass-card rounded-3xl p-5 sm:p-7 md:p-8 border border-brown-900/10 flex flex-col items-center justify-between text-center relative overflow-hidden bg-gradient-to-br from-white via-green-100/20 to-cream shadow-xs">
+    <div className="w-full rounded-[32px] p-6 sm:p-8 border border-brown-900/10 flex flex-col items-center justify-between text-center relative overflow-hidden bg-white/95 shadow-xs transition-all">
       {/* Hidden Audio Element with loop */}
       <audio
         ref={audioRef}

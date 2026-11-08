@@ -86,7 +86,7 @@ export default function ProgressOverview({ data }: { data: ProgressMetricData })
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {/* 1. ZYBA SCORE */}
-        <div className="rounded-2xl border border-brown-900/10 bg-white/80 p-4 sm:p-5 flex flex-col justify-between gap-3 shadow-xs hover:border-brown-900/20 transition-colors">
+        <div className="rounded-[28px] border border-brown-900/10 bg-white/95 p-5 sm:p-6 flex flex-col justify-between gap-3 shadow-xs hover:border-brown-900/20 transition-all">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2 text-xs font-semibold text-brown-700">
               <span className="p-1 rounded-lg bg-orange-100/70 text-orange-600">
@@ -119,7 +119,7 @@ export default function ProgressOverview({ data }: { data: ProgressMetricData })
         </div>
 
         {/* 2. STRESS LEVEL */}
-        <div className="rounded-2xl border border-brown-900/10 bg-white/80 p-4 sm:p-5 flex flex-col justify-between gap-3 shadow-xs hover:border-brown-900/20 transition-colors">
+        <div className="rounded-[28px] border border-brown-900/10 bg-white/95 p-5 sm:p-6 flex flex-col justify-between gap-3 shadow-xs hover:border-brown-900/20 transition-all">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2 text-xs font-semibold text-brown-700">
               <span className="p-1 rounded-lg bg-green-100/70 text-green-700">
@@ -152,7 +152,7 @@ export default function ProgressOverview({ data }: { data: ProgressMetricData })
         </div>
 
         {/* 3. RECOVERY & SLEEP QUALITY */}
-        <div className="rounded-2xl border border-brown-900/10 bg-white/80 p-4 sm:p-5 flex flex-col justify-between gap-3 shadow-xs hover:border-brown-900/20 transition-colors sm:col-span-2 lg:col-span-1">
+        <div className="rounded-[28px] border border-brown-900/10 bg-white/95 p-5 sm:p-6 flex flex-col justify-between gap-3 shadow-xs hover:border-brown-900/20 transition-all sm:col-span-2 lg:col-span-1">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2 text-xs font-semibold text-brown-700">
               <span className="p-1 rounded-lg bg-mood-depressed/20 text-mood-neutral">

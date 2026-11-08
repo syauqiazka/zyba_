@@ -914,14 +914,14 @@ export default function PostCard({ post, onToggleLike, onToggleRepost, onAddComm
             </div>
           )}
 
-          {/* Action row */}
-          <div className="flex items-center gap-0.5 sm:gap-1 -ml-1.5 mt-1">
+          {/* Action row with tactile comfortable targets */}
+          <div className="flex items-center gap-1 sm:gap-2 -ml-1.5 mt-1 text-brown-700/60">
             {/* Like */}
             <button
               type="button"
               onClick={() => onToggleLike(post.id)}
-              className={`flex items-center gap-1 px-1.5 py-1 rounded-xl transition-all active:scale-90 ${
-                post.userLiked ? "text-orange-500" : "text-brown-700/50 hover:text-orange-500 hover:bg-orange-50"
+              className={`flex items-center gap-1.5 min-h-[38px] px-2.5 py-1.5 rounded-full transition-all active:scale-95 ${
+                post.userLiked ? "text-orange-500 bg-orange-50/70" : "text-brown-700/60 hover:text-orange-500 hover:bg-orange-50/50"
               }`}
               title="Suka"
               aria-label={`Suka — ${post.likes}`}
@@ -936,12 +936,12 @@ export default function PostCard({ post, onToggleLike, onToggleRepost, onAddComm
               type="button"
               onClick={() => !commentsDisabled && setShowComments(!showComments)}
               disabled={commentsDisabled}
-              className={`flex items-center gap-1 px-1.5 py-1 rounded-xl transition-all ${
+              className={`flex items-center gap-1.5 min-h-[38px] px-2.5 py-1.5 rounded-full transition-all ${
                 commentsDisabled
                   ? "text-brown-700/25 cursor-not-allowed"
                   : showComments
-                  ? "text-brown-900"
-                  : "text-brown-700/50 hover:text-brown-900 hover:bg-cream"
+                  ? "text-brown-900 bg-cream"
+                  : "text-brown-700/60 hover:text-brown-900 hover:bg-cream"
               }`}
               title={commentsDisabled ? "Komentar dimatikan" : "Balas"}
               aria-label={`Komentar — ${post.commentsCount}`}
@@ -955,8 +955,8 @@ export default function PostCard({ post, onToggleLike, onToggleRepost, onAddComm
             <button
               type="button"
               onClick={() => onToggleRepost?.(post.id)}
-              className={`flex items-center gap-1 px-1.5 py-1 rounded-xl transition-all ${
-                post.userReposted ? "text-green-600" : "text-brown-700/50 hover:text-green-600 hover:bg-green-50"
+              className={`flex items-center gap-1.5 min-h-[38px] px-2.5 py-1.5 rounded-full transition-all ${
+                post.userReposted ? "text-green-600 bg-green-50/70" : "text-brown-700/60 hover:text-green-600 hover:bg-green-50/50"
               }`}
               title="Repost"
               aria-label={`Repost — ${post.repostsCount ?? 0}`}
@@ -970,7 +970,7 @@ export default function PostCard({ post, onToggleLike, onToggleRepost, onAddComm
             <button
               type="button"
               onClick={handleCopyLink}
-              className="flex items-center gap-1 px-1.5 py-1 rounded-xl text-brown-700/50 hover:text-brown-900 hover:bg-cream transition-all"
+              className="flex items-center gap-1.5 min-h-[38px] px-2.5 py-1.5 rounded-full text-brown-700/60 hover:text-brown-900 hover:bg-cream transition-all"
               title="Bagikan"
               aria-label="Bagikan"
             >
@@ -984,8 +984,8 @@ export default function PostCard({ post, onToggleLike, onToggleRepost, onAddComm
                 handleToggleSave(post.id);
                 showToast?.(isSaved ? "Postingan dihapus dari Tersimpan" : "✓ Postingan disimpan");
               }}
-              className={`flex items-center gap-1 px-1.5 py-1 rounded-xl transition-all ml-auto ${
-                isSaved ? "text-orange-500" : "text-brown-700/40 hover:text-brown-900 hover:bg-cream"
+              className={`flex items-center gap-1.5 min-h-[38px] px-2.5 py-1.5 rounded-full transition-all ml-auto ${
+                isSaved ? "text-orange-500 bg-orange-50/70" : "text-brown-700/50 hover:text-brown-900 hover:bg-cream"
               }`}
               title={isSaved ? "Hapus dari Tersimpan" : "Simpan Thread"}
               aria-label={isSaved ? "Hapus dari Tersimpan" : "Simpan Thread"}

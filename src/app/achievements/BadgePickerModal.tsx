@@ -41,7 +41,7 @@ export default function BadgePickerModal({ slot, unlockedAchievements, currentBa
       <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={onClose} />
 
       {/* Modal */}
-      <div className="relative w-full sm:max-w-md bg-white rounded-t-3xl sm:rounded-3xl shadow-2xl flex flex-col max-h-[90vh] overflow-hidden animate-in slide-in-from-bottom-4 duration-300">
+      <div className="relative w-full sm:max-w-md bg-white rounded-t-[32px] sm:rounded-[32px] border border-brown-900/10 shadow-2xl flex flex-col max-h-[90vh] overflow-hidden animate-in slide-in-from-bottom-4 duration-300">
         {/* Handle */}
         <div className="flex justify-center pt-3 pb-1 sm:hidden">
           <div className="w-10 h-1 rounded-full bg-brown-900/15" />
@@ -55,9 +55,9 @@ export default function BadgePickerModal({ slot, unlockedAchievements, currentBa
           </div>
           <button
             onClick={onClose}
-            className="w-8 h-8 rounded-full bg-brown-900/8 hover:bg-brown-900/15 flex items-center justify-center text-brown-700 transition-colors"
+            className="w-9 h-9 rounded-full bg-brown-900/8 hover:bg-brown-900/15 flex items-center justify-center text-brown-700 transition-colors"
           >
-            <X size={15} />
+            <X size={16} />
           </button>
         </div>
 
@@ -68,7 +68,7 @@ export default function BadgePickerModal({ slot, unlockedAchievements, currentBa
             placeholder="Cari badge…"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full px-4 py-2.5 rounded-xl bg-cream text-sm text-brown-900 placeholder-brown-700/40 outline-none border border-transparent focus:border-orange-300 transition-colors"
+            className="w-full px-4 py-2.5 rounded-2xl bg-cream text-sm text-brown-900 placeholder-brown-700/40 outline-none border border-brown-900/10 focus:border-orange-500/50 transition-colors"
           />
         </div>
 
@@ -110,7 +110,7 @@ export default function BadgePickerModal({ slot, unlockedAchievements, currentBa
                 onChange={(e) => setCustomLabel(e.target.value)}
                 placeholder={selectedDef.title}
                 maxLength={30}
-                className="w-full px-3.5 py-2.5 rounded-xl bg-cream text-sm text-brown-900 placeholder-brown-700/40 outline-none border border-transparent focus:border-orange-300 transition-colors"
+                className="w-full px-3.5 py-2.5 rounded-2xl bg-cream text-sm text-brown-900 placeholder-brown-700/40 outline-none border border-brown-900/10 focus:border-orange-500/50 transition-colors"
               />
             </div>
 
@@ -127,7 +127,7 @@ export default function BadgePickerModal({ slot, unlockedAchievements, currentBa
 
             <button
               onClick={() => onSelect(selected, customLabel || undefined)}
-              className="w-full py-3 rounded-xl bg-brown-900 text-white text-sm font-bold hover:bg-brown-900/90 active:scale-[0.99] transition-all"
+              className="w-full min-h-[48px] py-3 rounded-2xl bg-brown-900 text-white text-sm font-bold hover:bg-brown-900/90 active:scale-[0.99] transition-all"
             >
               Pasang Badge →
             </button>

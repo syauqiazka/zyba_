@@ -6,7 +6,7 @@ import { Compass, CalendarCheck, ArrowRight } from "lucide-react";
 
 export default function JourneyEmptyState() {
   return (
-    <div className="rounded-3xl border border-brown-900/10 bg-white/80 p-8 sm:p-12 text-center flex flex-col items-center justify-center max-w-xl mx-auto shadow-xs">
+    <div className="rounded-[32px] border border-brown-900/10 bg-white/95 p-8 sm:p-12 text-center flex flex-col items-center justify-center max-w-xl mx-auto shadow-xs transition-all">
       <div className="w-14 h-14 rounded-2xl bg-orange-100/60 border border-orange-500/20 text-orange-500 flex items-center justify-center mb-5">
         <Compass size={28} strokeWidth={2} />
       </div>

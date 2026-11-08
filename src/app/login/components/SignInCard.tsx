@@ -68,7 +68,7 @@ export default function SignInCard({
   ] = useState(false);
 
   return (
-    <div className="w-full rounded-[28px] border border-brown-900/10 bg-white p-6 shadow-[0_24px_60px_rgba(41,35,31,0.08)] sm:p-8">
+    <div className="w-full rounded-[32px] border border-brown-900/10 bg-white/95 p-6 shadow-xs sm:p-8">
 
       {/* HEADER */}
       <div>

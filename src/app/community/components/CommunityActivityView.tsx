@@ -110,7 +110,7 @@ export default function CommunityActivityView() {
               key={tab}
               type="button"
               onClick={() => setFilter(tab)}
-              className={`px-4 py-1.5 rounded-full text-xs font-bold transition-all shrink-0 border ${
+              className={`min-h-[38px] px-4 py-1.5 rounded-full text-xs font-bold transition-all shrink-0 border ${
                 filter === tab
                   ? "bg-brown-900 text-white border-brown-900 shadow-2xs"
                   : "bg-white text-brown-700 border-brown-900/10 hover:border-brown-900/30"
@@ -134,7 +134,7 @@ export default function CommunityActivityView() {
       </div>
 
       {/* Notifications List */}
-      <div className="bg-white rounded-2xl border border-brown-900/10 divide-y divide-brown-900/6 shadow-xs overflow-hidden">
+      <div className="bg-white/95 rounded-[32px] border border-brown-900/10 divide-y divide-brown-900/6 shadow-xs overflow-hidden">
         {filteredNotifs.length === 0 ? (
           <div className="py-16 text-center text-xs text-brown-700/50 flex flex-col items-center justify-center gap-2">
             <UserPlus size={28} className="opacity-30" />

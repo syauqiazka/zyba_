@@ -120,7 +120,7 @@ export default function DailyAssessmentSummary({ record }: SummaryProps) {
   return (
     <div className="w-full max-w-[680px] mx-auto flex flex-col gap-4 select-none animate-in fade-in duration-200">
       {/* ── 1. Header Card: Today's Check-in & Overall Score ────────── */}
-      <div className="bg-white rounded-2xl p-4 sm:p-6 border border-brown-900/10 shadow-xs">
+      <div className="bg-white/95 rounded-[32px] p-5 sm:p-7 border border-brown-900/10 shadow-xs">
         <div className="flex items-center justify-between pb-3 border-b border-brown-900/10 mb-4">
           <div className="flex items-center gap-2">
             <span className="text-[10px] sm:text-[11px] font-extrabold uppercase tracking-widest text-orange-500 bg-orange-100 px-2.5 py-0.5 rounded-full">
@@ -162,7 +162,7 @@ export default function DailyAssessmentSummary({ record }: SummaryProps) {
       </div>
 
       {/* ── 2. Compact Horizontal Bars: 6 Domains ──────────────────── */}
-      <div className="bg-white rounded-2xl p-4 sm:p-5 border border-brown-900/10 shadow-xs">
+      <div className="bg-white/95 rounded-[28px] p-5 sm:p-6 border border-brown-900/10 shadow-xs">
         <h3 className="font-display text-xs sm:text-sm font-bold text-brown-900 mb-3 flex items-center gap-1.5">
           <Compass size={14} className="text-brown-700" />
           <span>Indikator Kesejahteraan Harian</span>
@@ -187,7 +187,7 @@ export default function DailyAssessmentSummary({ record }: SummaryProps) {
       </div>
 
       {/* ── 3. Today's Insight (Warm, Human, Supportive) ────────────── */}
-      <div className="bg-white rounded-2xl p-4 sm:p-5 border border-brown-900/10 shadow-xs flex items-start gap-3">
+      <div className="bg-white/95 rounded-[28px] p-5 sm:p-6 border border-brown-900/10 shadow-xs flex items-start gap-3">
         <div className="w-8 h-8 rounded-xl bg-orange-100 text-orange-500 flex items-center justify-center shrink-0 mt-0.5">
           <Lightbulb size={18} />
         </div>
@@ -203,7 +203,7 @@ export default function DailyAssessmentSummary({ record }: SummaryProps) {
 
       {/* ── 4. Reflection Quote Box ─────────────────────────────────── */}
       {record.reflection && (
-        <div className="bg-white rounded-2xl p-4 border border-brown-900/10 shadow-xs flex items-start gap-3">
+        <div className="bg-white/95 rounded-[28px] p-5 border border-brown-900/10 shadow-xs flex items-start gap-3">
           <Quote size={16} className="text-brown-900 shrink-0 mt-0.5" />
           <div className="flex-1">
             <span className="text-[10px] font-extrabold uppercase tracking-wider text-brown-700/60 block mb-1">

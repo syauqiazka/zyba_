@@ -111,10 +111,10 @@ export default function ComposeBox({ onAddPost, onRiskDetected, currentUserIniti
 
   return (
     <div
-      className={`rounded-2xl border transition-all ${
+      className={`rounded-[28px] border transition-all duration-200 overflow-hidden ${
         isFocused || hasContent
-          ? "bg-cream border-brown-900/20 shadow-xs"
-          : "bg-cream/70 border-brown-900/10 hover:border-brown-900/20"
+          ? "bg-white border-brown-900/20 shadow-xs"
+          : "bg-white/80 border-brown-900/10 hover:border-brown-900/20"
       }`}
     >
       {/* Privacy notice banner */}

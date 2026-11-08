@@ -1,6 +1,7 @@
 
 "use client";
 
+import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 
 interface WeeklyStressData {
@@ -299,11 +300,11 @@ export default function StressLevelChart({ initialHistory }: StressLevelChartPro
     getStressLabel(headerStressLevel);
 
   return (
-    <div className="glass-card glass-card-hover rounded-3xl p-6 flex flex-col justify-between">
+    <div className="rounded-[32px] bg-white/95 border border-brown-900/10 p-6 sm:p-7 shadow-xs flex flex-col justify-between transition-all duration-300">
       {/* HEADER */}
       <div className="flex items-center justify-between mb-3">
-        <span className="text-xs font-bold text-brown-700 uppercase tracking-wider">
-          Stress Level (Minggu Ini)
+        <span className="text-[11px] font-extrabold text-brown-700 uppercase tracking-widest">
+          Tingkat Stres Mingguan
         </span>
 
         <span
@@ -419,9 +420,9 @@ export default function StressLevelChart({ initialHistory }: StressLevelChartPro
           </span>
         )}
 
-        <a href="/daily-assessment" className="text-orange-500 hover:text-orange-600 transition-colors font-bold">
-          Mulai Assessment
-        </a>
+        <Link href="/daily-assessment" className="text-orange-500 hover:text-brown-900 transition-colors text-xs font-semibold cursor-pointer">
+          Mulai Asesmen →
+        </Link>
       </div>
 
       {/* ERROR */}

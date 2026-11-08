@@ -96,11 +96,11 @@ export default function CompanionSidebar({
   };
 
   const navItemClass = (active: boolean) =>
-    `w-full flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-semibold transition-all duration-300 text-left
+    `w-full flex items-center gap-3 px-3.5 py-2.5 rounded-2xl text-xs font-semibold transition-all duration-200 text-left
      ${
        active
-         ? "bg-brown-900/8 text-brown-900 font-bold"
-         : "text-brown-700 hover:-translate-y-0.5 hover:bg-gradient-to-r hover:from-orange-100/80 hover:to-green-100/80 hover:text-brown-900 hover:shadow-sm"
+         ? "bg-brown-900 text-cream shadow-xs font-bold"
+         : "text-brown-700 hover:bg-cream/80 hover:text-brown-900 border border-transparent hover:border-brown-900/10"
      }`;
 
   const displayName = (() => {
@@ -125,7 +125,7 @@ export default function CompanionSidebar({
         {/* Back to Dashboard */}
         <Link
           href="/dashboard"
-          className="p-2 rounded-xl text-brown-700/50 hover:text-brown-900 hover:bg-gradient-to-r hover:from-orange-100/80 hover:to-green-100/80 hover:shadow-sm transition-all duration-300"
+          className="p-2 rounded-xl text-brown-700/60 hover:text-brown-900 hover:bg-cream border border-transparent hover:border-brown-900/10 transition-colors"
           title="Kembali ke Dashboard ZYBA"
         >
           <Home size={16} />
@@ -135,7 +135,7 @@ export default function CompanionSidebar({
         <button
           type="button"
           onClick={onToggleSidebar}
-          className="p-2 rounded-xl text-brown-700/50 hover:text-brown-900 hover:bg-gradient-to-r hover:from-orange-100/80 hover:to-green-100/80 hover:shadow-sm transition-all duration-300"
+          className="p-2 rounded-xl text-brown-700/60 hover:text-brown-900 hover:bg-cream border border-transparent hover:border-brown-900/10 transition-colors"
           title="Buka bilah sisi"
         >
           <PanelLeft size={16} />
@@ -147,7 +147,7 @@ export default function CompanionSidebar({
         <button
           type="button"
           onClick={() => { setActiveSection("chat"); onNewChat(); }}
-          className="p-2 rounded-xl text-brown-700/50 hover:text-brown-900 hover:bg-gradient-to-r hover:from-orange-100/80 hover:to-green-100/80 transition-all duration-300"
+          className="p-2 rounded-xl text-brown-700/60 hover:text-brown-900 hover:bg-cream border border-transparent hover:border-brown-900/10 transition-colors"
           title="Percakapan Baru"
         >
           <Plus size={16} strokeWidth={2.5} />
@@ -218,7 +218,7 @@ export default function CompanionSidebar({
         <button
           type="button"
           onClick={() => { setActiveSection("chat"); onNewChat(); }}
-          className="w-full py-2.5 px-3.5 rounded-xl bg-white border border-brown-900/10 text-brown-900 text-xs font-bold hover:bg-gradient-to-r hover:from-orange-100/80 hover:to-green-100/80 hover:-translate-y-0.5 hover:shadow-sm transition-all duration-300 shadow-2xs active:scale-[0.99] flex items-center gap-2.5"
+          className="w-full py-2.5 px-3.5 rounded-2xl bg-white border border-brown-900/10 text-brown-900 text-xs font-bold hover:bg-cream hover:border-brown-900/20 transition-all duration-200 shadow-xs active:scale-[0.98] flex items-center gap-2.5 cursor-pointer"
         >
           <Plus size={15} strokeWidth={2.5} />
           <span>Percakapan Baru</span>

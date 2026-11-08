@@ -83,7 +83,7 @@ export default function CommunityProfileView() {
   return (
     <div className="w-full max-w-[620px] mx-auto py-4 px-2 space-y-4 animate-in fade-in duration-200">
       {/* Profile Header */}
-      <div className="bg-white rounded-3xl border border-brown-900/10 p-6 shadow-xs">
+      <div className="bg-white/95 rounded-[32px] border border-brown-900/10 p-6 sm:p-7 shadow-xs">
         <div className="flex items-start justify-between gap-4 mb-3">
           <div>
             <h1 className="font-bold text-xl text-brown-900">{userName}</h1>
@@ -91,7 +91,7 @@ export default function CommunityProfileView() {
               <p className="text-xs text-brown-700/60 mt-0.5">@{userUsername}</p>
             )}
           </div>
-          <div className="w-16 h-16 rounded-full bg-orange-100 border border-orange-200 flex items-center justify-center font-bold text-2xl text-orange-600 shadow-md shrink-0">
+          <div className="w-16 h-16 rounded-full bg-orange-100 border border-orange-200 flex items-center justify-center font-bold text-2xl text-orange-600 shadow-xs shrink-0">
             {initials}
           </div>
         </div>
@@ -124,7 +124,7 @@ export default function CommunityProfileView() {
             <button
               type="button"
               onClick={() => setIsPostModalOpen(true)}
-              className="rounded-full bg-brown-900 text-white font-bold px-4 py-1.5 hover:bg-orange-500 transition-colors shadow-2xs"
+              className="min-h-[40px] rounded-full bg-brown-900 text-white font-bold px-4 py-2 hover:bg-orange-500 transition-colors shadow-2xs inline-flex items-center"
             >
               + Thread Baru
             </button>
@@ -151,7 +151,7 @@ export default function CommunityProfileView() {
       </div>
 
       {/* Tab Contents */}
-      <div className="bg-white rounded-2xl border border-brown-900/10 shadow-xs overflow-hidden">
+      <div className="bg-white/95 rounded-[32px] border border-brown-900/10 shadow-xs overflow-hidden">
         {activeTab === "SAVED" ? (
           mySaved.length === 0 ? (
             <div className="py-12 text-center text-xs text-brown-700/50">

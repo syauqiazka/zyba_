@@ -19,18 +19,18 @@ export default function ZybaRecommendations({
   onAdd,
 }: ZybaRecommendationsProps) {
   return (
-    <div className="xl:col-span-7 glass-card rounded-3xl p-6 md:p-7 border border-brown-900/10 bg-white">
+    <div className="xl:col-span-7 rounded-[32px] p-6 md:p-8 border border-brown-900/10 bg-white/95 shadow-xs">
       <div className="flex items-center justify-between gap-4">
         <div>
-          <span className="text-xs font-bold uppercase tracking-wider text-green-500">
-            ✨ Rekomendasi Zyba
+          <span className="text-[11px] font-extrabold uppercase tracking-widest text-green-700 bg-green-100 px-3 py-0.5 rounded-full">
+            Rekomendasi Pemulihan
           </span>
-          <h2 className="font-display text-2xl font-extrabold text-brown-900 mt-1">
-            Pilih yang paling cocok untuk hari ini
+          <h2 className="font-display text-xl sm:text-2xl font-bold text-brown-900 mt-2">
+            Pilih aktivitas yang paling nyaman hari ini
           </h2>
         </div>
-        <span className="hidden sm:inline-flex px-3 py-1 rounded-full bg-green-100 text-green-500 text-[10px] font-bold">
-          Smart suggestion
+        <span className="hidden sm:inline-flex px-3 py-1 rounded-full bg-cream text-brown-700 text-[10px] font-bold border border-brown-900/10">
+          Saran Adaptif
         </span>
       </div>
 

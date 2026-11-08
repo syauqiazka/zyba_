@@ -70,7 +70,7 @@ export default function CalendarWidget({ moodEntries = [] }: CalendarWidgetProps
     .slice(0, 2);
 
   return (
-    <div className="glass-card rounded-3xl p-6 border border-brown-900/10 flex flex-col gap-4">
+    <div className="rounded-[32px] bg-white/95 border border-brown-900/10 p-6 sm:p-7 shadow-xs flex flex-col gap-4">
       <div className="flex items-center justify-between">
         <h3 className="font-display text-base font-bold text-brown-900">
           Kalender Mood Bulanan
