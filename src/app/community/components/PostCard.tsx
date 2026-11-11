@@ -7,6 +7,7 @@ import {
   Check,
   X,
   Heart,
+  HeartHandshake,
   MessageSquare,
   MessageSquareOff,
   Repeat,
@@ -73,8 +74,8 @@ interface PostCardProps {
 }
 
 // ─── Action Icons ─────────────────────────────────────────────────────────────
-function IconHeart({ filled }: { filled?: boolean }) {
-  return <Heart size={18} className={filled ? "fill-current" : ""} />;
+function IconHug({ filled }: { filled?: boolean }) {
+  return <HeartHandshake size={17} className={filled ? "text-orange-600" : ""} strokeWidth={1.8} />;
 }
 function IconComment({ disabled }: { disabled?: boolean }) {
   return disabled ? <MessageSquareOff size={18} className="opacity-35" /> : <MessageSquare size={18} />;
@@ -916,19 +917,24 @@ export default function PostCard({ post, onToggleLike, onToggleRepost, onAddComm
 
           {/* Action row with tactile comfortable targets */}
           <div className="flex items-center gap-1 sm:gap-2 -ml-1.5 mt-1 text-brown-700/60">
-            {/* Like */}
+            {/* Kirim Pelukan (Empathetic Hug Interaction) */}
             <button
               type="button"
               onClick={() => onToggleLike(post.id)}
-              className={`flex items-center gap-1.5 min-h-[38px] px-2.5 py-1.5 rounded-full transition-all active:scale-95 ${
-                post.userLiked ? "text-orange-500 bg-orange-50/70" : "text-brown-700/60 hover:text-orange-500 hover:bg-orange-50/50"
+              className={`flex items-center gap-1.5 min-h-[38px] px-3 py-1.5 rounded-full transition-all active:scale-95 cursor-pointer ${
+                post.userLiked
+                  ? "text-orange-600 bg-orange-100/80 font-bold shadow-2xs"
+                  : "text-brown-700/60 hover:text-orange-600 hover:bg-orange-100/40"
               }`}
-              title="Suka"
-              aria-label={`Suka — ${post.likes}`}
+              title={post.userLiked ? "Pelukan hangat terkirim" : "Kirim pelukan hangat"}
+              aria-label={`Pelukan — ${post.likes}`}
               aria-pressed={post.userLiked}
             >
-              <IconHeart filled={post.userLiked} />
-              <span className="text-[11px] font-semibold min-w-[12px]">{post.likes}</span>
+              <IconHug filled={post.userLiked} />
+              <span className="text-xs font-semibold">
+                {post.userLiked ? "Pelukan" : "Kirim Pelukan"}
+              </span>
+              <span className="text-[11px] font-bold min-w-[12px] opacity-80">{post.likes}</span>
             </button>
 
             {/* Comment */}

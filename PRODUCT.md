@@ -40,9 +40,12 @@ Pengguna membuka ZYBA melalui web desktop (dengan dukungan mobile responsif) pad
 
 ## Evidence on Hand
 - Repositori kode lengkap Next.js 14 App Router di folder `zyba_`.
-- Dokumen spesifikasi arsitektur komprehensif di `AGENTS.md` (2116 baris).
+- Dokumen spesifikasi arsitektur komprehensif di `AGENTS.md`.
+- Dokumen otoritas desain kanonikal di `design.md` / `DESIGN.md` dan Master Design System di `design-system/zyba/MASTER.md`.
+- 12 berkas spesifikasi mockdocs halaman resmi di direktori `design-system/zyba/pages/` (`dashboard.md`, `mood-check-in.md`, `companion.md`, `activity.md`, `wellness-journey.md`, `community.md`, `resources.md`, `onboarding-assessment.md`, `settings-billing.md`, `achievements.md`, `landing.md`, `guidebook.md`).
+- Kontrak palet terkunci mutlak di `design-system/PALETTE_LOCK.md`.
 - Komponen krisis aktif: `CrisisBanner.tsx` dan `CrisisModal.tsx`.
-- Skema database di `prisma/*/schema.prisma`.
+- Skema database di `prisma/schema.prisma`.
 
 ## Product Principles
 1. **Ketenangan di Atas Segala-galanya (Calm Over Hype)**: Visual harus memberikan rasa lega dan hening saat pengguna membuka layar. Tidak ada elemen kompetitif atau notifikasi menuntut.

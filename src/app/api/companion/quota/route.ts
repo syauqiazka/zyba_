@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { verifySessionToken } from "@/lib/auth";
-import { checkMessageQuota } from "@/backend/billing/entitlements";
+import { checkTokenQuota } from "@/backend/billing/entitlements";
 
 export async function GET(req: NextRequest) {
   try {
@@ -14,18 +14,21 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: "Invalid session" }, { status: 401 });
     }
 
-    const quotaCheck = await checkMessageQuota(session.userId);
+    const quotaCheck = await checkTokenQuota(session.userId);
 
     return NextResponse.json({
       allowed: quotaCheck.allowed,
+      tokensUsed: quotaCheck.tokensUsed,
       remaining: quotaCheck.remaining,
       limit: quotaCheck.limit,
+      percentUsed: quotaCheck.percentUsed,
+      percentRemaining: quotaCheck.percentRemaining,
       plan: quotaCheck.plan,
     }, {
       headers: { "Cache-Control": "private, no-cache, no-store, max-age=0, must-revalidate" },
     });
   } catch (err: any) {
     console.error("[Quota Check Error]:", err);
-    return NextResponse.json({ error: "Gagal memeriksa kuota pesan." }, { status: 500 });
+    return NextResponse.json({ error: "Gagal memeriksa kuota token." }, { status: 500 });
   }
 }

@@ -1,0 +1,373 @@
+"use client";
+
+import React from "react";
+import { CloudRain, Cloud, Minus, Smile, Sparkles, ClipboardCheck } from "lucide-react";
+import {
+  calculateDailyZybaScore,
+} from "@/lib/assessmentMetrics";
+import {
+  DailyRecord,
+  Pagination,
+  SLEEP_OPTIONS,
+} from "./DailyAssessmentForm";
+
+interface HistoryProps {
+  history: DailyRecord[];
+  pagination: Pagination;
+  onPageChange: (page: number) => void;
+  isLoading: boolean;
+}
+
+const MOOD_MAP: Record<
+  string,
+  {
+    icon: React.ElementType;
+    label: string;
+    color: string;
+    bg: string;
+  }
+> = {
+  DEPRESSED: {
+    icon: CloudRain,
+    label: "Sangat Terpuruk",
+    color: "text-mood-depressed",
+    bg: "bg-mood-depressed/15",
+  },
+  SAD: {
+    icon: Cloud,
+    label: "Sedih",
+    color: "text-mood-sad",
+    bg: "bg-mood-sad/15",
+  },
+  NEUTRAL: {
+    icon: Minus,
+    label: "Biasa",
+    color: "text-mood-neutral",
+    bg: "bg-mood-neutral/15",
+  },
+  HAPPY: {
+    icon: Smile,
+    label: "Senang",
+    color: "text-mood-happy",
+    bg: "bg-mood-happy/15",
+  },
+  OVERJOYED: {
+    icon: Sparkles,
+    label: "Sangat Bahagia",
+    color: "text-green-600",
+    bg: "bg-green-100",
+  },
+};
+
+function getJakartaDateKey(
+  date = new Date()
+) {
+  return new Intl.DateTimeFormat(
+    "en-CA",
+    {
+      timeZone: "Asia/Jakarta",
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+    }
+  ).format(date);
+}
+
+function formatDateIndonesia(
+  date: string
+) {
+  return new Intl.DateTimeFormat(
+    "id-ID",
+    {
+      weekday: "long",
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+      timeZone: "Asia/Jakarta",
+    }
+  ).format(
+    new Date(`${date}T00:00:00+07:00`)
+  );
+}
+
+function getConditionFromScore(
+  score: number | null
+) {
+  if (score === null) {
+    return "Belum Dinilai";
+  }
+
+  if (score >= 80) {
+    return "Baik";
+  }
+
+  if (score >= 60) {
+    return "Cukup";
+  }
+
+  return "Perlu Perhatian";
+}
+
+export default function DailyAssessmentHistory({
+  history,
+  pagination,
+  onPageChange,
+  isLoading,
+}: HistoryProps) {
+  if (isLoading) {
+    return (
+      <div className="space-y-3">
+        {[1, 2, 3].map((i) => (
+          <div
+            key={i}
+            className="h-24 rounded-2xl bg-cream/60 animate-pulse"
+          />
+        ))}
+      </div>
+    );
+  }
+
+  if (history.length === 0) {
+    return (
+      <div className="text-center py-10 text-brown-700 text-sm flex flex-col items-center justify-center gap-2">
+        <div className="w-10 h-10 rounded-2xl bg-cream flex items-center justify-center border border-brown-900/10 text-brown-700/60 mb-1">
+          <ClipboardCheck size={20} />
+        </div>
+        Belum ada riwayat Assessment Harian.
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex flex-col gap-4">
+      <h3 className="font-display text-base font-bold text-brown-900">
+        Riwayat Assessment Harian
+        <span className="ml-2 text-xs font-normal text-brown-700">
+          ({pagination.total} entri)
+        </span>
+      </h3>
+
+      <div
+        className="rounded-2xl border border-brown-900/10 bg-cream/25 p-2 sm:p-3"
+      >
+        <div
+          className="zyba-scrollbar flex flex-col gap-3 max-h-[360px] sm:max-h-[440px] overflow-y-scroll overflow-x-hidden overscroll-contain pr-1 sm:pr-2"
+          style={{ scrollbarGutter: "stable" }}
+        >
+        {history.map((record) => {
+          const mood =
+            MOOD_MAP[record.mood] ?? {
+              icon: Minus,
+              label: record.mood,
+              color: "text-brown-700",
+              bg: "bg-cream",
+            };
+          const MoodIcon = mood.icon;
+
+          const sleep =
+            SLEEP_OPTIONS.find(
+              (o) =>
+                o.rating ===
+                record.sleepRating
+            );
+
+          const score =
+            calculateDailyZybaScore({
+              ...record,
+            });
+
+          const condition =
+            record.condition ||
+            getConditionFromScore(score);
+
+          const isToday =
+            record.date ===
+            getJakartaDateKey();
+
+          return (
+            <div
+              key={record.id}
+              className={`
+                rounded-2xl
+                p-4
+                border
+                bg-white/95
+                transition-all
+                ${isToday
+                  ? "border-orange-500/30 shadow-xs"
+                  : "border-brown-900/10"
+                }
+              `}
+            >
+              {/* Card Header: Mood + Date + Hari Ini Badge */}
+              <div className="flex items-center justify-between gap-2">
+                <div className="flex items-center gap-2.5 min-w-0">
+                  <div className={`w-8 h-8 rounded-xl flex items-center justify-center shrink-0 ${mood.bg}`}>
+                    <MoodIcon size={16} className={mood.color} />
+                  </div>
+
+                  <div className="min-w-0">
+                    <p className="text-xs font-bold text-brown-900 truncate">
+                      {formatDateIndonesia(record.date)}
+                    </p>
+                    <p className={`text-[11px] font-semibold leading-tight ${mood.color}`}>
+                      {mood.label}
+                    </p>
+                  </div>
+                </div>
+
+                {isToday && (
+                  <span className="px-2.5 py-0.5 rounded-full bg-orange-100 text-orange-600 text-[10px] font-extrabold shrink-0 border border-orange-200">
+                    Hari Ini
+                  </span>
+                )}
+              </div>
+
+              {/* Stats Grid: Zyba Score, Stres, Tidur (Clean, responsive, never overlaps) */}
+              <div className="grid grid-cols-3 gap-2 mt-3 pt-3 border-t border-brown-900/10 text-center">
+                {score !== null ? (
+                  <div className="bg-cream/60 rounded-xl p-2 border border-brown-900/5">
+                    <p className="text-[9px] uppercase font-bold text-brown-700/70">
+                      Skor Zyba
+                    </p>
+                    <p className="text-xs font-extrabold text-brown-900 mt-0.5">
+                      {score}
+                      <span className="text-[9px] font-normal text-brown-700/60">
+                        /100
+                      </span>
+                    </p>
+                  </div>
+                ) : (
+                  <div className="bg-cream/60 rounded-xl p-2 border border-brown-900/5">
+                    <p className="text-[9px] uppercase font-bold text-brown-700/70">
+                      skor zyba
+                    </p>
+                    <p className="text-xs font-extrabold text-brown-900 mt-0.5">-</p>
+                  </div>
+                )}
+
+                <div className="bg-cream/60 rounded-xl p-2 border border-brown-900/5">
+                  <p className="text-[9px] uppercase font-bold text-brown-700/70">
+                    Stres
+                  </p>
+                  <p className="text-xs font-extrabold text-brown-900 mt-0.5">
+                    {record.stressLevel !== null ? `${record.stressLevel}/5` : "-"}
+                  </p>
+                </div>
+
+                <div className="bg-cream/60 rounded-xl p-2 border border-brown-900/5">
+                  <p className="text-[9px] uppercase font-bold text-brown-700/70">
+                    Tidur
+                  </p>
+                  <p className="text-xs font-extrabold text-brown-900 mt-0.5 truncate flex items-center justify-center gap-0.5">
+                    {sleep ? (
+                      <>
+                        <span>{sleep.icon}</span>
+                        <span className="truncate">{sleep.label}</span>
+                      </>
+                    ) : (
+                      "-"
+                    )}
+                  </p>
+                </div>
+              </div>
+
+              {/* CONDITION */}
+              {score !== null && (
+                <div className="mt-3">
+                  <span
+                    className={`
+                      inline-flex
+                      px-2.5
+                      py-1
+                      rounded-full
+                      text-[10px]
+                      font-bold
+                      ${score >= 80
+                        ? "bg-green-100 text-green-700"
+                        : score >= 60
+                          ? "bg-orange-100 text-orange-600"
+                          : "bg-purple-100 text-purple-700"
+                      }
+                    `}
+                  >
+                    {condition}
+                  </span>
+                </div>
+              )}
+
+              {/* ENERGY TAGS */}
+              {record.energyTags &&
+                record.energyTags.length >
+                0 && (
+                  <div className="flex flex-wrap gap-1.5 mt-2.5">
+                    {record.energyTags.map(
+                      (tag) => (
+                        <span
+                          key={tag}
+                          className="px-2 py-0.5 bg-cream border border-brown-900/10 rounded-full text-[10px] font-semibold text-brown-700"
+                        >
+                          {tag}
+                        </span>
+                      )
+                    )}
+                  </div>
+                )}
+
+              {/* REFLECTION */}
+              {record.reflection &&
+                record.reflection.trim() !==
+                "" && (
+                  <p className="mt-2.5 text-xs text-brown-700 line-clamp-2 italic">
+                    "{record.reflection}"
+                  </p>
+                )}
+            </div>
+          );
+        })}
+        </div>
+      </div>
+
+      {/* PAGINATION */}
+      {pagination.totalPages > 1 && (
+        <div className="flex items-center justify-center gap-2 pt-2">
+          <button
+            type="button"
+            onClick={() =>
+              onPageChange(
+                pagination.page - 1
+              )
+            }
+            disabled={
+              pagination.page <= 1
+            }
+            className="px-3 py-1.5 rounded-xl text-xs font-bold text-brown-700 border border-brown-900/15 hover:bg-cream disabled:opacity-40 disabled:cursor-not-allowed transition-colors cursor-pointer"
+          >
+            ← Prev
+          </button>
+
+          <span className="text-xs text-brown-700 font-semibold">
+            {pagination.page} /{" "}
+            {pagination.totalPages}
+          </span>
+
+          <button
+            type="button"
+            onClick={() =>
+              onPageChange(
+                pagination.page + 1
+              )
+            }
+            disabled={
+              pagination.page >=
+              pagination.totalPages
+            }
+            className="px-3 py-1.5 rounded-xl text-xs font-bold text-brown-700 border border-brown-900/15 hover:bg-cream disabled:opacity-40 disabled:cursor-not-allowed transition-colors cursor-pointer"
+          >
+            Next →
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}

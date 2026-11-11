@@ -13,11 +13,19 @@ interface ComposeBoxProps {
   currentUserName?: string | null;
 }
 
-const TAG_OPTIONS = ["Sharing", "Mindfulness", "SleepRoutine", "ZybaRocks", "MentalHealth", "SelfCare"];
+const TAG_OPTIONS = [
+  "Refleksi",
+  "Hubungan",
+  "Kecemasan",
+  "Syukur",
+  "Pemulihan",
+  "Mindfulness",
+  "SelfCare",
+];
 
 export default function ComposeBox({ onAddPost, onRiskDetected, currentUserInitials = "AL", currentUserAvatar, currentUserName }: ComposeBoxProps) {
   const [content, setContent] = useState("");
-  const [selectedTag, setSelectedTag] = useState("Sharing");
+  const [selectedTag, setSelectedTag] = useState("Refleksi");
   const [showTagPicker, setShowTagPicker] = useState(false);
   const [isFocused, setIsFocused] = useState(false);
 
@@ -161,7 +169,7 @@ export default function ComposeBox({ onAddPost, onRiskDetected, currentUserIniti
             value={content}
             onChange={(e) => setContent(e.target.value)}
             onFocus={() => setIsFocused(true)}
-            placeholder={selectedFile ? "Tambahkan keterangan foto..." : "Ada cerita apa hari ini? Bagikan ceritamu dengan hangat..."}
+            placeholder={selectedFile ? "Tambahkan keterangan foto..." : "Bagikan apa yang sedang singgah di hatimu. Komunitas ini hadir untuk merangkulmu..."}
             rows={isFocused || hasContent ? 3 : 2}
             className="w-full text-sm text-brown-900 placeholder:text-brown-700/40 resize-none bg-transparent focus:outline-none leading-relaxed transition-all"
           />

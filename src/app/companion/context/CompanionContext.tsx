@@ -92,7 +92,20 @@ interface CompanionContextType {
   messagesEndRef: React.RefObject<HTMLDivElement>;
   quotaRemaining: number | null;
   quotaLimit: number;
+  tokensUsed: number;
+  tokensRemaining: number;
+  tokenLimit: number;
+  percentRemaining: number;
+  percentUsed: number;
   plan: "FREE" | "PLUS";
+  updateTokenQuota: (quota: {
+    tokensUsed: number;
+    remaining: number;
+    limit: number;
+    percentUsed: number;
+    percentRemaining: number;
+    plan: "FREE" | "PLUS";
+  }) => void;
   isTTSEnabled: boolean;
   setIsTTSEnabled: (val: boolean) => void;
   ttsProvider: "elevenlabs" | "edge";
@@ -193,8 +206,35 @@ export function CompanionProvider({ children }: { children: React.ReactNode }) {
   const [crisisAlert, setCrisisAlert] = useState<boolean>(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [quotaRemaining, setQuotaRemaining] = useState<number | null>(null);
-  const [quotaLimit, setQuotaLimit] = useState(20);
+  const [quotaLimit, setQuotaLimit] = useState(20_000);
+  const [tokensUsed, setTokensUsed] = useState<number>(0);
+  const [tokensRemaining, setTokensRemaining] = useState<number>(20_000);
+  const [tokenLimit, setTokenLimit] = useState<number>(20_000);
+  const [percentRemaining, setPercentRemaining] = useState<number>(100);
+  const [percentUsed, setPercentUsed] = useState<number>(0);
   const [plan, setPlan] = useState<"FREE" | "PLUS">("FREE");
+
+  const updateTokenQuota = useCallback((quota: {
+    tokensUsed: number;
+    remaining: number;
+    limit: number;
+    percentUsed: number;
+    percentRemaining: number;
+    plan: "FREE" | "PLUS";
+  }) => {
+    if (typeof quota.tokensUsed === "number") setTokensUsed(quota.tokensUsed);
+    if (typeof quota.remaining === "number") {
+      setQuotaRemaining(quota.remaining);
+      setTokensRemaining(quota.remaining);
+    }
+    if (typeof quota.limit === "number") {
+      setQuotaLimit(quota.limit);
+      setTokenLimit(quota.limit);
+    }
+    if (typeof quota.percentRemaining === "number") setPercentRemaining(quota.percentRemaining);
+    if (typeof quota.percentUsed === "number") setPercentUsed(quota.percentUsed);
+    if (quota.plan === "FREE" || quota.plan === "PLUS") setPlan(quota.plan);
+  }, []);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const { speak, stop } = useTTS();
@@ -243,17 +283,22 @@ export function CompanionProvider({ children }: { children: React.ReactNode }) {
       .catch((err) => console.error("[Fetch Conversations]:", err));
   }, [dataRefreshSignal]);
 
-  // Fetch quota on mount
+  // Fetch token quota on mount
   useEffect(() => {
     fetch("/api/companion/quota", { cache: "no-store" })
       .then((res) => res.json())
       .then((data) => {
-        if (data.remaining !== undefined) {
+        if (typeof data.tokensUsed === "number") setTokensUsed(data.tokensUsed);
+        if (typeof data.remaining === "number") {
           setQuotaRemaining(data.remaining);
+          setTokensRemaining(data.remaining);
         }
         if (typeof data.limit === "number") {
           setQuotaLimit(data.limit);
+          setTokenLimit(data.limit);
         }
+        if (typeof data.percentRemaining === "number") setPercentRemaining(data.percentRemaining);
+        if (typeof data.percentUsed === "number") setPercentUsed(data.percentUsed);
         if (data.plan === "FREE" || data.plan === "PLUS") {
           setPlan(data.plan);
           setSelectedModelRaw((current) => {
@@ -404,6 +449,10 @@ export function CompanionProvider({ children }: { children: React.ReactNode }) {
       if (response.status === 403) {
         const errorData = await response.json();
         if (errorData.error === "QUOTA_EXCEEDED") {
+          if (typeof errorData.tokensUsed === "number") setTokensUsed(errorData.tokensUsed);
+          if (typeof errorData.remaining === "number") setTokensRemaining(errorData.remaining);
+          if (typeof errorData.percentRemaining === "number") setPercentRemaining(errorData.percentRemaining);
+          if (typeof errorData.percentUsed === "number") setPercentUsed(errorData.percentUsed);
           setShowProModal(true);
           setIsSending(false);
           return;
@@ -442,13 +491,18 @@ export function CompanionProvider({ children }: { children: React.ReactNode }) {
 
       const data = await response.json();
 
-      // Update quota after successful message
-      if (data.quotaRemaining !== undefined) {
+      // Update token quota after successful message
+      if (typeof data.tokensUsed === "number") setTokensUsed(data.tokensUsed);
+      if (typeof data.quotaRemaining === "number") {
         setQuotaRemaining(data.quotaRemaining);
+        setTokensRemaining(data.quotaRemaining);
       }
       if (typeof data.quotaLimit === "number") {
         setQuotaLimit(data.quotaLimit);
+        setTokenLimit(data.quotaLimit);
       }
+      if (typeof data.percentRemaining === "number") setPercentRemaining(data.percentRemaining);
+      if (typeof data.percentUsed === "number") setPercentUsed(data.percentUsed);
       if (data.plan === "FREE" || data.plan === "PLUS") {
         setPlan(data.plan);
       }
@@ -593,6 +647,12 @@ export function CompanionProvider({ children }: { children: React.ReactNode }) {
         messagesEndRef,
         quotaRemaining,
         quotaLimit,
+        tokensUsed,
+        tokensRemaining,
+        tokenLimit,
+        percentRemaining,
+        percentUsed,
+        updateTokenQuota,
         plan,
         isTTSEnabled,
         setIsTTSEnabled,

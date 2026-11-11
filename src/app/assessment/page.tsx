@@ -10,18 +10,16 @@ import CompilingState from "./components/CompilingState";
 import CompletedState from "./components/CompletedState";
 import CrisisModal from "./components/CrisisModal";
 
-
+// 8 Unified Steps (Profile Setup + Mental Health Assessment) — AGENTS.md 4.B & 4.C
 const STEPS = [
-  { title: "Goal Kesehatan", desc: "Tujuan utama pengunaan ZYBA" },
+  { title: "Profil & Avatar", desc: "Pilih avatar & nama panggilan" },
+  { title: "PIN Keamanan", desc: "4 digit proteksi privasi sesi" },
+  { title: "Preferensi Notifikasi", desc: "Atur pengingat kebugaran" },
+  { title: "Goal Kesehatan", desc: "Tujuan utama penggunaan ZYBA" },
   { title: "Profil Fisik", desc: "Gender, usia, & berat badan" },
-  { title: "Mood Saat Ini", desc: "Skala ekspresi emosional" },
-  { title: "Riwayat Konsultasi", desc: "Bantuan profesional medis" },
-  { title: "Gejala Fisik", desc: "Indikasi fisik terkait stres" },
-  { title: "Kualitas Tidur", desc: "Rating 1 - 5" },
-  { title: "Level Stres", desc: "Rating 1 - 5" },
-  { title: "Obat & Suplemen", desc: "Konsumsi medis saat ini" },
-  { title: "Gejala Mental", desc: "Keluhan kecemasan/fokus" },
-  { title: "Analisis Ekspresi", desc: "Skrining ekspresi & teks" },
+  { title: "Ritme Batin & Tidur", desc: "Mood pebble & kualitas tidur" },
+  { title: "Beban Stres & Gejala", desc: "Level stres & keluhan tubuh" },
+  { title: "Analisis Ekspresi", desc: "Skrining refleksi batin AI" },
 ];
 
 export default function AssessmentPage() {
@@ -39,7 +37,18 @@ export default function AssessmentPage() {
     }
   };
 
-  // Form State — input awal bersih dengan placeholder (tanpa teks bawaan yang harus dihapus)
+  // ── Profile & Security State ──────────────────────────────────────────────
+  const [name, setName] = useState("");
+  const [avatarKey, setAvatarKey] = useState("fox");
+  const [bio, setBio] = useState("");
+  const [pin, setPin] = useState("");
+
+  // ── Notification Preferences ──────────────────────────────────────────────
+  const [companionNotif, setCompanionNotif] = useState(true);
+  const [wellnessNotif, setWellnessNotif] = useState(true);
+  const [communityNotif, setCommunityNotif] = useState(false);
+
+  // ── Mental Health & Lifestyle State ───────────────────────────────────────
   const [goal, setGoal] = useState("Stress Relief & Relaxation");
   const [gender, setGender] = useState("Pria");
   const [age, setAge] = useState("");
@@ -55,12 +64,13 @@ export default function AssessmentPage() {
   const [customMentalSymptom, setCustomMentalSymptom] = useState("");
   const [expressionText, setExpressionText] = useState("");
 
+  // ── Execution State ───────────────────────────────────────────────────────
   const [isCompiling, setIsCompiling] = useState(false);
   const [isCompleted, setIsCompleted] = useState(false);
   const [crisisAlert, setCrisisAlert] = useState(false);
-
   const [calculatedScore, setCalculatedScore] = useState<number>(80);
   const [calculatedCondition, setCalculatedCondition] = useState<string>("Kondisi Baik");
+  const [ageError, setAgeError] = useState("");
 
   // Jika sudah menyelesaikan onboarding, lempar langsung ke dashboard
   useEffect(() => {
@@ -73,6 +83,12 @@ export default function AssessmentPage() {
             router.replace("/dashboard");
             return;
           }
+          if (data.user?.name) {
+            setName(data.user.name);
+          }
+          if (data.user?.avatarUrl) {
+            setAvatarKey(data.user.avatarUrl);
+          }
           if (data.user?.gender) {
             setGender(data.user.gender);
           }
@@ -84,11 +100,9 @@ export default function AssessmentPage() {
     loadUser();
   }, [router, dataRefreshSignal]);
 
-  const [ageError, setAgeError] = useState("");
-
   const handleNext = async () => {
-    // ── Validasi Step 1: Usia wajib diisi ──────────────────────────
-    if (currentStep === 1) {
+    // ── Validasi Step 4: Usia wajib diisi ────────────────────────────
+    if (currentStep === 4) {
       const ageNum = parseInt(age, 10);
       if (!age.trim() || isNaN(ageNum) || ageNum < 5 || ageNum > 120) {
         setAgeError("Umur wajib diisi (5–120 tahun).");
@@ -97,7 +111,8 @@ export default function AssessmentPage() {
       setAgeError("");
     }
 
-    if (currentStep === 9) {
+    // ── Final Step (Step 7: Analisis Ekspresi) ──────────────────────
+    if (currentStep === 7) {
       if (expressionText.trim()) {
         const isRisk = detectRisk(expressionText);
         if (isRisk) {
@@ -126,6 +141,14 @@ export default function AssessmentPage() {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
+            name: name.trim() || undefined,
+            avatarUrl: avatarKey || "fox",
+            bio: bio.trim() || undefined,
+            notificationPref: {
+              companionNotif,
+              wellnessNotif,
+              communityNotif,
+            },
             goal,
             gender,
             age: parseInt(age, 10) || 21,
@@ -160,7 +183,6 @@ export default function AssessmentPage() {
     }
   };
 
-
   const handlePrev = () => {
     if (currentStep > 0) {
       setCurrentStep((prev) => prev - 1);
@@ -177,40 +199,36 @@ export default function AssessmentPage() {
   };
 
   return (
-    /* Full-screen layout — tidak ada sidebar. ClientLayout sudah exclude /assessment dari sidebar. */
     <div className="min-h-screen bg-cream flex flex-col">
-      {/* ===== Top Header Bar — locked, menunjukkan ini onboarding-gated ===== */}
+      {/* ===== Top Header Bar ===== */}
       <header className="w-full bg-white border-b border-brown-900/10 px-4 sm:px-6 py-3.5 sm:py-4 flex items-center justify-between sticky top-0 z-30 shadow-xs">
         <div className="flex items-center gap-3">
-          {/* Logo ZYBA mini */}
-          <div className="relative w-8 h-8 flex items-center justify-center rounded-xl bg-cream border border-orange-500/20 shadow-sm">
-            <div className="absolute w-3 h-3 rounded-full bg-orange-500 -top-0.5 left-1/2 -translate-x-1/2" />
-            <div className="absolute w-3 h-3 rounded-full bg-green-500 -bottom-0.5 left-1/2 -translate-x-1/2" />
-            <div className="absolute w-3 h-3 rounded-full bg-orange-500 -left-0.5 top-1/2 -translate-y-1/2" />
-            <div className="absolute w-3 h-3 rounded-full bg-green-500 -right-0.5 top-1/2 -translate-y-1/2" />
-            <div className="w-2 h-2 rounded-full bg-brown-900 z-10" />
+          <div className="relative w-8 h-8 flex items-center justify-center rounded-xl bg-cream border border-orange-500/20 shadow-xs">
+            <span className="font-display font-black text-xs text-orange-500">ZY</span>
           </div>
           <div className="flex items-center gap-2">
             <span className="font-display font-extrabold text-sm text-brown-900">ZYBA</span>
-            <span className="text-[10px] font-bold text-orange-500 bg-orange-100 px-2 py-0.5 rounded-full uppercase tracking-wider">
-              Asesmen Awal
+            <span className="text-[10px] font-bold text-orange-500 bg-orange-100 px-2.5 py-0.5 rounded-full uppercase tracking-wider">
+              Setup Profil & Asesmen Awal
             </span>
           </div>
         </div>
-
       </header>
 
       {/* ===== Main Content ===== */}
-      <div ref={contentRef} className="flex-1 max-w-[1200px] w-full mx-auto px-4 py-6 sm:px-6 md:px-10 md:py-10 flex flex-col justify-center">
-        {/* Page title */}
+      <div
+        ref={contentRef}
+        className="flex-1 max-w-[1200px] w-full mx-auto px-4 py-6 sm:px-6 md:px-10 md:py-10 flex flex-col justify-center"
+      >
+        {/* Page Title */}
         {!isCompleted && !isCompiling && (
           <div className="mb-4 sm:mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
             <div>
               <h1 className="font-display text-xl sm:text-2xl font-extrabold text-brown-900">
-                Mental Health Assessment
+                Langkah Awal Menuju Ketenangan
               </h1>
               <p className="text-xs text-brown-700 mt-0.5">
-                Kuesioner awal untuk menyusun rencana kesehatan mental yang lebih personal.
+                Setup profil pribadimu dan rekam kondisi awal untuk menyusun sanctuary yang personal.
               </p>
             </div>
           </div>
@@ -232,33 +250,50 @@ export default function AssessmentPage() {
             {!isCompiling && !isCompleted && (
               <QuestionStep
                 currentStep={currentStep}
+                name={name}
+                setName={setName}
+                avatarKey={avatarKey}
+                setAvatarKey={setAvatarKey}
+                bio={bio}
+                setBio={setBio}
+                pin={pin}
+                setPin={setPin}
+                companionNotif={companionNotif}
+                setCompanionNotif={setCompanionNotif}
+                wellnessNotif={wellnessNotif}
+                setWellnessNotif={setWellnessNotif}
+                communityNotif={communityNotif}
+                setCommunityNotif={setCommunityNotif}
                 goal={goal}
                 setGoal={setGoal}
                 gender={gender}
                 setGender={setGender}
                 age={age}
-                setAge={(v) => { setAge(v); setAgeError(""); }}
+                setAge={(v) => {
+                  setAge(v);
+                  setAgeError("");
+                }}
                 ageError={ageError}
                 weight={weight}
                 setWeight={setWeight}
                 mood={mood}
                 setMood={setMood}
-                soughtHelp={soughtHelp}
-                setSoughtHelp={setSoughtHelp}
-                physicalSymptoms={physicalSymptoms}
-                setPhysicalSymptoms={setPhysicalSymptoms}
-                customPhysicalSymptom={customPhysicalSymptom}
-                setCustomPhysicalSymptom={setCustomPhysicalSymptom}
                 sleepRating={sleepRating}
                 setSleepRating={setSleepRating}
                 stressRating={stressRating}
                 setStressRating={setStressRating}
-                medications={medications}
-                setMedications={setMedications}
+                physicalSymptoms={physicalSymptoms}
+                setPhysicalSymptoms={setPhysicalSymptoms}
+                customPhysicalSymptom={customPhysicalSymptom}
+                setCustomPhysicalSymptom={setCustomPhysicalSymptom}
                 mentalSymptoms={mentalSymptoms}
                 setMentalSymptoms={setMentalSymptoms}
                 customMentalSymptom={customMentalSymptom}
                 setCustomMentalSymptom={setCustomMentalSymptom}
+                medications={medications}
+                setMedications={setMedications}
+                soughtHelp={soughtHelp}
+                setSoughtHelp={setSoughtHelp}
                 expressionText={expressionText}
                 setExpressionText={setExpressionText}
                 toggleSymptom={toggleSymptom}

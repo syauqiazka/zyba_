@@ -2,6 +2,7 @@
 
 import React, { useState, useRef, useEffect } from "react";
 import { createPortal } from "react-dom";
+import { ChevronDown, Search, X } from "lucide-react";
 import { AIModelType } from "@/backend/ai/types";
 import { LEGACY_MODEL_ALIAS_MAP } from "@/backend/ai/modelRegistry";
 
@@ -193,9 +194,10 @@ export default function ModelSelector({
         <span className="truncate max-w-[70px] xs:max-w-[95px] sm:max-w-[130px] font-bold text-brown-900">
           {currentOption.name}
         </span>
-        <span className="text-[9px] text-brown-700/60 shrink-0">
-          {isOpen ? "▲" : "▼"}
-        </span>
+        <ChevronDown
+          size={12}
+          className={`text-brown-700/60 shrink-0 transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`}
+        />
       </button>
 
       {/* Popover Dropdown */}
@@ -223,9 +225,10 @@ export default function ModelSelector({
               <button
                 type="button"
                 onClick={() => setIsOpen(false)}
-                className="text-xs text-brown-700/60 hover:text-brown-900 font-bold p-0.5 rounded-md hover:bg-brown-900/5 transition-colors"
+                className="text-xs text-brown-700/60 hover:text-brown-900 p-1 rounded-md hover:bg-brown-900/5 transition-colors"
+                aria-label="Tutup"
               >
-                ✕
+                <X size={13} />
               </button>
             </div>
 
@@ -239,16 +242,17 @@ export default function ModelSelector({
                 autoFocus
                 className="w-full bg-cream/50 border border-brown-900/15 rounded-xl px-2.5 py-1.5 pl-7 text-xs text-brown-900 focus:outline-none focus:ring-1 focus:ring-orange-500 font-medium placeholder:text-brown-700/40"
               />
-              <span className="absolute left-3 top-2 text-[10px] text-brown-700/50">
-                🔍
+              <span className="absolute left-3 top-2.5 text-brown-700/50">
+                <Search size={12} />
               </span>
               {searchQuery && (
                 <button
                   type="button"
                   onClick={() => setSearchQuery("")}
-                  className="absolute right-3 top-2 text-[10px] text-brown-700/50 hover:text-brown-900 font-bold"
+                  className="absolute right-3 top-2 p-0.5 text-brown-700/50 hover:text-brown-900"
+                  aria-label="Hapus pencarian"
                 >
-                  ✕
+                  <X size={11} />
                 </button>
               )}
             </div>

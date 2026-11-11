@@ -13,7 +13,7 @@ import {
 
 const NAV_TABS = [
   { href: "/dashboard", label: "Dashboard", icon: Home },
-  { href: "/daily-assessment", label: "Mood", icon: CalendarCheck },
+  { href: "/mood-check-in", label: "Mood", icon: CalendarCheck },
   { href: "/companion", label: "Tanya Zyba", icon: Bot },
   { href: "/activity", label: "Planner", icon: Zap },
   { href: "/community", label: "Komunitas", icon: Users },

@@ -5,7 +5,12 @@ import { PersonaId } from "@/backend/ai/personas";
 import { AIMode } from "@/backend/ai/types";
 import { resolveModelDescriptor, getDefaultModelForMode } from "@/backend/ai/modelRegistry";
 import { verifySessionToken } from "@/lib/auth";
-import { consumeMessageQuota, releaseMessageQuota } from "@/backend/billing/entitlements";
+import {
+  checkTokenQuota,
+  consumeTokenQuota,
+  releaseTokenQuota,
+} from "@/backend/billing/entitlements";
+import { estimateTokens, estimateHistoryTokens } from "@/lib/tokenizer";
 import { companionDb } from "@/backend/db/companionClient";
 import { checkAndUnlock } from "@/lib/achievements/engine";
 import { checkRateLimit, rateLimitResponse } from "@/lib/server/rateLimit";
@@ -98,20 +103,22 @@ export async function POST(req: NextRequest) {
       });
     }
 
-    // Reserve one slot only after payload validation and crisis handling.
-    // Safety responses and malformed requests never consume the daily quota.
-    const quotaCheck = await consumeMessageQuota(session.userId);
+    // 1. Cek kuota token pengguna sebelum memanggil model AI
+    const quotaCheck = await checkTokenQuota(session.userId);
 
-    if (!quotaCheck.allowed) {
+    if (!quotaCheck.allowed || quotaCheck.remaining <= 0) {
       return NextResponse.json(
         {
           error: "QUOTA_EXCEEDED",
           message:
             quotaCheck.plan === "FREE"
-              ? "Kamu sudah mencapai batas 20 chat hari ini. Upgrade ke Zyba Plus untuk mendapatkan 60 chat/hari."
-              : "Kamu sudah mencapai batas 60 chat Premium hari ini. Kuota akan reset besok.",
+              ? `Kamu telah menggunakan batas ${quotaCheck.limit.toLocaleString("id-ID")} token hari ini (100% terpakai). Upgrade ke Zyba Plus untuk mendapatkan 150.000 token/hari.`
+              : `Kamu telah mencapai batas ${quotaCheck.limit.toLocaleString("id-ID")} token Premium hari ini. Kuota akan direset pukul 00:00 WIB.`,
+          tokensUsed: quotaCheck.tokensUsed,
           remaining: quotaCheck.remaining,
           limit: quotaCheck.limit,
+          percentUsed: quotaCheck.percentUsed,
+          percentRemaining: quotaCheck.percentRemaining,
           plan: quotaCheck.plan,
         },
         { status: 403 }
@@ -120,7 +127,6 @@ export async function POST(req: NextRequest) {
 
     // Jika model openai-premium diminta oleh user Free, tolak
     if (model === "openai-premium" && quotaCheck.plan !== "PLUS") {
-      await releaseMessageQuota(session.userId).catch(() => undefined);
       return NextResponse.json(
         { error: "Model Premium hanya tersedia untuk pelanggan Premium." },
         { status: 403 }
@@ -173,13 +179,6 @@ export async function POST(req: NextRequest) {
         userId: session.userId,
       });
     } catch (aiErr: any) {
-      // AI failure must not burn the user's daily slot.
-      try {
-        await releaseMessageQuota(session.userId);
-      } catch (releaseErr) {
-        console.error("[Companion] Failed to release AI quota:", releaseErr);
-      }
-
       if (aiErr?.message === "RATE_LIMIT") {
         return NextResponse.json(
           {
@@ -201,6 +200,15 @@ export async function POST(req: NextRequest) {
       }
       throw aiErr;
     }
+
+    // 2. Hitung token yang dikonsumsi untuk giliran pesan ini:
+    // Input tokens: Pesan pengguna + riwayat percakapan + estimasi system prompt (~150 token)
+    const inputTokens = estimateTokens(trimmedMessage) + estimateHistoryTokens(finalHistory) + 150;
+    const outputTokens = estimateTokens(aiResult.reply);
+    const totalTurnTokens = inputTokens + outputTokens;
+
+    // 3. Catat konsumsi token secara atomic
+    const updatedQuota = await consumeTokenQuota(session.userId, totalTurnTokens);
 
     // Save user message + AI reply to DB (skip if temporary conversationId)
     if (conversationId && !conversationId.startsWith("conv-")) {
@@ -266,9 +274,14 @@ export async function POST(req: NextRequest) {
       fallbackReason: aiResult.fallbackReason,
       latencyMs: aiResult.latencyMs,
       providerStatus: aiResult.providerStatus,
-      quotaRemaining: Math.max(0, quotaCheck.remaining - 1),
-      quotaLimit: quotaCheck.limit,
-      plan: quotaCheck.plan,
+      // Granular Token Quota Data
+      tokensSpent: totalTurnTokens,
+      tokensUsed: updatedQuota.tokensUsed,
+      quotaRemaining: updatedQuota.remaining,
+      quotaLimit: updatedQuota.limit,
+      percentUsed: updatedQuota.percentUsed,
+      percentRemaining: updatedQuota.percentRemaining,
+      plan: updatedQuota.plan,
     }, {
       headers: { "Cache-Control": "private, no-cache, no-store, max-age=0, must-revalidate" },
     });

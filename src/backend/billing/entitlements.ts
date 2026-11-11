@@ -2,8 +2,23 @@
 import { accountDb } from "@/backend/db/accountClient";
 import { companionDb } from "@/backend/db/companionClient";
 
-export const FREE_DAILY_MESSAGE_LIMIT = 20;
-export const PREMIUM_DAILY_MESSAGE_LIMIT = 60;
+// Kuota Token Harian (Gen Z Wellness - Granular Token System)
+export const FREE_DAILY_TOKEN_LIMIT = 20_000;       // 20.000 token/hari (~25-35 sesi percakapan)
+export const PREMIUM_DAILY_TOKEN_LIMIT = 150_000;   // 150.000 token/hari (~200+ sesi percakapan mendalam)
+
+// Alias kompatibilitas
+export const FREE_DAILY_MESSAGE_LIMIT = FREE_DAILY_TOKEN_LIMIT;
+export const PREMIUM_DAILY_MESSAGE_LIMIT = PREMIUM_DAILY_TOKEN_LIMIT;
+
+export interface TokenQuotaStatus {
+  allowed: boolean;
+  tokensUsed: number;
+  remaining: number;
+  limit: number;
+  percentUsed: number;
+  percentRemaining: number;
+  plan: "FREE" | "PLUS";
+}
 
 type ZYBAGlobal = typeof globalThis & {
   __zybaUserPlanCache?: Map<string, { plan: "FREE" | "PLUS"; timestamp: number }>;
@@ -108,113 +123,155 @@ function getQuotaId(userId: string, dateKey: string) {
   return userId + ":" + dateKey;
 }
 
-async function getCurrentMessageCount(userId: string, dateKey: string): Promise<number> {
+async function getCurrentTokenUsage(userId: string, dateKey: string): Promise<number> {
   const counter = await companionDb.dailyMessageQuota.findUnique({
     where: { userId_date: { userId, date: dateKey } },
     select: { messageCount: true },
   });
 
-  if (counter) return counter.messageCount;
+  if (counter) {
+    // Jika counter lama masih berbasis hitungan pesan kecil (< 100), normalisasi ke perkiraan token
+    if (counter.messageCount > 0 && counter.messageCount <= 100) {
+      return counter.messageCount * 350;
+    }
+    return counter.messageCount;
+  }
 
   const { start, end } = getJakartaDayBounds(dateKey);
 
-  return companionDb.message.count({
+  // Jika belum ada counter harian, hitung perkiraan dari pesan user hari ini
+  const userMsgCount = await companionDb.message.count({
     where: {
       role: "USER",
       createdAt: { gte: start, lt: end },
       conversation: { userId },
     },
   });
+
+  return userMsgCount * 350;
 }
 
-export async function checkMessageQuota(userId: string) {
+/**
+ * Cek status kuota token pengguna hari ini.
+ * Menghasilkan metrik kuota token: jumlah terpakai, sisa, limit, dan persentase tersisa.
+ */
+export async function checkTokenQuota(userId: string): Promise<TokenQuotaStatus> {
   const plan = await getUserPlan(userId);
   const dailyLimit =
-    plan === "PLUS" ? PREMIUM_DAILY_MESSAGE_LIMIT : FREE_DAILY_MESSAGE_LIMIT;
+    plan === "PLUS" ? PREMIUM_DAILY_TOKEN_LIMIT : FREE_DAILY_TOKEN_LIMIT;
 
   const dateKey = getJakartaDateKey();
-  const countToday = await getCurrentMessageCount(userId, dateKey);
+  const tokensUsed = await getCurrentTokenUsage(userId, dateKey);
+
+  const remaining = Math.max(0, dailyLimit - tokensUsed);
+  const percentUsed = Math.min(100, Math.round((tokensUsed / dailyLimit) * 1000) / 10);
+  const percentRemaining = Math.max(0, Math.round((100 - percentUsed) * 10) / 10);
 
   return {
-    allowed: countToday < dailyLimit,
-    remaining: Math.max(0, dailyLimit - countToday),
+    allowed: tokensUsed < dailyLimit,
+    tokensUsed,
+    remaining,
     limit: dailyLimit,
+    percentUsed,
+    percentRemaining,
     plan,
   };
 }
 
 /**
- * Reserve one quota slot atomically.
- * PostgreSQL serializes concurrent upserts on the unique (userId, date) key.
+ * Konsumsi kuota token secara granular & atomic.
  */
-export async function consumeMessageQuota(userId: string) {
+export async function consumeTokenQuota(
+  userId: string,
+  tokensToConsume: number
+): Promise<TokenQuotaStatus> {
   const plan = await getUserPlan(userId);
-  const dailyLimit = plan === "PLUS" ? PREMIUM_DAILY_MESSAGE_LIMIT : FREE_DAILY_MESSAGE_LIMIT;
+  const dailyLimit =
+    plan === "PLUS" ? PREMIUM_DAILY_TOKEN_LIMIT : FREE_DAILY_TOKEN_LIMIT;
   const dateKey = getJakartaDateKey();
-  const { start: dayStart, end: dayEnd } = getJakartaDayBounds(dateKey);
   const quotaId = getQuotaId(userId, dateKey);
+  const tokens = Math.max(1, Math.round(tokensToConsume));
 
-  // Fast path: once today's counter exists, never rescan message history.
-  const existing = await companionDb.dailyMessageQuota.findUnique({
-    where: { userId_date: { userId, date: dateKey } },
-    select: { messageCount: true },
-  });
-
-  if (existing) {
-    const rows = await companionDb.$queryRaw<QuotaRow[]>`
-      INSERT INTO "daily_message_quotas"
-        ("id", "userId", "date", "messageCount", "createdAt", "updatedAt")
-      VALUES
-        (${quotaId}, ${userId}, ${dateKey}, 1, NOW(), NOW())
-      ON CONFLICT ("userId", "date")
-      DO UPDATE SET
-        "messageCount" = "daily_message_quotas"."messageCount" + 1,
-        "updatedAt" = NOW()
-      WHERE "daily_message_quotas"."messageCount" < ${dailyLimit}
-      RETURNING "messageCount"
-    `;
-    const count = rows[0]?.messageCount;
-    if (count === undefined) return { allowed: false, remaining: 0, limit: dailyLimit, plan };
-    return { allowed: true, remaining: Math.max(0, dailyLimit - count), limit: dailyLimit, plan };
-  }
-
-  // First request of the day: bootstrap from persisted USER messages.
+  // Atomic upsert with Postgres
   const rows = await companionDb.$queryRaw<QuotaRow[]>`
     INSERT INTO "daily_message_quotas"
       ("id", "userId", "date", "messageCount", "createdAt", "updatedAt")
-    SELECT
-      ${quotaId}, ${userId}, ${dateKey}, COUNT(*)::int + 1, NOW(), NOW()
-    FROM "messages" AS m
-    INNER JOIN "conversations" AS c ON c."id" = m."conversationId"
-    WHERE c."userId" = ${userId}
-      AND m."role" = 'USER'
-      AND m."createdAt" >= ${dayStart}
-      AND m."createdAt" < ${dayEnd}
-    HAVING COUNT(*) < ${dailyLimit}
+    VALUES
+      (${quotaId}, ${userId}, ${dateKey}, ${tokens}, NOW(), NOW())
     ON CONFLICT ("userId", "date")
     DO UPDATE SET
-      "messageCount" = "daily_message_quotas"."messageCount" + 1,
+      "messageCount" = "daily_message_quotas"."messageCount" + ${tokens},
       "updatedAt" = NOW()
-    WHERE "daily_message_quotas"."messageCount" < ${dailyLimit}
     RETURNING "messageCount"
   `;
-  const count = rows[0]?.messageCount;
-  if (count === undefined) return { allowed: false, remaining: 0, limit: dailyLimit, plan };
-  return { allowed: true, remaining: Math.max(0, dailyLimit - count), limit: dailyLimit, plan };
+
+  const totalTokens = rows[0]?.messageCount ?? tokens;
+  const remaining = Math.max(0, dailyLimit - totalTokens);
+  const percentUsed = Math.min(100, Math.round((totalTokens / dailyLimit) * 1000) / 10);
+  const percentRemaining = Math.max(0, Math.round((100 - percentUsed) * 10) / 10);
+
+  return {
+    allowed: totalTokens <= dailyLimit,
+    tokensUsed: totalTokens,
+    remaining,
+    limit: dailyLimit,
+    percentUsed,
+    percentRemaining,
+    plan,
+  };
 }
 
-export async function releaseMessageQuota(userId: string) {
+/**
+ * Kembalikan kuota token jika eksekusi AI gagal.
+ */
+export async function releaseTokenQuota(userId: string, tokensToRefund: number) {
   const dateKey = getJakartaDateKey();
+  const tokens = Math.max(1, Math.round(tokensToRefund));
 
   await companionDb.$executeRaw`
     UPDATE "daily_message_quotas"
     SET
-      "messageCount" = GREATEST("messageCount" - 1, 0),
+      "messageCount" = GREATEST("messageCount" - ${tokens}, 0),
       "updatedAt" = NOW()
     WHERE "userId" = ${userId}
       AND "date" = ${dateKey}
       AND "messageCount" > 0
   `;
+}
+
+// =========================================================================
+// Backward Compatibility Functions (menjaga dependensi lama tetap aman)
+// =========================================================================
+
+export async function checkMessageQuota(userId: string) {
+  const tokenQuota = await checkTokenQuota(userId);
+  return {
+    allowed: tokenQuota.allowed,
+    remaining: tokenQuota.remaining,
+    limit: tokenQuota.limit,
+    tokensUsed: tokenQuota.tokensUsed,
+    percentUsed: tokenQuota.percentUsed,
+    percentRemaining: tokenQuota.percentRemaining,
+    plan: tokenQuota.plan,
+  };
+}
+
+export async function consumeMessageQuota(userId: string) {
+  // Konsumsi default 350 token per chat untuk caller lama
+  const tokenQuota = await consumeTokenQuota(userId, 350);
+  return {
+    allowed: tokenQuota.allowed,
+    remaining: tokenQuota.remaining,
+    limit: tokenQuota.limit,
+    tokensUsed: tokenQuota.tokensUsed,
+    percentUsed: tokenQuota.percentUsed,
+    percentRemaining: tokenQuota.percentRemaining,
+    plan: tokenQuota.plan,
+  };
+}
+
+export async function releaseMessageQuota(userId: string) {
+  await releaseTokenQuota(userId, 350);
 }
 
 export async function hasFeature(

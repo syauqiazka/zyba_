@@ -1,9 +1,9 @@
 "use client";
-import { useFreshDataSignal } from "@/hooks/useFreshData";
+import { useFreshDataSignal, notifyZybaDataChanged } from "@/hooks/useFreshData";
 
 import { useEffect, useState, useRef, useCallback } from "react";
 import Link from "next/link";
-import { Flame, Sparkles, Camera, ArrowRight, CheckCircle2 } from "lucide-react";
+import { Flame, Sparkles, Camera, ArrowRight, CheckCircle2, Sun, Cloud, Compass } from "lucide-react";
 
 import MetricScoreCard from "./components/MetricScoreCard";
 import StressLevelChart from "./components/StressLevelChart";
@@ -11,6 +11,9 @@ import CompanionWidget from "./components/CompanionWidget";
 import TrackerChecklist from "./components/TrackerChecklist";
 import QuickAccessCards from "./components/QuickAccessCards";
 import PremiumStatusWidget from "./components/PremiumStatusWidget";
+import TactileMetricCards from "./components/TactileMetricCards";
+import WeeklyTaskCards from "./components/WeeklyTaskCards";
+import SanctuaryRightRail from "./components/SanctuaryRightRail";
 import UserAvatar from "@/components/ui/UserAvatar";
 import AvatarCropModal from "@/components/ui/AvatarCropModal";
 
@@ -110,6 +113,101 @@ function getAssessmentTime(
   return 0;
 }
 
+function getGreetingInfo(): { greeting: string; period: "pagi" | "siang" | "sore" | "malam" } {
+  try {
+    const hour = parseInt(
+      new Intl.DateTimeFormat("en-US", {
+        timeZone: "Asia/Jakarta",
+        hour: "numeric",
+        hour12: false,
+      }).format(new Date()),
+      10
+    );
+    if (hour >= 4 && hour < 11) return { greeting: "Selamat Pagi", period: "pagi" };
+    if (hour >= 11 && hour < 15) return { greeting: "Selamat Siang", period: "siang" };
+    if (hour >= 15 && hour < 18) return { greeting: "Selamat Sore", period: "sore" };
+    return { greeting: "Selamat Malam", period: "malam" };
+  } catch {
+    return { greeting: "Selamat Datang", period: "pagi" };
+  }
+}
+
+function getEmpatheticSubtitle(
+  name: string,
+  condition: string,
+  stressLevel: number | null,
+  period: "pagi" | "siang" | "sore" | "malam",
+  hasAssessment: boolean
+): string {
+  const firstName = name.split(" ")[0] || "teman";
+
+  if (!hasAssessment) {
+    return "Selamat datang di tempat perlindunganmu. Mari kenali ritme batinmu lewat check-in pertamamu.";
+  }
+
+  // High stress or "Perlu Perhatian"
+  if (condition === "Perlu Perhatian" || (stressLevel !== null && stressLevel >= 4)) {
+    if (period === "malam") {
+      return `Hari yang cukup padat, ${firstName}. Lepaskan perlahan beban pikiranmu malam ini; ruang ini selalu aman untukmu beristirahat.`;
+    }
+    return `Pelukan hangat untukmu hari ini, ${firstName}. Ambil jeda sesering yang kamu butuhkan; tidak ada yang harus diselesaikan terburu-buru.`;
+  }
+
+  // Moderate stress or "Cukup"
+  if (condition === "Cukup" || stressLevel === 3) {
+    if (period === "sore" || period === "malam") {
+      return `Satu hari yang bermakna telah kamu lalui, ${firstName}. Beri apresiasi pada dirimu yang telah melangkah sejauh ini.`;
+    }
+    return `Satu hari demi satu langkah kecil. Dengarkan apa yang tubuh dan batinmu butuhkan dengan penuh kelembutan.`;
+  }
+
+  // Good condition or low stress
+  if (condition === "Baik" || (stressLevel !== null && stressLevel <= 2)) {
+    if (period === "pagi") {
+      return `Senang menyambut energimu yang jernih pagi ini, ${firstName}. Rawat ritme ketenangan ini sepanjang harimu.`;
+    }
+    return `Harmoni batinmu terasa menenangkan hari ini. Nikmati setiap momen kebersamaan dengan dirimu sendiri.`;
+  }
+
+  return "Tarik napas perlahan. Hadir seutuhnya di ruang tenangmu hari ini.";
+}
+
+function getEmotionalWeatherBadge(condition: string, hasAssessment: boolean) {
+  if (!hasAssessment) {
+    return (
+      <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-white/10 text-cream/90 border border-white/20 flex items-center gap-1.5">
+        <Sparkles size={12} strokeWidth={1.8} className="text-orange-300" />
+        <span>Langkah Awal</span>
+      </span>
+    );
+  }
+
+  if (condition === "Baik") {
+    return (
+      <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-200 border border-emerald-400/30 flex items-center gap-1.5">
+        <Sun size={12} strokeWidth={1.8} className="text-emerald-300" />
+        <span>Cuaca Batin: Teduh &amp; Stabil</span>
+      </span>
+    );
+  }
+
+  if (condition === "Cukup") {
+    return (
+      <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-amber-500/20 text-amber-200 border border-amber-400/30 flex items-center gap-1.5">
+        <Cloud size={12} strokeWidth={1.8} className="text-amber-300" />
+        <span>Cuaca Batin: Tenang Mengalir</span>
+      </span>
+    );
+  }
+
+  return (
+    <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-orange-500/25 text-orange-200 border border-orange-400/30 flex items-center gap-1.5">
+      <Compass size={12} strokeWidth={1.8} className="text-orange-300" />
+      <span>Cuaca Batin: Butuh Kehangatan</span>
+    </span>
+  );
+}
+
 export default function DashboardPage() {
   const [userData, setUserData] = useState<UserData>(() => {
     if (typeof window !== "undefined") {
@@ -143,12 +241,20 @@ export default function DashboardPage() {
     useState<
       Record<string, boolean>
     >({
-      "Zyba Hours (Latihan Napas)": false,
+      "Refleksi Pagi": false,
+      "Latihan Napas 4-7-8": false,
+      "Jeda & Hidrasi Sore": false,
       "Catatan Jurnal Kesehatan": false,
-      "Membaca Wawasan Harian": false,
-      "Refleksi Jurnal Mental": false,
       "Aktivitas Komunitas": false,
     });
+
+  const [greetingInfo, setGreetingInfo] = useState<{
+    greeting: string;
+    period: "pagi" | "siang" | "sore" | "malam";
+  }>({
+    greeting: "Selamat Datang",
+    period: "pagi",
+  });
 
   const [todayFormatted, setTodayFormatted] =
     useState("");
@@ -604,10 +710,12 @@ export default function DashboardPage() {
 
   /*
    * =====================================================
-   * LOAD TRACKER
+   * LOAD TRACKER & SYNC WITH DB ACTIVITY
    * =====================================================
    */
   useEffect(() => {
+    let cancelled = false;
+
     try {
       const todayKey =
         `zyba_trackers_${getJakartaDateKey()}`;
@@ -617,29 +725,51 @@ export default function DashboardPage() {
           todayKey
         );
 
-      if (!saved) {
-        return;
-      }
+      if (saved) {
+        const parsed =
+          JSON.parse(saved);
 
-      const parsed =
-        JSON.parse(saved);
-
-      if (
-        parsed &&
-        typeof parsed === "object"
-      ) {
-        setTrackerState(
-          parsed
-        );
+        if (
+          parsed &&
+          typeof parsed === "object"
+        ) {
+          setTrackerState(
+            parsed
+          );
+        }
       }
     } catch {
       // Abaikan error
     }
-  }, []);
+
+    // Synchronize with database activity logs
+    fetch("/api/activity", { method: "GET", cache: "no-store" })
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        if (cancelled || !data?.todayActivities || !Array.isArray(data.todayActivities)) return;
+        setTrackerState((prev) => {
+          const next = { ...prev };
+          for (const act of data.todayActivities) {
+            if (act.title && act.completed) {
+              next[act.title] = true;
+            }
+            if (act.type === "BREATHING" && act.completed) {
+              next["Latihan Napas 4-7-8"] = true;
+            }
+          }
+          return next;
+        });
+      })
+      .catch(() => {});
+
+    return () => {
+      cancelled = true;
+    };
+  }, [dataRefreshSignal]);
 
   /*
    * =====================================================
-   * DATE
+   * DATE & GREETING
    * =====================================================
    */
   useEffect(() => {
@@ -658,6 +788,7 @@ export default function DashboardPage() {
         new Date()
       )
     );
+    setGreetingInfo(getGreetingInfo());
   }, []);
 
   /*
@@ -680,9 +811,10 @@ export default function DashboardPage() {
   ) => {
     setTrackerState(
       (prev) => {
+        const willBeDone = !prev[key];
         const nextState = {
           ...prev,
-          [key]: !prev[key],
+          [key]: willBeDone,
         };
 
         try {
@@ -697,6 +829,32 @@ export default function DashboardPage() {
           );
         } catch {
           // Abaikan
+        }
+
+        if (willBeDone) {
+          const activityType = key.toLowerCase().includes("napas")
+            ? "BREATHING"
+            : key.toLowerCase().includes("refleksi")
+            ? "BREATHING"
+            : "WORKOUT";
+
+          fetch("/api/activity", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              type: activityType,
+              durationMin: 5,
+              points: 20,
+              completed: true,
+              title: key,
+            }),
+          })
+            .then(() => {
+              notifyZybaDataChanged();
+            })
+            .catch((err) => {
+              console.warn("Failed to persist tracker to DB:", err);
+            });
         }
 
         return nextState;
@@ -714,125 +872,6 @@ export default function DashboardPage() {
         premiumUntil={userData.premiumUntil}
       />
 
-      {/* =================================================
-          TOP BANNER: SANCTUARY GREETING
-      ================================================= */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-5 p-6 sm:p-7 rounded-[24px] border border-brown-900/10 bg-white/95 shadow-xs relative overflow-hidden">
-
-        {/* Hidden file input for avatar upload */}
-        <input
-          ref={avatarInputRef}
-          type="file"
-          accept="image/png,image/jpeg,image/webp,image/gif"
-          className="hidden"
-          onChange={handleFileSelected}
-        />
-
-        <div className="flex items-center gap-4">
-          {/* Avatar with Crop & Cooldown Trigger */}
-          <div className="relative group shrink-0">
-            <button
-              type="button"
-              onClick={() => window.dispatchEvent(new CustomEvent("zyba_open_profile"))}
-              className="rounded-full focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-orange-500 block transition-transform group-hover:scale-105 active:scale-95"
-              title="Buka profil lengkap"
-            >
-              <UserAvatar
-                src={userData.avatarUrl}
-                name={userData.name}
-                size="lg"
-                className="w-14 h-14 sm:w-16 sm:h-16 rounded-full border-2 border-brown-900/10 shadow-xs cursor-pointer object-cover"
-                showStatus={false}
-              />
-            </button>
-            <button
-              type="button"
-              onClick={handleAvatarClick}
-              disabled={isUploadingAvatar}
-              className="absolute inset-0 bg-black/45 rounded-full flex flex-col items-center justify-center text-white opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer shadow-inner pointer-events-none group-hover:pointer-events-auto"
-              title={
-                cooldownInfo && !cooldownInfo.canChange
-                  ? `Cooldown: ${cooldownInfo.remainingText}`
-                  : "Ubah foto profil"
-              }
-            >
-              <Camera size={16} />
-            </button>
-            <button
-              type="button"
-              onClick={handleAvatarClick}
-              className="absolute -bottom-1 -right-1 w-6 h-6 rounded-full bg-brown-900 hover:bg-orange-500 text-cream flex items-center justify-center shadow-xs border-2 border-cream cursor-pointer transition-colors"
-              title="Ubah foto profil"
-              aria-label="Ubah foto profil"
-            >
-              <Camera size={11} />
-            </button>
-          </div>
-
-          <div>
-            <div className="flex items-center gap-2 mb-1 flex-wrap">
-              <span
-                className={`px-3 py-0.5 rounded-full text-[11px] font-extrabold uppercase tracking-widest ${
-                  userData.hasAssessment
-                    ? "bg-orange-100 text-orange-700"
-                    : "bg-green-100 text-green-700"
-                }`}
-              >
-                {userData.hasAssessment ? "Ruang Hadir" : "Selamat Bergabung"}
-              </span>
-
-              <span className="text-xs text-brown-700/80 font-medium" suppressHydrationWarning>
-                · {todayFormatted}
-              </span>
-
-              {/* Cooldown badge if active */}
-              {cooldownInfo && !cooldownInfo.canChange && (
-                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-100 text-amber-800 border border-amber-300/50">
-                  Cooldown foto: {cooldownInfo.remainingText}
-                </span>
-              )}
-            </div>
-
-            <h1 className="font-display text-2xl sm:text-3xl font-extrabold text-brown-900 tracking-tight leading-tight">
-              Hai, <span className="break-words">{userData.name}</span>
-            </h1>
-            <p className="text-xs sm:text-sm text-brown-700 mt-0.5 font-normal">
-              Tarik napas perlahan. Hadir seutuhnya di ruang tenangmu hari ini.
-            </p>
-          </div>
-        </div>
-
-        <div className="flex items-center gap-3">
-          <div
-            className="flex items-center gap-3 px-4 py-2.5 rounded-2xl bg-white/95 border border-brown-900/10 shadow-xs"
-            title={userData.hasAssessment ? `${userData.streak} hari konsisten merawat diri` : "Pengguna baru ZYBA"}
-          >
-            <div
-              className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 ${
-                userData.hasAssessment
-                  ? "bg-orange-100 text-orange-500"
-                  : "bg-green-100 text-green-500"
-              }`}
-            >
-              {userData.hasAssessment ? (
-                <Flame className="w-5 h-5 shrink-0" />
-              ) : (
-                <Sparkles className="w-5 h-5 shrink-0" />
-              )}
-            </div>
-
-            <div className="flex flex-col">
-              <span className="text-xs font-bold text-brown-900 leading-tight">
-                {userData.hasAssessment ? `${userData.streak} Hari Hadir` : "Baru Hadir"}
-              </span>
-              <span className="text-[10px] text-brown-700/70">
-                {userData.hasAssessment ? "Ritual konsisten" : "Awal perjalanan"}
-              </span>
-            </div>
-          </div>
-        </div>
-      </div>
-
       {avatarToast && (
         <div className="bg-green-100 border border-green-300 text-green-800 text-xs font-bold px-4 py-2.5 rounded-2xl flex items-center gap-2 shadow-sm animate-in fade-in duration-200">
           {avatarToast}
@@ -840,105 +879,167 @@ export default function DashboardPage() {
       )}
 
       {/* =================================================
-          SANCTUARY ASYMMETRIC GRID (65% : 35%)
+          SANCTUARY ASYMMETRIC GRID (ORGANIC TACTILE SPREAD)
       ================================================= */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-start">
-        {/* Main Focus Column (65%) */}
-        <div className="lg:col-span-7 xl:col-span-8 flex flex-col gap-6 sm:gap-8">
-          {/* 1. Mindful Assessment Ritual Hero Card */}
-          <div className="rounded-[24px] bg-white/95 border border-brown-900/10 p-6 sm:p-8 shadow-xs flex flex-col justify-between relative">
-            <div className="relative flex flex-col gap-4 sm:gap-5">
-              <div className="flex items-center justify-between gap-3 flex-wrap">
-                <div className="flex items-center gap-2">
-                  <span className="text-[11px] font-extrabold uppercase tracking-widest text-orange-500 bg-orange-100 px-3 py-1 rounded-full">
-                    Ritual Harian
-                  </span>
-                  <span className="text-xs text-brown-700/80">
-                    10 Domain Kesejahteraan
-                  </span>
+        {/* ====================================================
+            MAIN SANCTUARY CANVASES (LEFT / CENTER 68%)
+        ==================================================== */}
+        <div className="lg:col-span-8 flex flex-col gap-6 sm:gap-7">
+          {/* 1. HERO SANCTUARY CARD (DEEP SAGE CRAFT CONTAINER) */}
+          <div className="rounded-[28px] bg-[#344638] text-cream border border-[#445B4A] p-6 sm:p-8 shadow-sm relative overflow-hidden flex flex-col gap-6">
+            {/* Subtle organic contour lines / backdrop decoration */}
+            <div className="absolute -top-24 -right-24 w-80 h-80 rounded-full bg-white/5 blur-2xl pointer-events-none" />
+            <div className="absolute -bottom-20 -left-20 w-64 h-64 rounded-full bg-black/15 blur-xl pointer-events-none" />
+
+            {/* Hidden file input for avatar upload */}
+            <input
+              ref={avatarInputRef}
+              type="file"
+              accept="image/png,image/jpeg,image/webp,image/gif"
+              className="hidden"
+              onChange={handleFileSelected}
+            />
+
+            {/* Top Micro Quote & Date Bar */}
+            <div className="relative z-10 flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-white/10">
+              <div className="flex items-center gap-2 text-xs sm:text-[13px] text-cream/90 font-medium">
+                <Sparkles size={14} className="text-orange-400 shrink-0" />
+                <span>Setiap langkah kecil berharga. Kamu telah hadir hari ini.</span>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-white/10 text-cream border border-white/15" suppressHydrationWarning>
+                  {todayFormatted}
+                </span>
+                {getEmotionalWeatherBadge(userData.condition, userData.hasAssessment)}
+                <span className="text-[11px] font-extrabold px-2.5 py-0.5 rounded-full bg-orange-500/25 text-orange-200 border border-orange-400/30">
+                  {userData.hasAssessment ? `${userData.streak} Hari Konsistensi` : "Awal Perjalanan"}
+                </span>
+              </div>
+            </div>
+
+            {/* Main Greeting & Persona Anchor */}
+            <div className="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-5">
+              <div className="flex items-center gap-4">
+                {/* Avatar with Crop & Cooldown Trigger */}
+                <div className="relative group shrink-0">
+                  <button
+                    type="button"
+                    onClick={() => window.dispatchEvent(new CustomEvent("zyba_open_profile"))}
+                    className="rounded-full focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-orange-400 block transition-transform group-hover:scale-105 active:scale-95"
+                    title="Buka profil lengkap"
+                  >
+                    <UserAvatar
+                      src={userData.avatarUrl}
+                      name={userData.name}
+                      size="lg"
+                      className="w-14 h-14 sm:w-16 sm:h-16 rounded-full border-2 border-white/20 shadow-xs cursor-pointer object-cover"
+                      showStatus={false}
+                    />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleAvatarClick}
+                    disabled={isUploadingAvatar}
+                    className="absolute inset-0 bg-black/50 rounded-full flex flex-col items-center justify-center text-white opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer shadow-inner pointer-events-none group-hover:pointer-events-auto"
+                    title={
+                      cooldownInfo && !cooldownInfo.canChange
+                        ? `Cooldown: ${cooldownInfo.remainingText}`
+                        : "Ubah foto profil"
+                    }
+                  >
+                    <Camera size={16} />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleAvatarClick}
+                    className="absolute -bottom-1 -right-1 w-6 h-6 rounded-full bg-orange-500 hover:bg-orange-600 text-white flex items-center justify-center shadow-xs border-2 border-[#344638] cursor-pointer transition-colors"
+                    title="Ubah foto profil"
+                    aria-label="Ubah foto profil"
+                  >
+                    <Camera size={11} />
+                  </button>
                 </div>
-                {userData.hasAssessment && (
-                  <span className="text-xs font-semibold text-green-700 bg-green-100 px-3 py-1 rounded-full flex items-center gap-1.5 border border-green-500/20">
-                    <CheckCircle2 size={13} />
-                    Sudah Tercatat Hari Ini
-                  </span>
-                )}
+
+                <div>
+                  <h1 className="font-display text-2xl sm:text-3xl lg:text-4xl font-extrabold text-cream tracking-tight leading-tight">
+                    {greetingInfo.greeting},{" "}
+                    <span className="break-words text-white">{userData.name}</span>!
+                  </h1>
+                  <p className="text-xs sm:text-sm text-cream/80 mt-1 font-normal leading-relaxed max-w-lg">
+                    {getEmpatheticSubtitle(
+                      userData.name,
+                      userData.condition,
+                      userData.stressLevel,
+                      greetingInfo.period,
+                      userData.hasAssessment
+                    )}
+                  </p>
+                </div>
               </div>
 
-              <div>
-                <h2 className="font-display text-xl sm:text-2xl font-bold text-brown-900 leading-snug">
-                  {userData.hasAssessment
-                    ? "Evaluasi emosionalmu hari ini telah tersimpan."
-                    : "Bagaimana keadaan batin dan tubuhmu hari ini?"}
-                </h2>
-                <p className="text-xs sm:text-sm text-brown-700 mt-2 max-w-xl leading-relaxed">
-                  {userData.hasAssessment
-                    ? `Kondisi suasana hatimu hari ini: ${userData.condition}. Rawat keseimbanganmu dengan tidak menuntut hal yang berlebihan.`
-                    : "Luangkan jeda hening 1–2 menit untuk mengamati perasaan, energi fisik, dan kebutuhanmu tanpa menghakimi."}
-                </p>
-              </div>
-
-              <div className="pt-2 flex items-center gap-3 flex-wrap">
+              {/* Action Button: Check In / Goal */}
+              <div className="shrink-0 flex items-center gap-2">
                 <Link
-                  href="/daily-assessment"
-                  className="inline-flex items-center gap-2 px-6 py-2.5 rounded-full bg-orange-500 hover:bg-brown-900 text-white text-xs sm:text-sm font-semibold transition-all duration-200 active:scale-[0.98] shadow-xs cursor-pointer"
+                  href="/mood-check-in"
+                  className="rounded-full bg-orange-500 hover:bg-orange-600 text-white px-5 py-2.5 text-xs sm:text-sm font-bold shadow-xs transition-transform active:scale-95 flex items-center gap-1.5 cursor-pointer"
                 >
-                  <span>{userData.hasAssessment ? "Lihat Hasil Asesmen" : "Mulai Check-In Hari Ini"}</span>
+                  <span>{userData.hasAssessment ? "Lihat Asesmen" : "Mulai Check-In"}</span>
                   <ArrowRight size={14} />
-                </Link>
-                <Link
-                  href="/wellness-journey"
-                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-cream hover:bg-cream/70 text-brown-900 text-xs sm:text-sm font-semibold transition-colors duration-200 border border-brown-900/10 cursor-pointer"
-                >
-                  <span>Riwayat Tren</span>
                 </Link>
               </div>
             </div>
+
+            {/* 2. THREE TACTILE PEBBLE METRIC CARDS */}
+            <div className="relative z-10 pt-2">
+              <TactileMetricCards
+                streak={userData.streak}
+                conversationCount={userData.conversationCount}
+                score={userData.zybaScore}
+                condition={userData.condition}
+                hasAssessment={userData.hasAssessment}
+              />
+            </div>
+
+            {/* 3. THIS WEEK TASKS (AKTIVITAS PEKAN INI) */}
+            <div className="relative z-10 pt-2 border-t border-white/10">
+              <WeeklyTaskCards
+                hasAssessment={userData.hasAssessment}
+                streak={userData.streak}
+              />
+            </div>
           </div>
 
-          {/* 2. Tanya Zyba Private Gateway */}
+          {/* 4. TANYA ZYBA COMPANION QUICK GATEWAY */}
           <CompanionWidget
-            conversationCount={
-              userData.conversationCount
-            }
+            conversationCount={userData.conversationCount}
           />
 
-          {/* 3. Stress Level & Mood Waveform */}
+          {/* 5. STRESS LEVEL & MOOD WAVEFORM */}
           <StressLevelChart initialHistory={assessmentHistory} />
         </div>
 
-        {/* Side Companion Column (35%) */}
-        <div className="lg:col-span-5 xl:col-span-4 flex flex-col gap-6 sm:gap-8">
-          {/* 1. Score Overview */}
+        {/* ====================================================
+            SIDEBAR SANCTUARY RAIL (RIGHT 32%)
+        ==================================================== */}
+        <div className="lg:col-span-4 flex flex-col gap-6">
+          {/* 1. Sanctuary Right Rail (Specialist Card, Today's Tasks, Mood Check Banner) */}
+          <SanctuaryRightRail
+            conversationCount={userData.conversationCount}
+            hasAssessment={userData.hasAssessment}
+            trackerState={trackerState}
+            toggleTracker={toggleTracker}
+          />
+
+          {/* 2. Score Overview Detail Card */}
           <MetricScoreCard
-            score={
-              userData.zybaScore
-            }
-            condition={
-              userData.condition
-            }
-            hasAssessment={
-              userData.hasAssessment
-            }
+            score={userData.zybaScore}
+            condition={userData.condition}
+            hasAssessment={userData.hasAssessment}
           />
 
-          {/* 2. Gentle Routine Checklist */}
-          <TrackerChecklist
-            trackerState={
-              trackerState
-            }
-            completedCount={
-              completedCount
-            }
-            totalTrackers={
-              totalTrackers
-            }
-            toggleTracker={
-              toggleTracker
-            }
-          />
-
-          {/* 3. Quick Access / Safety Net */}
+          {/* 3. Quick Access / Crisis Safety Directory */}
           <QuickAccessCards />
         </div>
       </div>

@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { CalendarDays, ClipboardList, Trash2, Plus } from "lucide-react";
+import { CalendarDays, ClipboardList, Trash2, Plus, Clock, Check, Sparkles } from "lucide-react";
+import { renderActivityIcon } from "@/lib/activityIcons";
 
 export interface PlannedActivity {
   id: string;
@@ -50,7 +51,7 @@ export default function DailyPlan({
               <CalendarDays size={14} className="text-orange-500" />
               Rencana Hari Ini
             </span>
-            <span className="px-2 py-0.5 rounded-full bg-cream text-brown-900 text-[10px] font-bold">
+            <span className="px-2.5 py-0.5 rounded-full bg-cream text-brown-900 text-[10px] font-bold border border-brown-900/10">
               {activities.length} Aktivitas
             </span>
           </div>
@@ -58,7 +59,7 @@ export default function DailyPlan({
             Aktivitas yang sudah kamu susun
           </h2>
           <p className="text-xs text-brown-700 mt-1">
-            {completedCount} dari {activities.length} aktivitas selesai.
+            {completedCount} dari {activities.length} aktivitas selesai. Selesaikan ritme harimu tanpa tekanan.
           </p>
         </div>
 
@@ -67,7 +68,7 @@ export default function DailyPlan({
             <button
               type="button"
               onClick={onResetDefault}
-              className="px-4 py-2.5 rounded-full border border-brown-900/15 text-brown-700 text-xs font-bold hover:bg-cream transition-colors"
+              className="px-4 py-2.5 rounded-full border border-brown-900/15 text-brown-700 text-xs font-bold hover:bg-cream transition-colors cursor-pointer"
             >
               Pulihkan Rencana Bawaan
             </button>
@@ -76,9 +77,10 @@ export default function DailyPlan({
           <button
             type="button"
             onClick={onAdd}
-            className="self-start md:self-auto px-5 py-2.5 rounded-full bg-brown-900 text-white text-xs font-bold hover:bg-green-500 transition-colors shadow-sm flex items-center gap-1.5"
+            className="self-start md:self-auto px-5 py-2.5 rounded-full bg-brown-900 text-white text-xs font-bold hover:bg-green-600 transition-all shadow-sm flex items-center gap-1.5 cursor-pointer active:scale-95"
           >
-            <span>+</span> Tambah Aktivitas
+            <Plus size={14} />
+            <span>Tambah Aktivitas</span>
           </button>
         </div>
       </div>
@@ -88,7 +90,7 @@ export default function DailyPlan({
         {activities.map((activity) => (
           <div
             key={activity.id}
-            className="py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4 group transition-colors hover:bg-cream/20 rounded-2xl px-2"
+            className="py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4 group transition-colors hover:bg-cream/40 rounded-2xl px-3"
           >
             {/* Left: Time, Icon, Details */}
             <div className="flex items-center gap-4 min-w-0 flex-1">
@@ -98,8 +100,8 @@ export default function DailyPlan({
                 </span>
               </div>
 
-              <div className="w-11 h-11 rounded-2xl bg-cream flex items-center justify-center text-xl shrink-0 group-hover:scale-105 transition-transform shadow-xs">
-                {activity.icon}
+              <div className="w-11 h-11 rounded-2xl bg-cream border border-brown-900/10 flex items-center justify-center text-brown-800 shrink-0 group-hover:scale-105 group-hover:bg-green-100/50 group-hover:text-green-800 transition-all shadow-2xs">
+                {renderActivityIcon(activity.icon, "w-5 h-5")}
               </div>
 
               <div className="min-w-0 flex-1">
@@ -108,21 +110,23 @@ export default function DailyPlan({
                     className={
                       "text-sm font-bold truncate " +
                       (activity.completed
-                        ? "text-brown-700 line-through opacity-60"
+                        ? "text-brown-700/60 line-through"
                         : "text-brown-900")
                     }
                   >
                     {activity.title}
                   </h3>
-                  <span className="px-2 py-0.5 rounded-full bg-green-100 text-green-700 text-[9px] font-bold">
+                  <span className="px-2 py-0.5 rounded-full bg-green-100 text-green-800 text-[10px] font-semibold">
                     {activity.category}
                   </span>
                 </div>
-                <div className="flex items-center gap-3 mt-1">
-                  <span className="text-[10px] text-brown-700">
-                    ⏱️ {activity.duration}
+                <div className="flex items-center gap-3 mt-1 text-xs">
+                  <span className="text-[11px] text-brown-700 flex items-center gap-1">
+                    <Clock size={11} className="text-brown-700/60" />
+                    {activity.duration}
                   </span>
-                  <span className="text-[10px] font-bold text-orange-500">
+                  <span className="text-[11px] font-bold text-orange-600 flex items-center gap-1">
+                    <Sparkles size={11} className="text-orange-500" />
                     +{activity.points} pts
                   </span>
                 </div>
@@ -130,29 +134,36 @@ export default function DailyPlan({
             </div>
 
             {/* Right: Toggle Button & Delete Button */}
-            <div className="flex items-center gap-2 self-end sm:self-center shrink-0">
+            <div className="flex items-center gap-2.5 self-end sm:self-center shrink-0">
               <button
                 type="button"
                 onClick={() => onToggle(activity.id)}
                 className={
-                  "px-4 py-2 rounded-full text-xs font-bold transition-all " +
+                  "px-4 py-2 rounded-full text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer active:scale-95 " +
                   (activity.completed
-                    ? "bg-green-100 text-green-700 hover:bg-green-200"
-                    : "bg-brown-900 text-white hover:bg-green-500 shadow-xs")
+                    ? "bg-green-100 text-green-800 hover:bg-green-200"
+                    : "bg-brown-900 text-white hover:bg-green-600 shadow-2xs")
                 }
               >
-                {activity.completed ? "✓ Selesai" : "Tandai Selesai"}
+                {activity.completed ? (
+                  <>
+                    <Check size={14} className="text-green-700" />
+                    <span>Selesai</span>
+                  </>
+                ) : (
+                  <span>Tandai Selesai</span>
+                )}
               </button>
 
               {/* Delete Button */}
               <button
                 type="button"
                 onClick={() => setActivityToDelete(activity)}
-                className="w-8 h-8 rounded-full flex items-center justify-center text-brown-700/60 hover:text-danger hover:bg-danger/10 transition-colors"
+                className="w-8 h-8 rounded-full flex items-center justify-center text-brown-700/50 hover:text-danger hover:bg-danger/10 transition-colors cursor-pointer"
                 title="Hapus aktivitas ini"
                 aria-label={`Hapus ${activity.title}`}
               >
-                <Trash2 size={16} />
+                <Trash2 size={15} />
               </button>
             </div>
           </div>
@@ -176,7 +187,7 @@ export default function DailyPlan({
               <button
                 type="button"
                 onClick={onAdd}
-                className="px-6 py-2.5 rounded-full bg-orange-500 text-white text-xs font-bold hover:bg-orange-600 transition-colors shadow-sm"
+                className="px-6 py-2.5 rounded-full bg-orange-500 text-white text-xs font-bold hover:bg-orange-600 transition-colors shadow-sm cursor-pointer"
               >
                 + Tambah Aktivitas Pertama
               </button>
@@ -184,7 +195,7 @@ export default function DailyPlan({
                 <button
                   type="button"
                   onClick={onResetDefault}
-                  className="px-5 py-2.5 rounded-full border border-brown-900/15 text-brown-700 text-xs font-bold hover:bg-cream transition-colors"
+                  className="px-5 py-2.5 rounded-full border border-brown-900/15 text-brown-700 text-xs font-bold hover:bg-cream transition-colors cursor-pointer"
                 >
                   Gunakan Template Bawaan
                 </button>
@@ -202,7 +213,7 @@ export default function DailyPlan({
             if (event.target === event.currentTarget) setActivityToDelete(null);
           }}
         >
-          <div className="w-full max-w-md bg-white rounded-3xl p-6 shadow-2xl border border-brown-900/10">
+          <div className="w-full max-w-md bg-white rounded-[24px] p-6 shadow-2xl border border-brown-900/10">
             <div className="w-12 h-12 rounded-2xl bg-danger/10 text-danger flex items-center justify-center mx-auto mb-4 border border-danger/20">
               <Trash2 size={24} />
             </div>
@@ -212,7 +223,7 @@ export default function DailyPlan({
             <p className="text-xs text-brown-700 text-center mt-2 leading-relaxed">
               Apakah kamu yakin ingin menghapus{" "}
               <strong className="text-brown-900 font-bold">
-                {activityToDelete.icon} {activityToDelete.title}
+                {activityToDelete.title}
               </strong>{" "}
               ({activityToDelete.time}) dari rencana hari ini?
             </p>
@@ -221,14 +232,14 @@ export default function DailyPlan({
               <button
                 type="button"
                 onClick={() => setActivityToDelete(null)}
-                className="flex-1 py-3 rounded-full border border-brown-900/10 bg-white text-brown-700 text-xs font-bold hover:bg-cream transition-colors"
+                className="flex-1 py-3 rounded-full border border-brown-900/10 bg-white text-brown-700 text-xs font-bold hover:bg-cream transition-colors cursor-pointer"
               >
                 Batal
               </button>
               <button
                 type="button"
                 onClick={confirmDelete}
-                className="flex-1 py-3 rounded-full bg-danger hover:bg-red-700 text-white text-xs font-bold transition-colors shadow-sm"
+                className="flex-1 py-3 rounded-full bg-danger hover:bg-red-700 text-white text-xs font-bold transition-colors shadow-sm cursor-pointer"
               >
                 Hapus Aktivitas
               </button>

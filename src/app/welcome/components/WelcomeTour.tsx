@@ -194,7 +194,7 @@ export default function WelcomeTour() {
             Curhat ke Zyba Companion →
           </Link>
           <span className="text-brown-700/40" aria-hidden="true">•</span>
-          <Link href="/daily-assessment" className="text-xs font-bold text-green-700 hover:underline min-h-[32px] flex items-center">
+          <Link href="/mood-check-in" className="text-xs font-bold text-green-700 hover:underline min-h-[32px] flex items-center">
             Catat Mood Hari Ini →
           </Link>
           <span className="text-brown-700/40" aria-hidden="true">•</span>

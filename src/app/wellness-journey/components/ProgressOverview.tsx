@@ -1,7 +1,17 @@
 "use client";
 
 import React from "react";
-import { ArrowUpRight, ArrowDownRight, Minus, Flame, HeartPulse, Brain, Moon } from "lucide-react";
+import {
+  ArrowUpRight,
+  ArrowDownRight,
+  Minus,
+  Flame,
+  HeartPulse,
+  Brain,
+  Moon,
+  Sparkles,
+  Compass,
+} from "lucide-react";
 
 export interface ProgressMetricData {
   zybaScore: {
@@ -55,7 +65,7 @@ export default function ProgressOverview({ data }: { data: ProgressMetricData })
       <span
         className={`inline-flex items-center gap-0.5 text-[11px] font-bold px-2 py-0.5 rounded-md ${
           isGood
-            ? "text-green-700 bg-green-100/70"
+            ? "text-green-800 bg-green-100/70"
             : "text-orange-700 bg-orange-100/70"
         }`}
       >
@@ -66,27 +76,88 @@ export default function ProgressOverview({ data }: { data: ProgressMetricData })
     );
   };
 
-  return (
-    <div className="flex flex-col gap-3">
-      <div className="flex items-center justify-between">
-        <h2 className="font-display text-sm font-bold text-brown-900 tracking-tight flex items-center gap-2">
-          <span>Ringkasan Perkembangan</span>
-          <span className="text-[11px] font-normal text-brown-700/70">
-            (vs {timeRangeLabel} sebelumnya)
-          </span>
-        </h2>
+  const currentScoreVal = zybaScore.current !== null ? Math.round(zybaScore.current) : 75;
+  const strokeDashoffset = 251.2 - (251.2 * currentScoreVal) / 100;
 
-        {streak > 0 && (
-          <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-cream border border-brown-900/10 text-[11px] font-bold text-brown-900">
-            <Flame size={13} className="text-orange-500" />
-            <span>{streak} Hari Konsisten</span>
+  return (
+    <div className="flex flex-col gap-6">
+      {/* ── Sanctuary Progress Overview Banner (Mockdoc 4A) ── */}
+      <div className="bg-orange-100/40 rounded-[24px] border border-orange-500/15 p-6 sm:p-7 flex flex-col md:flex-row items-center justify-between gap-6 shadow-xs">
+        <div className="min-w-0 flex-1">
+          <div className="flex items-center gap-2 mb-2 flex-wrap">
+            <span className="px-3 py-1 rounded-full bg-orange-500 text-white text-[11px] font-extrabold uppercase tracking-wider whitespace-nowrap flex items-center gap-1.5 shadow-2xs">
+              <Compass size={12} />
+              Ikhtisar {timeRangeLabel} Terakhir
+            </span>
+            {streak > 0 && (
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/90 border border-orange-500/20 text-[11px] font-bold text-brown-900 shadow-2xs">
+                <Flame size={13} className="text-orange-500" />
+                <span>{streak} Hari Refleksi Rutin</span>
+              </span>
+            )}
           </div>
-        )}
+
+          <h2 className="font-display text-2xl sm:text-3xl font-extrabold text-brown-900 leading-tight">
+            Setiap riak perasaan adalah bagian dari perjalanan tumbuhmu.
+          </h2>
+
+          <p className="text-xs sm:text-sm text-brown-700/80 mt-1.5 max-w-xl leading-relaxed font-body">
+            Kesejahteraan batin bukanlah garis lurus sempurna, melainkan gelombang yang belajar kita arungi bersama. Amati pola emosimu tanpa rasa bersalah.
+          </p>
+        </div>
+
+        {/* Ring Skor Hening (pbakaus/impeccable) */}
+        <div className="shrink-0 flex items-center gap-4 bg-white/90 p-4 sm:p-5 rounded-[20px] border border-brown-900/10 shadow-2xs">
+          <div className="relative w-20 h-20 flex items-center justify-center">
+            <svg className="w-20 h-20 transform -rotate-90" viewBox="0 0 100 100">
+              <circle
+                cx="50"
+                cy="50"
+                r="40"
+                className="stroke-cream"
+                strokeWidth="8"
+                fill="transparent"
+              />
+              <circle
+                cx="50"
+                cy="50"
+                r="40"
+                className="stroke-green-500 transition-all duration-1000 ease-out"
+                strokeWidth="8"
+                strokeDasharray="251.2"
+                strokeDashoffset={strokeDashoffset}
+                strokeLinecap="round"
+                fill="transparent"
+              />
+            </svg>
+            <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
+              <span className="font-display text-xl font-extrabold text-brown-900 leading-none">
+                {currentScoreVal}
+              </span>
+              <span className="text-[9px] font-bold text-brown-700/60 uppercase mt-0.5">
+                Skor
+              </span>
+            </div>
+          </div>
+
+          <div className="flex flex-col text-left">
+            <span className="text-[10px] font-extrabold uppercase tracking-widest text-green-800">
+              Kondisi Dominan
+            </span>
+            <span className="font-display text-base font-bold text-brown-900 mt-0.5">
+              {zybaScore.condition}
+            </span>
+            <span className="text-[11px] text-brown-700/70 mt-0.5">
+              Rerata {timeRangeLabel}
+            </span>
+          </div>
+        </div>
       </div>
 
+      {/* ── 3 Metric Cards Row (rounded-[20px] per Anti-Slop) ── */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {/* 1. ZYBA SCORE */}
-        <div className="rounded-[28px] border border-brown-900/10 bg-white/95 p-5 sm:p-6 flex flex-col justify-between gap-3 shadow-xs hover:border-brown-900/20 transition-all">
+        <div className="rounded-[20px] border border-brown-900/10 bg-white/95 p-5 sm:p-6 flex flex-col justify-between gap-3 shadow-xs hover:border-brown-900/20 transition-all">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2 text-xs font-semibold text-brown-700">
               <span className="p-1 rounded-lg bg-orange-100/70 text-orange-600">
@@ -119,7 +190,7 @@ export default function ProgressOverview({ data }: { data: ProgressMetricData })
         </div>
 
         {/* 2. STRESS LEVEL */}
-        <div className="rounded-[28px] border border-brown-900/10 bg-white/95 p-5 sm:p-6 flex flex-col justify-between gap-3 shadow-xs hover:border-brown-900/20 transition-all">
+        <div className="rounded-[20px] border border-brown-900/10 bg-white/95 p-5 sm:p-6 flex flex-col justify-between gap-3 shadow-xs hover:border-brown-900/20 transition-all">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2 text-xs font-semibold text-brown-700">
               <span className="p-1 rounded-lg bg-green-100/70 text-green-700">
@@ -152,7 +223,7 @@ export default function ProgressOverview({ data }: { data: ProgressMetricData })
         </div>
 
         {/* 3. RECOVERY & SLEEP QUALITY */}
-        <div className="rounded-[28px] border border-brown-900/10 bg-white/95 p-5 sm:p-6 flex flex-col justify-between gap-3 shadow-xs hover:border-brown-900/20 transition-all sm:col-span-2 lg:col-span-1">
+        <div className="rounded-[20px] border border-brown-900/10 bg-white/95 p-5 sm:p-6 flex flex-col justify-between gap-3 shadow-xs hover:border-brown-900/20 transition-all sm:col-span-2 lg:col-span-1">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2 text-xs font-semibold text-brown-700">
               <span className="p-1 rounded-lg bg-mood-depressed/20 text-mood-neutral">

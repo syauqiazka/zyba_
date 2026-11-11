@@ -64,16 +64,58 @@ Status: **sudah diimplementasikan** di repo (dikonfirmasi lewat review langsung 
 - **DM Sans** (weight 400/500/600/700) — `font-body`, dipakai untuk isi/body (14–16px), caption (12px).
 - Kelas Tailwind: `font-display` dan `font-body` (sudah dikonfigurasi, tinggal pakai langsung di className).
 
-### 3.3 Komponen Inti
+### 3.3 Komponen Inti & Sistem Navigasi
 
-- **Button primer**: pill/rounded-full (`rounded-pill`), background `brown-900` atau `orange-500`, teks putih, ikon panah `→` di kanan.
-- **Button sekunder**: outline atau flat `green-100`.
-- **Progress ring**: lingkaran skor (mis. "Zyba Score 80") — dashboard & hasil assessment.
-- **Mood selector**: baris ikon ekspresif, 5 warna berbeda per mood.
-- **Card resource/artikel**: thumbnail + judul + meta, dipakai di Resource & Community feed.
-- **Input field**: rounded, ikon di kiri, konsisten di semua form.
-- **Bottom nav (mobile)** → desktop **wajib** jadi **sidebar kiri**.
-- **Streak/stats badge**: angka besar + label.
+- **Button primer**: pill/rounded-full (`rounded-full`), background `brown-900` atau `orange-500`, teks putih, transisi lembut.
+- **Button sekunder**: outline atau flat `green-100` dengan teks `brown-900`.
+- **Hierarki Corner Radius (Anti-Slop Radius Scale)**:
+  - Dilarang keras menyeragamkan `rounded-[32px]` pada seluruh kartu atau komponen reguler (`rounded-[32px]` dihapus total).
+  - Shell / Container Utama / Zen Dock: `rounded-[28px]` atau `rounded-[24px]`
+  - Kartu Konten Utama (Major Sanctuary Anchor): `rounded-[24px]`
+  - Kartu Konten Biasa & Widgets: `rounded-[20px]` atau `rounded-[16px]`
+  - Form controls, list rows, & sub-cards: `rounded-xl` (12px)
+  - Chips, badges, & buttons: `rounded-full` atau `rounded-lg` (8px)
+- **Progress ring**: lingkaran skor hening (mis. "Zyba Score 80") — dashboard & hasil assessment.
+- **Mood selector**: baris pebbles sentuh empuk 5 warna sesuai mood canonical token.
+- **Card resource/artikel**: thumbnail kertas halus + judul + meta, dipakai di Resource & Community feed.
+- **Input field**: rounded-xl (12px), border kontak kertas organik `border-brown-900/10`, fokus `ring-orange-500/40`.
+- **Navigasi Responsif**:
+  - Desktop & Tablet (≥768px): **Floating Zen Dock** (lebar 76px mengapung `md:w-[76px] lg:w-[76px]`, `rounded-[28px]`, background `bg-white/90 backdrop-blur-md`, padding layout `md:pl-[108px]`).
+  - Mobile (<768px): **Ergonomic Bottom Pill Nav** (tinggi 56px, `rounded-full`, floating).
+  - **Portal Tooltips**: Tooltip dock dimuat ke React Portal (`document.body`) dengan positioning dinamis berbasis `getBoundingClientRect()`, bebas dari masalah clipping container `overflow-y-auto`.
+  - **Profile Popover Anchor**: Berlabuh dinamis di `left: 104px` (`md:left-[104px] lg:left-[104px]`) pada desktop/tablet, dan beralih ke centered bottom sheet pada mobile (`<768px`).
+- **Hearth Flame**: nyala lilin konsistensi harian yang tenang, menggantikan streak api merah yang menekan.
+
+### 3.4 Arsitektur Mockdocs Halaman & 5 Skill Wajib (`design-system/zyba/pages/`)
+
+Setiap halaman dan fitur ZYBA memiliki dokumen spesifikasi mockdoc resmi di direktori `design-system/zyba/pages/` yang mengintegrasikan secara penuh 5 framework keahlian (*skills*):
+1. **obra / superpowers** ([obra/superpowers](https://github.com/obra/superpowers)): Metodologi rekayasa terstruktur, kontrak data & API eksplisit, matriks transisi state (Default, Loading, Empty, Active, Error, Crisis), kriteria penerimaan terverifikasi (*verifiable acceptance criteria*), dan tes otomatis sebelum deliverable dianggap tuntas.
+2. **Leonxlnx / taste-skill** ([Leonxlnx/taste-skill](https://github.com/Leonxlnx/taste-skill)): Arahan seni berkarakter (*The Tactile Sanctuary — Earthy Editorial & Organic Craft*), kanvas kertas linen alami (`#F7F2E7`), tinta tanah pekat (`#3B2A20`), komposisi asimetris golden spread (65:35), tipografi bernapas, dan nada bicara hangat manusiawi tanpa basa-basi korporat.
+3. **pbakaus / impeccable** ([pbakaus/impeccable](https://github.com/pbakaus/impeccable)): Kosakata desain presisi, ketegasan visual (*bolder & polish*), evaluasi kritik mandiri (*critique & audit*), elevasi kertas taktil (`border-brown-900/10` + bayangan kontak lembut), dan kepatuhan kontras WCAG AA $\ge 4.5:1$ (AAA 11.2:1 untuk teks utama).
+4. **nextlevelbuilder / ui-ux-pro-max-skill** ([nextlevelbuilder/ui-ux-pro-max-skill](https://github.com/nextlevelbuilder/ui-ux-pro-max-skill)): Kecerdasan arsitektural multi-platform, matriks token desain terkunci `PALETTE_LOCK.md`, tata letak responsif 3-viewport (Mobile 375px Bottom Pill, Tablet 768px Zen Dock, Desktop 1280px Grid 12-kolom), dan spesifikasi komponen terstandarisasi.
+5. **miqdadbadjuber / anti-slop** ([miqdadbadjuber/anti-slop](https://github.com/miqdadbadjuber/anti-slop)): Filter kebersihan anti-slop mutlak:
+   - Dilarang keras menggunakan emoji sebagai ikon (wajib Lucide SVG garis halus 1.8px).
+   - Dilarang gradient ungu-biru AI atau radial blur glow.
+   - Dilarang kartu bersarang (*card inception*).
+   - Dilarang kotak rounded warna-warni di atas heading (*icon-in-a-box syndrome*).
+   - Dilarang gamifikasi menekan & angka streak merah membara.
+   - Dilarang statistik karangan atau klaim sensasional.
+   - Wajib skala radius proporsional (hapus pemaksaan seragam `rounded-[32px]`).
+   - Wajib kepatuhan `prefers-reduced-motion: reduce`.
+
+**Daftar Berkas Mockdocs Resmi (`design-system/zyba/pages/`):**
+- [`dashboard.md`](file:///e:/syauqi/zyba_/zyba_/design-system/zyba/pages/dashboard.md) — Sanctuary Overview (`/dashboard`)
+- [`mood-check-in.md`](file:///e:/syauqi/zyba_/zyba_/design-system/zyba/pages/mood-check-in.md) — Mindful Assessment Ritual (`/daily-assessment` & `/mood-check-in`)
+- [`companion.md`](file:///e:/syauqi/zyba_/zyba_/design-system/zyba/pages/companion.md) — Private Reflection Pavilion (`/companion`)
+- [`activity.md`](file:///e:/syauqi/zyba_/zyba_/design-system/zyba/pages/activity.md) — Smart Activity Planner & Breathing Garden (`/activity`)
+- [`wellness-journey.md`](file:///e:/syauqi/zyba_/zyba_/design-system/zyba/pages/wellness-journey.md) — Ruang Sehat & Holistic Growth Canvas (`/wellness-journey`)
+- [`community.md`](file:///e:/syauqi/zyba_/zyba_/design-system/zyba/pages/community.md) — Warm Support Circles (`/community`)
+- [`resources.md`](file:///e:/syauqi/zyba_/zyba_/design-system/zyba/pages/resources.md) — Curated Sanctuary Library (`/resources`)
+- [`onboarding-assessment.md`](file:///e:/syauqi/zyba_/zyba_/design-system/zyba/pages/onboarding-assessment.md) — Arrival Ritual & 8-Step Assessment (`/onboarding` & `/assessment`)
+- [`settings-billing.md`](file:///e:/syauqi/zyba_/zyba_/design-system/zyba/pages/settings-billing.md) — Sanctuary Settings & Zyba Plus (`/settings` & `/settings/zyba-plus`)
+- [`achievements.md`](file:///e:/syauqi/zyba_/zyba_/design-system/zyba/pages/achievements.md) — Quiet Milestones & Hearth Badges (`/achievements`)
+- [`landing.md`](file:///e:/syauqi/zyba_/zyba_/design-system/zyba/pages/landing.md) — Warm Invitation & Sanctuary Gateway (`/`)
+- [`guidebook.md`](file:///e:/syauqi/zyba_/zyba_/design-system/zyba/pages/guidebook.md) — Crisis Directory & Sanctuary Guide (`/guidebook`)
 
 ---
 
@@ -131,13 +173,13 @@ Sleep Quality, breathing exercise, exercise completed, activity target, choose a
 
 ## 5. Panduan Konversi Mobile → Desktop
 
-1. **Navigasi**: bottom nav mobile → **sidebar kiri fixed** (~240–280px): Dashboard, Mood Check-In, Zyba Companion, Smart Activity Planner, Wellness Journey, Zyba Community, Resources, Settings.
+1. **Navigasi**: bottom nav mobile (<768px) → **Floating Zen Dock** di desktop & tablet (≥768px, fixed mengapung `md:left-4 md:w-[76px] lg:w-[76px]`, `rounded-[28px]`, background `bg-white/90 backdrop-blur-md`, padding layout `md:pl-[108px]`): Dashboard, Mood Check-In, Zyba Companion, Smart Activity Planner, Wellness Journey, Zyba Community, Resources, Settings. Profile Popover berlabuh dinamis di `left: 104px` (`md:left-[104px] lg:left-[104px]`). Tooltip menggunakan React Portal ke `document.body` agar bebas dari clipping container `overflow-y-auto`.
 2. **Layout grid**: container max-width 1200–1280px, grid 12 kolom. Halaman list (Resources, Community, Activity) pakai **grid multi-kolom** (2–3 kolom).
 3. **Assessment**: gabung jadi **form multi-step** — panel kiri progress stepper, panel kanan pertanyaan aktif.
 4. **Chat (Zyba Companion)**: **dua panel** — kiri daftar percakapan, kanan jendela chat aktif (pola WhatsApp Web/Slack).
 5. **Modal vs full page**: Delete Conversation, OTP Verification, Forgot Password → jadi **modal/dialog** di desktop.
-6. **Komponen reusable**: mood selector & progress ring dipertahankan ukurannya, disusun ulang dalam grid yang lebih lega.
-7. **Breakpoint**: desktop ≥1024px = sidebar+grid; tablet 768–1023px = sidebar collapse icon-only; <768px = pola mobile asli.
+6. **Komponen reusable**: mood selector pebbles & progress ring dipertahankan ukurannya, disusun ulang dalam grid yang lebih lega.
+7. **Breakpoint**: desktop ≥1024px & tablet 768–1023px = Floating Zen Dock (76px) + grid; <768px = Ergonomic Bottom Pill Nav (56px) + sliding drawer jika dibuka via tombol menu header.
 
 ---
 
@@ -520,6 +562,24 @@ Implementasi pertama sudah benar secara **struktur** (posisi sidebar, list, inpu
 
 Aturan yang sama berlaku untuk Community Sidebar (Bagian 11.5) — bandingkan ke bobot visual Threads yang juga minim border, mengandalkan whitespace dan divider tipis, bukan card/box berwarna.
 
+### 10.9 Standar Kualitas Interaksi Chat Companion (Anti-Slop & Tactile)
+
+1. **Multiline Auto-Growing Textarea**:
+   - Kotak input menggunakan `<textarea>` dinamis yang menyesuaikan tinggi secara otomatis (`rows={1}`, max-height 180px).
+   - Menghormati konvensi pengetikan: tombol `Enter` mengirim pesan (kecuali saat Shift ditekan atau IME komposisi aktif); kombinasi `Shift + Enter` membuat baris baru.
+2. **Real Speech-to-Text (STT) via Web Speech API (`useSTT`)**:
+   - Dilarang membuat animasi microphone palsu tanpa fungsi perekaman audio.
+   - Menggunakan hook `src/hooks/useSTT.ts` yang menginisialisasi `webkitSpeechRecognition` / `SpeechRecognition` native browser berbahasa Indonesia (`lang: "id-ID"`).
+   - Transkripsi suara pengguna dialirkan langsung (*streaming*) ke dalam teks input secara real-time.
+   - Dilengkapi status jujur: badge "Mendengarkan...", tombol "Selesai" untuk menghentikan rekaman, dan pesan error ramah jika izin mic ditolak atau browser tidak mendukung Web Speech API.
+3. **Penanganan Attachment Jujur (Honest Interaction State)**:
+   - Jika fitur upload lampiran belum didukung oleh backend API, tombol lampiran wajib ditandai non-aktif secara jujur (`aria-disabled="true"`, `cursor-not-allowed opacity-40`) dengan tooltip deskriptif ("Lampiran belum didukung saat ini").
+   - Dilarang menampilkan dialog file picker yang seolah-olah berhasil namun datanya tidak diproses.
+4. **Accessible TTS Playback**:
+   - Tombol putar suara respons AI (*Text-to-Speech*) wajib dapat diakses pada layar sentuh/mobile (tidak disembunyikan di balik `opacity-0 group-hover:opacity-100` yang hanya bisa diakses via mouse desktop).
+5. **Model Selector Bebas Emoji**:
+   - Pemilihan model AI menggunakan ikon Lucide garis halus (`ChevronDown`, `Search`, `X`) dengan filter pencarian instan dan feedback state yang bersih.
+
 ---
 
 ## 11. Spesifikasi Redesign Zyba Community (Gaya Threads)
@@ -673,23 +733,21 @@ Terapkan pola ini ke **semua** halaman yang punya kode serupa (cek dengan `grep 
 
 Bagian 5 sudah menetapkan breakpoint dasar (desktop ≥1024px, tablet 768–1023px, mobile <768px). Detail tambahan per halaman:
 
-- **Sidebar utama & sidebar kontekstual (Companion/Community)**: di <768px, sidebar **tidak boleh** selalu terbuka menutupi konten. Ubah jadi off-canvas drawer yang di-toggle lewat ikon hamburger, default tertutup saat halaman dibuka.
+- **Sidebar utama & navigasi**: di <768px, navigasi menggunakan Ergonomic Bottom Pill Nav (56px) plus sliding drawer via header menu. Pada desktop & tablet (≥768px), navigasi menggunakan Floating Zen Dock (76px mengapung `md:w-[76px] lg:w-[76px]`).
 - **Dashboard grid** (3-kolom di desktop, Bagian 4.E) → 1 kolom stack penuh di mobile.
 - **Community feed** (max-width 600px center di desktop) → full-width dengan padding kiri-kanan kecil di mobile.
 - **Companion chat**: pastikan font tidak mengecil di bawah 14px, dan tap target (tombol kirim, ikon attachment/mic) minimal 44×44px sesuai standar aksesibilitas mobile.
-- **Modal** (CreatePostModal, Chatbot Settings, dll.): di desktop floating card kanan-bawah → di mobile jadi **bottom-sheet full-width** (slide dari bawah), bukan card kecil yang terpotong di layar sempit.
-- **Wajib dites** minimal di breakpoint 375px (iPhone SE), 390px (iPhone standar), dan 768px (tablet) sebelum dianggap "responsif" — bukan cuma di-resize browser sekilas.
+- **Modal & Popover** (ProfilePopover, CreatePostModal, Chatbot Settings, dll.): di desktop/tablet Profile Popover menempel dinamis di `left: 104px` (`md:left-[104px] lg:left-[104px]`) dengan batas `max-h-[calc(100dvh-2rem)]` untuk layar pendek → di mobile jadi **bottom-sheet terpusat** (`bottom-3 left-3 right-3 max-w-[420px] mx-auto`), bukan card kecil yang terpotong di layar sempit.
+- **Wajib dites** minimal di breakpoint 375px (iPhone SE), 390px (iPhone standar), 768px (tablet portrait), 1024px (tablet landscape/small laptop), dan 1280x600/360x640 (short viewport) sebelum dianggap "responsif" — bukan cuma di-resize browser sekilas.
 
-### 15.1 Regresi Desktop Akibat Implementasi Off-Canvas Sidebar (Bug Aktif)
+### 15.1 Integrasi Desktop Layout Zen Dock 76px & ClientLayout
 
-> ⚠️ **Dilaporkan user**: setelah sidebar dibuat responsif untuk mobile (off-canvas drawer + tombol hamburang `fixed top-4 left-4 md:hidden`), tampilan **desktop jadi rusak** — konten utama terdorong turun, ada area kosong besar di bagian atas viewport (gejala sama seperti Bagian 14.1, tapi kali ini penyebabnya bukan hydration, melainkan regresi dari perubahan sidebar responsif).
+> ⚠️ **Prinsip Bebas Regresi Layout**: Dengan migrasi ke Floating Zen Dock 76px, struktur layout utama menggunakan container fixed yang bersih di `src/app/ClientLayout.tsx`:
+> - Wrapper konten utama (`<main>`) menggunakan padding kiri `md:pl-[108px]` (jarak dock 16px + lebar 76px + ruang napas 16px).
+> - Sidebar Zen Dock melayang secara independen (`fixed left-4 top-4 bottom-4 w-[76px] z-40`) sehingga tidak pernah mendorong vertikal atau merusak flex-flow dokumen.
+> - Tooltip Sidebar dipasangi React Portal ke `document.body` dengan koordinat absolut viewport sehingga bebas dari pemotongan kontainer scroll (`overflow-y-auto`).
 
-**Pola bug yang paling umum untuk kasus ini** (cek satu-satu di kode sidebar/layout terbaru):
-1. **Spacing/margin khusus mobile yang lupa di-reset di desktop.** Kalau ada `pt-16` atau sejenisnya di `<main>`/wrapper konten untuk menghindari tombol hamburger `fixed` menutupi konten di mobile, pastikan itu ditulis `pt-16 md:pt-0` (atau breakpoint yang sesuai) — **bukan** `pt-16` polos yang kebawa ke semua ukuran layar.
-2. **Wrapper sidebar `fixed md:sticky ... h-screen`** — cek apakah ada elemen sibling di `<div class="flex">` (level yang sama dengan spacer `w-64` dan `<main>`) yang ikut memengaruhi tinggi/posisi vertikal parent flex container-nya karena perubahan structural saat menambahkan drawer mobile.
-3. **`align-items` pada parent flex container** (`<div class="flex">` yang membungkus spacer sidebar + `<main>`) — kalau berubah dari default `stretch` jadi `center` (sengaja atau tidak sengaja saat refactor), `<main>` akan menyusut ke tinggi kontennya sendiri dan ke-center vertikal di tengah tinggi sidebar yang `h-screen`, menyisakan ruang kosong di atas.
-
-**Instruksi verifikasi**: buka DevTools di desktop, inspect elemen `<div class="flex">` yang membungkus sidebar-spacer + `<main>`, cek tab **Computed** untuk `align-items` — kalau nilainya `center`, itu penyebabnya, ubah balik ke default (hapus class `items-center` yang tidak sengaja ketambahan) atau eksplisit `items-stretch`.
+**Instruksi verifikasi**: buka DevTools di desktop, inspect layout utama untuk memastikan padding `md:pl-[108px]` konsisten dan tidak ada horizontal overflow atau layout shift.
 
 **Prinsip pencegahan ke depan**: setiap kali menambah class khusus mobile (padding, margin, position, height) untuk kebutuhan responsif, **selalu** pikirkan apakah itu perlu di-reset eksplisit di breakpoint `md:` ke atas — jangan asumsikan default Tailwind akan "otomatis benar" di desktop kalau sudah override sesuatu di mobile.
 
@@ -1413,8 +1471,10 @@ Gabungan semua item wajib dari seluruh dokumen ini — centang satu-satu sebelum
 - [ ] Tidak ada toolbar full-width di atas halaman Companion (model selector menempel ke input, bukan header terpisah); sidebar item aktif tidak pakai border/bg solid mencolok; input box tanpa outline warna (Bagian 10.8).
 - [ ] Semua item Community Sidebar (bukan cuma item pertama) konsisten pakai hover/active state tipis sesuai Bagian 10.8, bukan pill solid `bg-green-100` versi lama.
 - [ ] `CreatePostModal` benar-benar di-import & dirender di `community/page.tsx` dengan state kontrol yang valid, tombol "+" mengambang mengubah state itu (bukan lagi `handleScrollToCompose`), dan sudah dites klik langsung di browser — bukan cuma dibaca dari kode (Bagian 11.6).
-- [ ] Semua warna pakai kelas Tailwind dari Bagian 3.1, tidak ada hex baru yang keluar dari palet.
-- [ ] Layout desktop konsisten: sidebar kiri fixed, container max-width 1200–1280px (Bagian 5).
+- [ ] Semua warna pakai kelas Tailwind dari Bagian 3.1 & PALETTE_LOCK.md, tidak ada hex baru yang keluar dari palet.
+- [ ] Layout desktop konsisten: Floating Zen Dock 76px mengapung (`md:w-[76px] lg:w-[76px]`), Profile Popover 104px, container max-width 1200–1280px, padding kiri `md:pl-[108px]` (Bagian 5).
+- [ ] Companion chat interaction: Multiline auto-growing textarea (Enter untuk kirim, Shift+Enter untuk baris baru), real Web Speech API STT via `useSTT` hook, status attachment dinonaktifkan secara jujur, tombol TTS dapat diakses pada layar sentuh/mobile (Bagian 10.9).
+- [ ] Skala hierarki corner radius berjenjang (`rounded-[28px]`/`[24px]`/`[20px]`/`xl`/`full`) dipatuhi tanpa menyeragamkan `rounded-[32px]` pada komponen reguler (Bagian 3.3).
 
 **Performa & Skalabilitas (Bagian 13):**
 - [ ] Semua endpoint list/feed pakai pagination, tidak ada `findMany()` tanpa `take` di data yang bisa tumbuh besar.
@@ -1427,9 +1487,9 @@ Gabungan semua item wajib dari seluruh dokumen ini — centang satu-satu sebelum
 - [ ] Statistik dashboard (conversations count, streak, dll.) berasal dari query agregat real, bukan angka manual di JSX.
 - [ ] Tidak ada data user contoh ("Alex Rivera") yang tampil sebagai fallback diam-diam kalau fetch user asli gagal.
 
-**Responsif Mobile (Bagian 15):**
-- [ ] Sidebar (utama, Companion, Community) jadi off-canvas drawer di <768px, bukan selalu terbuka.
-- [ ] Dashboard grid, Community feed, dan Modal sudah dites di breakpoint 375px, 390px, dan 768px.
+**Responsif & Cross-Viewport (Bagian 15):**
+- [ ] Navigasi responsif: Floating Zen Dock 76px di desktop/tablet (≥768px) dengan Portal Tooltips bebas clipping; Ergonomic Bottom Pill Nav 56px di mobile (<768px); Profile Popover centered bottom sheet di mobile.
+- [ ] Seluruh halaman dan modal teruji pada berbagai resolusi: 360x640 (short mobile), 390x844 (mobile), 768x1024 (tablet portrait), 1024x768 (tablet landscape), 1280x600 (short laptop), dan 1440x900 (desktop).
 
 **Kebersihan Repo (Bagian 16):**
 - [ ] Folder `daily-assessment/` benar-benar terhapus dari filesystem (bukan cuma di-unlink dari nav) — kalau merge sudah dieksekusi.

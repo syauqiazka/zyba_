@@ -6,6 +6,7 @@ import { AIModelType } from "@/backend/ai/aiModelManager";
 import { PersonaId, getPersonaById } from "@/backend/ai/personas";
 import ModelSelector from "./ModelSelector";
 import { useTTS } from "@/hooks/useTTS";
+import { useSTT } from "@/hooks/useSTT";
 import { formatChatDateSeparator, isSameCalendarDay } from "@/lib/dateUtils";
 
 interface Message {
@@ -62,13 +63,27 @@ export default function ChatMessages({
   ttsProvider = "edge",
 }: Props) {
   const [centerInput, setCenterInput] = useState("");
-  const [isMicActive, setIsMicActive] = useState(false);
   const [hoveredMessageId, setHoveredMessageId] = useState<string | null>(null);
   const { speak, isPlaying, isLoading } = useTTS();
   const persona = getPersonaById(selectedPersona);
 
+  // Real Speech Recognition for Empty State center input
+  const {
+    isListening: isCenterMicActive,
+    error: centerSttError,
+    setError: setCenterSttError,
+    toggleListening: toggleCenterListening,
+    stopListening: stopCenterListening,
+  } = useSTT({
+    lang: "id-ID",
+    onTranscript: (spokenText) => {
+      setCenterInput(spokenText);
+    },
+  });
+
   const handleCenterSubmit = () => {
     if (!centerInput.trim() || isSending) return;
+    if (isCenterMicActive) stopCenterListening();
     if (onSendMessage) {
       onSendMessage(centerInput.trim());
       setCenterInput("");
@@ -95,6 +110,36 @@ export default function ChatMessages({
 
         {/* Floating Center Input Box — Warm tactile paper card */}
         <div className="w-full max-w-2xl bg-white rounded-[24px] border border-brown-900/10 shadow-xs p-3.5 sm:p-4 text-left transition-all focus-within:shadow-md focus-within:border-brown-900/20 box-border overflow-visible">
+          {/* Center Mic listening feedback */}
+          {isCenterMicActive && (
+            <div className="mb-2 flex items-center justify-between bg-orange-100 text-orange-600 px-3.5 py-1.5 rounded-full text-xs animate-in fade-in">
+              <span className="font-semibold flex items-center gap-2">
+                <span className="w-2 h-2 rounded-full bg-orange-500 animate-pulse" />
+                Mendengarkan... Ucapkan perasaanmu.
+              </span>
+              <button
+                type="button"
+                onClick={stopCenterListening}
+                className="text-xs font-bold underline cursor-pointer hover:text-orange-700"
+              >
+                Selesai
+              </button>
+            </div>
+          )}
+
+          {centerSttError && (
+            <div className="mb-2 flex items-center justify-between bg-red-50 text-danger border border-red-200 px-3.5 py-1.5 rounded-full text-xs animate-in fade-in">
+              <span className="text-xs truncate flex-1">{centerSttError}</span>
+              <button
+                type="button"
+                onClick={() => setCenterSttError(null)}
+                className="text-xs font-bold underline ml-2 cursor-pointer"
+              >
+                Tutup
+              </button>
+            </div>
+          )}
+
           <textarea
             value={centerInput}
             onChange={(e) => setCenterInput(e.target.value)}
@@ -104,19 +149,21 @@ export default function ChatMessages({
                 handleCenterSubmit();
               }
             }}
-            placeholder="Ketik pesan ke Zyba..."
+            placeholder="Ketik pesan ke Zyba... (Enter kirim, Shift+Enter baris baru)"
             rows={2}
             className="w-full bg-transparent text-xs sm:text-sm text-brown-900 placeholder:text-brown-700/50 resize-none focus:outline-none leading-relaxed"
           />
 
           {/* Bottom attached controls row */}
           <div className="flex flex-wrap items-center justify-between gap-2 pt-2.5 mt-2 border-t border-brown-900/6 text-xs text-brown-700 w-full">
-            {/* Left: "+" button & Mode Toggle [Curhat | Solusi] */}
+            {/* Left: Disabled attachment button & Mode Toggle [Curhat | Solusi] */}
             <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
               <button
                 type="button"
-                className="w-7 h-7 rounded-lg border border-brown-900/10 flex items-center justify-center text-brown-700/70 hover:text-brown-900 hover:bg-brown-900/5 transition-colors shrink-0"
-                title="Tambahkan dokumen atau lampiran"
+                disabled
+                className="w-7 h-7 rounded-lg border border-brown-900/10 flex items-center justify-center text-brown-700/30 cursor-not-allowed shrink-0"
+                title="Lampiran dokumen/foto belum didukung saat ini (fokus pada pendampingan teks & suara)"
+                aria-disabled="true"
               >
                 <Plus size={14} />
               </button>
@@ -165,11 +212,13 @@ export default function ChatMessages({
 
               <button
                 type="button"
-                onClick={() => setIsMicActive(!isMicActive)}
-                className={`p-1.5 rounded-lg text-sm transition-colors shrink-0 ${
-                  isMicActive ? "bg-orange-100 text-orange-600" : "text-brown-700/60 hover:text-brown-900"
+                onClick={toggleCenterListening}
+                className={`p-1.5 rounded-lg text-sm transition-colors shrink-0 cursor-pointer ${
+                  isCenterMicActive
+                    ? "bg-orange-200 text-orange-600 animate-pulse"
+                    : "text-brown-700/60 hover:text-brown-900"
                 }`}
-                title="Voice input"
+                title={isCenterMicActive ? "Hentikan perekaman suara" : "Input suara (Bahasa Indonesia)"}
               >
                 <Mic size={15} />
               </button>
@@ -178,10 +227,10 @@ export default function ChatMessages({
                 type="button"
                 onClick={handleCenterSubmit}
                 disabled={!centerInput.trim() || isSending}
-                className="w-7 h-7 rounded-lg bg-orange-500 text-white flex items-center justify-center font-bold text-xs hover:bg-orange-600 disabled:opacity-30 transition-all shadow-2xs shrink-0"
+                className="w-7 h-7 rounded-lg bg-orange-500 text-white flex items-center justify-center font-bold text-xs hover:bg-orange-600 disabled:opacity-30 transition-all shadow-2xs shrink-0 cursor-pointer"
                 title="Kirim pesan"
               >
-                <ArrowRight size={13} />
+                {isSending ? <Loader2 size={13} className="animate-spin text-white" /> : <ArrowRight size={13} />}
               </button>
             </div>
           </div>
@@ -260,23 +309,29 @@ export default function ChatMessages({
               >
                 <div className="whitespace-pre-wrap">{msg.content}</div>
                 
-                {/* TTS Speaker Icon — only for AI replies */}
-                {!isUser && hoveredMessageId === msg.id && (
-                  <button
-                    type="button"
-                    onClick={() => speak(msg.content, ttsProvider === "elevenlabs")}
-                    disabled={isLoading}
-                    className="mt-2 p-1.5 rounded-lg border border-brown-900/10 hover:bg-orange-50 hover:border-orange-500/30 transition-colors text-brown-700 hover:text-orange-600 disabled:opacity-50"
-                    title={isPlaying ? "Stop audio" : "Play audio"}
-                  >
-                    {isLoading ? (
-                      <Loader2 size={13} className="animate-spin text-orange-500" />
-                    ) : isPlaying ? (
-                      <Square size={13} className="text-orange-600 fill-current" />
-                    ) : (
-                      <Volume2 size={13} className="text-brown-700" />
-                    )}
-                  </button>
+                {/* TTS Speaker Button — accessible on hover (desktop) & always visible (mobile) */}
+                {!isUser && (
+                  <div className={`mt-2 flex items-center gap-1.5 transition-opacity ${
+                    hoveredMessageId === msg.id ? "opacity-100" : "opacity-80 sm:opacity-0 sm:group-hover:opacity-100"
+                  }`}>
+                    <button
+                      type="button"
+                      onClick={() => speak(msg.content, ttsProvider === "elevenlabs")}
+                      disabled={isLoading}
+                      className="p-1.5 rounded-lg border border-brown-900/10 hover:bg-orange-50 hover:border-orange-500/30 transition-colors text-brown-700 hover:text-orange-600 disabled:opacity-50 cursor-pointer flex items-center gap-1.5"
+                      title={isPlaying ? "Hentikan audio" : "Dengarkan jawaban Zyba"}
+                      aria-label="Putar audio jawaban"
+                    >
+                      {isLoading ? (
+                        <Loader2 size={13} className="animate-spin text-orange-500" />
+                      ) : isPlaying ? (
+                        <Square size={13} className="text-orange-600 fill-current" />
+                      ) : (
+                        <Volume2 size={13} className="text-brown-700" />
+                      )}
+                      <span className="text-[10px] font-semibold text-brown-700 sm:hidden">Dengarkan</span>
+                    </button>
+                  </div>
                 )}
               </div>
             </div>

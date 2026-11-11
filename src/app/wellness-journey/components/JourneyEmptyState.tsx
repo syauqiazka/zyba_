@@ -23,7 +23,7 @@ export default function JourneyEmptyState() {
 
       <div className="flex flex-col sm:flex-row items-center gap-3 w-full sm:w-auto">
         <Link
-          href="/daily-assessment"
+          href="/mood-check-in"
           className="w-full sm:w-auto px-6 py-3 rounded-full bg-brown-900 text-cream text-xs font-bold flex items-center justify-center gap-2 hover:bg-brown-900/90 active:scale-95 transition-all shadow-sm"
         >
           <CalendarCheck size={16} />

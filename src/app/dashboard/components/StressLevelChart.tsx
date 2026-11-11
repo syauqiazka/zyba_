@@ -420,7 +420,7 @@ export default function StressLevelChart({ initialHistory }: StressLevelChartPro
           </span>
         )}
 
-        <Link href="/daily-assessment" className="text-orange-500 hover:text-brown-900 transition-colors text-xs font-semibold cursor-pointer">
+        <Link href="/mood-check-in" className="text-orange-500 hover:text-brown-900 transition-colors text-xs font-semibold cursor-pointer">
           Mulai Asesmen →
         </Link>
       </div>

@@ -1,7 +1,7 @@
 "use client";
 
-import React, { useState, useId } from "react";
-import { TrendingUp, Activity, Moon, Brain, Info } from "lucide-react";
+import React, { useState, useId, useEffect } from "react";
+import { TrendingUp, Activity, Moon, Brain, Info, Sparkles } from "lucide-react";
 
 export interface TrendPoint {
   date: string; // YYYY-MM-DD
@@ -18,10 +18,50 @@ interface TrendChartProps {
   points: TrendPoint[];
 }
 
+/**
+ * Generates an organic, smooth cubic spline (River of Mindful Seasons)
+ * avoiding jagged linear polygon segments.
+ */
+function createSmoothSplinePath(coords: { x: number; y: number }[]): string {
+  if (coords.length === 0) return "";
+  if (coords.length === 1) return `M ${coords[0].x.toFixed(1)} ${coords[0].y.toFixed(1)}`;
+  if (coords.length === 2) {
+    return `M ${coords[0].x.toFixed(1)} ${coords[0].y.toFixed(1)} L ${coords[1].x.toFixed(1)} ${coords[1].y.toFixed(1)}`;
+  }
+
+  let d = `M ${coords[0].x.toFixed(1)} ${coords[0].y.toFixed(1)}`;
+  for (let i = 0; i < coords.length - 1; i++) {
+    const p0 = coords[i === 0 ? 0 : i - 1];
+    const p1 = coords[i];
+    const p2 = coords[i + 1];
+    const p3 = coords[i + 2 < coords.length ? i + 2 : i + 1];
+
+    const cp1x = p1.x + (p2.x - p0.x) / 6;
+    const cp1y = p1.y + (p2.y - p0.y) / 6;
+
+    const cp2x = p2.x - (p3.x - p1.x) / 6;
+    const cp2y = p2.y - (p3.y - p1.y) / 6;
+
+    d += ` C ${cp1x.toFixed(1)} ${cp1y.toFixed(1)}, ${cp2x.toFixed(1)} ${cp2y.toFixed(1)}, ${p2.x.toFixed(1)} ${p2.y.toFixed(1)}`;
+  }
+  return d;
+}
+
 export default function WellnessTrendChart({ points }: TrendChartProps) {
   const [selectedMetric, setSelectedMetric] = useState<TrendMetric>("score");
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
+  const [reducedMotion, setReducedMotion] = useState(false);
   const gradientId = useId();
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+      setReducedMotion(mediaQuery.matches);
+      const listener = (e: MediaQueryListEvent) => setReducedMotion(e.matches);
+      mediaQuery.addEventListener("change", listener);
+      return () => mediaQuery.removeEventListener("change", listener);
+    }
+  }, []);
 
   // Filter valid data points for selected metric
   const validPoints = points.filter((p) => {
@@ -39,14 +79,14 @@ export default function WellnessTrendChart({ points }: TrendChartProps) {
       max: 100,
       unit: "poin",
       stroke: "#F2884B",
-      fillStart: "rgba(242, 136, 75, 0.25)",
+      fillStart: "rgba(242, 136, 75, 0.28)",
       fillEnd: "rgba(242, 136, 75, 0.0)",
       ticks: [0, 25, 50, 75, 100],
       formatter: (v: number) => `${Math.round(v)}`,
       statusText: (v: number) => {
-        if (v >= 80) return "Kondisi Baik";
+        if (v >= 80) return "Kondisi Sangat Baik";
         if (v >= 60) return "Cukup Stabil";
-        return "Perlu Perhatian";
+        return "Perlu Dukungan";
       },
     },
     stress: {
@@ -56,14 +96,14 @@ export default function WellnessTrendChart({ points }: TrendChartProps) {
       max: 5,
       unit: "/5.0",
       stroke: "#8FAE5D",
-      fillStart: "rgba(143, 174, 93, 0.25)",
+      fillStart: "rgba(143, 174, 93, 0.28)",
       fillEnd: "rgba(143, 174, 93, 0.0)",
       ticks: [1, 2, 3, 4, 5],
       formatter: (v: number) => v.toFixed(1),
       statusText: (v: number) => {
-        if (v <= 2) return "Stres Rendah (Baik)";
+        if (v <= 2) return "Stres Rendah (Tenang)";
         if (v <= 3.5) return "Stres Sedang";
-        return "Stres Cukup Tinggi";
+        return "Stres Menuntut Rehat";
       },
     },
     sleep: {
@@ -73,28 +113,28 @@ export default function WellnessTrendChart({ points }: TrendChartProps) {
       max: 5,
       unit: "/5.0",
       stroke: "#A99BE0",
-      fillStart: "rgba(169, 155, 224, 0.25)",
+      fillStart: "rgba(169, 155, 224, 0.28)",
       fillEnd: "rgba(169, 155, 224, 0.0)",
       ticks: [1, 2, 3, 4, 5],
       formatter: (v: number) => v.toFixed(1),
       statusText: (v: number) => {
         if (v >= 4) return "Tidur Nyenyak";
         if (v >= 3) return "Cukup Istirahat";
-        return "Kurang Tidur";
+        return "Kurang Istirahat";
       },
     },
   };
 
   const config = METRIC_CONFIG[selectedMetric];
 
-  // SVG dimensions
+  // Responsive SVG Dimensions
   const svgWidth = 800;
   const svgHeight = 260;
-  const padding = { top: 25, right: 30, bottom: 40, left: 45 };
+  const padding = { top: 28, right: 32, bottom: 42, left: 45 };
   const chartWidth = svgWidth - padding.left - padding.right;
   const chartHeight = svgHeight - padding.top - padding.bottom;
 
-  // Calculate coordinates
+  // Calculate Coordinates
   const getCoordinates = () => {
     if (validPoints.length === 0) return [];
 
@@ -128,10 +168,8 @@ export default function WellnessTrendChart({ points }: TrendChartProps) {
         (1 - (averageVal - config.min) / (config.max - config.min)) * chartHeight
       : null;
 
-  // Build SVG path
-  const linePath = coords.length > 1
-    ? coords.reduce((acc, c, i) => `${acc} ${i === 0 ? "M" : "L"} ${c.x.toFixed(1)} ${c.y.toFixed(1)}`, "")
-    : "";
+  // Build Organic Smooth Spline Path
+  const linePath = coords.length > 1 ? createSmoothSplinePath(coords) : "";
 
   const areaPath =
     coords.length > 1
@@ -139,21 +177,27 @@ export default function WellnessTrendChart({ points }: TrendChartProps) {
       : "";
 
   const activePoint = hoveredIndex !== null && coords[hoveredIndex] ? coords[hoveredIndex] : null;
-  const isTopHalf = activePoint ? (activePoint.y / svgHeight) < 0.35 : false;
-  const isNearRightEdge = activePoint ? (activePoint.x / svgWidth) > 0.78 : false;
-  const isNearLeftEdge = activePoint ? (activePoint.x / svgWidth) < 0.22 : false;
+  const isTopHalf = activePoint ? activePoint.y / svgHeight < 0.35 : false;
+  const isNearRightEdge = activePoint ? activePoint.x / svgWidth > 0.78 : false;
+  const isNearLeftEdge = activePoint ? activePoint.x / svgWidth < 0.22 : false;
 
   return (
     <div className="rounded-[20px] border border-brown-900/10 bg-white/95 p-6 sm:p-8 shadow-xs flex flex-col gap-4 transition-all">
       {/* Chart Header & Metric Selectors */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-brown-900/5">
         <div>
-          <h3 className="font-display text-base font-bold text-brown-900 tracking-tight flex items-center gap-2">
+          <div className="flex items-center gap-2">
+            <span className="text-[11px] font-extrabold uppercase tracking-widest text-orange-600 bg-orange-100/70 px-3 py-0.5 rounded-full inline-flex items-center gap-1.5">
+              <Sparkles size={11} className="text-orange-500" />
+              Kurva Riak Tenang
+            </span>
+          </div>
+          <h3 className="font-display text-lg font-bold text-brown-900 tracking-tight mt-1.5 flex items-center gap-2">
             <TrendingUp size={18} className="text-orange-500" />
-            <span>Tren Perkembangan Kondisi</span>
+            <span>Tren Dinamika Kesejahteraan</span>
           </h3>
           <p className="text-xs text-brown-700/70 mt-0.5">
-            Pola perubahan metrik berdasarkan data check-in harianmu.
+            Pola perubahan metrik berdasarkan catatan harianmu tanpa angka persentase yang menekan.
           </p>
         </div>
 
@@ -173,7 +217,7 @@ export default function WellnessTrendChart({ points }: TrendChartProps) {
                 }}
                 className={`px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer ${
                   isSelected
-                    ? "bg-brown-900 text-white shadow-xs"
+                    ? "bg-brown-900 text-white shadow-2xs"
                     : "text-brown-700 hover:text-brown-900"
                 }`}
               >
@@ -187,20 +231,20 @@ export default function WellnessTrendChart({ points }: TrendChartProps) {
 
       {/* Empty State when less than 2 data points */}
       {validPoints.length < 2 ? (
-        <div className="py-14 text-center flex flex-col items-center justify-center gap-2.5 bg-cream/30 rounded-2xl border border-dashed border-brown-900/10">
+        <div className="py-14 text-center flex flex-col items-center justify-center gap-2.5 bg-cream/35 rounded-2xl border border-dashed border-brown-900/10">
           <Info size={22} className="text-brown-700/50" />
           <p className="text-xs font-bold text-brown-900">
             Belum Cukup Data Tren
           </p>
-          <p className="text-xs text-brown-700/70 max-w-sm">
+          <p className="text-xs text-brown-700/70 max-w-sm leading-relaxed">
             {validPoints.length === 1
-              ? "Tercatat 1 data check-in. Lakukan check-in di hari berikutnya untuk mulai melihat garis visual tren perkembanganmu."
-              : "Lakukan setidaknya 2 kali Check-In Harian agar grafik tren dapat divisualisasikan."}
+              ? "Tercatat 1 data check-in. Lakukan check-in di hari berikutnya untuk mulai melihat garis visual gelombang tren perkembanganmu."
+              : "Lakukan setidaknya 2 kali Check-In Harian agar kurva riak gelombang dapat divisualisasikan."}
           </p>
         </div>
       ) : (
         <div className="relative w-full overflow-visible">
-          {/* Active tooltip popover */}
+          {/* Active Tooltip Popover */}
           {activePoint && (
             <div
               className={`absolute z-30 pointer-events-none transform transition-all duration-150 ${
@@ -218,7 +262,7 @@ export default function WellnessTrendChart({ points }: TrendChartProps) {
                 marginTop: isTopHalf ? "14px" : "-14px",
               }}
             >
-              <div className="bg-brown-900 text-cream px-3.5 py-2 rounded-xl text-xs shadow-xl border border-white/10 flex flex-col gap-0.5 whitespace-nowrap">
+              <div className="bg-brown-900 text-cream px-3.5 py-2.5 rounded-xl text-xs shadow-xl border border-white/10 flex flex-col gap-0.5 whitespace-nowrap">
                 <span className="text-[10px] text-cream/70 font-medium">
                   {activePoint.point.date}
                 </span>
@@ -232,7 +276,7 @@ export default function WellnessTrendChart({ points }: TrendChartProps) {
             </div>
           )}
 
-          {/* Responsive SVG Chart */}
+          {/* Responsive SVG Smooth Spline Chart */}
           <div className="w-full">
             <svg
               viewBox={`0 0 ${svgWidth} ${svgHeight}`}
@@ -240,7 +284,7 @@ export default function WellnessTrendChart({ points }: TrendChartProps) {
             >
               <defs>
                 <linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor={config.stroke} stopOpacity="0.28" />
+                  <stop offset="0%" stopColor={config.stroke} stopOpacity="0.25" />
                   <stop offset="100%" stopColor={config.stroke} stopOpacity="0.0" />
                 </linearGradient>
               </defs>
@@ -281,7 +325,7 @@ export default function WellnessTrendChart({ points }: TrendChartProps) {
                     y1={averageY}
                     x2={svgWidth - padding.right}
                     y2={averageY}
-                    stroke="rgba(59, 42, 32, 0.25)"
+                    stroke="rgba(59, 42, 32, 0.22)"
                     strokeWidth="1"
                     strokeDasharray="2 2"
                   />
@@ -298,12 +342,16 @@ export default function WellnessTrendChart({ points }: TrendChartProps) {
                 </g>
               )}
 
-              {/* Shaded Area */}
+              {/* Shaded Organic Spline Area */}
               {areaPath && (
-                <path d={areaPath} fill={`url(#${gradientId})`} />
+                <path
+                  d={areaPath}
+                  fill={`url(#${gradientId})`}
+                  className={reducedMotion ? "" : "transition-all duration-300"}
+                />
               )}
 
-              {/* Main Line */}
+              {/* Smooth Spline Curve Line */}
               {linePath && (
                 <path
                   d={linePath}
@@ -312,6 +360,7 @@ export default function WellnessTrendChart({ points }: TrendChartProps) {
                   strokeWidth="2.75"
                   strokeLinecap="round"
                   strokeLinejoin="round"
+                  className={reducedMotion ? "" : "transition-all duration-300"}
                 />
               )}
 
@@ -325,14 +374,14 @@ export default function WellnessTrendChart({ points }: TrendChartProps) {
                     onMouseEnter={() => setHoveredIndex(i)}
                     onMouseLeave={() => setHoveredIndex(null)}
                   >
-                    {/* Larger transparent hit target */}
+                    {/* Hit target */}
                     <circle cx={c.x} cy={c.y} r="14" fill="transparent" />
 
-                    {/* Visible dot */}
+                    {/* Tactile Pebble Dot */}
                     <circle
                       cx={c.x}
                       cy={c.y}
-                      r={isHovered ? "6" : "4"}
+                      r={isHovered ? "6.5" : "4.5"}
                       fill="#FFFFFF"
                       stroke={config.stroke}
                       strokeWidth={isHovered ? "3" : "2"}
@@ -340,7 +389,6 @@ export default function WellnessTrendChart({ points }: TrendChartProps) {
                     />
 
                     {/* X-axis date labels */}
-                    {/* Show label if small number of points or at reasonable steps */}
                     {(validPoints.length <= 10 ||
                       i === 0 ||
                       i === validPoints.length - 1 ||
@@ -363,8 +411,8 @@ export default function WellnessTrendChart({ points }: TrendChartProps) {
           </div>
 
           <div className="flex items-center justify-between text-[11px] text-brown-700/60 pt-2 border-t border-brown-900/5 px-1">
-            <span>Arahkan kursor ke titik grafik untuk detail tanggal dan status.</span>
-            <span>{validPoints.length} titik data tercatat</span>
+            <span>Arahkan kursor ke titik riak untuk rincian tanggal dan status.</span>
+            <span>{validPoints.length} titik riak tercatat</span>
           </div>
         </div>
       )}

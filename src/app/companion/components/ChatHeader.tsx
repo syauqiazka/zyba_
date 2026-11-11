@@ -2,6 +2,7 @@ import { Volume2, VolumeX, Settings2, Trash2, Zap, Menu, Sparkles, ChevronDown }
 import { PersonaId, getPersonaById } from "@/backend/ai/personas";
 import { getMoodColor } from "./ConversationList";
 import { useCompanion } from "../context/CompanionContext";
+import TokenMeterBadge from "./TokenMeterBadge";
 
 interface Conversation {
   id: string;
@@ -46,7 +47,15 @@ export default function ChatHeader({
   const currentEmotion = activeConv?.emotionTag || "Tenang";
   const moodColor = getMoodColor(currentEmotion);
   const persona = getPersonaById(selectedPersona);
-  const { setMobileSidebarOpen } = useCompanion();
+  const {
+    setMobileSidebarOpen,
+    tokensUsed,
+    tokensRemaining,
+    tokenLimit,
+    percentRemaining,
+    percentUsed,
+    plan,
+  } = useCompanion();
 
   const openPersonaModal = () => {
     if (setShowPersonaModal) {
@@ -130,19 +139,18 @@ export default function ChatHeader({
           <span>{currentEmotion}</span>
         </span>
 
-        {/* Free Plan / Upgrade Button */}
-        {setShowProModal && (
-          <button
-            type="button"
-            onClick={() => setShowProModal(true)}
-            className="px-2 sm:px-3 py-1 sm:py-1.5 rounded-full bg-orange-500 text-white hover:opacity-90 text-[10px] sm:text-xs font-bold transition-all shadow-xs flex items-center gap-1 shrink-0"
-            aria-label="Upgrade ke Zyba Plus"
-          >
-            <Zap size={12} aria-hidden />
-            <span className="hidden md:inline">Zyba </span>
-            <span className="inline sm:hidden">Plus</span>
-          </button>
-        )}
+        {/* Token Quota Meter & Percentage */}
+        <TokenMeterBadge
+          tokensUsed={tokensUsed}
+          tokensRemaining={tokensRemaining}
+          tokenLimit={tokenLimit}
+          percentRemaining={percentRemaining}
+          percentUsed={percentUsed}
+          plan={plan}
+          onUpgradeClick={() => {
+            if (setShowProModal) setShowProModal(true);
+          }}
+        />
 
         {/* Audio Mode Toggle */}
         {setIsTTSEnabled && (

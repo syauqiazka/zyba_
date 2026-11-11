@@ -17,6 +17,7 @@ import {
   Shield,
   Heart,
   Smile,
+  Bot,
 } from "lucide-react";
 import { isAvatarUrl } from "@/lib/avatarUtils";
 import UserAvatar from "@/components/ui/UserAvatar";
@@ -42,6 +43,7 @@ interface ProfilePopoverProps {
   onClose: () => void;
   onOpenSettings: (tab?: string) => void;
   onLogout: () => void;
+  triggerRef?: React.RefObject<HTMLElement | null>;
 }
 
 export default function ProfilePopover({
@@ -50,9 +52,11 @@ export default function ProfilePopover({
   onClose,
   onOpenSettings,
   onLogout,
+  triggerRef,
 }: ProfilePopoverProps) {
   const popoverRef = useRef<HTMLDivElement>(null);
   const [mounted, setMounted] = useState(false);
+  const [popoverCoords, setPopoverCoords] = useState<{ left?: number; bottom?: number } | null>(null);
   const [onlineStatus, setOnlineStatus] = useState<"online" | "idle" | "dnd" | "invisible">("online");
   const [customStatus, setCustomStatus] = useState(user.customStatus || user.statusText || "");
   const [isEditingCustomStatus, setIsEditingCustomStatus] = useState(false);
@@ -62,6 +66,38 @@ export default function ProfilePopover({
   useEffect(() => {
     setMounted(true);
   }, []);
+
+  // Update dynamic position when anchored to trigger
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const updateAnchor = () => {
+      if (typeof window === "undefined" || window.innerWidth < 768) {
+        setPopoverCoords(null);
+        return;
+      }
+
+      if (triggerRef?.current) {
+        const rect = triggerRef.current.getBoundingClientRect();
+        // 12px gap from right of dock
+        const left = Math.round(rect.right + 12);
+        // Align bottom with trigger button, respecting screen edge
+        const bottom = Math.max(16, Math.round(window.innerHeight - rect.bottom));
+        setPopoverCoords({ left, bottom });
+      } else {
+        // Fallback for 76px dock (ml-4 = 16px + 76px = 92px + 12px gap = 104px)
+        setPopoverCoords({ left: 104, bottom: 16 });
+      }
+    };
+
+    updateAnchor();
+    window.addEventListener("resize", updateAnchor);
+    window.addEventListener("scroll", updateAnchor, true);
+    return () => {
+      window.removeEventListener("resize", updateAnchor);
+      window.removeEventListener("scroll", updateAnchor, true);
+    };
+  }, [isOpen, triggerRef]);
 
   // Discord-style personal note (persisted locally)
   const [note, setNote] = useState("");
@@ -162,8 +198,7 @@ export default function ProfilePopover({
 
       {/* ── Popover Card
            Mobile  : centered bottom sheet (full width minus margins)
-           Tablet  : anchored bottom-left, after icon-sidebar (80px)
-           Desktop : anchored bottom-left, after full sidebar (256px)
+           Tablet & Desktop : anchored directly next to 76px Floating Zen Dock
       ── */}
       <div
         ref={popoverRef}
@@ -171,17 +206,17 @@ export default function ProfilePopover({
           pointer-events-auto
           fixed z-[9999]
           /* Mobile: bottom sheet, centered */
-          bottom-3 left-3 right-3
-          /* Tablet (md): anchor left after icon sidebar */
-          md:left-[88px] md:right-auto md:bottom-4 md:w-80
-          /* Desktop (lg): anchor left after full sidebar */
-          lg:left-[272px]
-          rounded-3xl bg-cream text-brown-900 shadow-2xl border border-brown-900/15
+          bottom-3 left-3 right-3 max-w-[420px] mx-auto
+          /* Tablet (md) & Desktop (lg): anchor next to 76px Floating Zen Dock */
+          md:left-[104px] md:right-auto md:bottom-4 md:w-80 md:max-w-none md:mx-0
+          lg:left-[104px]
+          rounded-[24px] bg-cream text-brown-900 shadow-2xl border border-brown-900/15
           overflow-hidden animate-in fade-in slide-in-from-bottom-3 duration-200
-          select-none font-body max-h-[88vh] overflow-y-auto
+          select-none font-body max-h-[calc(100dvh-2rem)] overflow-y-auto
         "
         style={{
           boxShadow: "0 20px 40px -15px rgba(59, 42, 32, 0.35), 0 0 0 1px rgba(59, 42, 32, 0.08)",
+          ...(popoverCoords ? { left: `${popoverCoords.left}px`, bottom: `${popoverCoords.bottom}px` } : {}),
         }}
       >
         {/* ── 1. Top Banner (Warm Brand Gradient) ───────── */}
@@ -310,12 +345,12 @@ export default function ProfilePopover({
 
           {/* Discord Badges Row */}
           <div className="flex items-center gap-1.5 pt-1 border-t border-brown-900/8 flex-wrap">
-            {/* ZYBA Flower Badge */}
+            {/* ZYBA Pioneer Badge */}
             <div
               className="w-7 h-7 rounded-lg bg-orange-50 border border-orange-200 flex items-center justify-center text-sm shadow-2xs hover:scale-105 transition-transform cursor-pointer"
               title="Zyba Pioneer Member"
             >
-              🌸
+              <Sparkles size={14} className="text-orange-500" />
             </div>
             {/* Streak Badge */}
             <div
@@ -338,7 +373,7 @@ export default function ProfilePopover({
               className="w-7 h-7 rounded-lg bg-cream border border-brown-900/10 flex items-center justify-center text-sm shadow-2xs hover:scale-105 transition-transform cursor-pointer"
               title="Companion: Kina"
             >
-              🦊
+              <Bot size={14} className="text-brown-700" />
             </div>
           </div>
 

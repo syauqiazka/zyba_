@@ -90,7 +90,7 @@ export default function MetricScoreCard({
             Mulai kenali ritme emosionalmu hari ini untuk memunculkan Skor Zyba personalmu.
           </p>
           <Link
-            href="/daily-assessment"
+            href="/mood-check-in"
             className="inline-flex items-center justify-center gap-1.5 px-5 py-2 rounded-full bg-brown-900 hover:bg-orange-500 text-cream text-xs font-semibold shadow-2xs transition-colors cursor-pointer"
           >
             <span>Mulai Asesmen</span>

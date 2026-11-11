@@ -74,6 +74,10 @@ export async function POST(req: NextRequest) {
 
     const body = await req.json();
     const {
+      name,
+      avatarUrl,
+      bio,
+      notificationPref,
       goal,
       gender,
       age,
@@ -87,6 +91,41 @@ export async function POST(req: NextRequest) {
       mentalSymptoms,
       expressionText,
     } = body;
+
+    // 1. Simpan data profil awal (nama, avatar, bio)
+    if (name || avatarUrl || bio) {
+      try {
+        await userRepository.update(userId, {
+          name: name || undefined,
+          avatarUrl: avatarUrl || undefined,
+          bio: bio || undefined,
+        });
+      } catch (profErr: any) {
+        console.warn("[/api/assessment] Profile update warning:", profErr.message);
+      }
+    }
+
+    // 2. Simpan preferensi notifikasi pendampingan
+    if (notificationPref) {
+      try {
+        await accountDb.notificationPref.upsert({
+          where: { userId },
+          create: {
+            userId,
+            companionNotif: notificationPref.companionNotif ?? true,
+            wellnessNotif: notificationPref.wellnessNotif ?? true,
+            communityNotif: notificationPref.communityNotif ?? false,
+          },
+          update: {
+            companionNotif: notificationPref.companionNotif ?? true,
+            wellnessNotif: notificationPref.wellnessNotif ?? true,
+            communityNotif: notificationPref.communityNotif ?? false,
+          },
+        });
+      } catch (notifErr: any) {
+        console.warn("[/api/assessment] Notification pref warning:", notifErr.message);
+      }
+    }
 
     // Safety: Deteksi risiko bahaya diri dari refleksi bebas (AGENTS.md Bagian 12)
     const isRisk = expressionText ? detectRisk(expressionText) : false;

@@ -73,8 +73,8 @@ export default function CompletedState({ score = 80, condition = "Kondisi Baik" 
           <span>Mulai Gunakan ZYBA</span>
           <span className="group-hover:translate-x-1 transition-transform">→</span>
         </button>
-        <p className="text-[11px] text-brown-700/70">
-          Semua fitur ZYBA kini terbuka untukmu 🚀
+        <p className="text-[11px] text-brown-700/70 font-medium">
+          Semua fitur ZYBA kini terbuka penuh untukmu
         </p>
       </div>
     </div>

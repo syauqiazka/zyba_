@@ -1,18 +1,19 @@
 "use client";
 
-import { Paperclip, Mic, Send } from "lucide-react";
-
+import { Paperclip, Mic, Send, Loader2 } from "lucide-react";
 import { useRef, useEffect, useState } from "react";
 import ModelSelector from "./ModelSelector";
 import { AIModelType } from "@/backend/ai/aiModelManager";
+import { useSTT } from "@/hooks/useSTT";
+import { useCompanion } from "../context/CompanionContext";
 
 interface Props {
   inputText: string;
   setInputText: (text: string) => void;
   handleSendMessage: () => void;
   isSending: boolean;
-  isVoiceActive: boolean;
-  setIsVoiceActive: (v: boolean) => void;
+  isVoiceActive?: boolean;
+  setIsVoiceActive?: (v: boolean) => void;
   selectedModel: AIModelType;
   setSelectedModel?: (m: AIModelType) => void;
   commStyle?: "CASUAL" | "FORMAL" | "FUN";
@@ -24,16 +25,36 @@ export default function ChatInput({
   setInputText,
   handleSendMessage,
   isSending,
-  isVoiceActive,
-  setIsVoiceActive,
   selectedModel,
   setSelectedModel,
   commStyle = "CASUAL",
   setCommStyle,
 }: Props) {
-  const inputRef = useRef<HTMLInputElement>(null);
-
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
   const [keyboardOffset, setKeyboardOffset] = useState(0);
+  const { percentRemaining, tokensRemaining } = useCompanion();
+
+  // Real Speech-to-Text via Web Speech API (Indonesian language support)
+  const {
+    isListening,
+    error: sttError,
+    setError: setSttError,
+    toggleListening,
+    stopListening,
+  } = useSTT({
+    lang: "id-ID",
+    onTranscript: (spokenText) => {
+      setInputText(spokenText);
+    },
+  });
+
+  // Adjust textarea height dynamically based on input length
+  useEffect(() => {
+    const el = textareaRef.current;
+    if (!el) return;
+    el.style.height = "auto";
+    el.style.height = `${Math.min(el.scrollHeight, 120)}px`;
+  }, [inputText]);
 
   useEffect(() => {
     const viewport = window.visualViewport;
@@ -47,7 +68,6 @@ export default function ChatInput({
       }
 
       // visualViewport shrinks when the Android/iOS keyboard opens.
-      // Keep the composer directly above that viewport instead of leaving a gap.
       const offset = Math.max(
         0,
         window.innerHeight - viewport.height - viewport.offsetTop
@@ -67,11 +87,21 @@ export default function ChatInput({
     };
   }, []);
 
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    // Enter sends the message; Shift + Enter creates a new line
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
-      handleSendMessage();
+      if (inputText.trim() && !isSending) {
+        if (isListening) stopListening();
+        handleSendMessage();
+      }
     }
+  };
+
+  const handleTriggerSend = () => {
+    if (!inputText.trim() || isSending) return;
+    if (isListening) stopListening();
+    handleSendMessage();
   };
 
   return (
@@ -89,79 +119,99 @@ export default function ChatInput({
           : {}),
       }}
     >
-      {/* Voice input active feedback */}
-      {isVoiceActive && (
-        <div className="mb-2 flex items-center justify-between bg-orange-100 text-orange-500 px-4 py-2 rounded-full text-xs animate-pulse">
+      {/* Real Voice input active feedback */}
+      {isListening && (
+        <div className="mb-2 flex items-center justify-between bg-orange-100 text-orange-600 px-4 py-2 rounded-full text-xs animate-in fade-in duration-150">
           <span className="font-semibold flex min-w-0 flex-1 items-center gap-2 leading-4 break-words">
-            <span className="w-2 h-2 rounded-full bg-orange-500 motion-safe:animate-pulse motion-reduce:animate-none" />
-            Mendengarkan suaramu... Ucapkan perasaanmu.
+            <span className="w-2 h-2 rounded-full bg-orange-500 animate-pulse" />
+            Mendengarkan suaramu... Ucapkan perasaanmu langsung ke Zyba.
           </span>
           <button
             type="button"
-            onClick={() => setIsVoiceActive(false)}
-            className="text-xs font-bold underline"
+            onClick={stopListening}
+            className="text-xs font-bold underline cursor-pointer hover:text-orange-700 ml-2 shrink-0"
           >
             Selesai
           </button>
         </div>
       )}
 
-      {/* 10.4 Rounded-pill input full-width with attachment & voice icons on the left, orange-500 circle send button */}
-      <div className="relative flex items-center w-full bg-cream/70 rounded-full focus-within:ring-1 focus-within:ring-brown-900/10 focus-within:bg-white transition-all pl-3 pr-2 py-1.5 shadow-sm">
-        {/* Attachment Icon */}
+      {/* Voice Recognition Error feedback */}
+      {sttError && (
+        <div className="mb-2 flex items-center justify-between bg-red-50 text-danger border border-red-200 px-4 py-2 rounded-full text-xs animate-in fade-in duration-150">
+          <span className="truncate flex-1 text-xs">{sttError}</span>
+          <button
+            type="button"
+            onClick={() => setSttError(null)}
+            className="text-xs font-bold ml-2 underline cursor-pointer hover:text-red-800"
+          >
+            Tutup
+          </button>
+        </div>
+      )}
+
+      {/* Rounded full-width composer card with attachment, mic, and send button */}
+      <div className="relative flex items-center w-full bg-cream/70 rounded-full focus-within:ring-1 focus-within:ring-brown-900/10 focus-within:bg-white transition-all pl-3 pr-2 py-1 shadow-xs">
+        {/* Attachment Icon — Honestly disabled with clear explanation */}
         <button
           type="button"
-          className="p-2 text-brown-700 hover:text-brown-900 hover:bg-cream rounded-full transition-colors"
-          title="Lampiran dokumen / foto"
-          aria-label="Lampiran"
+          disabled
+          className="p-2 text-brown-700/40 cursor-not-allowed rounded-full transition-colors"
+          title="Lampiran dokumen/foto belum didukung saat ini (fokus pada pendampingan teks & suara)"
+          aria-label="Lampiran belum didukung"
+          aria-disabled="true"
         >
           <Paperclip size={16} aria-hidden />
         </button>
 
-        {/* Voice/Mic Icon */}
+        {/* Real Voice/Mic Icon via Web Speech API */}
         <button
           type="button"
-          onClick={() => setIsVoiceActive(!isVoiceActive)}
-          className={`p-2 rounded-full transition-colors ${
-            isVoiceActive
-              ? "text-orange-500 bg-orange-100"
+          onClick={toggleListening}
+          className={`p-2 rounded-full transition-colors cursor-pointer ${
+            isListening
+              ? "text-orange-600 bg-orange-200 animate-pulse"
               : "text-brown-700 hover:text-brown-900 hover:bg-cream"
           }`}
-          title="Voice input"
-          aria-label="Voice input"
+          title={isListening ? "Hentikan perekaman suara" : "Bicara dengan suara (Bahasa Indonesia)"}
+          aria-label={isListening ? "Hentikan perekaman suara" : "Input suara"}
         >
           <Mic size={16} aria-hidden />
         </button>
 
-        {/* Text Input */}
-        <input
-          ref={inputRef}
-          type="text"
+        {/* Multiline auto-growing Textarea: Enter to send, Shift+Enter for newline */}
+        <textarea
+          ref={textareaRef}
           value={inputText}
           onChange={(e) => setInputText(e.target.value)}
           onKeyDown={handleKeyDown}
-          placeholder="Ketik pesan ke Zyba..."
+          placeholder="Ketik pesan ke Zyba... (Enter kirim, Shift+Enter baris baru)"
           disabled={isSending}
-          className="flex-1 min-w-0 bg-transparent px-2 sm:px-3 py-2 text-xs md:text-sm text-brown-900 placeholder:text-brown-700/60 focus:outline-none"
+          rows={1}
+          className="flex-1 min-w-0 bg-transparent px-2 sm:px-3 py-2 text-xs md:text-sm text-brown-900 placeholder:text-brown-700/60 focus:outline-none resize-none max-h-28 overflow-y-auto leading-relaxed"
         />
 
-        {/* Circular Send Button (10.4: lingkaran orange-500, ikon panah putih, disabled abu-abu) */}
+        {/* Circular Send Button with loading spinner */}
         <button
           type="button"
-          onClick={handleSendMessage}
+          onClick={handleTriggerSend}
           disabled={!inputText.trim() || isSending}
           aria-label="Kirim Pesan"
-          className={`w-9 h-9 rounded-full flex items-center justify-center shrink-0 transition-all shadow-sm ${
+          className={`w-9 h-9 rounded-full flex items-center justify-center shrink-0 transition-all shadow-xs ${
             inputText.trim() && !isSending
-              ? "bg-orange-500 text-white hover:opacity-95 hover:scale-105 active:scale-95"
+              ? "bg-orange-500 text-white hover:opacity-95 hover:scale-105 active:scale-95 cursor-pointer"
               : "bg-brown-900/20 text-white/70 cursor-not-allowed"
           }`}
         >
-          <Send size={14} aria-hidden className="rotate-45" />
+          {isSending ? (
+            <Loader2 size={14} className="animate-spin text-white" />
+          ) : (
+            <Send size={14} aria-hidden className="rotate-45" />
+          )}
         </button>
       </div>
 
-      {/* Kontrol Model & Gaya menempel ke input chat (Claude.ai style — AGENTS.md Bagian 10.8) */}
+      {/* Kontrol Model & Gaya menempel ke input chat */}
       <div className="flex flex-wrap items-center justify-between gap-1.5 mt-2 pt-1 px-1 text-xs text-brown-700">
         <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
           {setSelectedModel && (
@@ -178,7 +228,7 @@ export default function ChatInput({
                   key={style}
                   type="button"
                   onClick={() => setCommStyle(style)}
-                  className={`px-2 sm:px-2.5 py-0.5 rounded-full text-[10px] font-bold transition-all ${
+                  className={`px-2 sm:px-2.5 py-0.5 rounded-full text-[10px] font-bold transition-all cursor-pointer ${
                     commStyle === style
                       ? "bg-brown-900 text-white shadow-2xs"
                       : "text-brown-700 hover:text-brown-900"
@@ -191,9 +241,26 @@ export default function ChatInput({
           )}
         </div>
 
-        <span className="text-[10px] text-brown-700/50 hidden sm:inline">
-          Tekan Enter untuk kirim
-        </span>
+        <div className="flex items-center gap-3">
+          <span className="text-[10px] text-brown-700/50 hidden sm:inline">
+            Enter untuk kirim · Shift+Enter baris baru
+          </span>
+          <span
+            className="text-[10px] text-brown-700/70 font-medium flex items-center gap-1.5"
+            title={`${tokensRemaining.toLocaleString("id-ID")} token tersisa`}
+          >
+            <span
+              className={`w-1.5 h-1.5 rounded-full ${
+                percentRemaining <= 15
+                  ? "bg-danger animate-pulse"
+                  : percentRemaining <= 40
+                  ? "bg-orange-500"
+                  : "bg-green-500"
+              }`}
+            />
+            {percentRemaining}% token tersisa
+          </span>
+        </div>
       </div>
     </div>
   );

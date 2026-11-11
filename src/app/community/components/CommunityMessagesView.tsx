@@ -137,7 +137,7 @@ export default function CommunityMessagesView() {
   const otherUserId = activeConv?.otherUserId || targetUserMeta?.id || targetUserId || "";
   const otherName = activeConv?.otherUserName || targetUserMeta?.name || otherUserId;
   const otherUsername = activeConv?.otherUserUsername || targetUserMeta?.username || null;
-  const otherAvatar = activeConv?.otherUserAvatar || targetUserMeta?.avatarUrl || "🦊";
+  const otherAvatar = activeConv?.otherUserAvatar || targetUserMeta?.avatarUrl || "fox";
 
   const activeChatLog = activeConvId ? messages[activeConvId] || [] : [];
 

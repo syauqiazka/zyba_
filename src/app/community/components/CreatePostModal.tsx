@@ -5,7 +5,15 @@ import { X, ChevronDown, Image as ImageIcon, Loader2 } from "lucide-react";
 import { isAvatarUrl, resolveAvatar } from "@/lib/avatarUtils";
 import UserAvatar from "@/components/ui/UserAvatar";
 
-const TAG_OPTIONS = ["Sharing", "Mindfulness", "SleepRoutine", "ZybaRocks", "MentalHealth", "SelfCare"];
+const TAG_OPTIONS = [
+  "Refleksi",
+  "Hubungan",
+  "Kecemasan",
+  "Syukur",
+  "Pemulihan",
+  "Mindfulness",
+  "SelfCare",
+];
 
 interface CreatePostModalProps {
   open: boolean;

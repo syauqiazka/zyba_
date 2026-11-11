@@ -23,7 +23,7 @@ const FEATURES = [
       "Catat kondisi mental, fisik, dan sosialmu secara rutin. Dari check-in harian sederhana ini, kamu bisa mulai memahami perubahan dan pola keseharianmu dari waktu ke waktu.",
     icon: Brain,
     tone: "feature-lilac",
-    loginPath: "/daily-assessment",
+    loginPath: "/mood-check-in",
     cta: "Mulai Check-In Harian",
   },
   {

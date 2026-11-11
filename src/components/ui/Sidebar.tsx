@@ -1,12 +1,15 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
+import { createPortal } from "react-dom";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import ProfilePopover, { ProfileUser } from "../profile/ProfilePopover";
 import ProfileSettingsModal from "../profile/ProfileSettingsModal";
 import UserAvatar from "./UserAvatar";
 import SidebarPremiumCard from "./SidebarPremiumCard";
+import AmbientSoundDock from "./AmbientSoundDock";
+import GroundingModal from "./GroundingModal";
 import {
   Home,
   CalendarCheck,
@@ -34,7 +37,7 @@ type NavItem = {
 
 const NAV_ITEMS: NavItem[] = [
   { href: "/dashboard", label: "Dashboard", icon: Home },
-  { href: "/daily-assessment", label: "Mood Check-In", icon: CalendarCheck },
+  { href: "/mood-check-in", label: "Mood Check-In", icon: CalendarCheck },
   { href: "/companion", label: "Tanya Zyba", icon: Bot },
   { href: "/activity", label: "Smart Planner", icon: Zap },
   { href: "/community", label: "Komunitas Zyba", icon: Users },
@@ -51,10 +54,44 @@ export default function Sidebar({ onClose }: { onClose?: () => void }) {
 
   const [isProfilePopoverOpen, setIsProfilePopoverOpen] = useState(false);
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
+  const [isGroundingModalOpen, setIsGroundingModalOpen] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
   const [subscription, setSubscription] = useState<any>(null);
   const [premiumUntil, setPremiumUntil] = useState<string | null>(null);
   const [communityBadgeCount, setCommunityBadgeCount] = useState(0);
+  const [mounted, setMounted] = useState(false);
+  const profileButtonRef = useRef<HTMLButtonElement>(null);
+
+  // Portal tooltip state (completely unclipped by aside overflow-y-auto)
+  const [activeTooltip, setActiveTooltip] = useState<{
+    label: string;
+    isPremium?: boolean;
+    top: number;
+    left: number;
+  } | null>(null);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const handleShowTooltip = (
+    el: HTMLElement,
+    label: string,
+    isPremium?: boolean
+  ) => {
+    if (typeof window === "undefined" || window.innerWidth < 768) return;
+    const rect = el.getBoundingClientRect();
+    setActiveTooltip({
+      label,
+      isPremium,
+      top: Math.round(rect.top + rect.height / 2),
+      left: Math.round(rect.right + 12),
+    });
+  };
+
+  const handleHideTooltip = () => {
+    setActiveTooltip(null);
+  };
 
   // Instant hydration from localStorage cache to eliminate any loading delay
   const [currentUser, setCurrentUser] = useState<ProfileUser>(() => {
@@ -133,6 +170,14 @@ export default function Sidebar({ onClose }: { onClose?: () => void }) {
   }, []);
 
   useEffect(() => {
+    const handleOpenGrounding = () => {
+      setIsGroundingModalOpen(true);
+    };
+    window.addEventListener("zyba_open_grounding", handleOpenGrounding);
+    return () => window.removeEventListener("zyba_open_grounding", handleOpenGrounding);
+  }, []);
+
+  useEffect(() => {
     let mounted = true;
 
     const fetchBadges = async () => {
@@ -184,7 +229,10 @@ export default function Sidebar({ onClose }: { onClose?: () => void }) {
   };
 
   return (
-    <aside className="w-[82vw] max-w-[290px] md:w-[76px] lg:w-[76px] shrink-0 md:my-4 md:ml-4 md:h-[calc(100vh-2rem)] md:rounded-[28px] md:border md:border-brown-900/10 md:bg-white/90 md:backdrop-blur-md md:shadow-[0_4px_24px_-4px_rgba(59,42,32,0.06)] bg-cream p-4 md:px-2 md:py-4 flex flex-col sticky top-0 h-[100dvh] shadow-xl md:shadow-xs transition-all duration-300 overflow-y-auto scrollbar-none pb-6 md:pb-4 border-r border-brown-900/10 md:border-r-0">
+    <aside
+      onScroll={handleHideTooltip}
+      className="w-[82vw] max-w-[290px] md:w-[76px] lg:w-[76px] shrink-0 md:my-4 md:ml-4 md:h-[calc(100vh-2rem)] md:rounded-[28px] md:border md:border-brown-900/10 md:bg-white/90 md:backdrop-blur-md md:shadow-[0_4px_24px_-4px_rgba(59,42,32,0.06)] bg-cream p-4 md:px-2 md:py-4 flex flex-col sticky top-0 h-[100dvh] shadow-xl md:shadow-xs transition-all duration-300 overflow-y-auto scrollbar-none pb-6 md:pb-4 border-r border-brown-900/10 md:border-r-0"
+    >
       {/* Top section: Logo + Nav */}
       <div className="flex flex-col gap-5 flex-1">
         {/* Brand Logo & Close button row */}
@@ -233,8 +281,14 @@ export default function Sidebar({ onClose }: { onClose?: () => void }) {
               <Link
                 key={item.href}
                 href={item.href}
-                onClick={onClose}
-                title={item.label}
+                onClick={() => {
+                  handleHideTooltip();
+                  if (onClose) onClose();
+                }}
+                onMouseEnter={(e) => handleShowTooltip(e.currentTarget, item.label, item.isPremium)}
+                onMouseLeave={handleHideTooltip}
+                onFocus={(e) => handleShowTooltip(e.currentTarget, item.label, item.isPremium)}
+                onBlur={handleHideTooltip}
                 className={`group/link relative w-full md:w-11 md:h-11 px-3.5 py-2.5 md:p-0 rounded-2xl text-sm font-medium transition-all duration-200 flex items-center justify-start md:justify-center gap-3 ${
                   isActive
                     ? "bg-brown-900 text-cream shadow-xs font-semibold"
@@ -257,14 +311,6 @@ export default function Sidebar({ onClose }: { onClose?: () => void }) {
                 </div>
 
                 <span className="md:hidden truncate">{item.label}</span>
-
-                {/* Floating Zen Pill Tooltip on desktop hover */}
-                <span className="hidden md:flex absolute left-full ml-3 px-3 py-1.5 rounded-full bg-brown-900 text-cream text-xs font-semibold whitespace-nowrap shadow-md opacity-0 pointer-events-none group-hover/link:opacity-100 transition-all duration-150 z-50 items-center gap-1.5">
-                  <span>{item.label}</span>
-                  {item.isPremium && isPlus && (
-                    <span className="text-[9px] font-bold text-orange-400">PLUS</span>
-                  )}
-                </span>
 
                 {/* BETA badge for companion in drawer */}
                 {item.href === "/companion" && (
@@ -309,7 +355,14 @@ export default function Sidebar({ onClose }: { onClose?: () => void }) {
                 <Link
                   key={item.href}
                   href={item.href}
-                  onClick={onClose}
+                  onClick={() => {
+                    handleHideTooltip();
+                    if (onClose) onClose();
+                  }}
+                  onMouseEnter={(e) => handleShowTooltip(e.currentTarget, item.label)}
+                  onMouseLeave={handleHideTooltip}
+                  onFocus={(e) => handleShowTooltip(e.currentTarget, item.label)}
+                  onBlur={handleHideTooltip}
                   title={item.label}
                   className={`group/link relative w-full md:w-11 md:h-11 px-3.5 py-2.5 md:p-0 rounded-2xl text-sm font-medium transition-all duration-200 flex items-center justify-start md:justify-center gap-3 ${
                     isActive
@@ -323,9 +376,6 @@ export default function Sidebar({ onClose }: { onClose?: () => void }) {
                     className={isActive ? "text-white shrink-0" : "text-orange-500 shrink-0"}
                   />
                   <span className="md:hidden truncate">{item.label}</span>
-                  <span className="hidden md:flex absolute left-full ml-3 px-3 py-1.5 rounded-full bg-brown-900 text-cream text-xs font-semibold whitespace-nowrap shadow-md opacity-0 pointer-events-none group-hover/link:opacity-100 transition-all duration-150 z-50">
-                    {item.label}
-                  </span>
                 </Link>
               );
             })}
@@ -357,13 +407,27 @@ export default function Sidebar({ onClose }: { onClose?: () => void }) {
               setIsSettingsModalOpen(true);
             }}
             onLogout={handleLogout}
+            triggerRef={profileButtonRef}
           />
 
           {/* Desktop compact dock trigger */}
           <div className="hidden md:flex flex-col items-center gap-2">
+            <AmbientSoundDock
+              onShowTooltip={handleShowTooltip}
+              onHideTooltip={handleHideTooltip}
+            />
+
             <button
+              ref={profileButtonRef}
               type="button"
-              onClick={() => setIsProfilePopoverOpen(!isProfilePopoverOpen)}
+              onClick={() => {
+                handleHideTooltip();
+                setIsProfilePopoverOpen(!isProfilePopoverOpen);
+              }}
+              onMouseEnter={(e) => handleShowTooltip(e.currentTarget, currentUser.name)}
+              onMouseLeave={handleHideTooltip}
+              onFocus={(e) => handleShowTooltip(e.currentTarget, currentUser.name)}
+              onBlur={handleHideTooltip}
               className="w-11 h-11 rounded-2xl flex items-center justify-center p-0.5 border border-brown-900/10 hover:border-orange-500/50 bg-white/95 hover:bg-cream transition-all group/prof cursor-pointer shadow-xs relative"
               title="Profil Pengguna"
             >
@@ -378,9 +442,6 @@ export default function Sidebar({ onClose }: { onClose?: () => void }) {
                   label: "Aktif",
                 }}
               />
-              <span className="absolute left-full ml-3 px-3 py-1.5 rounded-full bg-brown-900 text-cream text-xs font-semibold whitespace-nowrap shadow-md opacity-0 pointer-events-none group-hover/prof:opacity-100 transition-all duration-150 z-50">
-                {currentUser.name}
-              </span>
             </button>
           </div>
 
@@ -445,6 +506,12 @@ export default function Sidebar({ onClose }: { onClose?: () => void }) {
           onLogout={handleLogout}
         />
 
+        {/* Kotak Tenang Grounding 5-4-3-2-1 Modal */}
+        <GroundingModal
+          isOpen={isGroundingModalOpen}
+          onClose={() => setIsGroundingModalOpen(false)}
+        />
+
         {/* Logout (Mobile Drawer only) */}
         <button
           type="button"
@@ -455,6 +522,29 @@ export default function Sidebar({ onClose }: { onClose?: () => void }) {
           <span>Keluar</span>
         </button>
       </div>
+
+      {/* Floating Zen Pill Portal Tooltip — Immune to aside overflow-y-auto clipping */}
+      {mounted &&
+        activeTooltip &&
+        createPortal(
+          <div
+            role="tooltip"
+            style={{
+              top: `${activeTooltip.top}px`,
+              left: `${activeTooltip.left}px`,
+              transform: "translateY(-50%)",
+            }}
+            className="fixed z-[99999] pointer-events-none px-3 py-1.5 rounded-full bg-brown-900 text-cream text-xs font-semibold whitespace-nowrap shadow-lg border border-brown-900/20 flex items-center gap-1.5 animate-in fade-in zoom-in-95 duration-100"
+          >
+            <span>{activeTooltip.label}</span>
+            {activeTooltip.isPremium && currentUser.plan === "PLUS" && (
+              <span className="text-[9px] font-bold text-orange-400 bg-orange-950/60 px-1.5 py-0.5 rounded-full">
+                PLUS
+              </span>
+            )}
+          </div>,
+          document.body
+        )}
     </aside>
   );
 }

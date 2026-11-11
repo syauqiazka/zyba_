@@ -21,6 +21,7 @@ import {
   Download,
   Settings,
   ArrowLeft,
+  Zap,
 } from "lucide-react";
 import { useCompanion, CompanionSection, SECTION_TO_SLUG } from "../context/CompanionContext";
 import { getPersonaById } from "@/backend/ai/personas";
@@ -70,6 +71,10 @@ export default function CompanionSidebar({
     setConvIdToDelete,
     selectedPersona,
     setShowProModal,
+    tokensRemaining,
+    tokenLimit,
+    percentRemaining,
+    plan,
   } = useCompanion();
   const currentPersona = getPersonaById(selectedPersona);
 
@@ -340,6 +345,35 @@ export default function CompanionSidebar({
         )}
       </div>
 
+      {/* ── 4.5 Token Quota Card ────────────────────────────────────────── */}
+      <div className="px-3 py-2.5 mx-3 mb-2 rounded-xl bg-white/70 border border-brown-900/8 text-brown-900 shadow-2xs">
+        <div className="flex items-center justify-between text-[11px] mb-1">
+          <span className="font-semibold text-brown-700/80 flex items-center gap-1">
+            <Zap size={11} className="text-orange-500" />
+            Sisa Token
+          </span>
+          <span className="font-bold text-brown-900">
+            {percentRemaining}%
+          </span>
+        </div>
+        <div className="w-full h-1.5 bg-brown-900/8 rounded-full overflow-hidden mb-1">
+          <div
+            className={`h-full rounded-full transition-all duration-300 ${
+              percentRemaining <= 15
+                ? "bg-danger"
+                : percentRemaining <= 40
+                ? "bg-orange-500"
+                : "bg-green-500"
+            }`}
+            style={{ width: `${Math.max(4, percentRemaining)}%` }}
+          />
+        </div>
+        <div className="flex items-center justify-between text-[10px] text-brown-700/60 font-medium">
+          <span>{tokensRemaining.toLocaleString("id-ID")} tok</span>
+          <span>{plan === "PLUS" ? "Zyba Plus (150k)" : "Gratis (20k/hr)"}</span>
+        </div>
+      </div>
+
       {/* ── 5. Bottom User Bar ───────────────────────────────────────────── */}
       <div className="p-3 border-t border-brown-900/8 bg-cream shrink-0 flex items-center justify-between">
         <button
@@ -351,7 +385,9 @@ export default function CompanionSidebar({
             {displayInitial}
           </div>
           <div className="text-left truncate">
-            <span className="text-xs font-bold text-brown-900 block truncate">{displayName} · Gratis</span>
+            <span className="text-xs font-bold text-brown-900 block truncate">
+              {displayName} · {plan === "PLUS" ? "Plus" : "Gratis"}
+            </span>
           </div>
           <ChevronDown size={12} className="text-brown-700/40 shrink-0" />
         </button>
