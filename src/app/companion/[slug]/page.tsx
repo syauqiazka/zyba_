@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import { Check, X, Zap } from "lucide-react";
 import { useCompanion } from "../context/CompanionContext";
 import ChatHeader from "../components/ChatHeader";
 import ChatMessages from "../components/ChatMessages";
@@ -96,7 +97,9 @@ export default function CompanionSlugPage() {
           <div className="bg-white rounded-3xl p-7 max-w-sm w-full shadow-2xl border border-brown-900/10 flex flex-col gap-5">
             <div className="flex items-center justify-between">
               <h3 className="font-display font-extrabold text-base text-brown-900">Pengaturan Tanya Zyba</h3>
-              <button type="button" onClick={() => setShowSettingsModal(false)} className="text-brown-700 hover:text-brown-900 text-sm">✕</button>
+              <button type="button" onClick={() => setShowSettingsModal(false)} className="text-brown-700 hover:text-brown-900 text-sm p-1 rounded-full hover:bg-cream" aria-label="Tutup">
+                <X size={16} />
+              </button>
             </div>
             <div className="flex flex-col gap-2">
               <label className="text-xs font-bold text-brown-900">Gaya Komunikasi AI:</label>
@@ -112,7 +115,7 @@ export default function CompanionSlugPage() {
                   }`}
                 >
                   <span>{style}</span>
-                  {commStyle === style && <span>✓</span>}
+                  {commStyle === style && <Check size={14} />}
                 </button>
               ))}
             </div>
@@ -131,7 +134,9 @@ export default function CompanionSlugPage() {
       {showProModal && (
         <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-xs flex items-center justify-center p-4">
           <div className="bg-orange-100 rounded-3xl p-8 max-w-md w-full shadow-2xl border border-orange-500/20 flex flex-col items-center text-center gap-5">
-            <div className="w-14 h-14 rounded-2xl bg-orange-500 text-white font-bold flex items-center justify-center text-2xl shadow-md">⚡</div>
+            <div className="w-14 h-14 rounded-2xl bg-orange-500 text-white font-bold flex items-center justify-center shadow-md">
+              <Zap size={28} />
+            </div>
             <div>
               <h3 className="font-display font-extrabold text-xl text-brown-900">Kuota Chat Harian Habis</h3>
               <p className="text-xs text-brown-700 mt-1 max-w-xs leading-relaxed">

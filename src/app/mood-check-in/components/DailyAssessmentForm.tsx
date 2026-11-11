@@ -103,12 +103,19 @@ interface FormProps {
   initialValues?: Partial<DailyAssessmentSubmitData>;
 }
 
-export const SLEEP_OPTIONS = [
-  { rating: 1, label: "< 4 jam", desc: "Insomnia", icon: "😴" },
-  { rating: 2, label: "4-5 jam", desc: "Kurang Nyenyak", icon: "🥱" },
-  { rating: 3, label: "6-7 jam", desc: "Cukup", icon: "🛌" },
-  { rating: 4, label: "7-8 jam", desc: "Pulas & Optimal", icon: "🌙" },
-  { rating: 5, label: "> 8 jam", desc: "Sangat Segar", icon: "🌟" },
+export interface SleepOptionItem {
+  rating: number;
+  label: string;
+  desc: string;
+  icon: React.ElementType;
+}
+
+export const SLEEP_OPTIONS: SleepOptionItem[] = [
+  { rating: 1, label: "< 4 jam", desc: "Insomnia", icon: Moon },
+  { rating: 2, label: "4-5 jam", desc: "Kurang Nyenyak", icon: Bed },
+  { rating: 3, label: "6-7 jam", desc: "Cukup", icon: BedDouble },
+  { rating: 4, label: "7-8 jam", desc: "Pulas & Optimal", icon: MoonStar },
+  { rating: 5, label: "> 8 jam", desc: "Sangat Segar", icon: Sunrise },
 ];
 
 export const ENERGY_TAGS = [

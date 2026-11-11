@@ -262,7 +262,7 @@ export default function DailyAssessmentHistory({
                   <p className="text-xs font-extrabold text-brown-900 mt-0.5 truncate flex items-center justify-center gap-0.5">
                     {sleep ? (
                       <>
-                        <span>{sleep.icon}</span>
+                        <sleep.icon size={12} className="text-brown-700 shrink-0" strokeWidth={1.8} />
                         <span className="truncate">{sleep.label}</span>
                       </>
                     ) : (

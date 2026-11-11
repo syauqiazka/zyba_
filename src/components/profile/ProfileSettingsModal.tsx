@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import { createPortal } from "react-dom";
+import { Check, Globe, LogOut, X, Camera, Clock } from "lucide-react";
 import { ProfileUser } from "./ProfilePopover";
 import PersonaPicker from "@/app/companion/components/PersonaPicker";
 import { PersonaId } from "@/backend/ai/personas";
@@ -55,7 +56,7 @@ const SIDEBAR: SidebarSection[] = [
     { id: "accessibility", label: "Aksesibilitas" },
   ]},
   { label: "INFO & BANTUAN", key: "info", items: [
-    { id: "crisis-resources", label: "Hotline Krisis", badge: "📞" },
+    { id: "crisis-resources", label: "Hotline Krisis", badge: "24/7" },
     { id: "about",            label: "Tentang ZYBA" },
   ]},
 ];
@@ -425,7 +426,7 @@ export default function ProfileSettingsModal({ user, isOpen, onClose, onUserUpda
           className="hidden md:flex absolute top-3.5 right-4 z-[999] pointer-events-auto w-9 h-9 rounded-full border border-brown-900/20 text-brown-700 hover:bg-cream hover:text-brown-900 items-center justify-center text-sm font-bold transition-all bg-white shadow-sm shrink-0 hover:scale-105 active:scale-95"
           aria-label="Tutup pengaturan"
         >
-          ✕
+          <X size={16} />
         </button>
 
         {/* ── Sidebar (Desktop / Tablet) ── */}
@@ -495,7 +496,8 @@ export default function ProfileSettingsModal({ user, isOpen, onClose, onUserUpda
           <div className="p-3 border-t border-brown-900/10 shrink-0">
             <button type="button" onClick={onLogout}
               className="w-full flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-bold text-danger hover:bg-danger/10 transition-colors">
-              <span>🚪</span><span>Keluar (Log Out)</span>
+              <LogOut size={14} className="shrink-0" />
+              <span>Keluar (Log Out)</span>
             </button>
           </div>
         </aside>
@@ -513,7 +515,7 @@ export default function ProfileSettingsModal({ user, isOpen, onClose, onUserUpda
                 className="w-8 h-8 rounded-full bg-brown-900/5 hover:bg-brown-900/10 active:scale-95 flex items-center justify-center text-brown-700 hover:text-brown-900 transition-colors border border-brown-900/15 text-sm font-bold shadow-2xs"
                 aria-label="Tutup pengaturan"
               >
-                ✕
+                <X size={15} />
               </button>
             </div>
             {/* Mobile Horizontal Tabs */}
@@ -597,7 +599,8 @@ export default function ProfileSettingsModal({ user, isOpen, onClose, onUserUpda
                       disabled={isUploadingAvatar}
                       className="text-xs font-bold bg-orange-500 text-white px-4 py-2.5 rounded-full hover:bg-orange-600 active:scale-95 transition-all shadow-xs flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
                     >
-                      {isUploadingAvatar ? "Mengunggah..." : "📷 Upload Foto"}
+                      <Camera size={13} className="shrink-0" />
+                      <span>{isUploadingAvatar ? "Mengunggah..." : "Upload Foto"}</span>
                     </button>
                   </div>
                 </div>
@@ -605,7 +608,7 @@ export default function ProfileSettingsModal({ user, isOpen, onClose, onUserUpda
                 {/* Cooldown active info banner */}
                 {cooldownInfo && !cooldownInfo.canChange && (
                   <div className="bg-amber-50 border border-amber-200/90 text-amber-900 text-xs px-3.5 py-2.5 rounded-2xl flex items-start gap-2">
-                    <span className="text-sm leading-none mt-0.5">⏳</span>
+                    <Clock size={14} className="text-amber-700 shrink-0 mt-0.5" />
                     <div className="leading-relaxed">
                       <span className="font-bold">Cooldown Aktif:</span> Ganti foto profil lagi dalam{" "}
                       <span className="font-bold underline">{cooldownInfo.remainingText}</span> (aturan {cooldownInfo.cooldownDays} hari sekali).
@@ -732,7 +735,15 @@ export default function ProfileSettingsModal({ user, isOpen, onClose, onUserUpda
             <Section id="connections" title="Koneksi Sosial">
               <div className="bg-cream/50 rounded-2xl p-5 border border-brown-900/10">
                 <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3"><span className="text-xl">🔵</span><div><p className="text-sm font-bold text-brown-900">Google</p><p className="text-xs text-brown-700">Hubungkan untuk login lebih mudah</p></div></div>
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 rounded-full bg-white border border-brown-900/15 flex items-center justify-center text-brown-900 shrink-0">
+                      <Globe size={15} />
+                    </div>
+                    <div>
+                      <p className="text-sm font-bold text-brown-900">Google</p>
+                      <p className="text-xs text-brown-700">Hubungkan untuk login lebih mudah</p>
+                    </div>
+                  </div>
                   <Btn onClick={() => ok("Fitur segera hadir!")}>Hubungkan</Btn>
                 </div>
               </div>
@@ -790,8 +801,8 @@ export default function ProfileSettingsModal({ user, isOpen, onClose, onUserUpda
                     setCommStyle(s);
                     try { localStorage.setItem("zyba_companion_style", s); } catch {};
                   }} className={`flex items-center justify-between p-3 rounded-2xl text-xs font-bold border transition-colors ${commStyle === s ? "bg-brown-900 text-white border-brown-900" : "bg-cream text-brown-900 border-brown-900/10 hover:border-orange-500"}`}>
-                    <span>{s === "CASUAL" ? "😊 Santai" : s === "FORMAL" ? "🎩 Formal" : "🎉 Fun"}</span>
-                    {commStyle === s && <span>✓</span>}
+                    <span>{s === "CASUAL" ? "Santai (Kasual)" : s === "FORMAL" ? "Formal & Terstruktur" : "Hangat & Ceria"}</span>
+                    {commStyle === s && <Check size={14} className="stroke-[2.5]" />}
                   </button>
                 ))}
                 <Btn onClick={() => ok("Gaya bahasa disimpan!")}>Simpan</Btn>
@@ -839,8 +850,8 @@ export default function ProfileSettingsModal({ user, isOpen, onClose, onUserUpda
               <div className="flex flex-col gap-2">
                 {(["public", "anonymous"] as const).map(v => (
                   <button key={v} onClick={() => setPostVisibility(v)} className={`flex items-center justify-between p-3 rounded-2xl text-xs font-bold border transition-colors ${postVisibility === v ? "bg-brown-900 text-white border-brown-900" : "bg-white text-brown-900 border-brown-900/10 hover:border-orange-500"}`}>
-                    <span>{v === "public" ? "🌍 Publik ke komunitas" : "🎭 Anonim"}</span>
-                    {postVisibility === v && <span>✓</span>}
+                    <span>{v === "public" ? "Publik ke komunitas" : "Anonim (Pseudonim)"}</span>
+                    {postVisibility === v && <Check size={14} className="stroke-[2.5]" />}
                   </button>
                 ))}
                 <Btn onClick={() => ok("Visibilitas disimpan!")}>Simpan</Btn>

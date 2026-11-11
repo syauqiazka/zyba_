@@ -3,6 +3,7 @@
 import React, { createContext, useContext, useState, useEffect, useCallback, useRef } from "react";
 import { useFreshDataSignal } from "@/hooks/useFreshData";
 import { usePathname, useRouter } from "next/navigation";
+import { Check, AlertCircle } from "lucide-react";
 import { Post } from "../components/PostCard";
 import { detectRisk } from "@/lib/crisisDetection";
 
@@ -784,9 +785,9 @@ export function CommunityProvider({ children }: { children: React.ReactNode }) {
           className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 flex items-center gap-2.5 px-4 py-2.5 rounded-full bg-brown-900 text-white shadow-2xl text-xs font-medium animate-in fade-in slide-in-from-bottom-2 duration-150 pointer-events-none"
         >
           {toast.type === "error" ? (
-            <span className="text-red-400 font-bold">✕</span>
+            <AlertCircle size={14} className="text-red-400 shrink-0" />
           ) : (
-            <span className="text-green-400 font-bold">✓</span>
+            <Check size={14} className="text-green-400 stroke-[2.5] shrink-0" />
           )}
           <span>{toast.message}</span>
         </div>

@@ -297,9 +297,10 @@ export default function ProfilePopover({
                 <button
                   type="button"
                   onClick={handleSaveCustomStatus}
-                  className="w-5 h-5 rounded-full bg-orange-500 text-white flex items-center justify-center text-[10px] font-bold hover:bg-orange-600 transition-colors"
+                  className="w-5 h-5 rounded-full bg-orange-500 text-white flex items-center justify-center hover:bg-orange-600 transition-colors cursor-pointer shrink-0"
+                  aria-label="Simpan status"
                 >
-                  ✓
+                  <Check size={11} strokeWidth={2.5} />
                 </button>
               </div>
             ) : (

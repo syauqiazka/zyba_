@@ -6,13 +6,8 @@ const globalForAccountDb = globalThis as unknown as {
 
 const dbUrl =
   process.env.DATABASE_URL_ACCOUNT ||
-  process.env.DIRECT_URL_ACCOUNT;
-
-if (!dbUrl) {
-  throw new Error(
-    "DATABASE_URL_ACCOUNT / DIRECT_URL_ACCOUNT belum diset."
-  );
-}
+  process.env.DIRECT_URL_ACCOUNT ||
+  "postgresql://postgres:postgres@localhost:5432/zyba_account";
 
 function withPoolConfig(url: string, limit = 5): string {
   if (url.includes("connection_limit=")) return url;

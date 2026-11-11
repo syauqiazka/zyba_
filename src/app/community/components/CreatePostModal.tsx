@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
-import { X, ChevronDown, Image as ImageIcon, Loader2 } from "lucide-react";
+import { X, ChevronDown, Image as ImageIcon, Loader2, AlertCircle } from "lucide-react";
 import { isAvatarUrl, resolveAvatar } from "@/lib/avatarUtils";
 import UserAvatar from "@/components/ui/UserAvatar";
 
@@ -222,9 +222,12 @@ export default function CreatePostModal({
       {/* Upload Error Banner */}
       {uploadError && (
         <div className="bg-red-50 border border-red-200 text-red-700 text-xs px-3 py-2 rounded-xl flex items-center justify-between">
-          <span>⚠ {uploadError}</span>
+          <span className="flex items-center gap-1.5">
+            <AlertCircle size={13} className="shrink-0" />
+            {uploadError}
+          </span>
           <button type="button" onClick={() => setUploadError(null)} className="text-red-500 hover:text-red-800 ml-2">
-            ✕
+            <X size={13} />
           </button>
         </div>
       )}

@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Trash2 } from "lucide-react";
+import { Trash2, X } from "lucide-react";
 import ChatHeader from "./components/ChatHeader";
 import ChatMessages from "./components/ChatMessages";
 import ChatInput from "./components/ChatInput";
@@ -161,8 +161,9 @@ export default function CompanionPage() {
                   setShowPersonaModal(false);
                 }}
                 className="w-8 h-8 rounded-full bg-cream text-brown-700 font-bold hover:bg-brown-900 hover:text-white transition-colors flex items-center justify-center"
+                aria-label="Tutup"
               >
-                ✕
+                <X size={16} />
               </button>
             </div>
             <PersonaPicker

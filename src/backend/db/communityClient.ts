@@ -6,13 +6,8 @@ const globalForCommunityDb = globalThis as unknown as {
 
 const dbUrl =
   process.env.DATABASE_URL_COMMUNITY ||
-  process.env.DIRECT_URL_COMMUNITY;
-
-if (!dbUrl) {
-  throw new Error(
-    "DATABASE_URL_COMMUNITY / DIRECT_URL_COMMUNITY belum diset."
-  );
-}
+  process.env.DIRECT_URL_COMMUNITY ||
+  "postgresql://postgres:postgres@localhost:5432/zyba_community";
 
 function withPoolConfig(url: string, limit = 10): string {
   if (url.includes("connection_limit=")) return url;

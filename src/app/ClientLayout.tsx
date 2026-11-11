@@ -4,7 +4,7 @@ import { Suspense, useState, useEffect } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import Sidebar from "@/components/ui/Sidebar";
 import NavigationProgress from "@/components/ui/NavigationProgress";
-import { Menu } from "lucide-react";
+import { Menu, Lock } from "lucide-react";
 
 const PROTECTED_PATHS = [
   "/dashboard",
@@ -172,8 +172,8 @@ export default function ClientLayout({
         <NavigationProgress />
         <div className="flex min-h-screen items-center justify-center bg-cream px-6 py-10 text-brown-900">
           <div className="w-full max-w-md rounded-[28px] border border-brown-900/10 bg-white p-8 text-center shadow-[0_24px_60px_rgba(41,35,31,0.08)]">
-            <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-orange-100 text-2xl">
-              🔒
+            <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-orange-100 text-orange-600">
+              <Lock size={24} strokeWidth={1.8} />
             </div>
             <p className="text-[11px] font-extrabold uppercase tracking-[0.16em] text-brown-700/60">
               Akses dibatasi

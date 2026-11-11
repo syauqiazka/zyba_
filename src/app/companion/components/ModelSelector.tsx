@@ -2,7 +2,21 @@
 
 import React, { useState, useRef, useEffect } from "react";
 import { createPortal } from "react-dom";
-import { ChevronDown, Search, X } from "lucide-react";
+import {
+  ChevronDown,
+  Search,
+  X,
+  Zap,
+  Sparkles,
+  Cpu,
+  Brain,
+  Wind,
+  Gem,
+  Layers,
+  ShieldCheck,
+  Settings,
+  Check,
+} from "lucide-react";
 import { AIModelType } from "@/backend/ai/types";
 import { LEGACY_MODEL_ALIAS_MAP } from "@/backend/ai/modelRegistry";
 
@@ -18,7 +32,7 @@ interface ModelOption {
   name: string;
   badge: string;
   desc: string;
-  icon: string;
+  icon: React.ElementType;
   tier: "FREE" | "PLUS" | "ALL";
 }
 
@@ -28,7 +42,7 @@ const MODEL_OPTIONS: ModelOption[] = [
     name: "Gemini Flash Lite",
     badge: "Rekomendasi",
     desc: "Model resmi Google, respons super cepat (sub-detik) & akurat",
-    icon: "⚡",
+    icon: Zap,
     tier: "ALL",
   },
   {
@@ -36,7 +50,7 @@ const MODEL_OPTIONS: ModelOption[] = [
     name: "Gemini Flash",
     badge: "Stabil",
     desc: "Model Google untuk percakapan pendamping harian",
-    icon: "✨",
+    icon: Sparkles,
     tier: "ALL",
   },
   {
@@ -44,7 +58,7 @@ const MODEL_OPTIONS: ModelOption[] = [
     name: "Groq OSS 20B",
     badge: "Ultra Fast",
     desc: "Inference super cepat via Groq LPU hardware",
-    icon: "⚡",
+    icon: Cpu,
     tier: "ALL",
   },
   {
@@ -52,7 +66,7 @@ const MODEL_OPTIONS: ModelOption[] = [
     name: "Groq Qwen 27B",
     badge: "Logika & Code",
     desc: "Penalaran logika, terstruktur & coding via Groq",
-    icon: "🧠",
+    icon: Brain,
     tier: "ALL",
   },
   {
@@ -60,7 +74,7 @@ const MODEL_OPTIONS: ModelOption[] = [
     name: "Ministral 8B",
     badge: "Reflektif",
     desc: "Model compact Mistral AI, terstruktur untuk refleksi",
-    icon: "🌊",
+    icon: Wind,
     tier: "ALL",
   },
   {
@@ -68,7 +82,7 @@ const MODEL_OPTIONS: ModelOption[] = [
     name: "Google Gemma 4 31B",
     badge: "Gratis",
     desc: "Open multimodal via OpenRouter free tier",
-    icon: "💎",
+    icon: Gem,
     tier: "ALL",
   },
   {
@@ -76,7 +90,7 @@ const MODEL_OPTIONS: ModelOption[] = [
     name: "NVIDIA Nemotron 3 Ultra",
     badge: "Frontier",
     desc: "NVIDIA reasoning frontier via OpenRouter free tier",
-    icon: "🟢",
+    icon: Layers,
     tier: "ALL",
   },
   {
@@ -84,7 +98,7 @@ const MODEL_OPTIONS: ModelOption[] = [
     name: "GPT Premium",
     badge: "Plus",
     desc: "Inference prioritas OpenAI untuk pelanggan Zyba Plus",
-    icon: "✨",
+    icon: ShieldCheck,
     tier: "PLUS",
   },
 ];
@@ -190,7 +204,9 @@ export default function ModelSelector({
         aria-haspopup="listbox"
         aria-expanded={isOpen}
       >
-        <span className="text-xs shrink-0">{currentOption.icon}</span>
+        <span className="shrink-0 text-orange-500">
+          <currentOption.icon size={13} strokeWidth={1.8} />
+        </span>
         <span className="truncate max-w-[70px] xs:max-w-[95px] sm:max-w-[130px] font-bold text-brown-900">
           {currentOption.name}
         </span>
@@ -217,7 +233,7 @@ export default function ModelSelector({
             {/* Header Popover */}
             <div className="flex items-center justify-between px-2 py-1 border-b border-brown-900/10 mb-1">
               <div className="flex items-center gap-1.5">
-                <span className="text-xs">⚙️</span>
+                <Settings size={13} className="text-brown-700 shrink-0" strokeWidth={1.8} />
                 <span className="text-[11px] font-extrabold text-brown-900">
                   Pilih Model Kecerdasan AI
                 </span>
@@ -281,8 +297,8 @@ export default function ModelSelector({
                       }`}
                     >
                       <div className="flex items-start gap-2.5 min-w-0">
-                        <span className="text-base shrink-0 mt-0.5">
-                          {opt.icon}
+                        <span className="shrink-0 mt-0.5 text-brown-800">
+                          <opt.icon size={15} strokeWidth={1.8} />
                         </span>
                         <div className="min-w-0">
                           <div className="flex items-center gap-1.5">
@@ -306,9 +322,7 @@ export default function ModelSelector({
                       </div>
 
                       {isSelected && (
-                        <span className="text-green-600 font-bold text-sm ml-1 shrink-0 mt-0.5">
-                          ✓
-                        </span>
+                        <Check size={14} className="text-green-700 stroke-[2.5] ml-1 shrink-0 mt-0.5" />
                       )}
                     </button>
                   );

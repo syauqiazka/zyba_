@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { X, Sparkles } from "lucide-react";
 
 interface GoogleAuthProfileModalProps {
   isOpen: boolean;
@@ -121,10 +122,10 @@ export default function GoogleAuthProfileModal({
         <button
           type="button"
           onClick={onClose}
-          className="absolute top-5 right-5 text-brown-700/60 hover:text-brown-900 text-sm p-1 rounded-full hover:bg-cream transition-colors"
+          className="absolute top-5 right-5 text-brown-700/60 hover:text-brown-900 text-sm p-1.5 rounded-full hover:bg-cream transition-colors"
           aria-label="Tutup"
         >
-          ✕
+          <X size={16} />
         </button>
 
         {/* STEP 1: GOOGLE AUTH */}
@@ -253,8 +254,8 @@ export default function GoogleAuthProfileModal({
         {step === "PROFILE_SETUP" && (
           <div className="flex flex-col gap-4">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-2xl bg-green-100 text-green-500 font-bold flex items-center justify-center text-xl shrink-0">
-                ✨
+              <div className="w-10 h-10 rounded-2xl bg-green-100 text-green-700 font-bold flex items-center justify-center shrink-0">
+                <Sparkles size={20} className="text-green-600" />
               </div>
               <div>
                 <h3 className="font-display font-extrabold text-lg text-brown-900 leading-snug">

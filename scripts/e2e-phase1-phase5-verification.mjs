@@ -68,8 +68,8 @@ async function runE2ETests() {
   assert(landingHero.includes("Jurnal Reflektif"), "Hero memiliki kartu 3D (Jurnal Reflektif)");
   assert(landingHero.includes("Komunitas Hangat"), "Hero memiliki kartu 3D (Komunitas Hangat)");
   assert(landingHero.includes("Ritme Mood"), "Hero memiliki kartu 3D (Ritme Mood)");
-  assert(landingHero.includes("99%"), "Hero menampilkan tingkat kepuasan 99% dengan pilar sanctuary");
-  assert(landingHero.includes("74.9 Juta+"), "Hero menampilkan metrik kepercayaan 74.9 Juta+ Gen Z RI");
+  assert(landingHero.includes("100%"), "Hero menampilkan komitmen privasi 100% dengan pilar sanctuary");
+  assert(landingHero.includes("74.9 Juta+"), "Hero menampilkan konteks demografi sensus 74.9 Juta+ Gen Z RI");
 
   // ============================================================================
   // 3. FASE 2: ONBOARDING & GATING ASSESSMENT (8 STEPS)

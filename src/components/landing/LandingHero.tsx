@@ -276,14 +276,14 @@ export default function LandingHero() {
         ========================================================================= */}
         <div className="mt-14 w-full pt-10 border-t border-brown-900/10 flex flex-col md:flex-row items-center justify-between gap-8 text-left">
           
-          {/* Left: 99% Satisfaction & 5 Pillar Icons */}
+          {/* Left: 100% Privacy Commitment & 5 Pillar Icons */}
           <div className="flex flex-col sm:flex-row sm:items-center gap-5 sm:gap-6 w-full md:w-auto">
             <div>
               <div className="font-display text-4xl sm:text-5xl font-black text-brown-900 tracking-tight">
-                99%
+                100%
               </div>
               <p className="text-xs sm:text-sm font-semibold text-brown-700 mt-1">
-                Rasa Aman & Nyaman Pengguna
+                Privasi Terjamin & Bebas Stigma
               </p>
             </div>
 
@@ -343,11 +343,11 @@ export default function LandingHero() {
                   74.9 Juta+
                 </span>
                 <span className="text-[10px] uppercase font-extrabold tracking-wider bg-orange-100 text-orange-700 px-2 py-0.5 rounded-full">
-                  Gen Z RI
+                  Sensus BPS RI
                 </span>
               </div>
               <p className="text-xs text-brown-700 mt-0.5 leading-relaxed font-body">
-                Generasi muda Indonesia memiliki ruang kesehatan mental yang mendengar setiap cerita tanpa penghakiman.
+                Misi mendampingi generasi muda Indonesia dengan ruang kebugaran mental berbasis sains & tanpa penghakiman.
               </p>
             </div>
           </div>

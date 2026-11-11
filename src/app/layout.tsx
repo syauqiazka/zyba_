@@ -1,7 +1,13 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { DM_Sans, Manrope } from "next/font/google";
 import ClientLayout from "./ClientLayout";
 import "./globals.css";
+
+export const viewport: Viewport = {
+  themeColor: "#344638",
+  width: "device-width",
+  initialScale: 1,
+};
 
 const dmSans = DM_Sans({
   subsets: ["latin"],

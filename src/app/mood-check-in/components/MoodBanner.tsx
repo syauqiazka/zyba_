@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { CloudRain, Cloud, Minus, Smile, Sparkles } from "lucide-react";
+import { CloudRain, Cloud, Minus, Smile, Sparkles, CheckCircle2, Clock, Flame } from "lucide-react";
 
 function getMoodIcon(val: string) {
   switch (val?.toUpperCase()) {
@@ -80,15 +80,27 @@ export default function MoodBanner({
       <div className="flex flex-col sm:flex-row lg:flex-col gap-3 shrink-0">
         {status && (
           <div className="flex items-center justify-center gap-2 px-4 py-2 rounded-2xl bg-white/20 border border-white/20 text-sm font-bold">
-            {status.done ? "✅ Selesai hari ini" : "⏳ Belum diisi"}
+            {status.done ? (
+              <>
+                <CheckCircle2 size={16} className="text-white shrink-0" strokeWidth={2} />
+                <span>Selesai hari ini</span>
+              </>
+            ) : (
+              <>
+                <Clock size={16} className="text-white/80 shrink-0" strokeWidth={2} />
+                <span>Belum diisi</span>
+              </>
+            )}
           </div>
         )}
         <div className="flex items-center gap-3 bg-white/10 backdrop-blur-md p-4 rounded-2xl border border-white/20">
           <div className="flex flex-col items-end">
-            <span className="text-xs font-bold uppercase tracking-wider">Journal Streak</span>
+            <span className="text-xs font-bold uppercase tracking-wider">Konsistensi Jurnal</span>
             <span className="text-xl font-display font-extrabold">{streak} / 365 Hari</span>
           </div>
-          <span className="text-3xl">🔥</span>
+          <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center text-orange-200 shrink-0">
+            <Flame size={20} strokeWidth={2} className="text-orange-300" />
+          </div>
         </div>
       </div>
     </div>
