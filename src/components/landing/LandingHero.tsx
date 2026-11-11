@@ -35,7 +35,7 @@ export default function LandingHero() {
           <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
           <span>Sanctuary Kebugaran Mental Gen Z</span>
           <span className="text-brown-700/30">|</span>
-          <span className="text-brown-700/80 font-medium">100% Privat & Tanpa Jejak</span>
+          <span className="text-brown-700/80 font-medium">Ruang Refleksi yang Menghargai Privasi</span>
         </div>
 
         {/* Main Display Headline (Inspired by Reference Image 2) */}
@@ -43,13 +43,13 @@ export default function LandingHero() {
           Kesehatan Mental Dirancang Ulang.
           <br />
           <span className="text-brown-700/90 font-medium italic block sm:inline">
-            Sepenuhnya Privat & Anonim.
+            Ruang Reflektif yang Mendengar Tanpa Menghakimi.
           </span>
         </h1>
 
         {/* Subtitle */}
         <p className="mt-5 text-sm sm:text-base md:text-lg text-brown-700 max-w-2xl leading-relaxed font-body">
-          Dari langkah awal hingga pendampingan berkelanjutan, ZYBA menghadirkan ruang aman berbasis sains untuk merawat pikiran, tubuh, dan denyut jiwamu tanpa penghakiman.
+          Dari langkah awal hingga pendampingan berkelanjutan, ZYBA menghadirkan ruang aman berbasis sains untuk merawat pikiran, mengurai lelah, dan memahami denyut jiwamu secara personal.
         </p>
 
         {/* Central Primary CTA Pill */}
@@ -208,7 +208,7 @@ export default function LandingHero() {
                   Kirim Pelukan
                 </span>
                 <span className="text-[11px] text-brown-700/70">
-                  100% Pseudonim
+                  Lingkar Suportif & Aman
                 </span>
               </div>
             </div>
@@ -272,18 +272,18 @@ export default function LandingHero() {
         </div>
 
         {/* =========================================================================
-            BOTTOM STRIP: REAL TRUST & IMPACT DATA (Matching Reference Image 2)
+            BOTTOM STRIP: PRIVACY & PURPOSE (Tactile Editorial Craft)
         ========================================================================= */}
         <div className="mt-14 w-full pt-10 border-t border-brown-900/10 flex flex-col md:flex-row items-center justify-between gap-8 text-left">
           
-          {/* Left: 100% Privacy Commitment & 5 Pillar Icons */}
+          {/* Left: Privasi Terkendali & 5 Pilar Sanctuary */}
           <div className="flex flex-col sm:flex-row sm:items-center gap-5 sm:gap-6 w-full md:w-auto">
             <div>
-              <div className="font-display text-4xl sm:text-5xl font-black text-brown-900 tracking-tight">
-                100%
-              </div>
-              <p className="text-xs sm:text-sm font-semibold text-brown-700 mt-1">
-                Privasi Terjamin & Bebas Stigma
+              <span className="text-[11px] font-bold text-green-700 uppercase tracking-wider bg-green-100 px-2.5 py-1 rounded-full inline-block">
+                Privasi Terkendali
+              </span>
+              <p className="text-xs sm:text-sm font-semibold text-brown-900 mt-2 max-w-xs leading-snug">
+                Kendali penuh atas catatan batin, percakapan, dan ruang kebugaranmu.
               </p>
             </div>
 
@@ -315,14 +315,14 @@ export default function LandingHero() {
               </div>
               <div
                 className="w-9 h-9 rounded-full bg-white border border-brown-900/10 flex items-center justify-center text-green-700 shadow-2xs"
-                title="Privasi Terjamin"
+                title="Perlindungan Data"
               >
                 <ShieldCheck size={16} />
               </div>
             </div>
           </div>
 
-          {/* Right: 74.9M Indonesian Gen Z Market Reassurance */}
+          {/* Right: Ruang Aman untuk Generasi Muda Indonesia */}
           <div className="flex items-center gap-4 w-full md:w-auto md:max-w-md">
             {/* Overlapping Avatar Stack */}
             <div className="flex -space-x-2 shrink-0">
@@ -339,15 +339,15 @@ export default function LandingHero() {
 
             <div>
               <div className="flex items-center gap-2">
-                <span className="font-display text-2xl font-black text-brown-900">
-                  74.9 Juta+
+                <span className="font-display text-base font-bold text-brown-900">
+                  Untuk Generasi Z Indonesia
                 </span>
                 <span className="text-[10px] uppercase font-extrabold tracking-wider bg-orange-100 text-orange-700 px-2 py-0.5 rounded-full">
-                  Sensus BPS RI
+                  Komunitas Hangat
                 </span>
               </div>
-              <p className="text-xs text-brown-700 mt-0.5 leading-relaxed font-body">
-                Misi mendampingi generasi muda Indonesia dengan ruang kebugaran mental berbasis sains & tanpa penghakiman.
+              <p className="text-xs text-brown-700 mt-1 leading-relaxed font-body">
+                Menyediakan ruang refleksi berbasis sains yang mendengar setiap cerita dengan penuh empati dan rasa aman.
               </p>
             </div>
           </div>

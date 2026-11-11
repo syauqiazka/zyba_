@@ -1,13 +1,15 @@
 import { PrismaClient } from "@/generated/community-client";
+import { resolveDatabaseUrl } from "./dbEnvSafety";
 
 const globalForCommunityDb = globalThis as unknown as {
   communityDb?: PrismaClient;
 };
 
-const dbUrl =
-  process.env.DATABASE_URL_COMMUNITY ||
-  process.env.DIRECT_URL_COMMUNITY ||
-  "postgresql://postgres:postgres@localhost:5432/zyba_community";
+const dbUrl = resolveDatabaseUrl(
+  "DATABASE_URL_COMMUNITY",
+  "DIRECT_URL_COMMUNITY",
+  "zyba_community"
+);
 
 function withPoolConfig(url: string, limit = 10): string {
   if (url.includes("connection_limit=")) return url;

@@ -1,13 +1,15 @@
 import { PrismaClient } from "@/generated/account-client";
+import { resolveDatabaseUrl } from "./dbEnvSafety";
 
 const globalForAccountDb = globalThis as unknown as {
   accountDb?: PrismaClient;
 };
 
-const dbUrl =
-  process.env.DATABASE_URL_ACCOUNT ||
-  process.env.DIRECT_URL_ACCOUNT ||
-  "postgresql://postgres:postgres@localhost:5432/zyba_account";
+const dbUrl = resolveDatabaseUrl(
+  "DATABASE_URL_ACCOUNT",
+  "DIRECT_URL_ACCOUNT",
+  "zyba_account"
+);
 
 function withPoolConfig(url: string, limit = 5): string {
   if (url.includes("connection_limit=")) return url;

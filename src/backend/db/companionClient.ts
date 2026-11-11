@@ -1,13 +1,15 @@
 import { PrismaClient } from "@/generated/companion-client";
+import { resolveDatabaseUrl } from "./dbEnvSafety";
 
 const globalForCompanionDb = globalThis as unknown as {
   companionDb?: PrismaClient;
 };
 
-const dbUrl =
-  process.env.DATABASE_URL_COMPANION ||
-  process.env.DIRECT_URL_COMPANION ||
-  "postgresql://postgres:postgres@localhost:5432/zyba_companion";
+const dbUrl = resolveDatabaseUrl(
+  "DATABASE_URL_COMPANION",
+  "DIRECT_URL_COMPANION",
+  "zyba_companion"
+);
 
 function withPoolConfig(url: string, limit = 5): string {
   if (url.includes("connection_limit=")) return url;

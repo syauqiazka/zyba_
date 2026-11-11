@@ -9,7 +9,7 @@ import path from "path";
 import crypto from "crypto";
 
 console.log("================================================================================");
-console.log("🌟 ZYBA END-TO-END VERIFICATION SUITE (FASE 1 — FASE 5 & BAGIAN 28 AUDIT)");
+console.log("🏛️  ZYBA STATIC ARCHITECTURE & CODE CONTRACT VERIFICATION SUITE");
 console.log("================================================================================\n");
 
 let passed = 0;
@@ -68,8 +68,8 @@ async function runE2ETests() {
   assert(landingHero.includes("Jurnal Reflektif"), "Hero memiliki kartu 3D (Jurnal Reflektif)");
   assert(landingHero.includes("Komunitas Hangat"), "Hero memiliki kartu 3D (Komunitas Hangat)");
   assert(landingHero.includes("Ritme Mood"), "Hero memiliki kartu 3D (Ritme Mood)");
-  assert(landingHero.includes("100%"), "Hero menampilkan komitmen privasi 100% dengan pilar sanctuary");
-  assert(landingHero.includes("74.9 Juta+"), "Hero menampilkan konteks demografi sensus 74.9 Juta+ Gen Z RI");
+  assert(landingHero.includes("Privasi Terkendali"), "Hero menampilkan penekanan privasi terkendali dengan 5 pilar sanctuary");
+  assert(landingHero.includes("Untuk Generasi Z Indonesia"), "Hero menampilkan orientasi komunitas untuk generasi Z Indonesia");
 
   // ============================================================================
   // 3. FASE 2: ONBOARDING & GATING ASSESSMENT (8 STEPS)
@@ -173,7 +173,7 @@ async function runE2ETests() {
   // SUMMARY
   // ============================================================================
   console.log("\n================================================================================");
-  console.log("📊 HASIL AKHIR AUDIT & VERIFIKASI END-TO-END");
+  console.log("📊 HASIL AKHIR AUDIT ARSITEKTUR & KONTRAK KODE");
   console.log("================================================================================");
   console.log(`Total Pengujian Skenario : ${passed + failed}`);
   console.log(`PASS                     : ${passed}`);
@@ -181,7 +181,7 @@ async function runE2ETests() {
   console.log("================================================================================");
 
   if (failed === 0) {
-    console.log("🏆 SEMUA TES DAN CHECKLIST VERIFIKASI E2E LULUS 100%! SIAP SUBMIT / DEPLOY.");
+    console.log("🏆 SEMUA TES DAN CHECKLIST KONTRAK KODE LULUS 100%! SIAP INTEGRASI.");
   } else {
     process.exit(1);
   }
