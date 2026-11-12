@@ -149,3 +149,4 @@ run().catch((err) => {
   console.error('Fatal error during screenshot capture:', err);
   process.exit(1);
 });
+
