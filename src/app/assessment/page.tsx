@@ -1,5 +1,8 @@
 "use client";
 
+// Onboarding & Asesmen Awal 8-Step — Redesign v2
+// Sumber acuan tunggal: design-system/zyba/MASTER.md & design-system/zyba/pages/onboarding-assessment.md
+
 import { useRouter } from "next/navigation";
 import { useState, useEffect, useRef } from "react";
 import { detectRisk } from "@/lib/crisisDetection";

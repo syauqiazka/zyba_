@@ -193,7 +193,7 @@ export default function SignInCard({
         <button
           type="submit"
           disabled={isLoading}
-          className="mt-1 inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-2xl bg-brown-900 px-5 text-sm font-extrabold text-white shadow-[0_12px_28px_rgba(41,35,31,0.12)] transition-all hover:-translate-y-0.5 hover:bg-orange-500 hover:shadow-[0_16px_30px_rgba(233,130,85,0.18)] active:translate-y-0 disabled:cursor-not-allowed disabled:opacity-50"
+          className="mt-1 inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-full bg-brown-900 px-5 text-sm font-extrabold text-white shadow-xs transition-all hover:-translate-y-0.5 hover:bg-orange-500 active:translate-y-0 disabled:cursor-not-allowed disabled:opacity-50 cursor-pointer"
         >
           {isLoading ? (
             <>
@@ -236,7 +236,7 @@ export default function SignInCard({
           setIsGoogleLoading(true);
           onGoogleClick();
         }}
-        className="flex min-h-12 w-full items-center justify-center gap-3 rounded-2xl border border-brown-900/12 bg-white px-4 text-sm font-bold text-brown-900 transition-all hover:border-brown-900/20 hover:bg-cream/60 disabled:cursor-not-allowed disabled:opacity-60"
+        className="flex min-h-12 w-full items-center justify-center gap-3 rounded-full border border-brown-900/12 bg-white px-4 text-sm font-bold text-brown-900 transition-all hover:border-brown-900/20 hover:bg-cream/60 disabled:cursor-not-allowed disabled:opacity-60 cursor-pointer shadow-xs"
       >
         {isGoogleLoading ? (
           <>

@@ -1,5 +1,8 @@
 "use client";
 
+// Gerbang Masuk & Autentikasi — Calm Authentication Pavilion (`/login`) — Redesign v2
+// Sumber acuan tunggal: design-system/zyba/MASTER.md & design-system/zyba/pages/login.md
+
 export const dynamic = "force-dynamic";
 
 import React, { useEffect, useState } from "react";
