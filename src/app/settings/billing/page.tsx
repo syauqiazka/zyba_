@@ -86,13 +86,13 @@ export default function BillingHistoryPage() {
           <button
             type="button"
             onClick={() => router.push("/settings/zyba-plus")}
-            className="rounded-2xl bg-orange-500 px-4 py-2.5 text-xs font-bold text-white hover:bg-orange-600"
+            className="rounded-full bg-orange-500 px-5 py-2.5 text-xs font-bold text-white hover:bg-orange-600 transition-colors shadow-xs"
           >
-            Upgrade Premium
+            Upgrade Plus
           </button>
         </header>
 
-        <section className="mt-6 overflow-hidden rounded-3xl border border-brown-900/10 bg-white">
+        <section className="mt-6 overflow-hidden rounded-[24px] border border-brown-900/10 bg-white/95 shadow-xs">
           {loading ? (
             <div className="space-y-3 p-5">
               {[1, 2, 3].map((item) => (

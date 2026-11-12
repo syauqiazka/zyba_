@@ -298,7 +298,7 @@ export default function ZybaPlusPage() {
 
         {/* ── Bottom CTA for non-plus ── */}
         {!isPlus && !planLoading && (
-          <div className="mt-8 rounded-3xl bg-brown-900 p-6 sm:p-8 text-center">
+          <div className="mt-8 rounded-[24px] bg-brown-900 p-6 sm:p-8 text-center shadow-xs">
             <p className="font-display text-xl font-extrabold text-white mb-2">
               Mulai perjalanan wellness yang lebih bermakna
             </p>
@@ -307,7 +307,7 @@ export default function ZybaPlusPage() {
               type="button"
               onClick={handleUpgrade}
               disabled={loading}
-              className="inline-flex items-center justify-center gap-2 rounded-2xl bg-orange-500 px-8 py-3.5 text-sm font-extrabold text-white hover:bg-orange-400 disabled:opacity-50 transition-colors shadow-lg shadow-orange-500/30"
+              className="inline-flex items-center justify-center gap-2 rounded-full bg-orange-500 px-8 py-3.5 text-sm font-extrabold text-white hover:bg-orange-600 disabled:opacity-50 transition-colors shadow-xs cursor-pointer"
             >
               <Sparkles size={16} />
               {loading ? "Menyiapkan..." : "Upgrade ke ZYBA Plus →"}
