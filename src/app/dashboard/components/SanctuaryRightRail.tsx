@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Bot, Check, ArrowRight, ArrowUpRight, Sparkles, ShieldCheck } from "lucide-react";
+import { Bot, Check, ArrowRight, ArrowUpRight, ShieldCheck } from "lucide-react";
 
 interface SanctuaryRightRailProps {
   conversationCount: number;
@@ -181,7 +181,6 @@ export default function SanctuaryRightRail({
 
         <div className="relative z-10 flex flex-col">
           <div className="flex items-center gap-1.5 text-white/80 text-[10px] font-extrabold uppercase tracking-widest mb-1.5">
-            <Sparkles size={12} />
             <span>Check-In Emosimu</span>
           </div>
 

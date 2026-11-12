@@ -16,7 +16,6 @@ export default function LandingCta() {
         <div className="footer-cta">
           <div>
             <div className="eyebrow footer-eyebrow">
-              <span className="eyebrow-dot" />
               Ruang untuk mulai
             </div>
 

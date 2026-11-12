@@ -369,15 +369,14 @@ function LoginContent({
                   <div className="mb-5 flex items-center justify-between gap-4">
 
                     <div className="flex items-center gap-2">
-                      <span
-                        className="relative block h-8 w-8 shrink-0"
-                        aria-hidden="true"
-                      >
-                        <span className="absolute left-1/2 top-0 h-2 w-2 -translate-x-1/2 rounded-full bg-orange-500" />
-                        <span className="absolute bottom-0 left-1/2 h-2 w-2 -translate-x-1/2 rounded-full bg-green-500" />
-                        <span className="absolute left-0 top-1/2 h-2 w-2 -translate-y-1/2 rounded-full bg-green-500" />
-                        <span className="absolute right-0 top-1/2 h-2 w-2 -translate-y-1/2 rounded-full bg-orange-500" />
-                        <span className="absolute left-1/2 top-1/2 h-2 w-2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-brown-900" />
+                      <span className="w-8 h-8 rounded-xl bg-brown-900 text-cream flex items-center justify-center p-1.5 shadow-xs" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" fill="none" className="w-full h-full text-cream">
+                          <path d="M12 2a4 4 0 0 0-4 4v1.5A4.5 4.5 0 0 0 12 12a4.5 4.5 0 0 0 4.5-4.5V6a4 4 0 0 0-4-4z" fill="#8FAE5D" />
+                          <path d="M2 12a4 4 0 0 0 4 4h1.5A4.5 4.5 0 0 0 12 12a4.5 4.5 0 0 0-4.5-4.5H6a4 4 0 0 0-4 4z" fill="#F2884B" />
+                          <path d="M12 22a4 4 0 0 0 4-4v-1.5A4.5 4.5 0 0 0 12 12a4.5 4.5 0 0 0-4.5 4.5V18a4 4 0 0 0 4 4z" fill="#8FAE5D" />
+                          <path d="M22 12a4 4 0 0 0-4-4h-1.5A4.5 4.5 0 0 0 12 12a4.5 4.5 0 0 0 4.5 4.5H18a4 4 0 0 0 4-4z" fill="#F2884B" />
+                          <circle cx="12" cy="12" r="2.5" fill="#FAF7F2" />
+                        </svg>
                       </span>
 
                       <span className="font-display text-xl font-extrabold tracking-tight">

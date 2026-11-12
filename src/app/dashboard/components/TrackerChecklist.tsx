@@ -1,6 +1,6 @@
 "use client";
 
-import { Wind, Smile, PenTool, BookOpen, Sparkles, MessageCircle, Check } from "lucide-react";
+import { Wind, Smile, PenTool, BookOpen, Heart, MessageCircle, Check } from "lucide-react";
 
 interface TrackerChecklistProps {
   trackerState: { [key: string]: boolean };
@@ -13,7 +13,7 @@ const TRACKER_ITEMS = [
   { key: "Zyba Hours (Latihan Napas)", category: "Ketenangan", icon: Wind, href: "/activity" },
   { key: "Catatan Jurnal Kesehatan", category: "Refleksi", icon: PenTool, href: "/daily-assessment" },
   { key: "Membaca Wawasan Harian", category: "Wawasan", icon: BookOpen, href: "/resources" },
-  { key: "Refleksi Jurnal Mental", category: "Kesehatan Mental", icon: Sparkles, href: "/wellness-journey" },
+  { key: "Refleksi Jurnal Mental", category: "Kesehatan Mental", icon: Heart, href: "/wellness-journey" },
   { key: "Aktivitas Komunitas", category: "Dukungan Sosial", icon: MessageCircle, href: "/community" },
 ];
 

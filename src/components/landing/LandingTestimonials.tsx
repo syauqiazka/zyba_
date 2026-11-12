@@ -31,7 +31,6 @@ export default function LandingTestimonials() {
       <div className="landing-container">
         <div className="section-heading testimonial-heading">
           <div className="eyebrow">
-            <span className="eyebrow-dot" />
             Testimoni
           </div>
 

@@ -16,7 +16,6 @@ export default function LandingAbout() {
           {/* LEFT */}
           <div className="journey-copy">
             <div className="eyebrow">
-              <span className="eyebrow-dot" />
               Cara kerja ZYBA
             </div>
 

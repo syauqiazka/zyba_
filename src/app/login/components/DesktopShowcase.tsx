@@ -32,17 +32,6 @@ export default function DesktopShowcase() {
   return (
     <div className="relative flex h-full min-h-[650px] flex-col justify-between overflow-hidden p-9 xl:p-11">
 
-      {/* BACKGROUND ACCENTS */}
-      <div
-        className="pointer-events-none absolute -right-24 -top-24 h-72 w-72 rounded-full bg-orange-500/10"
-        aria-hidden="true"
-      />
-
-      <div
-        className="pointer-events-none absolute -bottom-32 -left-24 h-80 w-80 rounded-full bg-green-500/10"
-        aria-hidden="true"
-      />
-
       {/* HERO COPY */}
       <div className="relative z-10">
         <p className="text-[11px] font-extrabold uppercase tracking-[0.18em] text-brown-700/70">

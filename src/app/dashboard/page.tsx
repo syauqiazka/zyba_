@@ -3,7 +3,7 @@ import { useFreshDataSignal, notifyZybaDataChanged } from "@/hooks/useFreshData"
 
 import { useEffect, useState, useRef, useCallback } from "react";
 import Link from "next/link";
-import { Flame, Sparkles, Camera, ArrowRight, CheckCircle2, Sun, Cloud, Compass } from "lucide-react";
+import { Flame, Camera, ArrowRight, CheckCircle2, Sun, Cloud, Compass } from "lucide-react";
 
 import MetricScoreCard from "./components/MetricScoreCard";
 import StressLevelChart from "./components/StressLevelChart";
@@ -176,7 +176,6 @@ function getEmotionalWeatherBadge(condition: string, hasAssessment: boolean) {
   if (!hasAssessment) {
     return (
       <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-white/10 text-cream/90 border border-white/20 flex items-center gap-1.5">
-        <Sparkles size={12} strokeWidth={1.8} className="text-orange-300" />
         <span>Langkah Awal</span>
       </span>
     );
@@ -903,8 +902,7 @@ export default function DashboardPage() {
 
             {/* Top Micro Quote & Date Bar */}
             <div className="relative z-10 flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-white/10">
-              <div className="flex items-center gap-2 text-xs sm:text-[13px] text-cream/90 font-medium">
-                <Sparkles size={14} className="text-orange-400 shrink-0" />
+              <div className="text-xs sm:text-[13px] text-cream/90 font-medium">
                 <span>Setiap langkah kecil berharga. Kamu telah hadir hari ini.</span>
               </div>
 

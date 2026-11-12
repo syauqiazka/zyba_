@@ -113,7 +113,6 @@ export default function LandingFeatures() {
         <div className="section-heading split-heading">
           <div>
             <div className="eyebrow">
-              <span className="eyebrow-dot" />
               Satu tempat, tujuh arah
             </div>
 
