@@ -1,5 +1,8 @@
 "use client";
 
+// Smart Activity Planner & Taman Bernapas — Redesign v2
+// Sumber acuan tunggal: design-system/zyba/MASTER.md & design-system/zyba/pages/activity.md
+
 import { useState, useEffect, useCallback } from "react";
 import ActivityBanner from "./components/ActivityBanner";
 import AddActivityModal, {
