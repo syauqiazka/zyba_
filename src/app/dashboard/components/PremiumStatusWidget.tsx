@@ -92,7 +92,7 @@ function PaymentRow({ p }: { p: PaymentHistoryItem }) {
   const statusCls = isSuccess
     ? "bg-green-100 text-green-700"
     : isPending
-    ? "bg-amber-100 text-amber-800"
+    ? "bg-orange-100 text-brown-900"
     : "bg-red-100 text-red-700";
 
   return (

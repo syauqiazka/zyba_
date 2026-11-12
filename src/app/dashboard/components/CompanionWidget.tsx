@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { MessageSquare, ArrowRight, Bot } from "lucide-react";
+import { ArrowRight, MessageCircle } from "lucide-react";
 
 interface CompanionWidgetProps {
   conversationCount?: number;
@@ -12,15 +12,15 @@ export default function CompanionWidget({ conversationCount = 0 }: CompanionWidg
   const [quickInput, setQuickInput] = useState("");
 
   return (
-    <div className="rounded-[20px] bg-white/95 border border-brown-900/10 p-6 sm:p-7 shadow-xs flex flex-col justify-between transition-all duration-300 relative overflow-hidden">
+    <div className="rounded-[20px] bg-white/90 border border-brown-900/10 p-6 sm:p-7 shadow-xs flex flex-col justify-between transition-all duration-300 relative overflow-hidden">
       <div>
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-xl bg-orange-100 flex items-center justify-center shrink-0">
-              <Bot className="w-4 h-4 text-orange-500" />
+            <div className="w-8 h-8 rounded-lg bg-orange-100 flex items-center justify-center shrink-0">
+              <MessageCircle className="w-4 h-4 text-orange-500" strokeWidth={1.8} />
             </div>
             <span className="text-[11px] font-extrabold uppercase tracking-widest text-brown-700">
-              Tanya Zyba · Pendamping Empatik
+              Zyba Companion
             </span>
           </div>
           <span className="flex items-center gap-1.5 text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-green-100 text-green-700 border border-green-500/20">
@@ -33,7 +33,7 @@ export default function CompanionWidget({ conversationCount = 0 }: CompanionWidg
           <span className="font-display text-2xl sm:text-3xl font-extrabold text-brown-900">
             {conversationCount.toLocaleString("id-ID")}
           </span>
-          <span className="text-xs text-brown-700 font-medium">catatan percakapan</span>
+          <span className="text-xs text-brown-700 font-medium">percakapan tersimpan</span>
         </div>
 
         <p className="text-xs sm:text-sm text-brown-700 mt-2 leading-relaxed">

@@ -173,9 +173,12 @@ function getEmpatheticSubtitle(
 }
 
 function getEmotionalWeatherBadge(condition: string, hasAssessment: boolean) {
+  const base =
+    "text-[11px] font-semibold px-2.5 py-0.5 rounded-full border flex items-center gap-1.5";
+
   if (!hasAssessment) {
     return (
-      <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-white/10 text-cream/90 border border-white/20 flex items-center gap-1.5">
+      <span className={`${base} bg-cream text-brown-700 border-brown-900/10`}>
         <span>Langkah Awal</span>
       </span>
     );
@@ -183,8 +186,8 @@ function getEmotionalWeatherBadge(condition: string, hasAssessment: boolean) {
 
   if (condition === "Baik") {
     return (
-      <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-200 border border-emerald-400/30 flex items-center gap-1.5">
-        <Sun size={12} strokeWidth={1.8} className="text-emerald-300" />
+      <span className={`${base} bg-green-100 text-brown-900 border-green-500/30`}>
+        <Sun size={12} strokeWidth={1.8} className="text-green-500" />
         <span>Cuaca Batin: Teduh &amp; Stabil</span>
       </span>
     );
@@ -192,16 +195,16 @@ function getEmotionalWeatherBadge(condition: string, hasAssessment: boolean) {
 
   if (condition === "Cukup") {
     return (
-      <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-amber-500/20 text-amber-200 border border-amber-400/30 flex items-center gap-1.5">
-        <Cloud size={12} strokeWidth={1.8} className="text-amber-300" />
+      <span className={`${base} bg-cream text-brown-900 border-brown-900/10`}>
+        <Cloud size={12} strokeWidth={1.8} className="text-brown-700" />
         <span>Cuaca Batin: Tenang Mengalir</span>
       </span>
     );
   }
 
   return (
-    <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-orange-500/25 text-orange-200 border border-orange-400/30 flex items-center gap-1.5">
-      <Compass size={12} strokeWidth={1.8} className="text-orange-300" />
+    <span className={`${base} bg-orange-100 text-brown-900 border-orange-500/30`}>
+      <Compass size={12} strokeWidth={1.8} className="text-orange-500" />
       <span>Cuaca Batin: Butuh Kehangatan</span>
     </span>
   );
@@ -864,13 +867,6 @@ export default function DashboardPage() {
   return (
     <div className="flex flex-col gap-8 pb-12 min-h-0">
 
-      {/* PREMIUM STATUS WIDGET — dinamis berdasarkan plan aktual */}
-      <PremiumStatusWidget
-        plan={userData.plan}
-        subscription={userData.subscription}
-        premiumUntil={userData.premiumUntil}
-      />
-
       {avatarToast && (
         <div className="bg-green-100 border border-green-300 text-green-800 text-xs font-bold px-4 py-2.5 rounded-2xl flex items-center gap-2 shadow-sm animate-in fade-in duration-200">
           {avatarToast}
@@ -886,10 +882,7 @@ export default function DashboardPage() {
         ==================================================== */}
         <div className="lg:col-span-8 flex flex-col gap-6 sm:gap-7">
           {/* 1. HERO SANCTUARY CARD (DEEP SAGE CRAFT CONTAINER) */}
-          <div className="rounded-[28px] bg-[#344638] text-cream border border-[#445B4A] p-6 sm:p-8 shadow-sm relative overflow-hidden flex flex-col gap-6">
-            {/* Subtle organic contour lines / backdrop decoration */}
-            <div className="absolute -top-24 -right-24 w-80 h-80 rounded-full bg-white/5 blur-2xl pointer-events-none" />
-            <div className="absolute -bottom-20 -left-20 w-64 h-64 rounded-full bg-black/15 blur-xl pointer-events-none" />
+          <div className="rounded-[24px] bg-white/90 text-brown-900 border border-brown-900/10 p-6 sm:p-8 shadow-xs flex flex-col gap-6">
 
             {/* Hidden file input for avatar upload */}
             <input
@@ -901,18 +894,18 @@ export default function DashboardPage() {
             />
 
             {/* Top Micro Quote & Date Bar */}
-            <div className="relative z-10 flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-white/10">
-              <div className="text-xs sm:text-[13px] text-cream/90 font-medium">
+            <div className="relative z-10 flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-brown-900/10">
+              <div className="text-xs sm:text-[13px] text-brown-700 font-medium">
                 <span>Setiap langkah kecil berharga. Kamu telah hadir hari ini.</span>
               </div>
 
               <div className="flex items-center gap-2">
-                <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-white/10 text-cream border border-white/15" suppressHydrationWarning>
+                <span className="text-[11px] font-semibold px-2.5 py-0.5 rounded-full bg-cream text-brown-700 border border-brown-900/10" suppressHydrationWarning>
                   {todayFormatted}
                 </span>
                 {getEmotionalWeatherBadge(userData.condition, userData.hasAssessment)}
-                <span className="text-[11px] font-extrabold px-2.5 py-0.5 rounded-full bg-orange-500/25 text-orange-200 border border-orange-400/30">
-                  {userData.hasAssessment ? `${userData.streak} Hari Konsistensi` : "Awal Perjalanan"}
+                <span className="text-[11px] font-semibold px-2.5 py-0.5 rounded-full bg-orange-100 text-brown-900 border border-orange-500/30">
+                  {userData.hasAssessment ? `Hadir ${userData.streak} hari` : "Awal Perjalanan"}
                 </span>
               </div>
             </div>
@@ -925,14 +918,14 @@ export default function DashboardPage() {
                   <button
                     type="button"
                     onClick={() => window.dispatchEvent(new CustomEvent("zyba_open_profile"))}
-                    className="rounded-full focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-orange-400 block transition-transform group-hover:scale-105 active:scale-95"
+                    className="rounded-full focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-orange-500 block transition-transform group-hover:scale-105 active:scale-95"
                     title="Buka profil lengkap"
                   >
                     <UserAvatar
                       src={userData.avatarUrl}
                       name={userData.name}
                       size="lg"
-                      className="w-14 h-14 sm:w-16 sm:h-16 rounded-full border-2 border-white/20 shadow-xs cursor-pointer object-cover"
+                      className="w-14 h-14 sm:w-16 sm:h-16 rounded-full border-2 border-brown-900/10 shadow-xs cursor-pointer object-cover"
                       showStatus={false}
                     />
                   </button>
@@ -952,7 +945,7 @@ export default function DashboardPage() {
                   <button
                     type="button"
                     onClick={handleAvatarClick}
-                    className="absolute -bottom-1 -right-1 w-6 h-6 rounded-full bg-orange-500 hover:bg-orange-600 text-white flex items-center justify-center shadow-xs border-2 border-[#344638] cursor-pointer transition-colors"
+                    className="absolute -bottom-1 -right-1 w-6 h-6 rounded-full bg-orange-500 hover:bg-orange-600 text-white flex items-center justify-center shadow-xs border-2 border-white cursor-pointer transition-colors"
                     title="Ubah foto profil"
                     aria-label="Ubah foto profil"
                   >
@@ -961,11 +954,11 @@ export default function DashboardPage() {
                 </div>
 
                 <div>
-                  <h1 className="font-display text-2xl sm:text-3xl lg:text-4xl font-extrabold text-cream tracking-tight leading-tight">
+                  <h1 className="font-display text-2xl sm:text-3xl lg:text-4xl font-extrabold text-brown-900 tracking-tight leading-tight">
                     {greetingInfo.greeting},{" "}
-                    <span className="break-words text-white">{userData.name}</span>!
+                    <span className="break-words">{userData.name}</span>!
                   </h1>
-                  <p className="text-xs sm:text-sm text-cream/80 mt-1 font-normal leading-relaxed max-w-lg">
+                  <p className="text-xs sm:text-sm text-brown-700 mt-1 font-normal leading-relaxed max-w-lg">
                     {getEmpatheticSubtitle(
                       userData.name,
                       userData.condition,
@@ -989,19 +982,17 @@ export default function DashboardPage() {
               </div>
             </div>
 
-            {/* 2. THREE TACTILE PEBBLE METRIC CARDS */}
-            <div className="relative z-10 pt-2">
+            {/* 2. METRIK RINGKAS (datar, tanpa kartu bersarang) */}
+            <div className="pt-2">
               <TactileMetricCards
                 streak={userData.streak}
                 conversationCount={userData.conversationCount}
-                score={userData.zybaScore}
-                condition={userData.condition}
                 hasAssessment={userData.hasAssessment}
               />
             </div>
 
             {/* 3. THIS WEEK TASKS (AKTIVITAS PEKAN INI) */}
-            <div className="relative z-10 pt-2 border-t border-white/10">
+            <div className="pt-5 border-t border-brown-900/10">
               <WeeklyTaskCards
                 hasAssessment={userData.hasAssessment}
                 streak={userData.streak}
@@ -1024,8 +1015,6 @@ export default function DashboardPage() {
         <div className="lg:col-span-4 flex flex-col gap-6">
           {/* 1. Sanctuary Right Rail (Specialist Card, Today's Tasks, Mood Check Banner) */}
           <SanctuaryRightRail
-            conversationCount={userData.conversationCount}
-            hasAssessment={userData.hasAssessment}
             trackerState={trackerState}
             toggleTracker={toggleTracker}
           />
@@ -1041,6 +1030,13 @@ export default function DashboardPage() {
           <QuickAccessCards />
         </div>
       </div>
+
+      {/* PREMIUM STATUS — diletakkan setelah konten utama, bukan di atas sapaan */}
+      <PremiumStatusWidget
+        plan={userData.plan}
+        subscription={userData.subscription}
+        premiumUntil={userData.premiumUntil}
+      />
 
       {/* Avatar Crop Modal */}
       <AvatarCropModal
