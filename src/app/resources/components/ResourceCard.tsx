@@ -55,29 +55,29 @@ const ICON_THEMES: Record<
     border: "border-green-500/25",
   },
   moon: {
-    bg: "bg-indigo-100",
-    text: "text-indigo-700",
-    border: "border-indigo-500/25",
+    bg: "bg-orange-100/60",
+    text: "text-orange-700",
+    border: "border-orange-500/20",
   },
   graduation: {
-    bg: "bg-amber-100",
-    text: "text-amber-700",
-    border: "border-amber-500/25",
+    bg: "bg-green-100/60",
+    text: "text-green-800",
+    border: "border-green-500/20",
   },
   brain: {
-    bg: "bg-purple-100",
-    text: "text-purple-700",
-    border: "border-purple-500/25",
+    bg: "bg-cream",
+    text: "text-brown-900",
+    border: "border-brown-900/15",
   },
   heart: {
-    bg: "bg-rose-100",
-    text: "text-rose-600",
-    border: "border-rose-500/25",
-  },
-  music: {
     bg: "bg-orange-100",
     text: "text-orange-600",
     border: "border-orange-500/25",
+  },
+  music: {
+    bg: "bg-green-100",
+    text: "text-green-700",
+    border: "border-green-500/25",
   },
 };
 

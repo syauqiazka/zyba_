@@ -1,5 +1,8 @@
 "use client";
 
+// Sanctuary Resources (Curated Library & Audio Player) — Redesign v2
+// Sumber acuan tunggal: design-system/zyba/MASTER.md & design-system/zyba/pages/resources.md
+
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { BookOpen, Headphones, Sparkles, Filter } from "lucide-react";
