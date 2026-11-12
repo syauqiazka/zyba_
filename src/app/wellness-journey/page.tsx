@@ -1,5 +1,8 @@
 "use client";
 
+// Wellness Journey (Ruang Sehat & Holistic Growth Canvas) — Redesign v2
+// Sumber acuan tunggal: design-system/zyba/MASTER.md & design-system/zyba/pages/wellness-journey.md
+
 import React, { useState, useEffect, useMemo, useCallback } from "react";
 import Link from "next/link";
 import {
