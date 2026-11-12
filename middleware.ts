@@ -26,6 +26,13 @@ const PROTECTED_PATHS = [
 const ASSESSMENT_ALLOWED_PATHS = ["/assessment", "/api/", "/login", "/onboarding", "/"];
 
 function getRedirectUrl(path: string, request: NextRequest): URL {
+  const isLocal =
+    request.nextUrl.hostname === "localhost" ||
+    request.nextUrl.hostname === "127.0.0.1";
+  if (isLocal) {
+    return new URL(path, request.url);
+  }
+
   const fwdHost = request.headers.get("x-forwarded-host")?.split(",")[0]?.trim();
   const fwdProto = request.headers.get("x-forwarded-proto")?.split(",")[0]?.trim() || "https";
 

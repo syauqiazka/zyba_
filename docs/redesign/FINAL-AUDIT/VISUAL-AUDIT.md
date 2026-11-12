@@ -50,7 +50,7 @@ Every anti-pattern identified by the `antislop` design review filter has been ri
 | **Icon-in-a-Box Syndrome** | Rounded rainbow squares above every heading | Clean editorial titles with semantic inline icon or subtle badge | **CLEAN** |
 | **Stressful Red Streaks** | Blazing red fire emojis creating user guilt | *Hearth Flame*: Calm candle flame icon with quiet consistency milestone | **CLEAN** |
 | **Uniform Oversized Radius** | Mindlessly slapping `rounded-[32px]` on everything | Proportional radius hierarchy implemented (see Section 4) | **CLEAN** |
-| **Vanity Marketing Claims** | Fabricated 99% satisfaction & 74.9M user counts | Truthful architectural commitments (100% Privat) & official BPS Census context | **CLEAN** |
+| **Vanity Marketing Claims** | Fabricated 99% satisfaction & 74.9M user counts | Grounded privacy commitments ("Ruang Refleksi yang Menghargai Privasi") & natural community orientation ("Untuk Generasi Z Indonesia") without unverified numerical vanity claims | **CLEAN** |
 
 ---
 
