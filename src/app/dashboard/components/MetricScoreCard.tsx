@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
+import ProgressRing from "@/components/ui/ProgressRing";
 
 interface MetricScoreCardProps {
   score?: number | null;
@@ -16,17 +17,12 @@ export default function MetricScoreCard({
 }: MetricScoreCardProps) {
   const isEvaluated = hasAssessment && score !== null && score !== undefined;
   const validScore = isEvaluated ? score : 0;
-  const percentage = Math.min(Math.max(validScore, 0), 100) / 100;
-  const strokeDashoffset = 377 * (1 - percentage);
 
-  // Warna dinamis sesuai rentang skor
-  const ringColor = !isEvaluated
-    ? "#E4EED2"
-    : validScore >= 80
-    ? "#8FAE5D"
-    : validScore >= 60
-    ? "#F2884B"
-    : "#A99BE0";
+  const colorTone: "vital" | "warm" | "neutral" = !isEvaluated
+    ? "neutral"
+    : validScore >= 75
+    ? "vital"
+    : "warm";
 
   const badgeClass = !isEvaluated
     ? "bg-cream border border-brown-900/15 text-brown-700"
@@ -48,36 +44,14 @@ export default function MetricScoreCard({
       </div>
 
       <div className="my-5 flex items-center justify-center relative">
-        <svg className="w-36 h-36 transform -rotate-90">
-          <circle
-            cx="72"
-            cy="72"
-            r="60"
-            stroke="#F7F2E7"
-            strokeWidth="10"
-            fill="transparent"
-          />
-          <circle
-            cx="72"
-            cy="72"
-            r="60"
-            stroke={ringColor}
-            strokeWidth="10"
-            strokeDasharray={377}
-            strokeDashoffset={isEvaluated ? strokeDashoffset : 377}
-            strokeLinecap="round"
-            fill="transparent"
-            className="transition-all duration-1000 ease-[cubic-bezier(0.16,1,0.3,1)] motion-reduce:transition-none"
-          />
-        </svg>
-        <div className="absolute flex flex-col items-center justify-center text-center">
-          <span className="font-display text-4xl font-extrabold text-brown-900 tracking-tight">
-            {isEvaluated ? score : "—"}
-          </span>
-          <span className="text-[10px] text-brown-700/80 font-bold uppercase tracking-wider mt-0.5">
-            dari 100
-          </span>
-        </div>
+        <ProgressRing
+          value={validScore}
+          size={144}
+          strokeWidth={10}
+          colorTone={colorTone}
+          label="Skor Kesejahteraan"
+          sublabel="dari 100"
+        />
       </div>
 
       {isEvaluated ? (
@@ -91,10 +65,10 @@ export default function MetricScoreCard({
           </p>
           <Link
             href="/mood-check-in"
-            className="inline-flex items-center justify-center gap-1.5 px-5 py-2 rounded-full bg-brown-900 hover:bg-orange-500 text-cream text-xs font-semibold shadow-2xs transition-colors cursor-pointer"
+            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-cream hover:bg-brown-900 hover:text-white border border-brown-900/15 text-xs font-semibold text-brown-900 transition-all duration-200 cursor-pointer shadow-2xs group"
           >
-            <span>Mulai Asesmen</span>
-            <ArrowRight size={13} />
+            <span>Mulai Asesmen Pertama</span>
+            <ArrowRight size={13} className="text-orange-500 group-hover:text-white transition-colors" />
           </Link>
         </div>
       )}

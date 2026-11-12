@@ -11,7 +11,7 @@ interface TrackerChecklistProps {
 
 const TRACKER_ITEMS = [
   { key: "Zyba Hours (Latihan Napas)", category: "Ketenangan", icon: Wind, href: "/activity" },
-  { key: "Catatan Jurnal Kesehatan", category: "Refleksi", icon: PenTool, href: "/daily-assessment" },
+  { key: "Catatan Jurnal Kesehatan", category: "Refleksi", icon: PenTool, href: "/mood-check-in" },
   { key: "Membaca Wawasan Harian", category: "Wawasan", icon: BookOpen, href: "/resources" },
   { key: "Refleksi Jurnal Mental", category: "Kesehatan Mental", icon: Heart, href: "/wellness-journey" },
   { key: "Aktivitas Komunitas", category: "Dukungan Sosial", icon: MessageCircle, href: "/community" },
