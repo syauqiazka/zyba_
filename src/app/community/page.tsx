@@ -1,5 +1,8 @@
 "use client";
 
+// Zyba Community (Warm Support Circles) — Redesign v2
+// Sumber acuan tunggal: design-system/zyba/MASTER.md & design-system/zyba/pages/community.md
+
 import React, { useRef, useState } from "react";
 import ComposeBox from "./components/ComposeBox";
 import PostCard from "./components/PostCard";
