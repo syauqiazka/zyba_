@@ -1,5 +1,8 @@
 "use client";
 
+// Pencapaian Hening — Quiet Milestones & Hearth Badges (`/achievements`) — Redesign v2
+// Sumber acuan tunggal: design-system/zyba/MASTER.md & design-system/zyba/pages/achievements.md
+
 import React, { useEffect, useState, useCallback } from "react";
 import {
   Flame,
@@ -46,12 +49,12 @@ interface PinnedBadge {
 
 const CATEGORY_ITEMS: { id: AchievementCategory; label: string; icon: LucideIcon }[] = [
   { id: "ALL", label: "Semua", icon: Trophy },
-  { id: "STREAK", label: "Streak", icon: Flame },
+  { id: "STREAK", label: "Konsistensi", icon: Flame },
   { id: "WELLNESS", label: "Kesehatan", icon: Heart },
   { id: "COMPANION", label: "Companion", icon: MessageSquare },
   { id: "SOSIAL", label: "Sosial", icon: Users },
   { id: "AKTIVITAS", label: "Aktivitas", icon: Activity },
-  { id: "SPESIAL", label: "Spesial", icon: Sparkles },
+  { id: "SPESIAL", label: "Khusus", icon: Sparkles },
 ];
 
 const SLOT_LABELS = ["Lencana 1", "Lencana 2", "Lencana 3"];
