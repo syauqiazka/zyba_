@@ -17,6 +17,32 @@
   --mood-happy: #E8C24A;
   --mood-overjoyed: #8FAE5D;
   --zyba-danger: #D9534F;
+
+  /* Semantic surface tokens */
+  --surface-canvas: #F7F2E7;
+  --surface-card: rgba(255, 255, 255, 0.95);
+  --surface-card-subtle: rgba(255, 255, 255, 0.60);
+  --surface-card-sunken: #EDE6D6;
+  --surface-popover: #FFFFFF;
+
+  /* Semantic ink tokens */
+  --ink-primary: #3B2A20;
+  --ink-secondary: #5A4636;
+  --ink-muted: #7C6853;
+  --ink-faint: #A49280;
+  --ink-inverse: #F7F2E7;
+
+  /* Semantic line tokens */
+  --line-subtle: rgba(59, 42, 32, 0.08);
+  --line-default: rgba(59, 42, 32, 0.12);
+  --line-strong: rgba(59, 42, 32, 0.20);
+  --line-focus: rgba(242, 136, 75, 0.40);
+
+  /* Semantic accent tokens */
+  --accent-focus: #F2884B;
+  --accent-vital: #8FAE5D;
+  --accent-warm-card: #FCE3D3;
+  --accent-vital-card: #E4EED2;
 }
 
 * {
