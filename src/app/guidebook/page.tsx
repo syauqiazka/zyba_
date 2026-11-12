@@ -1,5 +1,8 @@
 "use client";
 
+// Buku Panduan & Bantuan — Crisis Directory & Sanctuary Guide (`/guidebook`) — Redesign v2
+// Sumber acuan tunggal: design-system/zyba/MASTER.md & design-system/zyba/pages/guidebook.md
+
 import Link from "next/link";
 import {
   ArrowRight,
@@ -13,6 +16,7 @@ import {
   Sparkles,
   Zap,
 } from "lucide-react";
+import CrisisBanner from "@/components/ui/CrisisBanner";
 
 const sections = [
   {
@@ -90,7 +94,8 @@ const sections = [
 
 export default function GuidebookPage() {
   return (
-    <div className="mx-auto flex w-full max-w-5xl flex-col gap-8 pb-12">
+    <div className="mx-auto flex w-full max-w-5xl flex-col gap-6 sm:gap-8 pb-12">
+      {/* HEADER BANNER */}
       <section className="overflow-hidden rounded-[24px] border border-brown-900/10 bg-white/95 p-6 shadow-xs sm:p-8 md:p-10 relative">
         <div className="max-w-3xl">
           <span className="inline-flex items-center gap-2 rounded-full bg-brown-900 px-3 py-1.5 text-[10px] font-extrabold uppercase tracking-[0.16em] text-white">
@@ -98,7 +103,7 @@ export default function GuidebookPage() {
             Panduan ZYBA
           </span>
           <h1 className="mt-4 font-display text-3xl font-extrabold tracking-[-0.04em] text-brown-900 sm:text-4xl">
-            Buku Panduan ZYBA
+            Buku Panduan &amp; Bantuan ZYBA
           </h1>
           <p className="mt-3 max-w-2xl text-sm leading-6 text-brown-700 sm:text-base">
             Panduan singkat untuk memahami fitur ZYBA dan mengetahui apa yang bisa kamu lakukan di setiap bagian aplikasi.
@@ -106,6 +111,10 @@ export default function GuidebookPage() {
         </div>
       </section>
 
+      {/* PRIMARY CRISIS LIFELINE ANCHOR */}
+      <CrisisBanner />
+
+      {/* SECTIONS GRID */}
       <div className="grid gap-5 md:grid-cols-2">
         {sections.map((section) => {
           const Icon = section.icon;
@@ -143,7 +152,8 @@ export default function GuidebookPage() {
         })}
       </div>
 
-      <section className="rounded-3xl border border-brown-900/10 bg-white p-5 shadow-sm sm:p-6">
+      {/* FOOTER HELPER */}
+      <section className="rounded-[24px] border border-brown-900/10 bg-white/95 p-5 shadow-xs sm:p-6">
         <div className="flex items-start gap-3">
           <div className="flex size-10 shrink-0 items-center justify-center rounded-2xl bg-orange-100 text-orange-600">
             <HelpCircle size={19} />
@@ -159,7 +169,7 @@ export default function GuidebookPage() {
         </div>
         <Link
           href="/dashboard"
-          className="mt-5 inline-flex items-center gap-2 rounded-full bg-brown-900 px-4 py-2.5 text-xs font-extrabold text-white transition-colors hover:bg-orange-500"
+          className="mt-5 inline-flex items-center gap-2 rounded-full bg-brown-900 px-5 py-2.5 text-xs font-extrabold text-white transition-colors hover:bg-orange-500 shadow-xs"
         >
           Kembali ke Dashboard
           <ArrowRight size={14} />
