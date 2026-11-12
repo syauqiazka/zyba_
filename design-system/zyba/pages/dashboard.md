@@ -1,120 +1,127 @@
-# Dashboard Mockdoc — Sanctuary Overview (`/dashboard`)
+# Dashboard (Sanctuary Overview) — Redesign v2
 
-> **Skills Integration:** Obra/Superpowers Engineering Rigor + Leonxlnx/Taste Art Direction + pbakaus/Impeccable Vocabulary + UI/UX Pro Max Intelligence + Anti-Slop Hygiene Filter.  
 > **Canonical Route:** `/dashboard`  
 > **Source Components:** `src/app/dashboard/page.tsx`, `src/app/dashboard/components/*`
 
 ---
 
-## 1. Page Context & User Journey (obra/superpowers)
+## Perubahan dari v1
 
-- **Target Persona:** Gen Z yang baru bangun tidur, sedang rehat kuliah/kerja, atau bersiap tidur di malam hari; membutuhkan ikhtisar kondisi batin tanpa tekanan target angka.
-- **Mental Model:** *"Membuka lembaran pertama jurnal harian yang tenang, melihat bagaimana kabarku hari ini, dan memulai satu niat kecil."*
-- **Primary Job to Be Done (JTBD):** Memberikan evaluasi cepat kesejahteraan harian, pintu masuk check-in mood, akses kilat curhat ke Tanya Zyba, dan checklist rutinitas mikro yang tidak menghakimi.
-- **Data & API Binding:**
-  - Prisma Models: `User`, `MoodEntry`, `ActivityLog`, `JournalEntry`
-  - Endpoint: `GET /api/user/me`, `GET /api/mood/today`, `GET /api/activities/today`
-
----
-
-## 2. Art Direction & Visual Atmosphere (Leonxlnx/taste-skill)
-
-- **Arah Visual:** *The Tactile Sanctuary — Organic Forest & Linen Spread* (Terinspirasi dari referensi visual kurasi: Deep Sage Craft Hero + Tactile Stone Pebbles + Warm Paper Right Rail).
-- **Kanvas & Material:** Kanvas utama `bg-cream` (`#F7F2E7`) bertekstur kertas alami, berpadu dengan **Major Sage Craft Hero Container** (`bg-[#344638] text-cream rounded-[28px] border border-[#445B4A]`) yang memberikan nuansa ketenangan alam mendalam, dipadukan dengan panel samping kertas linen putih gading (`bg-[#FAF7F2]` / `bg-white/95 rounded-[28px] border border-brown-900/10`).
-- **Komposisi Asimetris Golden Spread (68% : 32%):**
-  - **Sisi Kiri (68% — Deep Sage Hero Sanctuary):**
-    - Banner mikro santun: *"Setiap langkah kecil berharga. Kamu telah hadir hari ini."*
-    - Sapaan hangat personal + tombol aksi hangat (*"Mulai Check-In"* / *"Lihat Asesmen"*).
-    - **3 Tactile Mineral Pebble Cards:** Tiga kartu metrik kertas putih gading (`bg-[#FAF7F2] rounded-[22px]`) yang masing-masing dihiasi batu mineral alami 3D:
-      1. *Ritual Konsistensi*: Batu Akik Merah / Terracotta Agate (`#EE8A5E`).
-      2. *Sesi Curhat AI*: Batu Giok Hijau / Green Jade (`#8FAE5D`).
-      3. *Zyba Score*: Batu Amber Madu / Tiger Eye (`#E8C24A`).
-    - **Aktivitas Pekan Ini (Weekly Task Cards):** 4 sub-kartu berlatar sage pekat (`bg-[#304134] rounded-[20px]`) dengan indikator progress horizontal bar.
-    - **Tanya Zyba Gateway & Stress Level Waveform.**
-  - **Sisi Kanan (32% — Sanctuary Right Rail):**
-    - **Tanya Zyba Specialist Card:** Status siaga 24/7 dengan tombol curhat cepat.
-    - **Rutinitas Hari Ini (Today Tasks):** Checklist harian interaktif langsung dengan counter badge.
-    - **Bottom Mood Check-In Banner:** Kartu terracotta hangat (`bg-orange-500 rounded-[24px] text-white`) dengan ajakan *"Check in sekarang ↗"*.
-- **Nada Emosional & Copywriting:** Hangat, santun, tidak menghakimi.
+1. **DIBUANG:** Kontainer hero hijau pekat `#344638` yang gelap dan berat. Digantikan oleh kanvas kertas taktil terang lapang berlatar `bg-white/90` dengan border kontak halus `border-brown-900/10`.
+2. **DIBUANG:** Ilustrasi batu mineral 3D buatan (*Tactile Pebble SVGs*). Digantikan ringkasan data nyata 2 kolom datar tanpa kartu bersarang (*anti-card inception*).
+3. **DIBUANG:** Angka target rekaan seperti `/30` hari atau `/10` sesi, serta persentase progres yang tidak berdasar data backend.
+4. **DIBUANG:** Ikon *Sparkles* dekoratif di kutipan sambutan dan badge emosional.
+5. **DIBUANG:** Duplikasi kartu pendamping (*Specialist Card*) dan banner *Mood Check-in* bawah di panel kanan.
+6. **BARU:** Hierarki konten terfokus: Sapaan personal hangat → Ringkasan 2 angka datar (Kehadiran & Sesi Tersimpan) → Daftar baris datar "Langkah kecil hari ini" → Widget Companion interaktif → Grafik stres mingguan.
+7. **BARU:** Relokasi `PremiumStatusWidget` ke bagian bawah konten utama, memastikan sapaan dan kesehatan mental menjadi pusat perhatian pertama.
+8. **BARU:** Sinkronisasi terpusat antara database `ActivityLog` dan `localStorage`, mencegah perbedaan status checklist harian.
 
 ---
 
-## 3. Responsive Geometry & Breakpoints (ui-ux-pro-max-skill)
+## Tujuan pengguna & fitur yang dipertahankan
 
-- **Desktop (≥ 1024px):**
-  - Navigasi: Floating Zen Dock di kiri (lebar 76px, fixed mengapung `md:left-4`, `rounded-[28px]`, `bg-white/90 backdrop-blur-md`).
-  - Spacing Layout: `md:pl-[108px] pr-8 py-8 max-w-[1280px] mx-auto`.
-  - Grid: Asymmetric 12-column grid (`col-span-8` untuk Deep Sage Hero Sanctuary : `col-span-4` untuk Sanctuary Right Rail).
-- **Tablet (768px – 1023px):**
-  - Navigasi: Floating Zen Dock 76px tetap aktif dengan tooltip via React Portal.
-  - Spacing Layout: `pl-[96px] pr-6 py-6`.
-  - Grid: Stack vertikal berjarak lapang `gap-6`.
-- **Mobile (< 768px):**
-  - Navigasi: Ergonomic Bottom Pill Nav (tinggi 56px, `rounded-full`, floating 12px dari tepi bawah).
-  - Spacing Layout: `px-4 pt-4 pb-24`.
-  - Grid: 1 kolom tumpuk berurutan: Deep Sage Hero Card (Greeting + 3 Pebble Cards + Tasks) → Tanya Zyba Gateway → Right Rail Checklist & Mood Check Banner.
+- **Tujuan Pengguna:** Memulai hari dengan ikhtisar batin yang tenang tanpa rasa dihakimi, mengecek ritme mood, mengakses pendamping curhat kilat, dan menandai rutinitas mikro tanpa tekanan angka target.
+- **Fitur yang Dipertahankan:**
+  - Sapaan personal adaptif waktu (Pagi/Siang/Sore/Malam) + nama user
+  - Zyba Score Ring kalkulasi riil dari asesmen harian
+  - Metrik kehadiran (streak konsistensi hari) & jumlah percakapan
+  - Kotak Tenang Grounding 5-4-3-2-1 (`zyba_open_grounding` event trigger)
+  - Rutinitas hari ini (toggle tracker terhubung ke API `/api/activity`)
+  - Widget Zyba Companion + shortcut chat (`/companion?initialMsg=`)
+  - Manajemen avatar (upload, crop melingkar, cooldown ganti foto)
+  - Status langganan Free/Plus & riwayat invoice Midtrans
 
 ---
 
-## 4. Component Hierarchy & Tailwind Specs (pbakaus/impeccable)
+## Layout (Mobile 375 / Tablet 768 / Desktop 1280)
 
-### A. Major Sanctuary Hero Card (Deep Sage Craft Container)
-- Container: `rounded-[28px] bg-[#344638] text-cream border border-[#445B4A] p-6 sm:p-8 shadow-sm relative overflow-hidden flex flex-col gap-6`
-- Top Micro Bar: `flex items-center justify-between pb-4 border-b border-white/10 text-xs text-cream/90`
-- Greeting Bar: Avatar dengan kontrol ganti foto + `font-display text-2xl sm:text-3xl lg:text-4xl font-extrabold text-cream` + tombol CTA `rounded-full bg-orange-500 hover:bg-orange-600 text-white px-5 py-2.5 text-xs sm:text-sm font-bold shadow-xs`
+### Desktop 1280px (Asymmetric Grid 8 : 4)
+```
++-----------------------------------------------------------------------------------+
+| [Zen Dock 76px] |                    CONTAINER MAX-W 1280px                       |
+|                 |                                                                 |
+| (Logo)          | +------------------------------------+  +---------------------+ |
+| [Dash]*         | | HERO CARD (bg-white/90, r-24)      |  | RIGHT RAIL (r-24)   | |
+| [Mood]          | | - Date & Weather Badge             |  | - Kotak Tenang 54321| |
+| [Chat]          | | - Avatar + Greeting ("Selamat...") |  | - Rutinitas Hari Ini| |
+| [Plan]          | | - Metrik Kehadiran & Percakapan    |  |   (Checklist row)   | |
+| [Track]         | | - Langkah Kecil Hari Ini (List)    |  +---------------------+ |
+| [Comm]          | +------------------------------------+  +---------------------+ |
+| [Book]          | +------------------------------------+  | ZYBA SCORE CARD     | |
+|                 | | ZYBA COMPANION WIDGET (r-20)       |  | - Circular Ring     | |
+|                 | | - Quick Chat Input Form            |  | - Kondisi ("Baik")  | |
+|                 | +------------------------------------+  +---------------------+ |
+|                 | +------------------------------------+  +---------------------+ |
+|                 | | STRESS & MOOD WAVEFORM (r-20)      |  | DIREKTORI BANTUAN   | |
+|                 | | - Grafik 7 Hari Terakhir           |  | - Sejiwa 119        | |
+|                 | +------------------------------------+  +---------------------+ |
+|                 | +-------------------------------------------------------------+ |
+|                 | | STATUS PLUS & RIWAYAT PEMBAYARAN (r-24)                     | |
+|                 | +-------------------------------------------------------------+ |
++-----------------------------------------------------------------------------------+
+```
 
-### B. Three Tactile Mineral Pebble Cards (`TactileMetricCards`)
-- Container: `grid grid-cols-1 sm:grid-cols-3 gap-4 w-full`
-- Kartu Metrik: `bg-[#FAF7F2] text-brown-900 rounded-[22px] border border-brown-900/10 p-5 shadow-xs hover:border-orange-500/40 transition-all flex flex-col justify-between min-h-[160px] relative overflow-hidden group`
-- 3 Batu Mineral Tactile:
-  - Red Agate (`type="agate"`): SVG kurva batu organik berlapis pita mineral Terracotta (`#EE8A5E`).
-  - Green Jade (`type="jade"`): SVG giok hijau sutra dengan kilau spesular lembut (`#8FAE5D`).
-  - Amber Quartz (`type="amber"`): SVG madu keemasan hangat dengan pantulan mineral (`#E8C24A`).
+### Tablet 768px
+- Floating Zen Dock (76px) di kiri dengan layout padding `pl-[96px]`.
+- Kolom kiri dan kanan tersusun bertumpuk secara elegan dengan `gap-6`.
 
-### C. Weekly Task Cards (`WeeklyTaskCards`)
-- Container: `grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-3.5`
-- Card Item: `bg-[#304134] hover:bg-[#384c3d] border border-white/10 rounded-[20px] p-4 flex flex-col justify-between min-h-[140px] text-cream transition-all`
-- Progress Bar: `w-full h-1.5 rounded-full bg-black/20 overflow-hidden` dengan bar pengisian `bg-orange-400`.
-
-### D. Sanctuary Right Rail (`SanctuaryRightRail`)
-- Container: `bg-[#FAF7F2] rounded-[28px] border border-brown-900/10 p-5 sm:p-6 shadow-xs flex flex-col gap-6`
-- Tanya Zyba Specialist Box: `bg-white/90 rounded-2xl p-3 border border-brown-900/10 flex items-center justify-between`
-- Rutinitas Hari Ini: List row interaktif langsung dengan checkmark circular `w-6 h-6`.
-- Bottom Mood Check Banner: `bg-orange-500 rounded-[24px] p-6 text-white shadow-xs` dengan tombol *"Check in sekarang ↗"*.
-
----
-
-## 5. State Matrix & Edge Cases (obra/superpowers)
-
-| State | Kondisi Pemicu | Visual Feedback | Aksi Pengguna |
-|---|---|---|---|
-| **Default** | Data pengguna, mood, dan aktivitas termuat | Asymmetric layout lengkap, data terkini | Klik mood pebble / rutinitas / chat |
-| **Loading** | Menunggu respon `/api/user/me` | Breathing pulse skeleton `animate-pulse duration-2000` di kanvas Cream | Layar tetap stabil tanpa layout-shift |
-| **Empty** | Akun baru belum ada catatan | Kartu selamat datang lembut, ajakan *"Mari mulai langkah pertamamu"* | Klik tombol *"Isi Check-In Hari Ini"* |
-| **Error** | Gagal mengambil data backend | Pesan ramah *"Ruang tenang sedang jeda sejenak"* + tombol *"Coba Segarkan"* | Klik refresh tanpa kehilangan sesi |
-| **Crisis Detected** | Catatan sebelumnya mengindikasikan risiko tinggi | Banner Sejiwa 119 ext. 8 muncul di bagian atas dashboard dengan latar Cream | Tombol telepon bebas pulsa langsung |
-
----
-
-## 6. Anti-Slop Audit Checklist (miqdadbadjuber/anti-slop)
-
-- [x] **Zero Emoji as Icons:** Ikon Lucide garis 1.8px digunakan di seluruh kartu (`Sparkles`, `CheckCircle2`, `Heart`, `Compass`).
-- [x] **Zero Purple/Blue AI Gradients:** Warna berakar 100% pada `#F7F2E7`, `#3B2A20`, `#F2884B`, `#8FAE5D`.
-- [x] **No Card Inception:** Kartu berdiri langsung di atas kanvas `bg-cream`, tidak ada lapisan kartu bersarang.
-- [x] **No Icon-in-a-box:** Heading disajikan dengan teks Manrope elegan tanpa boks kotak rounded warna-warni di atasnya.
-- [x] **Anti-Slop Radius Scale:** Zen Dock 28px, Major Anchor 24px, Widgets 20px, Sub-items 12px, Buttons pill.
-- [x] **Accessibility WCAG AA:** Teks utama kontras 11.2:1, teks sekunder 7.4:1, focus ring `ring-orange-500/40`.
-- [x] **Reduced Motion:** Mendukung penuh `motion-reduce:transition-none motion-reduce:animate-none`.
+### Mobile 375px
+- Zen Dock beralih ke Ergonomic Bottom Pill Nav (56px) melayang di bawah layar.
+- Grid 1-kolom penuh, padding horizontal `px-4 pt-4 pb-24`.
+- Urutan: Hero Card -> Kotak Tenang -> Zyba Companion -> Rutinitas Hari Ini -> Skor Kesejahteraan -> Grafik Stres -> Status Plus.
 
 ---
 
-## 7. Verification Contract (obra/superpowers)
+## Komponen & token yang dipakai
 
-- **Type Integrity:** `npx tsc --noEmit` wajib menghasilkan 0 error pada `src/app/dashboard`.
-- **Render Verification:** Halaman wajib merender tanpa overflow horizontal pada viewport 375px, 768px, 1280px.
-- **Contract Test Command:**
-  ```powershell
-  # Jalankan verifikasi build lokal
-  npm run build
-  ```
+- **Warna & Latar:** `bg-cream` (kanvas utama), `bg-white/90` (kartu utama), `border-brown-900/10` (garis kontak kertas).
+- **Tipografi:** `font-display` (Manrope) untuk display sapaan (`text-2xl sm:text-4xl font-extrabold text-brown-900`), `font-body` (DM Sans) untuk deskripsi empatik (`text-sm text-brown-700`).
+- **Skala Radius:** Kartu Hero `rounded-[24px]`, Widget `rounded-[20px]`, Kontrol & input `rounded-xl`, Tombol aksi `rounded-full`.
+- **Badges:** `bg-green-100 text-brown-900 border-green-500/30` (stabil/sehat), `bg-orange-100 text-brown-900 border-orange-500/30` (kehadiran/perhatian).
 
+---
+
+## State: Default / Loading / Empty / Error / Crisis / Locked(Plus)
+
+1. **Default:** Data terisi lengkap: sapaan aktif, skor tampil di ring, streak konsistensi valid, checklist rutinitas tersinkronisasi.
+2. **Loading:** Skeleton berdenyut halus `animate-pulse duration-2000` pada kanvas `bg-cream` menjaga stabilitas tanpa layout-shift.
+3. **Empty (Akun Baru):** Sapaan awal *"Selamat datang di tempat perlindunganmu"*, Skor menampilkan "— dari 100", ajakan lembut *"Mulai Check-In Pertama"* tanpa menyalahkan user.
+4. **Error:** Pesan pemulihan kontekstual *"Ruang tenang sedang jeda sejenak"* + tombol *"Segarkan Halaman"*.
+5. **Crisis Detected:** Banner hotline darurat Sejiwa 119 ext. 8 muncul di posisi atas dashboard tanpa tombol auto-dismiss.
+6. **Locked (Plus):** Pengguna Free melihat status plan "FREE", riwayat kosong rapi, dan tombol upgrade lembut tanpa mengganggu fungsionalitas utama.
+
+---
+
+## Interaksi & motion
+
+- **Hover Kartu:** `hover:border-brown-900/20` dan elevasi halus `hover:-translate-y-0.5` dengan transisi 200ms.
+- **Checklist Toggle:** Animasi centang circular dengan feedback visual instan pada state tracker harian.
+- **Avatar Trigger:** Klik avatar memicu event `zyba_open_profile` untuk membuka popover, hover memunculkan ikon kamera untuk crop modal.
+- **Reduced Motion:** Semua efek hover dan transisi dinonaktifkan di bawah `prefers-reduced-motion: reduce`.
+
+---
+
+## Aksesibilitas
+
+- Kontras rasio teks utama `text-brown-900` pada `bg-cream` adalah **11.2:1** (WCAG AAA).
+- Label aksesibel pada seluruh tombol tanpa teks (`aria-label="Ubah foto profil"`, `aria-label="Navigasi"`, dsb.).
+- Focus state jelas dengan `focus-visible:ring-2 focus-visible:ring-orange-500`.
+- Target sentuh mobile minimal 44x44px untuk seluruh tombol aksi dan toggle rutinitas.
+
+---
+
+## Kriteria penerimaan
+
+- [x] Tidak ada kontainer hero hijau pekat `#344638` atau border `#445B4A`.
+- [x] Tidak ada kartu di dalam kartu (*zero card inception*).
+- [x] Tidak ada angka karangan ("/30", "20/20", persentase palsu).
+- [x] Seluruh ikon menggunakan Lucide SVG garis halus tanpa ikon bintang/sparkle dekoratif.
+- [x] `PremiumStatusWidget` berada di bagian bawah konten, bukan di atas sapaan.
+- [x] Build dan type-check bebas dari error.
+
+---
+
+## Referensi yang dipakai
+
+- **Ref 1 (Solune) & Ref 3 (Pixelean):** Hierarki kartu utama terang, tipografi display tebal namun bernapas, ringkasan metrik datar horizontal.
+- **Ref 14 (Shuvo):** Komposisi editorial golden ratio asimetris 65:35 antara hero canvas dan right rail.

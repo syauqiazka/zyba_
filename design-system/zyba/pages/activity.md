@@ -1,106 +1,108 @@
-# Smart Activity Planner Mockdoc — Gentle Daily Rhythm (`/activity`)
+# Smart Activity Planner & Taman Bernapas — Redesign v2
 
-> **Skills Integration:** Obra/Superpowers Engineering Rigor + Leonxlnx/Taste Art Direction + pbakaus/Impeccable Vocabulary + UI/UX Pro Max Intelligence + Anti-Slop Hygiene Filter.  
 > **Canonical Route:** `/activity`  
 > **Source Components:** `src/app/activity/page.tsx`, `src/app/activity/components/*`
 
 ---
 
-## 1. Page Context & User Journey (obra/superpowers)
+## Perubahan dari v1
 
-- **Target Persona:** Gen Z yang merasa lelah secara fisik dan mental, terjebak dalam rasa bersalah karena merasa tidak cukup produktif, atau membutuhkan pemulihan tubuh yang lembut tanpa tekanan fitnes berat.
-- **Mental Model:** *"Melangkah ke kebun hijau yang sejuk, menarik napas lega, dan melakukan satu peregangan kecil yang membuat tubuh terasa lebih ringan."*
-- **Primary Job to Be Done (JTBD):** Menyediakan latihan relaksasi pernapasan terpandu (metode 4-7-8), menyusun 2–3 rencana aktivitas fisik mikro harian yang fleksibel, dan memvalidasi kondisi tubuh tanpa penilaian performa toksik.
-- **Data & API Binding:**
-  - Prisma Models: `ActivityLog` (`title`, `category`, `durationMin`, `completed`, `date`)
-  - Endpoints: `GET /api/activities/today`, `POST /api/activities/complete`, `POST /api/activities/custom`
-
----
-
-## 2. Art Direction & Visual Atmosphere (Leonxlnx/taste-skill)
-
-- **Arah Visual:** *The Tactile Sanctuary — Green Herb Garden*.
-- **Kanvas & Palet Vitalitas:** Kanvas Cream (`#F7F2E7`) berpadu Green 100 (`#E4EED2`) untuk latar kartu latihan pernapasan, Green 500 (`#8FAE5D`) untuk checkmark pemulihan, dan Orange 100 (`#FCE3D3`) untuk kartu energi matahari.
-- **The Breathing Circle (Taman Bernapas):**
-  - Lingkaran konsentris bernapas organik (diameter 180px di desktop, 150px di mobile) dengan kurva lembut yang membesar saat tarik napas (4 detik), menahan napas (7 detik), dan menyusut lembut saat buang napas (8 detik).
-- **Nada Bicara:** Menenangkan, membumi, dan tidak menuntut.
-  - Heading: *"Tubuhmu adalah rumahmu. Berikan ia ruang untuk beristirahat sejenak."*
-  - Subtitle: *"Tidak ada target kalori atau jarak tempuh di sini. Cukup hadir dan gerakkan tubuh semampumu."*
+1. **DIBUANG:** Panel samping "Ringkasan Ritme" kosong lebar yang sebelumnya memakan ruang tanpa isi data nyata. Panel ini kini diisi ringkasan aktivitas nyata yang telah diselesaikan atau diciutkan secara proporsional.
+2. **DIBUANG:** Gamifikasi poin berlebihan seperti "+60 pts" dan visual streak api yang menekan.
+3. **DIBUANG:** Kartu bersarang di daftar aktivitas harian. Setiap aktivitas kini disajikan dalam baris daftar terstruktur dengan pemisah garis halus.
+4. **DIBUANG:** Lingkaran animasi berlebihan yang menyebabkan lag pada perangkat mobile saat memuat pacer pernapasan.
+5. **BARU:** Tampilan Taman Bernapas 4-7-8 (Breathing Garden) yang elegan dengan pacer lingkaran organik yang mengembang (Tarik 4 detik), menahan (Tahan 7 detik), dan menyusut (Hembuskan 8 detik).
+6. **BARU:** Pemutar audio suara alam (hujan lembut, ombak hening, angin pinus) yang terintegrasi langsung dengan sesi latihan napas.
+7. **BARU:** Form cepat tambah aktivitas mikro personal yang realistis (5–15 menit).
 
 ---
 
-## 3. Responsive Geometry & Breakpoints (ui-ux-pro-max-skill)
+## Tujuan pengguna & fitur yang dipertahankan
 
-- **Desktop (≥ 1024px): 12-Column Sanctuary Grid**
-  - Spacing Layout: `md:pl-[108px] pr-8 py-8 max-w-[1240px] mx-auto`.
-  - Kolom Kiri (`col-span-7`): **Breathing Exercise Garden** (kartu interaktif utama) + **Daily Condition Insight**.
-  - Kolom Kanan (`col-span-5`): **Gentle Daily Plan** (daftar aktivitas mikro) + **Zyba Recommendations**.
-- **Tablet (768px – 1023px):**
-  - Spacing Layout: `pl-[96px] pr-6 py-6`.
-  - Grid: 2 baris modular berjarak `gap-6`.
-- **Mobile (< 768px):**
-  - Navigasi: Ergonomic Bottom Pill Nav di bawah.
-  - Spacing Layout: `px-4 pt-4 pb-24`.
-  - Tata Letak: Latihan pernapasan di bagian atas, diikuti daftar aktivitas dalam kartu sentuh lapang.
+- **Tujuan Pengguna:** Merencanakan tindakan kecil penyeimbang stres harian, melakukan jeda napas 4-7-8 saat cemas melanda, mendengarkan musik latar penenang, dan menandai kebiasaan baik yang berhasil dijalankan.
+- **Fitur yang Dipertahankan:**
+  - Rencana aktivitas harian terhubung ke backend API `/api/activity`
+  - Toggle checklist selesai aktivitas dengan pembaruan instan
+  - Tambah dan hapus aktivitas personal
+  - Modal latihan napas terpandu 4-7-8 (timer + panduan visual)
+  - Musik latar ambience audio
 
 ---
 
-## 4. Component Specs & Tactile Micro-Interactions (pbakaus/impeccable)
+## Layout (Mobile 375 / Tablet 768 / Desktop 1280)
 
-### A. Major Sanctuary Anchor Card (Breathing Exercise Pavilion)
-- Container: `bg-green-100/70 rounded-[24px] border border-green-500/20 p-6 sm:p-8 flex flex-col items-center shadow-xs`
-- Heading: `font-display text-xl sm:text-2xl font-bold text-brown-900 mb-2`
-- Breathing Circle:
-  - Lingkaran Utama: `w-40 h-40 sm:w-44 sm:h-44 rounded-full bg-white/90 border-2 border-green-500/40 flex flex-col items-center justify-center transition-transform duration-[4000ms] ease-in-out`
-  - Teks Fase: `font-display text-base font-bold text-brown-900` (*"Tarik Napas"*, *"Tahan"*, *"Hembuskan"*)
-  - Timer Hitung Mundur: `font-body text-xs font-semibold text-green-500 mt-1`
-- Tombol Kontrol:
-  - Mulai/Jeda: `bg-brown-900 text-cream hover:bg-brown-900/90 rounded-full px-6 py-2.5 text-sm font-medium mt-6 transition-all`
+### Desktop 1280px (Asymmetric Grid 8 : 4 Seimbang)
+```
++-----------------------------------------------------------------------------------+
+| [Zen Dock 76px] |                    CONTAINER MAX-W 1280px                       |
+|                 |                                                                 |
+|                 | +-----------------------------------+  +----------------------+ |
+|                 | | TAMAN BERNAPAS 4-7-8 (bg-white/90)|  | RINGKASAN HARI INI   | |
+|                 | | - Pacer Lingkaran Lembut          |  | (bg-white/90, r-24)  | |
+|                 | | - Kontrol Audio Ambience          |  | - 3 Aktivitas Selesai| |
+|                 | | - Tombol Mulai Sesi 3 Menit       |  | - Waktu Relaksasi    | |
+|                 | +-----------------------------------+  +----------------------+ |
+|                 | +-----------------------------------+  +----------------------+ |
+|                 | | RENCANA AKTIVITAS HARIAN (r-24)   |  | TAMBAH AKTIVITAS     | |
+|                 | | - Filter Kategori (Fisik/Batin)   |  | - Form Cepat (5 mnt) | |
+|                 | | - Baris Aktivitas:                |  | - Pilihan Tag        | |
+|                 | |   * Peregangan Leher & Bahu       |  +----------------------+ |
+|                 | |   * Minum Segelas Air Hangat      |                           |
+|                 | |   * Jeda Menatap Jendela          |                           |
+|                 | +-----------------------------------+                           |
++-----------------------------------------------------------------------------------+
+```
 
-### B. Daily Condition Card
-- Container: `bg-white/90 rounded-[20px] border border-brown-900/10 p-5 sm:p-6 mt-6`
-- Header: `flex items-center justify-between font-display text-base font-bold text-brown-900`
-- Meter Energi: Baris 4 batu energi sentuh horizontal yang menunjukkan stamina hari ini tanpa angka timbangan atau BMI.
-
-### C. Gentle Daily Plan (Daftar Aktivitas Mikro)
-- Container: `bg-white/90 rounded-[20px] border border-brown-900/10 p-5 sm:p-6`
-- Heading: `font-display text-base font-bold text-brown-900 flex items-center justify-between`
-- Kartu Aktivitas:
-  - `flex items-center justify-between p-3.5 rounded-xl border border-brown-900/10 hover:border-green-500/30 hover:bg-green-100/20 transition-all cursor-pointer`
-  - Ikon: Lucide `Footprints`, `Sun`, `StretchHorizontal` stroke 1.8px.
-  - Checkbox: Lingkaran sentuh `w-6 h-6 rounded-full border border-brown-900/20 checked:bg-green-500 checked:text-white`
-
----
-
-## 5. State Matrix & Edge Cases (obra/superpowers)
-
-| State | Kondisi Pemicu | Visual Feedback | Aksi Pengguna |
-|---|---|---|---|
-| **Breathing Idle** | Pengguna membuka halaman latihan napas | Lingkaran dalam posisi diam seimbang, tombol *"Mulai Bernapas"* aktif | Tekan tombol mulai |
-| **Breathing Running** | Siklus 4-7-8 sedang berjalan | Lingkaran membesar dan mengecil berirama, teks panduan berganti | Ikuti ritme napas |
-| **Breathing Completed** | 4 siklus latihan selesai | Gelombang hijau lembut berkedip sekali, teks *"Tubuhmu kini lebih rileks"* | Selesai atau ulangi sesi |
-| **Activity Checked** | Pengguna mencentang satu aktivitas mikro | Checkmark hijau terisi, coret tipis halus, audio pop hening | Tercatat di riwayat harian |
-| **Custom Added** | Pengguna menambahkan aktivitas pribadi | Baris baru meluncur masuk dari atas tanpa reload halaman | Tersimpan di database |
+### Mobile 375px
+- Modul Taman Bernapas tampil di atas dengan tombol audio yang mudah dijangkau satu tangan.
+- Daftar aktivitas tersusun vertikal di bawahnya dengan touch-target toggle centang 48x48px.
 
 ---
 
-## 6. Anti-Slop Audit Checklist (miqdadbadjuber/anti-slop)
+## Komponen & token yang dipakai
 
-- [x] **Zero Emoji as Icons:** Menggunakan SVG Lucide (`Wind`, `Footprints`, `Smile`, `CheckCircle2`, `Plus`).
-- [x] **No Toxic Gamification:** Tidak ada indikator streak yang putus berwarna merah menyeramkan jika pengguna melewatkan sehari.
-- [x] **No Card Inception:** Komponen aktivitas berupa list row di dalam satu kartu kontainer, bukan kartu bersarang.
-- [x] **Hierarki Radius:** Breathing Anchor 24px, Activity Box 20px, Row Items 12px, Control Pills 9999px.
-- [x] **Accessible Contrast:** Teks petunjuk napas 11.2:1 (AAA), label aktivitas 7.4:1 (AAA).
-- [x] **Respect Reduced Motion:** Jika `prefers-reduced-motion` aktif, animasi pernapasan digantikan hitungan teks angka statis.
+- **Pacer Lingkaran Bernapas:** `w-48 h-48 rounded-full border-4 border-green-500/30 bg-green-100/40 flex items-center justify-center transition-all duration-1000`.
+- **Baris Aktivitas:** `p-4 rounded-xl border border-brown-900/10 bg-white/90 hover:border-orange-500/30 flex items-center justify-between`.
+- **Tombol Selesai:** Checkbox lingkaran `w-6 h-6 rounded-full border border-brown-900/20 data-[state=checked]:bg-green-500 data-[state=checked]:text-white`.
 
 ---
 
-## 7. Verification Contract (obra/superpowers)
+## State: Default / Loading / Empty / Error / Crisis / Locked(Plus)
 
-- **Breathing Timer Rigor:** Siklus 4 detik tarik, 7 detik tahan, 8 detik hembus diverifikasi secara deterministik via `setInterval` clock.
-- **Activity Log Contract:** `POST /api/activities/complete` mengembalikan status log terbaru dan memperbarui state tanpa me-refresh halaman.
-- **Contract Test Command:**
-  ```powershell
-  npm run build
-  ```
+1. **Default:** Daftar aktivitas hari ini tampil dengan status selesai/belum, audio siap diputar.
+2. **Loading:** Skeleton baris berdenyut pada wadah aktivitas.
+3. **Empty (Belum Ada Rencana):** Tampilan hangat *"Belum ada rencana hari ini. Tambahkan satu niat kecil untuk tubuhmu"*.
+4. **Error:** Pesan *"Gagal menyinkronkan aktivitas"* + tombol coba lagi.
+5. **Crisis Detected:** Jika aktivitas diberi catatan darurat, saran kontak krisis langsung dimunculkan.
+6. **Locked:** Fitur rencana aktivitas dan latihan napas dasar terbuka penuh untuk seluruh pengguna.
 
+---
+
+## Interaksi & motion
+
+- **Siklus Napas 4-7-8:** Lingkaran membesar pelan selama 4 detik, mempertahankan ukuran selama 7 detik, lalu mengempis lembut selama 8 detik.
+- **Audio Ambience Toggle:** Fading in/out audio lembut saat tombol play/pause ditekan.
+- **Reduced Motion:** Pacer beralih ke penghitung detik numerik teks tanpa perubahan ukuran elemen grafis.
+
+---
+
+## Aksesibilitas
+
+- Fase pernapasan diumumkan kepada pembaca layar via `aria-live="polite"` ("Tarik napas", "Tahan", "Hembuskan perlahan").
+- Seluruh kontrol audio memiliki label tombol yang eksplisit (`aria-label="Putar suara alam"`).
+- Fokus keyboard melompat secara logis dari filter aktivitas ke daftar item.
+
+---
+
+## Kriteria penerimaan
+
+- [x] Panel samping tidak menyisakan ruang kosong lebar tanpa isi.
+- [x] Latihan napas 4-7-8 berjalan tepat sesuai siklus detik 4-7-8.
+- [x] Toggle selesai langsung memperbarui status di database `/api/activity`.
+- [x] Tidak ada angka XP atau streak api merah yang menekan.
+
+---
+
+## Referensi yang dipakai
+
+- **Ref 5 (Wellora) & Ref 8 (AI Wellness Advisor):** Tata letak rencana aktivitas harian berbasis ritme tubuh dan integrasi audio relaksasi lapang.

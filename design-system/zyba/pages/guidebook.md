@@ -1,103 +1,126 @@
-# Buku Panduan & Bantuan Mockdoc — Crisis Directory & Sanctuary Guide (`/guidebook`)
+# Buku Panduan & Bantuan Mockdoc — Crisis Directory & Sanctuary Guide (`/guidebook`) — Redesign v2
 
 > **Skills Integration:** Obra/Superpowers Engineering Rigor + Leonxlnx/Taste Art Direction + pbakaus/Impeccable Vocabulary + UI/UX Pro Max Intelligence + Anti-Slop Hygiene Filter.  
 > **Canonical Route:** `/guidebook`  
-> **Source Components:** `src/app/guidebook/page.tsx`, `src/lib/crisisDetection.ts`
+> **Source Components:** `src/app/guidebook/page.tsx`, `src/lib/crisisDetection.ts`  
+> **Single Source of Truth:** `design-system/zyba/MASTER.md`
 
 ---
 
-## 1. Page Context & User Journey (obra/superpowers)
+## 1. Ringkasan & Persona
 
-- **Target Persona:** Pengguna yang sedang mengalami krisis emosional mendalam, kerabat yang ingin membantu teman yang sedang terpuruk, atau pengguna baru yang ingin memahami tata krama di dalam ZYBA.
-- **Mental Model:** *"Membuka lembaran peta darurat dan panduan ramah yang tertata rapi di sudut ruangan, mengetahui persis siapa yang bisa dihubungi saat situasi genting, dan merasa terlindungi."*
-- **Primary Job to Be Done (JTBD):** Menyediakan daftar kontak hotline darurat resmi 24/7 (bebas pulsa Sejiwa 119 ext. 8, Yayasan Pulih, LISA, Into The Light), panduan pertolongan pertama psikologis mandiri (*Psychological First Aid*), dan etika menjaga kehangatan komunitas.
-- **Data & API Binding:**
-  - Sumber Kebenaran Krisis: `CRISIS_RESOURCES` di `src/lib/crisisDetection.ts`.
-  - Akses Langsung: Tombol `tel:` dan tautan WhatsApp resmi tanpa memerlukan form login.
-
----
-
-## 2. Art Direction & Visual Atmosphere (Leonxlnx/taste-skill)
-
-- **Arah Visual:** *The Tactile Sanctuary — Emergency Beacon in Quiet Earth*.
-- **Antitesis Warna Alarm Merah Bahaya:** Menolak penggunaan warna merah menyala yang menakut-nakuti atau membuat panik pengguna dalam kondisi krisis. Menggunakan kanvas Cream (`#F7F2E7`), kartu berlatar putih bersih dengan garis batas tegas `border-brown-900/20`, ikon `HeartHandshake` pekat, dan tombol panggilan Warm Orange (`#F2884B`) yang kontras dan jelas terlihat.
-- **Nada Bicara:** Menenangkan, berwibawa, penuh perlindungan, dan cepat tanggap.
-  - Heading: *"Kamu tidak harus memikul semua ini sendirian."*
-  - Subtitle: *"Bantuan profesional selalu siaga untuk mendengarkan dan mendampingimu melewati masa-masa terberat."*
+- **Target Persona:** Pengguna yang sedang mengalami beban emosional mendalam, kerabat yang ingin mencari panduan menolong teman terpuruk, atau pengguna baru yang ingin memahami etika ruang aman ZYBA.
+- **Mental Model:** *"Membuka lembaran peta darurat dan panduan pertolongan pertama yang tertata rapi di sudut ruangan, mengetahui persis siapa yang bisa dihubungi saat situasi genting, dan merasa terlindungi tanpa kepanikan."*
+- **Primary Job to Be Done (JTBD):** Menyediakan direktori kontak hotline darurat resmi 24/7 (bebas pulsa Sejiwa 119 ext. 8, Yayasan Pulih, LISA, Into The Light), panduan pertolongan pertama psikologis mandiri (*Psychological First Aid*), serta etika menjaga kehangatan komunitas.
+- **Sumber Data & Keabsahan:**
+  - Sumber Tunggal Krisis: `CRISIS_RESOURCES` di `src/lib/crisisDetection.ts`.
+  - Akses Langsung: Tombol dialer telepon `tel:` dan tautan WhatsApp resmi tanpa dinding login atau rintangan formulir.
 
 ---
 
-## 3. Responsive Geometry & Breakpoints (ui-ux-pro-max-skill)
+## 2. Perubahan dari v1
 
-- **Desktop (≥ 1024px): 12-Column Guidebook Spread**
-  - Spacing Layout: `md:pl-[108px] pr-8 py-8 max-w-[1240px] mx-auto`.
-  - Section Atas: **Primary Crisis Lifeline Anchor Card** (`col-span-12`, `rounded-[24px]`).
-  - Section Bawah: **Grid Organisasi Bantuan 3 Kolom** (`grid-cols-3 gap-6`).
-- **Tablet (768px – 1023px):**
-  - Grid 2 kolom berjarak `gap-6`.
-- **Mobile (< 768px):**
+- **Dihapus:** Penggunaan warna merah alarm menyala yang memicu kecemasan dan kepanikan berlebih pada pengguna yang sedang rapuh.
+- **Dihapus:** Tampilan daftar kontak darurat yang padat dan membingungkan tanpa hierarki tindakan pertama.
+- **Baru:** *Primary Crisis Lifeline Anchor* yang tenang namun tegas di bagian paling atas dengan tombol panggilan cepat Sejiwa 119 ext. 8.
+- **Baru:** Panduan Pertolongan Pertama Psikologis Mandiri (Teknik Grounding 5-4-3-2-1 dan Napas Kotak Terpimpin).
+- **Baru:** Kartu organisasi mitra dengan jam operasional transparan, metode kontak langsung, dan label keahlian spesifik.
+- **Alasan:** Menghadirkan perlindungan emosional yang menenangkan, berwibawa, mudah diakses dalam hitungan detik saat kondisi genting, dan mematuhi etika bantuan kesehatan jiwa.
+
+---
+
+## 3. Layout & Komposisi Grid (3 Viewport: 375, 768, 1280)
+
+- **Mobile (375px):**
+  - Padding: `px-4 pt-4 pb-24`.
+  - Banner Darurat Utama: Berada di posisi paling atas dengan tombol dialer berukuran besar (tinggi minimal 48px) agar mudah diketuk tangan yang gemetar.
+  - Kartu Bantuan: 1 kolom kartu vertikal dengan tombol panggil/chat langsung.
+  - Panduan Mandiri: Akordeon ringkas langkah pertolongan pertama.
   - Navigasi: Ergonomic Bottom Pill Nav di bawah.
-  - Spacing Layout: `px-4 pt-4 pb-24`.
-  - Tata Letak: Banner darurat utama di bagian paling atas dengan tombol telepon besar mudah diketuk (tinggi $\ge 48\text{px}$).
+- **Tablet (768px):**
+  - Layout: `md:pl-[108px] pr-6 py-8 max-w-[1000px] mx-auto`.
+  - Navigasi: Floating Zen Dock di sisi kiri (`w-[76px]`).
+  - Banner Darurat: Susunan horizontal dengan nomor kontak berukuran display.
+  - Grid Organisasi: 2 kolom `gap-6`.
+- **Desktop (1280px):**
+  - Layout: `md:pl-[108px] pr-8 py-10 max-w-[1240px] mx-auto`.
+  - Banner Utama: `rounded-[24px]` melintang penuh dengan teks penenang dan tombol dialer instan.
+  - Grid Organisasi: 3 kolom sejajar (`grid-cols-3 gap-6`) menampilkan mitra resmi.
+  - Bagian Panduan: Komposisi split 2 kolom (sisi kiri protokol pertolongan pertama, sisi kanan etika saling menjaga).
 
 ---
 
-## 4. Component Specifications (pbakaus/impeccable)
+## 4. Token Visual yang Digunakan
 
-### A. Primary Crisis Lifeline Anchor (Sejiwa 119 ext. 8)
-- Container: `bg-cream rounded-[24px] border-2 border-brown-900/20 p-6 sm:p-8 flex flex-col md:flex-row items-center justify-between gap-6 shadow-sm mb-8`
-- Identitas Hotline:
-  - Ikon: Lucide `HeartHandshake` stroke 2px warna Brown 900 (ukuran 36px)
-  - Nama Layanan: `font-display text-xl sm:text-2xl font-extrabold text-brown-900` (*"Layanan Sejiwa 119 Ekstensi 8"*).
-  - Penyelenggara: `font-body text-xs font-bold uppercase tracking-wider text-brown-700/80 mt-1` (*"Kemenkes RI & HIMPSI — 24 Jam Bebas Pulsa"*).
-  - Keterangan: `font-body text-sm text-brown-700 leading-relaxed max-w-xl mt-2`
-- Tombol Panggilan Darurat:
-  - Styling: `inline-flex items-center gap-2 rounded-full bg-orange-500 hover:bg-orange-500/90 text-white px-7 py-3 text-sm font-bold shadow-xs transition-all min-h-[48px] cursor-pointer`
-  - Aksi: `href="tel:119,8"` (membuka dialer telepon ponsel secara instan).
-
-### B. Directory Cards (Organisasi Mitra Terpercaya)
-- Container: `bg-white/95 rounded-[20px] border border-brown-900/10 p-6 flex flex-col justify-between shadow-xs hover:border-brown-900/25 transition-all`
-- 3 Mitra Resmi:
-  1. **Layanan LISA (Love Inside Suicide Awareness):** Konseling krisis multibahasa (Indonesia & Inggris).
-  2. **Into The Light Indonesia:** Edukasi pencegahan bunuh diri dan panduan pendampingan sebaya.
-  3. **Yayasan Pulih:** Pemulihan trauma psikologis dan kekerasan berbasis gender.
-- Action Link: Tombol sekunder `bg-green-100 hover:bg-green-100/80 text-brown-900 rounded-full px-4 py-2 text-xs font-semibold text-center mt-4`
-
-### C. Psychological First Aid Guide (Langkah Mandiri)
-- Container: `bg-white/90 rounded-[20px] border border-brown-900/10 p-6 mt-8`
-- Judul: `font-display text-lg font-bold text-brown-900 mb-4` (*"Langkah Sederhana Menstabilkan Diri Saat Panik"*)
-- 3 Langkah Mikro:
-  1. *Sentuh Permukaan Dingin (Grounding)* — Letakkan telapak tangan di atas meja atau basuh wajah dengan air sejuk.
-  2. *Metode Napas 4-7-8* — Tarik napas 4 detik, tahan 7 detik, hembuskan perlahan 8 detik.
-  3. *Hubungi Sahabat Tepercaya* — Kirim pesan singkat atau buka Tanya Zyba untuk merilis emosi.
+- **Kanvas Utama:** `bg-cream` (`#F7F2E7`).
+- **Tinta & Tipografi:** `text-brown-900` (`#3B2A20`) untuk judul berwibawa, `text-brown-700` (`#5A4636`) untuk narasi panduan, `text-brown-900/60` untuk nomor registrasi layanan.
+- **Aksen Kehangatan & Perlindungan:**
+  - `bg-orange-500` / `hover:bg-orange-600` untuk tombol panggilan darurat primer (kontras tajam dan mudah dikenali).
+  - `bg-green-100` / `text-green-700` untuk badge layanan 24 Jam & Bebas Pulsa.
+  - `border-brown-900/15` untuk garis batas taktil kertas.
+- **Peringatan Warna Bahaya:** Dilarang menggunakan merah `danger` untuk kartu darurat; merah hanya digunakan untuk status koneksi terputus.
 
 ---
 
-## 5. State Matrix & Edge Cases (obra/superpowers)
+## 5. Komponen Kunci & Hirarki Radius
 
-| State | Kondisi Pemicu | Visual Feedback | Aksi Pengguna |
-|---|---|---|---|
-| **Guidebook Open** | Pengguna membuka `/guidebook` | Seluruh nomor darurat dan panduan tampil jelas | Ketuk nomor telepon darurat jika butuh |
-| **Call Initiated** | Pengguna menekan tombol Sejiwa 119 | Sistem operasi membuka aplikasi dialer telepon | Lakukan panggilan darurat |
-| **Offline Mode** | Tidak ada koneksi internet | Halaman tetap dapat dibaca karena nomor hotline disimpan lokal | Nomor telepon tetap bisa dihubungi |
-
----
-
-## 6. Anti-Slop Audit Checklist (miqdadbadjuber/anti-slop)
-
-- [x] **Zero Emoji as Icons:** Menggunakan SVG Lucide (`HeartHandshake`, `Phone`, `Shield`, `HeartPulse`, `ExternalLink`).
-- [x] **Zero Alarm Red Slop:** Tidak ada background merah membara yang memperburuk kondisi kecemasan pengguna.
-- [x] **No Card Inception:** Kartu hotline berdiri mandiri dalam kanvas Cream.
-- [x] **Hierarki Radius:** Emergency Anchor 24px, Mitra Cards 20px, Guidance Box 20px, CTA Buttons 9999px.
-- [x] **Accessible Contrast:** Teks keterangan 11.2:1 (AAA), nomor telepon darurat kontras tinggi.
+1. **Primary Crisis Lifeline Anchor (Sejiwa 119 ext. 8):**
+   - Radius: `rounded-[24px]` (Major Sanctuary Anchor).
+   - Container: `border-2 border-brown-900/20 bg-cream p-6 sm:p-8 shadow-sm`.
+   - Ikon: Lucide `HeartHandshake` stroke 2px warna Brown 900.
+   - Tombol Panggilan: Pill `rounded-full bg-orange-500 text-white min-h-[48px] px-8 text-base font-bold`.
+2. **Directory Cards (Organisasi Mitra Terpercaya):**
+   - Radius: `rounded-[20px]`.
+   - Container: `border border-brown-900/10 bg-white/95 p-6 shadow-xs hover:border-brown-900/25 transition-all`.
+   - Tombol Kontak: `rounded-full` pill sekunder `bg-brown-900 text-cream` atau `bg-green-100 text-green-800`.
+3. **Psychological First Aid Accordion / Steps:**
+   - Radius: `rounded-xl` (12px) untuk setiap langkah panduan interaktif.
 
 ---
 
-## 7. Verification Contract (obra/superpowers)
+## 6. Matriks 6 State (Default, Loading, Empty, Active, Error, Crisis)
 
-- **Hotline Phone Integrity:** Tombol panggil darurat diverifikasi memiliki atribut `href="tel:119,8"` yang valid.
-- **Contract Test Command:**
-  ```powershell
-  npm run build
-  ```
+1. **Default:** Seluruh kontak darurat dan panduan tampil utuh, tombol telepon dapat diklik langsung membuka aplikasi telepon perangkat.
+2. **Loading:** Kerangka skeleton kertas lembut memuat kartu kontak darurat tanpa pergeseran layout.
+3. **Empty:** Tidak relevan (konten rujukan statis dan selalu tersedia).
+4. **Active:** Mengklik langkah teknik napas atau panduan mandiri memperluas instruksi visual secara halus.
+5. **Error:** Jika status jaringan terputus, nomor telepon penting tetap ditampilkan dari cache statis lokal agar pengguna tidak kehilangan akses nomor kontak darurat.
+6. **Crisis:** Halaman ini adalah tujuan utama saat sistem mendeteksi krisis emosional pengguna dari fitur chat atau jurnal.
 
+---
+
+## 7. Interaksi & Motion
+
+- **Akses Seketika:** Tombol `tel:` dan `https://wa.me/` langsung memicu intent bawaan OS tanpa jeda dialog konfirmasi yang memperlambat pertolongan.
+- **Transisi Akordeon:** Langkah panduan mandiri membuka perlahan dengan transisi tinggi 200ms `ease-out`.
+- **Reduced Motion:** Saat mode reduced motion aktif, akordeon membuka instan tanpa animasi pergeseran.
+
+---
+
+## 8. Aksesibilitas (WCAG AA/AAA, Keyboard, Focus, Reduced Motion)
+
+- **Target Sentuh:** Seluruh tombol dialer dan tautan kontak memiliki area sentuh minimal 48 x 48px untuk kemudahan akses saat tangan gemetar atau panik.
+- **Label Aksesibilitas:** Tombol telepon memiliki `aria-label="Panggil Hotline Bebas Pulsa Sejiwa 119 Ekstensi 8"`.
+- **Kontras:** Nomor telepon darurat menggunakan Manrope tebal 24px warna Brown 900 dengan rasio kontras 11.2:1 terhadap latar cream.
+- **Keyboard Navigation:** Seluruh nomor kontak dapat diakses dengan tombol Tab dan diaktifkan dengan Enter.
+
+---
+
+## 9. Integrasi Data & API (Contract strictly preserved)
+
+- Mengimpor langsung konstanta `CRISIS_RESOURCES` dari `src/lib/crisisDetection.ts`.
+- Mendukung tautan keluar aman:
+  - Sejiwa: `tel:119,8`
+  - Hotline LISA: `tel:08113855472`
+  - Yayasan Pulih: `https://wa.me/628118436633`
+- Tidak ada autentikasi yang diwajibkan untuk membuka `/guidebook`.
+
+---
+
+## 10. Acceptance Criteria (Verifiable)
+
+- [ ] Kontak darurat Sejiwa 119 ext. 8 ditampilkan secara menonjol di bagian atas halaman.
+- [ ] Tautan `tel:` memicu aplikasi telepon pada perangkat mobile dan desktop yang mendukung dialer.
+- [ ] Tidak ada penggunaan warna merah alarm yang menakutkan pengguna.
+- [ ] Panduan mandiri (Teknik Grounding 5-4-3-2-1) tersedia dan dapat dibaca dengan jelas.
+- [ ] Halaman dapat diakses tanpa login dan mematuhi standar aksesibilitas WCAG AAA untuk nomor telepon darurat.

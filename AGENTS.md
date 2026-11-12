@@ -1,6 +1,8 @@
 # AGENTS.md — ZYBA Web (Desktop)
 
-Dokumen ini adalah **satu-satunya sumber acuan** untuk coding agent (Hermes+9Router, Antigravity, atau agent lain) yang melanjutkan development ZYBA. Semua keputusan desain, hasil review, dan perbaikan yang wajib dilakukan digabung di sini — agent tidak perlu mencari konteks di tempat lain.
+> ⭐️ **SUMBER KEBENARAN DESAIN MUTLAK:** Seluruh keputusan desain, token warna semantik, tipografi, skala radius, elevasi, dan pola interaksi mengacu pada `design-system/zyba/MASTER.md`. Jika terdapat pertentangan antara bagian di dokumen ini dengan `design-system/zyba/MASTER.md`, **MASTER.md yang menang mutlak**.
+
+Dokumen ini adalah acuan arsitektur rekayasa untuk coding agent (Hermes+9Router, Antigravity, atau agent lain) yang melanjutkan development ZYBA. Semua keputusan desain, hasil review, dan perbaikan yang wajib dilakukan digabung di sini — agent tidak perlu mencari konteks di tempat lain.
 
 > ⚠️ **Baca urutan ini sebelum coding apa pun:**
 > 1. [Bagian 8 — Status Review & Prioritas Perbaikan](#8-status-review--prioritas-perbaikan) — 3 isu keamanan yang HARUS diperbaiki duluan.

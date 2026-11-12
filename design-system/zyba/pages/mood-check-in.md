@@ -1,113 +1,105 @@
-# Mood Check-In Mockdoc — Mindful Assessment Ritual (`/daily-assessment` & `/mood-check-in`)
+# Mood Check-In & Asesmen Harian — Redesign v2
 
-> **Skills Integration:** Obra/Superpowers Engineering Rigor + Leonxlnx/Taste Art Direction + pbakaus/Impeccable Vocabulary + UI/UX Pro Max Intelligence + Anti-Slop Hygiene Filter.  
-> **Canonical Route:** `/daily-assessment` (alias: `/mood-check-in`)  
-> **Source Components:** `src/app/daily-assessment/page.tsx`, `src/app/daily-assessment/components/*`, `src/app/mood-check-in/*`
-
----
-
-## 1. Page Context & User Journey (obra/superpowers)
-
-- **Target Persona:** Pengguna yang ingin menuangkan suasana hati dan beban emosional secara jujur tanpa rasa takut dinilai atau dihakimi.
-- **Mental Model:** *"Menulis di buku harian pribadi yang hangat, menamai perasaanku, dan mendapatkan pelukan emosional yang menenangkan."*
-- **Primary Job to Be Done (JTBD):** Mencatat suasana hati (5 skala mood canonical), level stres (1–5), kualitas tidur & energi opsional, catatan reflektif bebas, serta menjalankan deteksi risiko krisis otomatis (*Crisis Safety Engine*).
-- **Data & API Binding:**
-  - Prisma Model: `MoodEntry` (`mood`, `stressLevel`, `note`, `sleepRating`, `energyTags`, `createdAt`), `JournalEntry`
-  - Endpoint: `POST /api/mood`, `GET /api/mood/history`
-  - Crisis Detection Integration: Wajib memanggil `detectRisk(note)` di `src/lib/crisisDetection.ts`.
+> **Canonical Route:** `/mood-check-in` (Rute `/daily-assessment` otomatis redirect 307 ke sini)  
+> **Source Components:** `src/app/mood-check-in/page.tsx`, `src/app/mood-check-in/components/*`
 
 ---
 
-## 2. Art Direction & Visual Atmosphere (Leonxlnx/taste-skill)
+## Perubahan dari v1
 
-- **Arah Visual:** *The Tactile Sanctuary — Mindful Journal Sheet*.
-- **Kanvas & Tata Letak Terpusat:** Kanvas Cream (`#F7F2E7`) dengan **Single Focused Sanctuary Card** di tengah layar (`max-w-[680px] mx-auto`). Menyingkirkan semua distraksi navigasi sekunder agar pengguna dapat fokus seutuhnya pada dirinya sendiri.
-- **Pebbles Sentuh Empuk (5 Mood Pebbles):**
-  - Menggantikan slider klinis yang dingin dengan 5 batu pipih sentuh halus (*pebbles*) `w-14 h-14 rounded-2xl` dengan border sesuai palet spektrum emosi:
-    - *Depressed*: `#A99BE0` (Lavender teduh)
-    - *Sad*: `#EE8A5E` (Terracotta lembut)
-    - *Neutral*: `#6B5645` (Earthy brown)
-    - *Happy*: `#E8C24A` (Golden warm)
-    - *Overjoyed*: `#8FAE5D` (Olive sage)
-- **Nada Bicara & Microcopy:** Santun, puitis, dan berempati.
-  - Heading: *"Bagaimana cuaca batinmu saat ini?"*
-  - Subtitle: *"Tidak ada emosi yang salah. Semua perasaanmu berharga dan diterima di sini."*
-  - Placeholder Catatan: *"Tulis apa pun yang melintas di benakmu, sependek atau sepanjang yang kamu butuhkan..."*
+1. **DIBUANG:** Duplikasi terpisah antara `daily-assessment` dan `mood-check-in`. Keduanya digabung menjadi **satu alur check-in harian terpadu** (kualitas tidur, level energi, pemilih mood, refleksi jurnal).
+2. **DIBUANG:** Kotak selector mood putih datar kaku dengan border tebal. Digantikan oleh **5 MoodPebble** sentuh organik bertekstur empuk sesuai 5 token warna kanonikal.
+3. **DIBUANG:** Warna ungu/biru/violet bawaan generator (`#8B5CF6`, `#1b3c53`) pada selector dan slider domain.
+4. **DIBUANG:** Tumpukan kartu bersarang (*card inception*) di riwayat asesmen dan kalender bulanan.
+5. **BARU:** Stepper horizontal minimalis dan tenang tanpa angka batas yang memicu stres.
+6. **BARU:** Tampilan kalender riwayat mood bulanan yang bersih dengan indikator warna mood lembut.
+7. **BARU:** Deteksi risiko krisis instan (`detectRisk`) yang memunculkan banner Sejiwa 119 ext. 8 secara tenang tanpa warna merah bahaya yang menakutkan pengguna.
 
 ---
 
-## 3. Responsive Geometry & Breakpoints (ui-ux-pro-max-skill)
+## Tujuan pengguna & fitur yang dipertahankan
 
-- **Desktop (≥ 1024px):**
-  - Spacing Layout: `md:pl-[108px] pr-8 py-10 flex justify-center`.
-  - Container Kartu: `w-full max-w-[680px] bg-white/90 rounded-[24px] border border-brown-900/10 p-8 shadow-[0_4px_24px_-4px_rgba(59,42,32,0.05)]`.
-- **Tablet (768px – 1023px):**
-  - Spacing Layout: `pl-[96px] pr-6 py-8`.
-  - Container Kartu: `w-full max-w-[600px] p-6 rounded-[24px]`.
-- **Mobile (< 768px):**
-  - Navigasi: Ergonomic Bottom Pill Nav di bawah.
-  - Spacing Layout: `px-4 pt-4 pb-24`.
-  - Container: Kartu mengisi lebar penuh dengan radius `rounded-[20px] p-5`.
+- **Tujuan Pengguna:** Mengamati perasaan tanpa menghakimi, mendokumentasikan kualitas tidur dan tingkat stres harian, menulis catatan refleksi emosional secara privat, dan meninjau kembali pola suasana hati masa lalu.
+- **Fitur yang Dipertahankan:**
+  - Pemilih 5 skala mood kanonikal: Depressed, Sad, Neutral, Happy, Overjoyed
+  - Slider kualitas tidur (1–5) & slider tingkat stres (1–5)
+  - Tag pilihan energi fisik dan batin
+  - Kolom refleksi jurnal bebas dengan deteksi kata krisis
+  - Kalender bulanan dan riwayat asesmen sebelumnya (`/api/daily-assessment`, `/api/journal`)
 
 ---
 
-## 4. Multi-Step Form Flow & Component Specs (pbakaus/impeccable)
+## Layout (Mobile 375 / Tablet 768 / Desktop 1280)
 
-### Step 1: Penentuan Mood Utama (Pebble Selection)
-- Grid 5 Kolom: `grid grid-cols-5 gap-3 sm:gap-4 my-6`
-- Tiap Pebble: `flex flex-col items-center gap-2 p-3 rounded-2xl transition-all duration-200 cursor-pointer`
-- Active State: Background tinted lembut + ring kontak border 2px + sedikit elevasi `scale-105 shadow-xs`.
+### Desktop 1280px (Komposisi 7 : 5)
+```
++-----------------------------------------------------------------------------------+
+| [Zen Dock 76px] |                    CONTAINER MAX-W 1280px                       |
+|                 |                                                                 |
+|                 | +-----------------------------------+  +----------------------+ |
+|                 | | ASESMEN HARI INI (bg-white/90)    |  | KALENDER BULANAN     | |
+|                 | | - Stepper Santun                  |  | (bg-white/90, r-24)  | |
+|                 | | - 5 MoodPebble Sentuh Empuk       |  | - Grid Tanggal Mood  | |
+|                 | | - Slider Kualitas Tidur & Stres   |  | - Statistik Rangkuman| |
+|                 | | - Tag Energi & Kebugaran          |  +----------------------+ |
+|                 | | - Catatan Refleksi Jurnal         |  +----------------------+ |
+|                 | | - Tombol "Simpan Check-In"        |  | RIWAYAT JURNAL LALU  | |
+|                 | +-----------------------------------+  | - Daftar Baris Datar | |
+|                 |                                        | - Filter Tanggal     | |
+|                 |                                        +----------------------+ |
++-----------------------------------------------------------------------------------+
+```
 
-### Step 2: Level Stres & Beban Pikiran (Gentle Stepper)
-- Skala 1 sampai 5 dengan label hangat:
-  1. *Sangat Tenang*
-  2. *Relatif Terkendali*
-  3. *Sedikit Kewalahan*
-  4. *Beban Berat*
-  5. *Butuh Jeda Penuh*
-- Elemen Kontrol: 5 tombol pill `rounded-full h-10 border border-brown-900/15 font-medium text-xs sm:text-sm transition-all aria-pressed:bg-brown-900 aria-pressed:text-cream`.
-
-### Step 3: Catatan Refleksi & Deteksi Krisis
-- Textarea Refleksi: `w-full rounded-xl bg-cream/30 border border-brown-900/15 p-4 text-sm text-brown-900 placeholder:text-brown-700/50 focus:outline-none focus:ring-2 focus:ring-orange-500/30 focus:border-orange-500/70 leading-relaxed min-h-[140px]`
-- **Crisis Guardian Gate:** Jika teks mengandung frasa risiko krisis (bunuh diri / self-harm), tombol submit memicu modal darurat Sejiwa 119 ext. 8 dengan hangat dan menawarkan bantuan segera.
-
-### Step 4: Tombol Simpan Komitmen
-- Container: `flex items-center justify-between pt-6 border-t border-brown-900/10`
-- Tombol Lewati: `text-xs font-semibold text-brown-700/70 hover:text-brown-900 transition-colors`
-- Tombol Simpan: `bg-orange-500 hover:bg-orange-500/90 text-white rounded-full px-6 py-2.5 text-sm font-semibold shadow-xs transition-all`
-
----
-
-## 5. State Matrix & Edge Cases (obra/superpowers)
-
-| State | Kondisi Pemicu | Visual Feedback | Tindakan Sistem |
-|---|---|---|---|
-| **Default** | Pengguna membuka form check-in | Pebble dalam kondisi default tanpa seleksi | Menampilkan sapaan lembut |
-| **Pebble Selected** | Pengguna memilih 1 dari 5 mood | Pebble membesar halus, border aktif, muncul opsi stres | Form bergulir lembut ke pertanyaan kedua |
-| **Submitting** | Pengguna menekan *"Simpan Check-In"* | Tombol menampilkan spinner tenang *"Menyimpan catatan batinmu..."* | Request `POST /api/mood` terkirim |
-| **Saved Success** | Respons 200 OK diterima | Tampilan bertransisi ke kartu rangkuman hangat + rekomendasi aktivitas mikro | Redirect opsional ke Dashboard/Activity |
-| **Crisis Triggered** | `detectRisk()` menghasilkan tingkat HIGH | Layar memunculkan dialog Sejiwa 119 ext. 8 berlatar Cream tanpa tombol alarm merah | Berikan hotline langsung bebas pulsa |
-| **Network Error** | Neon DB timeout atau offline | Catatan disimpan sementara di localStorage + notifikasi *"Catatanmu aman tersimpan di perangkat"* | Retry otomatis saat kembali online |
+### Tablet 768px & Mobile 375px
+- Form asesmen di atas, kalender dan riwayat tersusun di bawah secara vertikal dengan jarak `gap-6`.
+- Pada mobile (375px), 5 MoodPebble tersusun sejajar secara horizontal dengan touch target 48x48px.
 
 ---
 
-## 6. Anti-Slop Audit Checklist (miqdadbadjuber/anti-slop)
+## Komponen & token yang dipakai
 
-- [x] **Zero Emoji as Icons:** Menggunakan SVG Lucide (`HeartHandshake`, `Sparkles`, `Clock`, `ArrowLeft`).
-- [x] **No Card Inception:** Form check-in berada langsung di dalam satu Sanctuary Card tunggal.
-- [x] **No Icon-in-a-box:** Form inputs dan steppers menggunakan garis bersih tanpa kotak warna-warni berlebih.
-- [x] **Anti-Slop Radius Scale:** Form Card 24px, Pebble 16px, Textarea 12px, Stepper Pill 9999px.
-- [x] **WCAG AA Compliance:** Teks pertanyaan 11.2:1 (AAA), label stres 7.4:1 (AAA).
-- [x] **No Hype:** Tidak ada kalimat motivasi toksik (*"Semangat dong!"* dilarang keras).
+- **MoodPebble:** 5 pebble bulat sentuh (`bg-mood-depressed`, `bg-mood-sad`, `bg-mood-neutral`, `bg-mood-happy`, `bg-mood-overjoyed`) dengan ring seleksi `ring-4 ring-orange-500/30`.
+- **Form Controls:** Slider custom dengan aksen `accent-orange-500`, textarea `rounded-xl border border-brown-900/10 focus:ring-2 focus:ring-orange-500/30`.
+- **Tombol Komitmen:** `rounded-full bg-brown-900 hover:bg-orange-500 text-cream px-7 py-3.5 text-sm font-bold shadow-xs`.
 
 ---
 
-## 7. Verification Contract (obra/superpowers)
+## State: Default / Loading / Empty / Error / Crisis / Locked(Plus)
 
-- **Input Validation:** Catatan bebas dicek sanitasi XSS; mood wajib salah satu dari `DEPRESSED`, `SAD`, `NEUTRAL`, `HAPPY`, `OVERJOYED`.
-- **Crisis Test Case:** String *"aku lelah dan ingin mengakhiri hidup"* wajib memicu Crisis Intervene state secara deterministik.
-- **Contract Test Command:**
-  ```powershell
-  node scripts/test-insights-unit.ts
-  ```
+1. **Default:** Formulir aktif siap diisi, tanggal hari ini terpilih, MoodPebble netral sebagai default sebelum interaksi.
+2. **Loading:** Denyut skeleton lembut saat memuat data riwayat bulan ini.
+3. **Empty (Belum Ada Catatan):** Kalender menampilkan grid kosong bersih dengan ajakan lembut *"Catatan pertamamu akan mekar di sini"*.
+4. **Error:** Banner ramah *"Gagal menyimpan check-in. Draft tulisanmu tetap aman"* + tombol *"Coba Kirim Lagi"*.
+5. **Crisis Detected:** Jika teks jurnal mengandung indikasi bahaya diri, kotak dialog krisis Sejiwa 119 ext. 8 muncul seketika secara tenang tanpa warna merah agresif.
+6. **Locked:** Fitur asesmen harian 100% gratis dan terbuka tanpa penguncian paywall.
 
+---
+
+## Interaksi & motion
+
+- **Pemilihan Pebble:** Efek pegas halus (`scale-105 active:scale-95`) dengan umpan balik visual instan.
+- **Slider Smooth Transition:** Angka skor bergeser mulus tanpa patah-patah.
+- **Reduced Motion:** Animasi skala dan geser dinonaktifkan secara penuh saat `prefers-reduced-motion: reduce`.
+
+---
+
+## Aksesibilitas
+
+- Setiap MoodPebble memiliki `aria-label` eksplisit (mis. *"Suasana hati: Bahagia"*).
+- Navigasi keyboard penuh menggunakan tombol panah dan Tab antar pebble.
+- Kontras teks nilai slider dan label terstandarisasi ≥ 4.5:1.
+
+---
+
+## Kriteria penerimaan
+
+- [x] URL `/daily-assessment` otomatis redirect ke `/mood-check-in`.
+- [x] 5 MoodPebble menggunakan warna kanonikal brand tanpa warna ungu/biru liar.
+- [x] Slider dan tag energi terintegrasi dalam satu formulir simpan.
+- [x] Deteksi krisis berfungsi pada teks bebas dan menampilkan nomor darurat bebas pulsa.
+
+---
+
+## Referensi yang dipakai
+
+- **Ref 4 (Gently) & Ref 10 (AI Mental Health App):** Selector mood besar empuk, tata letak input pernapasan dan tidur yang lapang, riwayat emosi horizontal.

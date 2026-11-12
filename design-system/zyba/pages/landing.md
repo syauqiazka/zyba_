@@ -1,110 +1,131 @@
-# Gerbang Publik Mockdoc — Warm Invitation & Sanctuary Gateway (`/`)
+# Gerbang Publik Mockdoc — Warm Invitation & Sanctuary Gateway (`/`) — Redesign v2
 
 > **Skills Integration:** Obra/Superpowers Engineering Rigor + Leonxlnx/Taste Art Direction + pbakaus/Impeccable Vocabulary + UI/UX Pro Max Intelligence + Anti-Slop Hygiene Filter.  
 > **Canonical Route:** `/` (Public Landing Page)  
-> **Source Components:** `src/app/page.tsx`, `src/components/landing/*`
+> **Source Components:** `src/app/page.tsx`, `src/components/landing/*`  
+> **Single Source of Truth:** `design-system/zyba/MASTER.md`
 
 ---
 
-## 1. Page Context & User Journey (obra/superpowers)
+## 1. Ringkasan & Persona
 
-- **Target Persona:** Pengunjung baru, mahasiswa, atau profesional muda Gen Z yang sedang mencari ruang aman untuk merawat kesehatan mental, fisik, dan sosialnya.
-- **Mental Model:** *"Menemukan poster editorial hangat di dinding kafe tenang, membacanya sejenak, merasakan pengertian mendalam, dan memutuskan untuk melangkah masuk."*
-- **Primary Job to Be Done (JTBD):** Memperkenalkan identitas ZYBA (Gen Z Wellness Support) secara transparan, menyajikan 4 pilar sanctuary utama, mendemonstrasikan data pasar kredibel (dari riset resmi pitch deck), dan mengarahkan pengunjung untuk masuk/daftar via `/onboarding`.
-- **Riset Pasar Kredibel (Pitch Deck Resmi — Bukan Angka Karangan):**
-  - **74,9 Juta:** Populasi Gen Z di Indonesia yang menghadapi fase transisi krusial.
-  - **81,1%:** Generasi muda yang pernah mencurahkan isi hati kepada AI namun mendambakan respons yang lebih empatik dan aman.
-  - **3 Dimensi:** Kesejahteraan holistik terpadu (Mental, Fisik, dan Sosial).
-- **Data & API Binding:**
-  - Halaman publik murni (Static Site Generation / ISR), tidak memerlukan cookie autentikasi untuk dibuka.
+- **Target Persona:** Pengunjung baru, mahasiswa, atau profesional muda Gen Z yang sedang mencari tempat beristirahat sejenak dari hiruk-pikuk kehidupan modern dan mendambakan pendamping kesejahteraan holistik tanpa penghakiman.
+- **Mental Model:** *"Menemukan poster editorial hangat di dinding kafe tenang, membacanya sejenak, merasakan pengertian mendalam, dan memutuskan untuk melangkah masuk ke dalam ruang hening."*
+- **Primary Job to Be Done (JTBD):** Memperkenalkan identitas ZYBA (*Gen Z Wellness Support*) secara transparan dan berwibawa, menyajikan 4 pilar sanctuary utama, menyajikan data kebutuhan nyata dari riset pitch deck resmi, dan memandu pengunjung mendaftar atau masuk ke dalam aplikasi via `/onboarding`.
+- **Riset Pasar Kredibel (Pitch Deck Resmi — Tanpa Angka Karangan):**
+  - **74,9 Juta:** Populasi generasi muda Gen Z di Indonesia yang menghadapi fase transisi krusial.
+  - **81,1%:** Generasi muda yang pernah mencurahkan isi hati kepada asisten digital namun mendambakan respons yang lebih empatik dan aman.
+  - **3 Pilar Holistik:** Kesehatan Mental, Fisik, dan Sosial yang saling terhubung.
 
 ---
 
-## 2. Art Direction & Visual Atmosphere (Leonxlnx/taste-skill)
+## 2. Perubahan dari v1
 
-- **Arah Visual:** *The Tactile Sanctuary — Sunlight on Warm Linen*.
-- **Antitesis Dark Mode SaaS Kuno:** Menolak template landing page teknologi generik (latar hitam pekat, gradient ungu-cyan, kartu mengkilap glassmorphism dengan efek glow berlebihan). ZYBA tampil bersahaja di atas kanvas Cream alami (`#F7F2E7`) dengan teks tinta tanah Brown 900 (`#3B2A20`), aksen Vital Green (`#8FAE5D`), dan kehangatan Orange 500 (`#F2884B`).
-- **Tipografi Editorial Berwibawa:**
-  - Headline Utama: `font-display text-4xl sm:text-5xl lg:text-6xl font-extrabold text-brown-900 tracking-tight leading-[1.15]`
-  - Penekanan Warna: *"Pendamping Kesehatan Mental, <span className="text-green-500">Fisik</span>, dan <span className="text-orange-500">Sosial</span> untuk Gen Z"*
-- **Nada Bicara:** Tulus, memberdayakan, tanpa klaim palsu (*"Ubah hidupmu dalam 7 hari!"* dilarang keras).
-
----
-
-## 3. Responsive Geometry & Breakpoints (ui-ux-pro-max-skill)
-
-- **Desktop (≥ 1024px): Max-Width 1280px Centered Layout**
-  - Header: Ramping dengan logo ZYBA, menu tautan tenang (Fitur, Nilai, Komunitas), dan tombol *"Masuk / Daftar"* pill Brown 900.
-  - Hero Section: Penataan terpusat dengan padding vertikal `pt-20 pb-24 px-8`.
-  - Feature Grid: 4 kartu sejajar dalam 1 baris (`grid-cols-4 gap-6`).
-  - Stat Row: 4 kolom angka tebal dengan garis pemisah tipis.
-- **Tablet (768px – 1023px):**
-  - Feature Grid: 2 kolom x 2 baris `gap-6`.
-- **Mobile (< 768px):**
-  - Header: Logo kiri + tombol masuk kanan (nav link disembunyikan agar bersih).
-  - Spacing Layout: `px-5 pt-12 pb-20`.
-  - Feature Cards: 1 kolom kartu sentuh empuk `gap-4`.
+- **Dihapus:** Hero section terpusat kaku yang terasa kosong dan memiliki hierarki visual lemah.
+- **Dihapus:** Kumpulan kartu fitur yang menyerupai widget dashboard yang ditempelkan sembarangan di landing page.
+- **Dihapus:** Pola *icon-in-a-box* (kotak warna-warni di atas setiap judul fitur).
+- **Dihapus:** Angka statistik karangan atau klaim tidak berdasar seperti *"Ubah hidupmu dalam 7 hari"*.
+- **Baru:** Komposisi editorial asimetris 60:40 pada hero section dengan tipografi berkarakter Manrope + DM Sans.
+- **Baru:** Visual interaktif sanctuary preview (cuplikan ritme hening, pemilih mood taktil, dan ruang curhat privat).
+- **Baru:** Bagian riset berbasis data empiris pitch deck dan alur ajakan ramah menuju `/onboarding`.
+- **Alasan:** Menghadirkan kesan produk digital profesional kelas dunia yang bernapas, tenang, elegan, dan menjauhi slop template SaaS generik.
 
 ---
 
-## 4. Component Specifications (pbakaus/impeccable)
+## 3. Layout & Komposisi Grid (3 Viewport: 375, 768, 1280)
 
-### A. Navigation Header
-- Container: `flex items-center justify-between px-6 sm:px-10 py-5 max-w-[1280px] mx-auto`
-- Brand Mark: Ikon bunga 4 kelopak khas ZYBA (oranye-hijau) + teks `font-display font-bold text-xl text-brown-900`
-- Navigation Links: `hidden md:flex items-center gap-8 text-sm font-medium text-brown-700 hover:text-brown-900 transition-colors`
-- CTA Masuk: `rounded-full bg-brown-900 hover:bg-brown-900/90 text-cream px-5 py-2.5 text-xs sm:text-sm font-semibold transition-all`
-
-### B. Hero Section
-- Badge Atas: `inline-block rounded-full bg-orange-100 text-orange-500 text-xs font-bold px-4 py-1.5 mb-6 border border-orange-500/20` (*"GEN Z WELLNESS SUPPORT"*)
-- Subheadline: `font-body text-base sm:text-lg text-brown-700 max-w-2xl mx-auto mt-6 leading-relaxed` (*"Curhat, dapatkan pemahaman, ubah menjadi program nyata — semua dalam satu ruang aman, privat, dan bebas dihakimi."*)
-- CTA Group:
-  - Tombol Primer: `rounded-full bg-orange-500 hover:bg-orange-500/90 text-white px-7 py-3 text-sm font-bold shadow-xs transition-all` (*"Mulai Melangkah →"*)
-  - Tombol Sekunder: `rounded-full border border-brown-900/20 hover:bg-white text-brown-900 px-6 py-3 text-sm font-medium transition-colors` (*"Kenali Fitur Sanctuary"*)
-
-### C. Stat Row Kredibel
-- Container: `grid grid-cols-2 lg:grid-cols-4 gap-6 py-12 my-12 border-y border-brown-900/10 text-center`
-- Item Stat:
-  - Angka: `font-display text-3xl sm:text-4xl font-extrabold text-brown-900 tracking-tight`
-  - Label: `font-body text-xs sm:text-sm text-brown-700/80 font-medium mt-1`
-
-### D. 4 Pilar Sanctuary Cards
-- Container Grid: `grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 my-16`
-- 4 Kartu:
-  1. **Zyba Companion:** Ikon Lucide `MessageSquareHeart` warna Warm Orange. *"Curhat kapan saja ke kawan AI empatik yang mendengarkan tanpa menghakimi."*
-  2. **Mood Check-In:** Ikon Lucide `Smile` warna Olive Sage. *"Catat cuaca batinmu, kenali polanya, dan temukan ketenangan diri."*
-  3. **Smart Activity Planner:** Ikon Lucide `Wind` warna Vital Green. *"Latihan pernapasan dan gerak tubuh sederhana yang disesuaikan energimu."*
-  4. **Zyba Community:** Ikon Lucide `HeartHandshake` warna Terracotta. *"Ruang berbagi cerita anonim yang suportif dan saling merangkul."*
-- Card Styling: `bg-white/95 rounded-[20px] border border-brown-900/10 p-6 shadow-xs hover:border-brown-900/25 transition-all flex flex-col justify-between`
+- **Mobile (375px):**
+  - Header: Ramping 56px dengan logo ZYBA di kiri dan tombol *"Masuk"* di kanan (tautan navigasi diringkas).
+  - Hero Section: 1 kolom terpusat dengan padding `px-5 pt-12 pb-16`. Teks headline 32px bernapas, tombol CTA pill utama lebar penuh.
+  - Preview Widget: Kartu pratinjau sanctuary hening memanjang vertikal.
+  - Fitur: 1 kolom kartu taktil dengan ruang lapang `gap-4`.
+  - Riset & Statistik: Baris metrik vertikal dengan angka tebal dan sumber jelas.
+- **Tablet (768px):**
+  - Header: 64px dengan logo, tautan pilar utama, dan tombol aksi ganda.
+  - Hero Section: Susunan semi-split dengan headline 44px dan ilustrasi kartu ritme di bawahnya.
+  - Fitur Grid: 2 kolom x 2 baris `gap-6`.
+  - Riset: Grid metrik 3 kolom berjarak lega.
+- **Desktop (1280px):**
+  - Header: Ramping mengapung atau terlabuh di atas kontainer max-w-[1240px] dengan logo, menu editorial, dan tombol masuk.
+  - Hero Section: Golden split 60:40. Sisi kiri teks editorial kuat (headline 56px, badge kategori, CTA primer & sekunder), sisi kanan representasi interaktif Tactile Sanctuary (preview percakapan tenang, pebble mood, dan hembusan napas).
+  - Fitur Utama: Grid asimetris 4 pilar sanctuary (`col-span-6` untuk fitur unggulan, `col-span-3` untuk pilar pendukung).
+  - Riset Section: Panel lebar `rounded-[28px]` berlatar `bg-white/80 border border-brown-900/10` dengan 3 kolom data terverifikasi.
+  - Footer Editorial: Penutup hangat dengan rujukan krisis Sejiwa 119 ext. 8 dan tautan hukum/privasi.
 
 ---
 
-## 5. State Matrix & Edge Cases (obra/superpowers)
+## 4. Token Visual yang Digunakan
 
-| State | Kondisi Pemicu | Visual Feedback | Aksi Pengguna |
-|---|---|---|---|
-| **Public Visitor** | Pengguna membuka domain root `/` | Halaman landing tampil lengkap | Klik CTA daftar atau login |
-| **Authenticated User** | Pengguna sudah memiliki cookie token sesi | Header menampilkan tombol *"Buka Sanctuary →"* | Masuk langsung ke `/dashboard` |
-| **Mobile Menu** | Pengguna membuka di layar kecil | Tampilan navigasi bersih tanpa drawer berat yang memblokir layar | Fokus pada CTA utama |
-
----
-
-## 6. Anti-Slop Audit Checklist (miqdadbadjuber/anti-slop)
-
-- [x] **Zero Emoji as Icons:** Menggunakan SVG Lucide (`MessageSquareHeart`, `Smile`, `Wind`, `HeartHandshake`, `ArrowRight`).
-- [x] **Zero AI Gradient Glows:** Kanvas bebas dari radial blur orbs atau lighting ungu-biru.
-- [x] **Zero Fake Testimonials:** Tidak ada kutipan rekaan dengan foto stok orang asing.
-- [x] **No Card Inception:** 4 kartu fitur berdiri sejajar langsung di atas kanvas Cream.
-- [x] **Hierarki Radius:** Sanctuary Cards 20px, CTA Buttons 9999px, Stat Dividers 0px.
-- [x] **Accessible Contrast:** Teks isi kontras 11.2:1 (AAA), tombol CTA kontras jelas.
+- **Kanvas Utama:** `bg-cream` (`#F7F2E7`) dengan tekstur linen alami.
+- **Tinta Teks:** `text-brown-900` (`#3B2A20`) untuk judul besar Manrope, `text-brown-700` (`#5A4636`) untuk narasi tubuh DM Sans.
+- **Aksen Taktil:**
+  - `bg-orange-500` / `hover:bg-orange-600` untuk tombol fokus utama (maksimal 1 per viewport).
+  - `bg-green-100` / `text-green-700` untuk penanda keseimbangan hidup & kesehatan holistik.
+  - `bg-orange-100` / `text-orange-600` untuk badge identitas Gen Z Wellness Support.
+- **Garis Kontak:** `border-brown-900/10` (organik kertas halus).
 
 ---
 
-## 7. Verification Contract (obra/superpowers)
+## 5. Komponen Kunci & Hirarki Radius
 
-- **Route Availability:** Mengunjungi `GET /` mengembalikan status 200 OK dengan HTML utuh tanpa redirect paksa ke dashboard untuk tamu belum terautentikasi.
-- **Contract Test Command:**
-  ```powershell
-  npm run build
-  ```
+1. **Navigation Header:**
+   - Radius: `rounded-full` pada tombol aksi CTA primer.
+   - Logo: Ikon bunga 4 kelopak khas ZYBA + tipografi `font-display font-extrabold text-xl`.
+2. **Hero Sanctuary Split Container:**
+   - Radius: `rounded-[28px]` pada preview frame sisi kanan.
+   - Elemen interaktif internal: `rounded-[20px]` untuk kartu cuplikan curhat, `rounded-xl` untuk baris dialog.
+3. **Pillar Feature Cards:**
+   - Radius: `rounded-[24px]` untuk 2 kartu sanctuary utama, `rounded-[20px]` untuk kartu pilar pendukung.
+   - Elevasi: Garis batas `border-brown-900/10` dengan bayangan kontak lembut `shadow-xs`.
+4. **Research Banner Card:**
+   - Radius: `rounded-[28px]` dengan padding internal `p-8 sm:p-12`.
+5. **Call to Action Bottom Shell:**
+   - Radius: `rounded-[28px]` berlatar `bg-brown-900 text-cream` dengan tombol pill `bg-orange-500 text-white`.
 
+---
+
+## 6. Matriks 6 State (Default, Loading, Empty, Active, Error, Crisis)
+
+1. **Default:** Halaman landing tampil lengkap dengan teks editorial tajam, preview interaktif, dan navigasi jelas menuju onboarding.
+2. **Loading:** Seluruh aset gambar dan font termuat instan dengan fallback font sistem sans-serif tanpa lonjakan layout (CLS = 0).
+3. **Empty:** Tidak relevan (halaman publik statis).
+4. **Active:** Interaksi scroll memicu transisi halus, tab fitur interaktif di hero preview merespons klik pengguna dengan pergantian cuplikan konten.
+5. **Error:** Jika script analitik atau CDN font gagal dimuat, konten halaman tetap dapat dibaca dengan tata letak sempurna berbasis font sistem.
+6. **Crisis:** Footer landing page menyertakan tautan hening langsung menuju Direktori Bantuan Krisis Sejiwa 119 ext. 8 tanpa penghalang apapun.
+
+---
+
+## 7. Interaksi & Motion
+
+- **Navigasi Halus:** Klik tautan anchor (*Fitur*, *Nilai*, *Riset*) menggeser viewport secara tenang (`scroll-behavior: smooth`).
+- **Taktil Hover:** Tombol pill dan kartu fitur merespons kursor dengan pergeseran mikro `-translate-y-0.5` dan penguatan garis kontak.
+- **Hero Reveal:** Konten hero muncul perlahan dengan transisi opasitas 300ms `ease-out`.
+- **Reduced Motion:** Saat `prefers-reduced-motion: reduce` aktif, seluruh transisi pergeseran ditiadakan.
+
+---
+
+## 8. Aksesibilitas (WCAG AA/AAA, Keyboard, Focus, Reduced Motion)
+
+- **Kontras Teks:** Seluruh teks memenuhi rasio kontras minimum 4.5:1 untuk teks normal dan 3.0:1 untuk teks display besar.
+- **Tautan & Tombol:** Setiap tautan memiliki teks deskriptif yang jelas bagi screen reader (bukan sekadar *"Klik di sini"*).
+- **Struktur Heading:** Mengikuti hierarki ketat: satu `h1` di hero section, `h2` di setiap section utama, dan `h3` di kartu fitur.
+- **Fokus Keyboard:** Navigasi tombol dan link menampilkan outline fokus tegas `focus-visible:ring-2 focus-visible:ring-orange-500/60`.
+
+---
+
+## 9. Integrasi Data & API (Contract strictly preserved)
+
+- Halaman landing adalah halaman publik tanpa dependensi cookie autentikasi.
+- Tautan CTA utama mengarah langsung ke `/onboarding` (untuk pendaftaran dan masuk).
+- Footer terhubung ke `/guidebook` untuk panduan krisis dan rujukan darurat.
+
+---
+
+## 10. Acceptance Criteria (Verifiable)
+
+- [ ] Hero section menerapkan komposisi split asimetris 60:40 pada desktop (1280px).
+- [ ] Tidak ada angka statistik karangan atau klaim tanpa rujukan resmi.
+- [ ] Tidak ada kartu dengan radius seragam `rounded-[32px]`.
+- [ ] Tidak ada penggunaan emoji sebagai ikon UI; seluruh ikon menggunakan Lucide SVG stroke 1.8px.
+- [ ] Tombol CTA navigasi dan hero berfungsi langsung mengarahkan ke `/onboarding`.
+- [ ] Halaman lolos pengujian aksesibilitas keyboard dan kontras warna WCAG AA.

@@ -1,95 +1,128 @@
-# Pencapaian Hening Mockdoc — Quiet Milestones & Hearth Badges (`/achievements`)
+# Pencapaian Hening Mockdoc — Quiet Milestones & Hearth Badges (`/achievements`) — Redesign v2
 
 > **Skills Integration:** Obra/Superpowers Engineering Rigor + Leonxlnx/Taste Art Direction + pbakaus/Impeccable Vocabulary + UI/UX Pro Max Intelligence + Anti-Slop Hygiene Filter.  
 > **Canonical Route:** `/achievements`  
-> **Source Components:** `src/app/achievements/page.tsx`, `src/app/achievements/BadgePickerModal.tsx`
+> **Source Components:** `src/app/achievements/page.tsx`, `src/app/achievements/BadgePickerModal.tsx`  
+> **Single Source of Truth:** `design-system/zyba/MASTER.md`
 
 ---
 
-## 1. Page Context & User Journey (obra/superpowers)
+## 1. Ringkasan & Persona
 
-- **Target Persona:** Pengguna yang membutuhkan pengakuan hening atas usaha kecil merawat diri sendiri, tanpa dipaksa bersaing dengan pengguna lain.
-- **Mental Model:** *"Menyimpan batu-batu kerikil kenangan di dalam saku kain, menandai setiap saat aku berhasil bertahan dan menyayangi diri sendiri."*
-- **Primary Job to Be Done (JTBD):** Menampilkan lencana apresiasi konsistensi kehadiran, kebiasaan latihan napas, dan refleksi batin; memungkinkan penyematan lencana utama pada profil pribadi (*Showcase Badge*).
-- **Prinsip Anti-FOMO Mutlak:** Dilarang menggunakan *Leaderboard* (papan peringkat publik) atau perbandingan skor antar pengguna yang memicu inferioritas dan kecemasan sosial.
-- **Data & API Binding:**
-  - Prisma Models: `Badge`, `UserBadge` (`unlockedAt`, `isEquipped`)
-  - Endpoints: `GET /api/achievements`, `POST /api/achievements/equip`
+- **Target Persona:** Pengguna Gen Z yang merawat kesehatan batin secara perlahan, lelah terhadap perlombaan produktivitas toksik, dan membutuhkan pengakuan hening atas usaha kecil merawat diri sendiri tanpa paksaan kompetisi.
+- **Mental Model:** *"Menyimpan kerikil halus di dalam saku kain, menandai setiap langkah kecil keberanian untuk hadir dan bernapas."*
+- **Primary Job to Be Done (JTBD):** Memberikan apresiasi atas konsistensi hadir, latihan relaksasi, dan refleksi jurnal, serta memungkinkan pengguna menyematkan hingga 3 lencana utama pada profil pribadi (*Showcase Badges*).
+- **Prinsip Anti-FOMO Mutlak:** Dilarang menggunakan *Leaderboard* (papan peringkat publik), bilah XP game arcade, atau perbandingan skor antar pengguna yang memicu inferioritas dan kecemasan sosial.
 
 ---
 
-## 2. Art Direction & Visual Atmosphere (Leonxlnx/taste-skill)
+## 2. Perubahan dari v1
 
-- **Arah Visual:** *The Tactile Sanctuary — Chamber of Hearth Tokens*.
-- **Desain Lencana Organik:** Menolak trofi kartun emas mencolok atau pita juara kompetitif. Lencana ZYBA dirancang layaknya **Kepingan Tembikar Organik** (bentuk lingkaran batu halus bernuansa Terracotta `#EE8A5E`, Olive Sage `#8FAE5D`, dan Kuningan Hangat `#E8C24A` dengan garis ukir Lucide tipis).
-- **Kanvas & Material:** Kanvas Cream (`#F7F2E7`), kartu lencana `bg-white/95` dengan border kontak tipis `border-brown-900/10`.
-- **Nada Bicara:** Menghangatkan hati dan menghargai keberanian untuk bertahan.
-  - Heading: *"Setiap langkah kecilmu berharga."*
-  - Subtitle: *"Pencapaian di sini bukan tentang siapa yang tercepat, melainkan tentang kesediaanmu untuk kembali hadir merawat diri."*
-
----
-
-## 3. Responsive Geometry & Breakpoints (ui-ux-pro-max-skill)
-
-- **Desktop (≥ 1024px): 12-Column Badge Gallery**
-  - Spacing Layout: `md:pl-[108px] pr-8 py-8 max-w-[1240px] mx-auto`.
-  - Section Atas: **Sanctuary Milestone Banner** (Lencana aktif tersemat di profil + Ikhtisar kehadiran hening).
-  - Section Bawah: **Grid Lencana 4 Kolom** (`grid-cols-4 gap-6`).
-- **Tablet (768px – 1023px):**
-  - Grid 3 kolom berjarak `gap-5`.
-- **Mobile (< 768px):**
-  - Navigasi: Ergonomic Bottom Pill Nav di bawah.
-  - Spacing Layout: `px-4 pt-4 pb-24`.
-  - Tata Letak: Grid 2 kolom sentuh empuk `gap-4`.
+- **Dihapus:** Elemen trophy logam mengkilap, aksen glow neon, dan label streak api merah yang menekan.
+- **Dihapus:** Penggunaan `rounded-[32px]` seragam pada seluruh kontainer kartu lencana.
+- **Baru:** Format lencana kepingan tembikar organik (*Terracotta*, *Olive Sage*, *Warm Brass*) dengan garis halus Lucide stroke 1.8px.
+- **Baru:** Dukungan penyematan fleksibel hingga 3 lencana aktif ke profil dengan modal pemilihan interaktif (*BadgePickerModal*).
+- **Baru:** Kartu pencapaian dengan hierarki radius terstruktur (`rounded-[24px]` showcase banner, `rounded-[20px]` kartu grid, `rounded-xl` milestone step).
+- **Alasan:** Menyelaraskan filosofi *Tactile Sanctuary*, menghilangkan tekanan gamifikasi arcade, dan memberikan ketenangan visual yang menghargai setiap proses pemulihan batin secara autentik.
 
 ---
 
-## 4. Component Specifications (pbakaus/impeccable)
+## 3. Layout & Komposisi Grid (3 Viewport: 375, 768, 1280)
 
-### A. Active Showcase Badge Card
-- Container: `bg-orange-100/60 rounded-[24px] border border-orange-500/20 p-6 sm:p-7 flex flex-col md:flex-row items-center gap-6 mb-8 shadow-xs`
-- Lencana Utama: Kepingan tembikar berdiameter 72px dengan latar `#FFFFFF` dan ikon Lucide `Flame` warna Warm Orange.
-- Teks Apresiasi:
-  - Label: `font-body text-xs font-bold uppercase tracking-widest text-orange-500` (*"Lencana Tersemat"*).
-  - Judul: `font-display text-xl font-bold text-brown-900` (*"Penjaga Nyala Hening"*).
-  - Keterangan: `font-body text-sm text-brown-700 leading-relaxed` (*"Hadir mengisi check-in dan meluangkan waktu hening selama 7 hari berturut-turut."*).
-- Tombol Ganti Lencana: `bg-white hover:bg-cream text-brown-900 border border-brown-900/15 rounded-full px-4 py-2 text-xs font-semibold transition-all cursor-pointer`
-
-### B. Badge Grid Card (Kepingan Tembikar)
-- Container: `bg-white/95 rounded-[20px] border border-brown-900/10 p-5 flex flex-col items-center text-center shadow-xs hover:border-brown-900/25 transition-all group cursor-pointer`
-- Token Kepingan:
-  - Kondisi Terbuka (`Unlocked`): `w-14 h-14 rounded-2xl bg-cream border border-brown-900/15 flex items-center justify-center text-brown-900 shadow-xs mb-3 group-hover:scale-105 transition-transform`
-  - Kondisi Terkunci (`Locked`): `w-14 h-14 rounded-2xl bg-cream/40 border border-brown-900/10 flex items-center justify-center text-brown-700/30 opacity-60 mb-3`
-- Judul Lencana: `font-display text-sm font-bold text-brown-900 mb-1`
-- Syarat & Status: `font-body text-xs text-brown-700/70 leading-relaxed`
-
----
-
-## 5. State Matrix & Edge Cases (obra/superpowers)
-
-| State | Kondisi Pemicu | Visual Feedback | Aksi Pengguna |
-|---|---|---|---|
-| **Badge Unlocked** | Syarat tercapai (mis. 5x latihan napas) | Popover notifikasi lembut berbunyi *"Lencana baru singgah di sakumu"* | Buka halaman untuk melihat |
-| **Badge Equipping** | Pengguna memilih lencana showcase | Modal konfirmasi pebble terbuka, lencana terpilih ter-highlight | Klik *"Sematkan di Profil"* |
-| **Locked Inspected** | Pengguna mengetuk lencana terkunci | Dialog petunjuk santun menjelaskan cara membukanya | Pelajari langkah kecil yang dibutuhkan |
+- **Mobile (375px):**
+  - Padding: `px-4 pt-4 pb-24`.
+  - Header: Judul editorial ringkas dengan ringkasan lencana terbuka.
+  - Showcase: 1 kartu banner ringkas memuat 1–3 lencana tersemat horizontal dengan tombol ganti cepat.
+  - Grid Lencana: 2 kolom sentuh empuk `gap-3.5 sm:gap-4`.
+  - Navigasi: Ergonomic Bottom Pill Nav di bagian bawah.
+- **Tablet (768px):**
+  - Layout: `md:pl-[108px] pr-6 py-8 max-w-[1000px] mx-auto`.
+  - Navigasi: Floating Zen Dock di sisi kiri (`w-[76px]`).
+  - Showcase: Kartu horizontal memanjang dengan preview profil dan detail lencana aktif.
+  - Grid Lencana: 3 kolom `gap-5`.
+- **Desktop (1280px):**
+  - Layout: `md:pl-[108px] pr-8 py-10 max-w-[1240px] mx-auto`.
+  - Header: Editorial split 65:35 — sisi kiri narasi kehangatan, sisi kanan ringkasan total lencana terkumpul.
+  - Showcase: Banner utama `rounded-[24px]` berlatar `bg-orange-100/60` dengan 3 slot tembikar interaktif.
+  - Grid Lencana: 4 kolom `grid-cols-4 gap-6`.
 
 ---
 
-## 6. Anti-Slop Audit Checklist (miqdadbadjuber/anti-slop)
+## 4. Token Visual yang Digunakan
 
-- [x] **Zero Emoji as Icons:** Menggunakan SVG Lucide (`Flame`, `Wind`, `Heart`, `Sparkles`, `Shield`, `Award`).
-- [x] **Zero Leaderboard Slop:** Tidak ada daftar peringkat kompetisi, tidak ada persentase "kamu mengalahkan 95% user lain".
-- [x] **No Card Inception:** Grid lencana teratur di atas kanvas Cream.
-- [x] **Hierarki Radius:** Showcase Banner 24px, Badge Card 20px, Token Kepingan 16px, Selector Pills 9999px.
-- [x] **Accessible Contrast:** Teks keterangan lencana memenuhi rasio kontras 7.4:1 (AAA).
+- **Kanvas & Latar:** `bg-cream` (`#F7F2E7`), kartu utama `bg-white/95`, kartu terkunci `bg-white/60`.
+- **Tinta & Teks:** `text-brown-900` (`#3B2A20`) untuk judul display, `text-brown-700` (`#5A4636`) untuk narasi deskripsi, `text-brown-900/50` untuk meta tanggal terbuka.
+- **Aksen Tembikar:**
+  - Terracotta: `#EE8A5E` / `bg-orange-100` / `text-orange-500` (kehangatan kehadiran).
+  - Sage: `#8FAE5D` / `bg-green-100` / `text-green-700` (latihan napas & ketenangan).
+  - Brass: `#E8C24A` / `bg-amber-100` / `text-amber-800` (refleksi mendalam & kejujuran rasa).
+- **Border & Separator:** `border-brown-900/10` (kontak kertas taktil).
 
 ---
 
-## 7. Verification Contract (obra/superpowers)
+## 5. Komponen Kunci & Hirarki Radius
 
-- **Badge Seeding Contract:** Skrip `prisma/seed-badges.ts` menghasilkan setidaknya 12 lencana resmi dengan kunci identitas unik.
-- **Contract Test Command:**
-  ```powershell
-  npm run build
-  ```
+1. **Active Showcase Banner:**
+   - Radius: `rounded-[24px]` (Major Anchor).
+   - Container: `border border-orange-500/20 bg-orange-100/60 p-6 sm:p-7 shadow-xs`.
+   - Menampilkan hingga 3 slot lencana tersemat dengan tombol buka `BadgePickerModal`.
+2. **Milestone Badge Card:**
+   - Radius: `rounded-[20px]`.
+   - Container: `border border-brown-900/10 bg-white/95 p-5 text-center transition-all hover:border-brown-900/25 shadow-xs`.
+   - Ikon kepingan tembikar 64px dengan lambang Lucide 28px stroke 1.8px.
+   - Status terkunci: Opasitas 55%, ikon gembok kecil, bilah progres mikro `h-1.5 bg-brown-900/10 rounded-full`.
+3. **Badge Picker Modal:**
+   - Radius: `rounded-[24px]` pada desktop/tablet, bottom-sheet `rounded-t-[24px]` pada mobile.
+   - Tombol Aksi: `rounded-full` pill primer `bg-brown-900 text-cream`.
 
+---
+
+## 6. Matriks 6 State (Default, Loading, Empty, Active, Error, Crisis)
+
+1. **Default:** Menampilkan banner showcase terisi, lencana yang terbuka dengan warna tembikar hangat, dan lencana terkunci dengan indikator progres lembut.
+2. **Loading:** Skeleton shimmer bernuansa kertas lembut pada 1 banner showcase dan 8 grid kartu lencana (`bg-brown-900/5 animate-pulse rounded-[20px]`).
+3. **Empty:** Apabila pengguna baru pertama kali bergabung dan belum membuka lencana, tampilkan kartu sambutan *"Langkah Pertamamu"* dengan tombol pintas menuju Check-In Hari Ini.
+4. **Active:** Interaksi klik pada kartu lencana membuka drawer/modal detail narasi lencana beserta tanggal perolehan dan opsi sematkan ke profil.
+5. **Error:** Banner kesalahan jaringan lembut dengan tombol *"Coba Muat Ulang"* tanpa menghilangkan navigasi Zen Dock.
+6. **Crisis:** Jika pengguna memicu indikasi krisis saat bernavigasi, tampilkan Crisis Floating Banner hening di atas halaman dengan kontak Sejiwa 119 ext. 8.
+
+---
+
+## 7. Interaksi & Motion
+
+- **Sentuhan Halus:** Hover pada kartu lencana memberikan elevasi lembut (`-translate-y-0.5 shadow-sm`) dengan durasi 200ms `ease-out`.
+- **Badge Equip Animation:** Saat lencana berhasil disematkan, slot showcase memancarkan denyut kehangatan lembut (skala 1.02 ke 1.00) tanpa partikel confetti norak.
+- **Modal Transition:** Fade backdrop `bg-brown-900/40 backdrop-blur-xs` dengan slide-up halus 240ms.
+- **Reduced Motion:** Hormati `prefers-reduced-motion: reduce` dengan menonaktifkan translasi posisi dan menyederhanakan transisi ke perubahan opasitas instan.
+
+---
+
+## 8. Aksesibilitas (WCAG AA/AAA, Keyboard, Focus, Reduced Motion)
+
+- **Rasio Kontras:** Teks utama Brown 900 pada kanvas Cream mencapai kontras 11.2:1 (melampaui WCAG AAA). Teks sekunder Brown 700 mencapai kontras 6.4:1 (WCAG AA).
+- **Akses Keyboard:** Setiap kartu lencana dan slot penyematan dapat difokuskan dengan tombol `Tab` dan diaktifkan dengan `Enter`/`Space`.
+- **Focus Ring:** Fokus tampak tegas dengan cincin `focus-visible:ring-2 focus-visible:ring-orange-500/60 focus-visible:ring-offset-2`.
+- **Screen Reader:** Progres lencana diumumkan secara semantik menggunakan `role="progressbar"` dan `aria-valuenow`.
+
+---
+
+## 9. Integrasi Data & API (Contract strictly preserved)
+
+- **GET `/api/achievements`**:
+  - Response: `{ badges: Badge[], userBadges: UserBadge[], equippedBadgeIds: string[] }`.
+  - Model Prisma: `Badge` (`id`, `slug`, `title`, `description`, `category`, `iconName`), `UserBadge` (`id`, `userId`, `badgeId`, `unlockedAt`, `isEquipped`).
+- **POST `/api/achievements/equip`**:
+  - Request Body: `{ badgeIds: string[] }` (maksimal 3 id lencana).
+  - Response: `{ success: true, equippedBadgeIds: string[] }`.
+- **Tidak ada modifikasi skema database atau kontrak API endpoint.**
+
+---
+
+## 10. Acceptance Criteria (Verifiable)
+
+- [ ] Lencana yang telah terbuka menampilkan tanggal pembukaan dan status kepemilikan yang valid.
+- [ ] Pengguna dapat memilih dan menyimpan hingga 3 lencana untuk disematkan pada profil pribadi via modal.
+- [ ] Tidak ada leaderboard publik, kalkulasi level kompetitif, atau grafis trofi arcade generik.
+- [ ] Komposisi responsif berjalan mulus pada 375px (2 kolom), 768px (3 kolom), dan 1280px (4 kolom).
+- [ ] Seluruh kartu mematuhi skala radius proporsional (tanpa `rounded-[32px]`).
+- [ ] Status keyboard traversal dan focus ring terverifikasi penuh di seluruh elemen interaktif.
