@@ -96,8 +96,8 @@ export default function ConversationList({
                 onClick={() => setActiveConvId(conv.id)}
                 className={`w-full text-left p-3 rounded-xl cursor-pointer transition-all flex items-start gap-2.5 ${
                   isActive
-                    ? "bg-green-100 border-l-[3px] border-l-orange-500 shadow-sm"
-                    : "hover:bg-white/70 border-l-[3px] border-l-transparent"
+                    ? "bg-orange-100/80 text-brown-900 font-semibold shadow-xs"
+                    : "hover:bg-brown-900/5 text-brown-700 hover:text-brown-900"
                 }`}
               >
                 {/* Avatar / Inisial */}
