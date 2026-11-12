@@ -1,3 +1,6 @@
+// Gerbang Publik — Warm Invitation & Sanctuary Gateway (`/`) — Redesign v2
+// Sumber acuan tunggal: design-system/zyba/MASTER.md & design-system/zyba/pages/landing.md
+
 import type { Metadata } from "next";
 import {
   LandingHeader,
