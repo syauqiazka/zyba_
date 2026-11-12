@@ -286,3 +286,4 @@ export default function WatercolorBackground({ phase, isNight }: WatercolorBackg
     </div>
   );
 }
+
