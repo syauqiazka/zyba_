@@ -12,6 +12,7 @@ import DailyAssessmentHistory from "./components/DailyAssessmentHistory";
 import CalendarWidget from "./components/CalendarWidget";
 import JournalHistory from "./components/JournalHistory";
 import HistoryTabs from "./components/HistoryTabs";
+import CrisisBanner from "@/components/ui/CrisisBanner";
 import { useMoodOverview } from "./useMoodOverview";
 import {
   Flame,
@@ -215,26 +216,11 @@ export default function DailyAssessmentPage() {
 
       {/* ── 3. Crisis Alert ─────────────────────────────────────────── */}
       {crisisAlert && (
-        <div className="rounded-2xl p-4 bg-orange-50 border border-orange-500/30 flex items-start gap-3 animate-in fade-in duration-300">
-          <AlertCircle size={20} className="text-orange-600 shrink-0 mt-0.5" />
-          <div className="flex-1">
-            <p className="text-xs sm:text-sm font-bold text-brown-900 mb-0.5">
-              Kami mendengarmu
-            </p>
-            <p className="text-xs text-brown-700 leading-relaxed">
-              Kamu tidak sendirian. Jika kamu butuh teman bicara darurat, hubungi{" "}
-              <strong>Into The Light Indonesia di 119 ext 8</strong> (Hotline Kemenkes, 24 jam).
-            </p>
-          </div>
-          <button
-            type="button"
-            onClick={() => setCrisisAlert(false)}
-            className="text-brown-700/60 hover:text-brown-900 p-1"
-            aria-label="Tutup"
-          >
-            <X size={15} />
-          </button>
-        </div>
+        <CrisisBanner
+          dismissible
+          onDismiss={() => setCrisisAlert(false)}
+          className="mb-2"
+        />
       )}
 
       {/* ── 4. Main Two-Column Layout ───────────────────────────────── */}
