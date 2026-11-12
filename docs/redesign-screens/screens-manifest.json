@@ -1,0 +1,290 @@
+[
+  {
+    "page": "landing",
+    "viewport": "mobile",
+    "status": "PASS",
+    "file": "landing-mobile.png"
+  },
+  {
+    "page": "login",
+    "viewport": "mobile",
+    "status": "PASS",
+    "file": "login-mobile.png"
+  },
+  {
+    "page": "welcome",
+    "viewport": "mobile",
+    "status": "PASS",
+    "file": "welcome-mobile.png"
+  },
+  {
+    "page": "assessment",
+    "viewport": "mobile",
+    "status": "PASS",
+    "file": "assessment-mobile.png"
+  },
+  {
+    "page": "dashboard",
+    "viewport": "mobile",
+    "status": "PASS",
+    "file": "dashboard-mobile.png"
+  },
+  {
+    "page": "mood-check-in",
+    "viewport": "mobile",
+    "status": "PASS",
+    "file": "mood-check-in-mobile.png"
+  },
+  {
+    "page": "companion",
+    "viewport": "mobile",
+    "status": "PASS",
+    "file": "companion-mobile.png"
+  },
+  {
+    "page": "activity",
+    "viewport": "mobile",
+    "status": "PASS",
+    "file": "activity-mobile.png"
+  },
+  {
+    "page": "wellness-journey",
+    "viewport": "mobile",
+    "status": "PASS",
+    "file": "wellness-journey-mobile.png"
+  },
+  {
+    "page": "community",
+    "viewport": "mobile",
+    "status": "PASS",
+    "file": "community-mobile.png"
+  },
+  {
+    "page": "resources",
+    "viewport": "mobile",
+    "status": "PASS",
+    "file": "resources-mobile.png"
+  },
+  {
+    "page": "achievements",
+    "viewport": "mobile",
+    "status": "PASS",
+    "file": "achievements-mobile.png"
+  },
+  {
+    "page": "settings",
+    "viewport": "mobile",
+    "status": "PASS",
+    "file": "settings-mobile.png"
+  },
+  {
+    "page": "zyba-plus",
+    "viewport": "mobile",
+    "status": "PASS",
+    "file": "zyba-plus-mobile.png"
+  },
+  {
+    "page": "guidebook",
+    "viewport": "mobile",
+    "status": "PASS",
+    "file": "guidebook-mobile.png"
+  },
+  {
+    "page": "error-404",
+    "viewport": "mobile",
+    "status": "PASS",
+    "file": "error-404-mobile.png"
+  },
+  {
+    "page": "landing",
+    "viewport": "tablet",
+    "status": "PASS",
+    "file": "landing-tablet.png"
+  },
+  {
+    "page": "login",
+    "viewport": "tablet",
+    "status": "PASS",
+    "file": "login-tablet.png"
+  },
+  {
+    "page": "welcome",
+    "viewport": "tablet",
+    "status": "PASS",
+    "file": "welcome-tablet.png"
+  },
+  {
+    "page": "assessment",
+    "viewport": "tablet",
+    "status": "PASS",
+    "file": "assessment-tablet.png"
+  },
+  {
+    "page": "dashboard",
+    "viewport": "tablet",
+    "status": "PASS",
+    "file": "dashboard-tablet.png"
+  },
+  {
+    "page": "mood-check-in",
+    "viewport": "tablet",
+    "status": "PASS",
+    "file": "mood-check-in-tablet.png"
+  },
+  {
+    "page": "companion",
+    "viewport": "tablet",
+    "status": "PASS",
+    "file": "companion-tablet.png"
+  },
+  {
+    "page": "activity",
+    "viewport": "tablet",
+    "status": "PASS",
+    "file": "activity-tablet.png"
+  },
+  {
+    "page": "wellness-journey",
+    "viewport": "tablet",
+    "status": "PASS",
+    "file": "wellness-journey-tablet.png"
+  },
+  {
+    "page": "community",
+    "viewport": "tablet",
+    "status": "PASS",
+    "file": "community-tablet.png"
+  },
+  {
+    "page": "resources",
+    "viewport": "tablet",
+    "status": "PASS",
+    "file": "resources-tablet.png"
+  },
+  {
+    "page": "achievements",
+    "viewport": "tablet",
+    "status": "PASS",
+    "file": "achievements-tablet.png"
+  },
+  {
+    "page": "settings",
+    "viewport": "tablet",
+    "status": "PASS",
+    "file": "settings-tablet.png"
+  },
+  {
+    "page": "zyba-plus",
+    "viewport": "tablet",
+    "status": "PASS",
+    "file": "zyba-plus-tablet.png"
+  },
+  {
+    "page": "guidebook",
+    "viewport": "tablet",
+    "status": "PASS",
+    "file": "guidebook-tablet.png"
+  },
+  {
+    "page": "error-404",
+    "viewport": "tablet",
+    "status": "PASS",
+    "file": "error-404-tablet.png"
+  },
+  {
+    "page": "landing",
+    "viewport": "desktop",
+    "status": "PASS",
+    "file": "landing-desktop.png"
+  },
+  {
+    "page": "login",
+    "viewport": "desktop",
+    "status": "PASS",
+    "file": "login-desktop.png"
+  },
+  {
+    "page": "welcome",
+    "viewport": "desktop",
+    "status": "PASS",
+    "file": "welcome-desktop.png"
+  },
+  {
+    "page": "assessment",
+    "viewport": "desktop",
+    "status": "PASS",
+    "file": "assessment-desktop.png"
+  },
+  {
+    "page": "dashboard",
+    "viewport": "desktop",
+    "status": "PASS",
+    "file": "dashboard-desktop.png"
+  },
+  {
+    "page": "mood-check-in",
+    "viewport": "desktop",
+    "status": "PASS",
+    "file": "mood-check-in-desktop.png"
+  },
+  {
+    "page": "companion",
+    "viewport": "desktop",
+    "status": "PASS",
+    "file": "companion-desktop.png"
+  },
+  {
+    "page": "activity",
+    "viewport": "desktop",
+    "status": "PASS",
+    "file": "activity-desktop.png"
+  },
+  {
+    "page": "wellness-journey",
+    "viewport": "desktop",
+    "status": "PASS",
+    "file": "wellness-journey-desktop.png"
+  },
+  {
+    "page": "community",
+    "viewport": "desktop",
+    "status": "PASS",
+    "file": "community-desktop.png"
+  },
+  {
+    "page": "resources",
+    "viewport": "desktop",
+    "status": "PASS",
+    "file": "resources-desktop.png"
+  },
+  {
+    "page": "achievements",
+    "viewport": "desktop",
+    "status": "PASS",
+    "file": "achievements-desktop.png"
+  },
+  {
+    "page": "settings",
+    "viewport": "desktop",
+    "status": "PASS",
+    "file": "settings-desktop.png"
+  },
+  {
+    "page": "zyba-plus",
+    "viewport": "desktop",
+    "status": "PASS",
+    "file": "zyba-plus-desktop.png"
+  },
+  {
+    "page": "guidebook",
+    "viewport": "desktop",
+    "status": "PASS",
+    "file": "guidebook-desktop.png"
+  },
+  {
+    "page": "error-404",
+    "viewport": "desktop",
+    "status": "PASS",
+    "file": "error-404-desktop.png"
+  }
+]

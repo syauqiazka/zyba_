@@ -6,35 +6,35 @@ Dokumen ini memetakan seluruh fitur, endpoint API, dan halaman aktif di ZYBA yan
 
 ## 1. Auth, Onboarding & Gating
 
-- [ ] **Registrasi Akun Baru (Email/Password)**
+- [x] **Registrasi Akun Baru (Email/Password)**
   - Halaman: `/login?tab=signup`, `/onboarding` (redirect ke signup)
   - API: `POST /api/auth` (action: `REGISTER`)
   - Validasi: password minimal 8 karakter, email valid
-- [ ] **Login Email & Password**
+- [x] **Login Email & Password**
   - Halaman: `/login`
   - API: `POST /api/auth` (action: `LOGIN`)
   - Session: JWT token (`auth-token` cookie via jose HS256)
-- [ ] **Google OAuth Authentication**
+- [x] **Google OAuth Authentication**
   - Trigger: Tombol "Lanjutkan dengan Google" di `/login`
   - API: `GET /api/auth/google`, `GET /api/auth/google/callback`
   - Handling: Callback profile fetch, exchange token, redirect ke target
-- [ ] **Verifikasi OTP (One-Time Password)**
+- [x] **Verifikasi OTP (One-Time Password)**
   - API: `POST /api/auth/otp` (action: `SEND_OTP`, `VERIFY_OTP`)
   - Kontrak: HMAC proof token untuk verifikasi pendaftaran
-- [ ] **Reset Password / Lupa Password**
+- [x] **Reset Password / Lupa Password**
   - Halaman: Modal/view di `/login?tab=forgot`
   - API: `POST /api/auth/reset-password`
-- [ ] **Welcome Tour**
+- [x] **Welcome Tour**
   - Halaman: `/welcome`
   - Slide carousel perkenalan nilai-nilai ZYBA
-- [ ] **Assessment Awal & Profile Setup 8-Step**
+- [x] **Assessment Awal & Profile Setup 8-Step**
   - Halaman: `/assessment`
   - API: `POST /api/assessment`
   - Alur: Avatar selector, nama/bio, OTP setup, biometric step (skip jika tidak ada), preferensi notifikasi, kuesioner kesehatan mental, AI expression analysis, loading compilation, "You're all set up"
-- [ ] **Middleware Gating & Onboarding Protection**
+- [x] **Middleware Gating & Onboarding Protection**
   - File: `middleware.ts`
   - Invariant: User yang belum `onboardingCompleted` otomatis di-redirect ke `/assessment` jika mengakses protected route (`/dashboard`, `/companion`, dll.)
-- [ ] **Terms of Service Agreement Modal**
+- [x] **Terms of Service Agreement Modal**
   - Komponen: `TermsAgreementModal.tsx`
   - API: `POST /api/auth` (action: `ACCEPT_TERMS`)
 
@@ -42,30 +42,30 @@ Dokumen ini memetakan seluruh fitur, endpoint API, dan halaman aktif di ZYBA yan
 
 ## 2. Dashboard (`/dashboard`)
 
-- [ ] **Sapaan Personal & Emotional Weather**
+- [x] **Sapaan Personal & Emotional Weather**
   - Menampilkan sapaan adaptif berdasarkan waktu Jakarta dan nama pengguna
   - Emotional weather badge berdasarkan skor dan kondisi batin
-- [ ] **Zyba Score Ring**
+- [x] **Zyba Score Ring**
   - Komponen: `MetricScoreCard.tsx`
   - API: `GET /api/user/me`, `GET /api/daily-assessment`
   - Kalkulasi: `getLatestZybaScore()` dari asesmen harian terbaru
-- [ ] **Metrik Ringkas Kehadiran & Percakapan**
+- [x] **Metrik Ringkas Kehadiran & Percakapan**
   - Komponen: `TactileMetricCards.tsx`
   - Menampilkan angka nyata hari streak konsistensi dan jumlah percakapan tanpa angka karangan
-- [ ] **Rutinitas Hari Ini & Checklist Interaktif**
+- [x] **Rutinitas Hari Ini & Checklist Interaktif**
   - Komponen: `SanctuaryRightRail.tsx`, `TrackerChecklist.tsx`
   - API: `GET /api/activity`, `POST /api/activity` (sync database dan localStorage)
-- [ ] **Kotak Tenang: Grounding 5-4-3-2-1**
+- [x] **Kotak Tenang: Grounding 5-4-3-2-1**
   - Event: `window.dispatchEvent(new CustomEvent("zyba_open_grounding"))`
   - Membuka modal panduan grounding sensorik anti-panik
-- [ ] **Widget Zyba Companion**
+- [x] **Widget Zyba Companion**
   - Komponen: `CompanionWidget.tsx`
   - Quick input menuju `/companion?initialMsg=`
-- [ ] **Manajemen Foto Profil (Avatar Upload, Crop & Cooldown)**
+- [x] **Manajemen Foto Profil (Avatar Upload, Crop & Cooldown)**
   - Komponen: `UserAvatar.tsx`, `AvatarCropModal.tsx`
   - API: `GET /api/user/avatar`, `POST /api/user/avatar`
   - Fitur: Upload gambar (JPG/PNG/WEBP/GIF <= 8MB), crop melingkar, cooldown ganti foto
-- [ ] **Status Berlangganan & Riwayat Pembayaran**
+- [x] **Status Berlangganan & Riwayat Pembayaran**
   - Komponen: `PremiumStatusWidget.tsx`
   - API: `GET /api/billing/history`
   - Menampilkan paket aktif (FREE/PLUS) dan daftar invoice Midtrans
@@ -74,75 +74,75 @@ Dokumen ini memetakan seluruh fitur, endpoint API, dan halaman aktif di ZYBA yan
 
 ## 3. Mood Check-In & Daily Assessment (`/mood-check-in`, `/daily-assessment`)
 
-- [ ] **Alur Check-In Mood Harian**
+- [x] **Alur Check-In Mood Harian**
   - Halaman: `/mood-check-in` (halaman `/daily-assessment` redirect 307 ke sini)
   - API: `GET /api/daily-assessment`, `POST /api/daily-assessment`
-- [ ] **Pemilih Mood 5 Token (MoodPebble)**
+- [x] **Pemilih Mood 5 Token (MoodPebble)**
   - 5 skala emosional kanonikal: Depressed, Sad, Neutral, Happy, Overjoyed
-- [ ] **Slider Tingkat Stres & Kualitas Tidur**
+- [x] **Slider Tingkat Stres & Kualitas Tidur**
   - Rentang 1–5 dengan label deskriptif
-- [ ] **Jurnal Refleksi Bebas & Deteksi Krisis**
+- [x] **Jurnal Refleksi Bebas & Deteksi Krisis**
   - Deteksi risiko instan: `detectRisk()` di `src/lib/crisisDetection.ts`
   - Memunculkan banner bantuan darurat Sejiwa 119 jika terdeteksi kata krisis
-- [ ] **Kalender Riwayat Mood Bulanan**
+- [x] **Kalender Riwayat Mood Bulanan**
   - Visualisasi ritme mood per tanggal
-- [ ] **Riwayat Catatan Jurnal**
+- [x] **Riwayat Catatan Jurnal**
   - API: `GET /api/journal`, `POST /api/journal`
 
 ---
 
 ## 4. Zyba Companion (`/companion`, `/companion/[slug]`)
 
-- [ ] **Daftar Percakapan & Manajemen Sesi**
+- [x] **Daftar Percakapan & Manajemen Sesi**
   - API: `GET /api/companion/conversations`, `POST /api/companion/conversations`, `DELETE /api/companion/conversations`
   - Navigasi per slug: `/companion/[slug]`
-- [ ] **Pemilihan Persona Pendamping**
+- [x] **Pemilihan Persona Pendamping**
   - 3 Persona resmi: Zyba Empathy, Zyba Mindful, Zyba Solution
-- [ ] **Pemilihan Model AI (Multi-Provider)**
+- [x] **Pemilihan Model AI (Multi-Provider)**
   - API: `GET /api/companion/models`
   - Provider: Gemini, Groq, Mistral, OpenRouter
-- [ ] **Interaksi Pesan (Teks, Streaming & Typing Indicator)**
+- [x] **Interaksi Pesan (Teks, Streaming & Typing Indicator)**
   - API: `POST /api/companion`
-- [ ] **Voice / Speech-to-Text (STT)**
+- [x] **Voice / Speech-to-Text (STT)**
   - Hook: `useSTT`
   - API: `POST /api/companion/stt`
-- [ ] **Text-to-Speech (TTS)**
+- [x] **Text-to-Speech (TTS)**
   - Audio player respon suara pendamping
   - API: `POST /api/companion/tts`
-- [ ] **Quota Meter & Modal Kuota Habis**
+- [x] **Quota Meter & Modal Kuota Habis**
   - API: `GET /api/companion/quota`
   - Menampilkan token tersisa dan opsi upgrade jika limit tercapai
-- [ ] **Crisis Safe Detection & Banner**
+- [x] **Crisis Safe Detection & Banner**
   - Menghalangi respon bahaya dan menyodorkan hotline jika terdeteksi krisis
 
 ---
 
 ## 5. Smart Activity Planner (`/activity`)
 
-- [ ] **Daftar Rencana Aktivitas Harian**
+- [x] **Daftar Rencana Aktivitas Harian**
   - API: `GET /api/activity`, `POST /api/activity`
   - Filter kategori: Relaksasi, Fisik, Ketenangan, Refleksi
-- [ ] **Tandai Aktivitas Selesai**
+- [x] **Tandai Aktivitas Selesai**
   - Toggle status selesai dengan sinkronisasi ke poin/tracker harian
-- [ ] **Tambah & Hapus Aktivitas Kustom**
+- [x] **Tambah & Hapus Aktivitas Kustom**
   - Form penambahan aktivitas mikro personal
-- [ ] **Taman Bernapas 4-7-8 (Breathing Garden)**
+- [x] **Taman Bernapas 4-7-8 (Breathing Garden)**
   - Modal latihan napas terpandu dengan lingkaran pacer (Tarik 4s, Tahan 7s, Hembuskan 8s)
-- [ ] **Audio Musik Latar Ambience**
+- [x] **Audio Musik Latar Ambience**
   - Audio kontrol untuk relaksasi terpandu
 
 ---
 
 ## 6. Wellness Journey (`/wellness-journey`)
 
-- [ ] **Visualisasi Pertumbuhan Holistik (Radar/Tren)**
+- [x] **Visualisasi Pertumbuhan Holistik (Radar/Tren)**
   - Menampilkan integrasi data mood, tidur, stres, dan kebugaran
-- [ ] **Wawasan Mingguan AI (Insights Engine)**
+- [x] **Wawasan Mingguan AI (Insights Engine)**
   - API: `GET /api/wellness/insights`
   - Mendeteksi korelasi (misal tidur vs stres)
-- [ ] **Rekomendasi Kebiasaan Mikro**
+- [x] **Rekomendasi Kebiasaan Mikro**
   - Rekomendasi langkah kecil berbasis data catatan
-- [ ] **Paywall Gate Zyba Plus untuk Wawasan Mendalam**
+- [x] **Paywall Gate Zyba Plus untuk Wawasan Mendalam**
   - Halaman: `/settings/zyba-plus/insights`
   - Gating fitur analisis mendalam bagi pengguna gratis
 
@@ -150,51 +150,51 @@ Dokumen ini memetakan seluruh fitur, endpoint API, dan halaman aktif di ZYBA yan
 
 ## 7. Zyba Community (`/community`, `/community/[slug]`)
 
-- [ ] **Feed Komunitas & Infinite Pagination**
+- [x] **Feed Komunitas & Infinite Pagination**
   - API: `GET /api/community`
   - Tab: Untuk Anda, Mengikuti, Populer
-- [ ] **Pembuatan Postingan (Inline & Modal)**
+- [x] **Pembuatan Postingan (Inline & Modal)**
   - Komponen: `CreatePostModal.tsx`
   - Pilihan posting anonim vs identitas terbuka
   - API: `POST /api/community`
-- [ ] **Reaksi & Interaksi ("Kirim Pelukan", Komentar, Repost, Bookmark)**
+- [x] **Reaksi & Interaksi ("Kirim Pelukan", Komentar, Repost, Bookmark)**
   - API: `POST /api/community/comments`, `GET /api/community/comments`
   - Reaction pelukan suportif
   - API: `POST /api/community/bookmarks`
-- [ ] **Sub-View & Halaman Dinamis Slug**
+- [x] **Sub-View & Halaman Dinamis Slug**
   - `/community/search`
   - `/community/messages` (Direct Messages, API `/api/community/dm/*`)
   - `/community/notifications` (API `/api/community/notifications`)
-- [ ] **Profil Pengguna Komunitas & Follow System**
+- [x] **Profil Pengguna Komunitas & Follow System**
   - Halaman: `/community/profile/[userId]`, followers, following
   - API: `GET /api/community/users/[userId]/*`, `POST /api/community/follows/[userId]`
-- [ ] **Sistem Pelaporan Konten & Moderasi**
+- [x] **Sistem Pelaporan Konten & Moderasi**
   - API: `POST /api/community/posts/[postId]/report`, `POST /api/community/comments/[commentId]/report`
-- [ ] **Deteksi Krisis Komunitas**
+- [x] **Deteksi Krisis Komunitas**
   - Banner Sejiwa 119 muncul jika teks postingan mengandung kata krisis
 
 ---
 
 ## 8. Sanctuary Resources (`/resources`, `/resources/[slug]`)
 
-- [ ] **Katalog Sumber Daya Kebugaran**
+- [x] **Katalog Sumber Daya Kebugaran**
   - Filter: Semua, Artikel, Audio
   - API: `GET /api/resources`
-- [ ] **Halaman Baca Artikel / Panduan**
+- [x] **Halaman Baca Artikel / Panduan**
   - Halaman: `/resources/[slug]`
-- [ ] **Pemutar Audio Relaksasi / Meditasi**
+- [x] **Pemutar Audio Relaksasi / Meditasi**
   - Audio player tersemat dengan kontrol play/pause/seek
-- [ ] **Kartu Pro & Paywall Banner**
+- [x] **Kartu Pro & Paywall Banner**
   - Preview konten eksklusif Zyba Plus
 
 ---
 
 ## 9. Pencapaian & Lencana (`/achievements`)
 
-- [ ] **Katalog Lencana Ketenangan (Quiet Milestones)**
+- [x] **Katalog Lencana Ketenangan (Quiet Milestones)**
   - API: `GET /api/achievements`, `GET /api/badges`
   - Filter kategori pencapaian
-- [ ] **Pemilih 3 Lencana Tampilan Profil**
+- [x] **Pemilih 3 Lencana Tampilan Profil**
   - Pengguna dapat memilih maksimal 3 lencana untuk disematkan di kartu profil
   - API: `POST /api/badges`
 
@@ -202,19 +202,19 @@ Dokumen ini memetakan seluruh fitur, endpoint API, dan halaman aktif di ZYBA yan
 
 ## 10. Pengaturan & Langganan (`/settings/*`)
 
-- [ ] **Pengaturan Profil Akun**
+- [x] **Pengaturan Profil Akun**
   - Halaman: `/settings`
   - Edit nama, username, bio, avatar
   - API: `POST /api/user/me`, `POST /api/user/username`
-- [ ] **Preferensi Notifikasi**
+- [x] **Preferensi Notifikasi**
   - Toggle notifikasi pengingat check-in, companion, komunitas
   - API: `GET /api/settings/notifications`, `POST /api/settings/notifications`
-- [ ] **Privasi & Keamanan Data**
+- [x] **Privasi & Keamanan Data**
   - Ekspor data lengkap (`GET /api/settings/export`)
   - Hapus akun permanen (`POST /api/account/delete`)
-- [ ] **Konfigurasi Persona Companion**
+- [x] **Konfigurasi Persona Companion**
   - Pengaturan gaya bahasa pendamping
-- [ ] **Alur Berlangganan Zyba Plus (Midtrans Snap Checkout)**
+- [x] **Alur Berlangganan Zyba Plus (Midtrans Snap Checkout)**
   - Halaman paket: `/settings/zyba-plus`
   - Halaman checkout: `/settings/zyba-plus/payment`
   - Halaman sukses: `/settings/zyba-plus/success`
@@ -225,9 +225,9 @@ Dokumen ini memetakan seluruh fitur, endpoint API, dan halaman aktif di ZYBA yan
 
 ## 11. Direktori Bantuan & Administrasi
 
-- [ ] **Guidebook Direktori Krisis (`/guidebook`)**
+- [x] **Guidebook Direktori Krisis (`/guidebook`)**
   - Informasi nomor bebas pulsa dan hotline kesehatan mental nasional (Sejiwa 119 ext. 8, Lisa Helpline, dsb.)
-- [ ] **Admin Moderasi & Pembayaran (`/admin/*`)**
+- [x] **Admin Moderasi & Pembayaran (`/admin/*`)**
   - `/admin` (Redirect otomatis ke `/admin/moderation`)
   - Antrean laporan konten (`GET /api/admin/reports`, action `POST /api/admin/moderation/action`)
   - Banding moderasi (`GET /api/admin/moderation/appeals`)
@@ -239,8 +239,8 @@ Dokumen ini memetakan seluruh fitur, endpoint API, dan halaman aktif di ZYBA yan
 
 ## 12. Landing Page & Utilitas Publik
 
-- [ ] **Halaman Beranda Publik (`/`)**
+- [x] **Halaman Beranda Publik (`/`)**
   - Hero editorial, pengenalan fitur, cara kerja, partner pendukung, FAQ, CTA
-- [ ] **Legal, Sitemap, Robots**
+- [x] **Legal, Sitemap, Robots**
   - `/robots.txt`, `/sitemap.xml`, `/manifest.webmanifest`
   - Halaman 404 & Error boundary
